@@ -106,7 +106,7 @@ public class StoreProduct extends XktBaseEntity {
      * 定时发货时间(精确到小时)
      */
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @Excel(name = "定时发货时间(精确到小时)", width = 30, dateFormat = "yyyy-MM-dd")
+    @Excel(name = "定时发货时间(精确到小时)", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date listingWaySchedule;
 
     /**

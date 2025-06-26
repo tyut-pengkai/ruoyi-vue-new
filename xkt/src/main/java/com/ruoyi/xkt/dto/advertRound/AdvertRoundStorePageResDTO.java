@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author liujiang
@@ -30,6 +31,8 @@ public class AdvertRoundStorePageResDTO {
     private Integer typeId;
     @ApiModelProperty(value = "投放类型")
     private String typeName;
+    @ApiModelProperty(value = "推广展示类型")
+    private Integer displayType;
     @ApiModelProperty(value = "投放位置")
     private String position;
     @ApiModelProperty(value = "投放开始时间")
@@ -38,6 +41,8 @@ public class AdvertRoundStorePageResDTO {
     private String endTime;
     @ApiModelProperty(value = "出价")
     private String payPrice;
+    @ApiModelProperty(value = "商品ID")
+    private String prodIdStr;
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     @ApiModelProperty(value = "凭证日期")
     private Date voucherDate;
@@ -61,5 +66,9 @@ public class AdvertRoundStorePageResDTO {
     private Integer picAuditStatus;
     @ApiModelProperty(value = "图片审核状态")
     private String picAuditStatusName;
+    @ApiModelProperty(value = "示例图")
+    private String examplePicUrl;
+    @ApiModelProperty(value = "商品货号")
+    private List<String> prodArtNumList;
 
 }

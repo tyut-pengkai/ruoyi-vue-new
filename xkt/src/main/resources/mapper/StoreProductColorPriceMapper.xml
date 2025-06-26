@@ -38,4 +38,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
           AND spc.store_id = #{storeId}
     </select>
 
+    <select id="selectStoreProdMinPriceList" resultType="com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdMinPriceDTO">
+        SELECT
+            spcp.store_prod_id,
+            MIN( spcp.price )
+        FROM
+            store_product_color_price spcp
+        WHERE
+            spcp.del_flag = 0
+            <if test="storeProdIdList != null and storeProdIdList.size() > 0">
+                AND spcp.store_prod_id IN
+                <foreach item="item" collection="storeProdIdList" separator="," open="(" close=")" index="">
+                    #{item}
+                </foreach>
+            </if>
+        GROUP BY
+            spcp.store_prod_id
+    </select>
+
 </mapper>

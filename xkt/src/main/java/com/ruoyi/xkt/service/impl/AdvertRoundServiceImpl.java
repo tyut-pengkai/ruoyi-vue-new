@@ -684,14 +684,24 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         }
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
         List<AdvertRoundStorePageResDTO> list = this.advertRoundMapper.selectStoreAdvertPage(pageDTO);
-        list.forEach(item -> item.setPlatformName(AdPlatformType.of(item.getPlatformId()).getLabel())
-                .setLaunchStatusName(AdLaunchStatus.of(item.getLaunchStatus()).getLabel())
-                .setPicAuditStatusName(ObjectUtils.isNotEmpty(item.getPicAuditStatus()) ? AdPicAuditStatus.of(item.getPicAuditStatus()).getLabel() : "")
-                .setPicDesignTypeName(ObjectUtils.isNotEmpty(item.getPicDesignType()) ? AdDesignType.of(item.getPicDesignType()).getLabel() : "")
-                .setPicAuditStatusName(ObjectUtils.isNotEmpty(item.getPicAuditStatus()) ? AdPicAuditStatus.of(item.getPicAuditStatus()).getLabel() : "")
-                .setPicSetTypeName(ObjectUtils.isNotEmpty(item.getPicSetType()) ? AdPicSetType.of(item.getPicSetType()).getLabel() : "")
-                .setTypeName(AdType.of(item.getTypeId()).getLabel())
-                .setBiddingStatusName(AdBiddingStatus.of(item.getBiddingStatus()).getLabel()));
+        List<String> idList = list.stream().map(AdvertRoundStorePageResDTO::getProdIdStr)
+                .filter(StringUtils::isNotBlank).flatMap(str -> StrUtil.split(str, ",").stream())
+                .distinct().collect(Collectors.toList());
+        List<StoreProduct> storeProdList = this.storeProdMapper.selectByIds(idList);
+        Map<String, StoreProduct> storeProdMap = storeProdList.stream().collect(Collectors.toMap(x -> x.getId().toString(), x -> x));
+        list.forEach(item -> {
+            final List<String> prodArtNumList = StringUtils.isEmpty(item.getProdIdStr()) ? new ArrayList<>() : StrUtil.split(item.getProdIdStr(), ",").stream()
+                    .map(storeProdMap::get).filter(Objects::nonNull).map(StoreProduct::getProdArtNum).collect(Collectors.toList());
+            item.setPlatformName(AdPlatformType.of(item.getPlatformId()).getLabel())
+                    .setLaunchStatusName(AdLaunchStatus.of(item.getLaunchStatus()).getLabel())
+                    .setPicAuditStatusName(ObjectUtils.isNotEmpty(item.getPicAuditStatus()) ? AdPicAuditStatus.of(item.getPicAuditStatus()).getLabel() : "")
+                    .setPicDesignTypeName(ObjectUtils.isNotEmpty(item.getPicDesignType()) ? AdDesignType.of(item.getPicDesignType()).getLabel() : "")
+                    .setPicAuditStatusName(ObjectUtils.isNotEmpty(item.getPicAuditStatus()) ? AdPicAuditStatus.of(item.getPicAuditStatus()).getLabel() : "")
+                    .setPicSetTypeName(ObjectUtils.isNotEmpty(item.getPicSetType()) ? AdPicSetType.of(item.getPicSetType()).getLabel() : "")
+                    .setTypeName(AdType.of(item.getTypeId()).getLabel())
+                    .setBiddingStatusName(AdBiddingStatus.of(item.getBiddingStatus()).getLabel())
+                    .setProdArtNumList(prodArtNumList);
+        });
         return Page.convert(new PageInfo<>(list));
     }
 

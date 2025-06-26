@@ -1,9 +1,12 @@
 package com.ruoyi.quartz.task;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.json.JSONUtil;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
 import com.alibaba.fastjson2.JSON;
@@ -14,6 +17,7 @@ import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.SimpleEntity;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.es.EsClientWrapper;
 import com.ruoyi.framework.notice.fs.FsNotice;
@@ -26,9 +30,13 @@ import com.ruoyi.xkt.dto.dailySale.DailySaleDTO;
 import com.ruoyi.xkt.dto.dailySale.DailySaleProdDTO;
 import com.ruoyi.xkt.dto.dailySale.WeekCateSaleDTO;
 import com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO;
+import com.ruoyi.xkt.dto.es.ESProductDTO;
 import com.ruoyi.xkt.dto.order.StoreOrderCancelDTO;
 import com.ruoyi.xkt.dto.order.StoreOrderRefund;
+import com.ruoyi.xkt.dto.picture.ProductPicSyncDTO;
+import com.ruoyi.xkt.dto.picture.ProductPicSyncResultDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileLatestFourProdDTO;
+import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO;
 import com.ruoyi.xkt.dto.useSearchHistory.UserSearchHistoryDTO;
 import com.ruoyi.xkt.dto.userBrowsingHistory.UserBrowsingHisDTO;
 import com.ruoyi.xkt.enums.*;
@@ -45,9 +53,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -97,6 +108,11 @@ public class XktTask {
     final StoreProductFileMapper storeProdFileMapper;
     final UserSearchHistoryMapper userSearchHisMapper;
     final UserBrowsingHistoryMapper userBrowHisMapper;
+    final StoreProductColorPriceMapper prodColorPriceMapper;
+    final IPictureService pictureService;
+    final NoticeMapper noticeMapper;
+    final UserNoticeMapper userNoticeMapper;
+    final UserSubscriptionsMapper userSubMapper;
 
     /**
      * 每年3月1日、6月1日、9月1日、12月1日执行
@@ -136,7 +152,7 @@ public class XktTask {
             return;
         }
         storeList.forEach(store -> {
-            redisCache.setCacheObject(CacheConstants.STORE_KEY + store.getId(), store, 1, TimeUnit.DAYS);
+            redisCache.setCacheObject(CacheConstants.STORE_KEY + store.getId(), store);
         });
     }
 
@@ -670,7 +686,14 @@ public class XktTask {
     }
 
     /**
-     * 凌晨2:35 更新过期档口
+     * 凌晨2:35 更新试用期过期档口
+     */
+    public void autoCloseTrialStore() {
+
+    }
+
+    /**
+     * 凌晨2:40 更新年费过期档口
      */
     public void autoCloseTimeoutStore() {
 
@@ -683,7 +706,7 @@ public class XktTask {
     }
 
     /**
-     * 凌晨2:40 更新档口过期会员
+     * 凌晨2:45 更新档口会员过期
      */
     public void autoCloseExpireStoreMember() {
 
@@ -703,23 +726,111 @@ public class XktTask {
         this.advertRoundService.updateBiddingStatus();
     }
 
+    public static void main(String[] args) {
+        Date now = DateUtils.parseDate(DateTimeFormatter.ofPattern("yyyy-MM-dd HH").format(LocalDateTime.now()));
+    }
+
     /**
      * 每个小时执行一次，发布商品
      */
     @Transactional
     public void hourPublicStoreProduct() {
-
-        // TODO 定时任务发布商品，同步到ES中
-        // TODO 定时任务发布商品，同步到ES中
-        // TODO 定时任务发布商品，同步到ES中
-
-        // 向ES索引: product_info 创建文档
-//        this.createESDoc(storeProd, storeProdDTO);
-        // 搜图服务同步
-//        sync2ImgSearchServer(storeProd.getId(), storeProdDTO.getFileList());
-
-        // 新增档口商品动态、关注档口用户 通知公告
-
+        // 获取当前时间 格式化为 yyyy-MM-dd HH:00:00
+        String hourTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:00:00").format(LocalDateTime.now());
+        // 当前整点待发布的商品
+        List<StoreProduct> unpublicList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+                .eq(StoreProduct::getDelFlag, Constants.UNDELETED).eq(StoreProduct::getListingWaySchedule, hourTime)
+                .eq(StoreProduct::getProdStatus, EProductStatus.UN_PUBLISHED.getValue()));
+        if (CollectionUtils.isEmpty(unpublicList)) {
+            return;
+        }
+        System.err.println(unpublicList);
+        final List<String> storeProdIdList = unpublicList.stream().map(x -> x.getId()).map(String::valueOf).collect(Collectors.toList());
+        // 获取所有的商品的第一张主图
+        List<StoreProdFileResDTO> mainPicList = this.storeProdFileMapper.selectMainPic(storeProdIdList);
+        // 所有的商品主图map
+        Map<Long, List<String>> mainPicMap = mainPicList.stream().filter(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC.getValue()))
+                .collect(Collectors.groupingBy(x -> x.getStoreProdId(), Collectors.mapping(x -> x.getFileUrl(), Collectors.toList())));
+        // 第一张商品主图map
+        Map<Long, StoreProdFileResDTO> firstMainPicMap = mainPicList.stream().filter(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC.getValue()))
+                .filter(x -> Objects.equals(x.getOrderNum(), Constants.ORDER_NUM_1)).collect(Collectors
+                        .toMap(x -> x.getStoreProdId(), x -> x));
+        // 主图视频map
+        Map<Long, Boolean> mainVideoMap = mainPicList.stream().filter(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC_VIDEO.getValue()))
+                .collect(Collectors.toMap(x -> x.getStoreProdId(), x -> true));
+        // 所有的分类
+        List<SysProductCategory> prodCateList = this.prodCateMapper.selectList(new LambdaQueryWrapper<SysProductCategory>()
+                .eq(SysProductCategory::getDelFlag, Constants.UNDELETED));
+        Map<Long, SysProductCategory> prodCateMap = prodCateList.stream().collect(Collectors.toMap(x -> x.getId(), x -> x));
+        // 父级分类
+        Map<Long, Long> parProdCateMap = prodCateList.stream().collect(Collectors.toMap(x -> x.getParentId(), x -> x.getParentId(), (s1, s2) -> s2));
+        // 子分类
+        Map<Long, Long> childProdCateMap = prodCateList.stream().collect(Collectors.toMap(x -> x.getId(), x -> x.getId()));
+        // 获取当前商品最低价格
+        Map<Long, BigDecimal> prodMinPriceMap = this.prodColorPriceMapper.selectStoreProdMinPriceList(storeProdIdList).stream().collect(Collectors
+                .toMap(x -> x.getStoreProdId(), x -> x.getPrice()));
+        // 档口商品的属性map
+        Map<Long, StoreProductCategoryAttribute> cateAttrMap = this.cateAttrMapper.selectList(new LambdaQueryWrapper<StoreProductCategoryAttribute>()
+                        .eq(StoreProductCategoryAttribute::getDelFlag, Constants.UNDELETED).in(StoreProductCategoryAttribute::getStoreProdId, storeProdIdList))
+                .stream().collect(Collectors.toMap(x -> x.getStoreProdId(), x -> x));
+        // 档口商品对应的档口
+        Map<Long, Store> storeMap = this.storeMapper.selectList(new LambdaQueryWrapper<Store>().eq(Store::getDelFlag, Constants.UNDELETED)
+                        .in(Store::getId, unpublicList.stream().map(x -> x.getStoreId()).collect(Collectors.toList())))
+                .stream().collect(Collectors.toMap(x -> x.getId(), x -> x));
+        // 构建批量操作请求
+        List<BulkOperation> bulkOperations = new ArrayList<>();
+        for (StoreProduct product : unpublicList) {
+            final SysProductCategory cate = prodCateMap.get(product.getProdCateId());
+            final SysProductCategory parCate = ObjectUtils.isEmpty(cate) ? null : prodCateMap.get(cate.getParentId());
+            final Store store = storeMap.get(product.getStoreId());
+            final StoreProdFileResDTO mainPic = firstMainPicMap.get(product.getId());
+            final BigDecimal prodMinPrice = prodMinPriceMap.get(product.getId());
+            final StoreProductCategoryAttribute cateAttr = cateAttrMap.get(product.getId());
+            final Boolean hasVideo = mainVideoMap.getOrDefault(product.getId(), Boolean.FALSE);
+            ESProductDTO esProductDTO = new ESProductDTO().setStoreProdId(product.getId().toString()).setProdArtNum(product.getProdArtNum())
+                    .setHasVideo(hasVideo).setProdCateId(product.getProdCateId().toString()).setCreateTime(DateUtils.getTime())
+                    .setProdCateName(ObjectUtils.isNotEmpty(cate) ? cate.getName() : "")
+                    .setSaleWeight("0").setRecommendWeight("0").setPopularityWeight("0")
+                    .setMainPicUrl(ObjectUtils.isNotEmpty(mainPic) ? mainPic.getFileUrl() : "")
+                    .setMainPicName(ObjectUtils.isNotEmpty(mainPic) ? mainPic.getFileName() : "")
+                    .setMainPicSize(ObjectUtils.isNotEmpty(mainPic) ? mainPic.getFileSize() : BigDecimal.ZERO)
+                    .setParCateId(ObjectUtils.isNotEmpty(parCate) ? parCate.getId().toString() : "")
+                    .setParCateName(ObjectUtils.isNotEmpty(parCate) ? parCate.getName() : "")
+                    .setProdPrice(ObjectUtils.isNotEmpty(prodMinPrice) ? prodMinPrice.toString() : "")
+                    .setSeason(ObjectUtils.isNotEmpty(cateAttr) ? cateAttr.getSuitableSeason() : "")
+                    .setProdStatus(product.getProdStatus().toString())
+                    .setStoreId(product.getStoreId().toString())
+                    .setStoreName(ObjectUtils.isNotEmpty(store) ? store.getStoreName() : "")
+                    .setStyle(ObjectUtils.isNotEmpty(cateAttr) ? cateAttr.getStyle() : "")
+                    .setTags(ObjectUtils.isNotEmpty(cateAttr) ? Collections.singletonList(cateAttr.getStyle()) : new ArrayList<>())
+                    .setProdTitle(product.getProdTitle());
+            // 创建更新操作
+            BulkOperation bulkOperation = new BulkOperation.Builder()
+                    .index(i -> i
+                            // 使用商品ID作为文档ID
+                            .id(String.valueOf(product.getId()))
+                            // 索引名称
+                            .index(Constants.ES_IDX_PRODUCT_INFO)
+                            // 插入的数据
+                            .document(esProductDTO))
+                    .build();
+            bulkOperations.add(bulkOperation);
+            this.createNotice(product, store.getStoreName());
+        }
+        // 执行批量插入
+        try {
+            BulkResponse response = esClientWrapper.getEsClient().bulk(b -> b.index(Constants.ES_IDX_PRODUCT_INFO).operations(bulkOperations));
+            log.info("批量插入到 ES 成功，共处理 {} 条记录", response.items().size());
+        } catch (Exception e) {
+            log.error("批量插入到 ES 失败", e);
+        }
+        for (StoreProduct product : unpublicList) {
+            List<String> mainPicUrlList = mainPicMap.get(product.getId());
+            if (CollUtil.isEmpty(mainPicUrlList)) {
+                return;
+            }
+            this.sync2ImgSearchServer(product.getId(), mainPicUrlList, true);
+        }
     }
 
 
@@ -1328,6 +1439,63 @@ public class XktTask {
         }
         throw new ServiceException("未知支付渠道");
     }
+
+    /**
+     * 搜图服务同步商品
+     *
+     * @param storeProductId
+     * @param storeProdFiles
+     */
+    private void sync2ImgSearchServer(Long storeProductId, List<String> picKeys, boolean async) {
+        if (async) {
+            ThreadUtil.execAsync(() -> {
+                        ProductPicSyncResultDTO r =
+                                pictureService.sync2ImgSearchServer(new ProductPicSyncDTO(storeProductId, picKeys));
+                        log.info("商品图片同步至搜图服务器: id: {}, result: {}", storeProductId, JSONUtil.toJsonStr(r));
+                    }
+            );
+        } else {
+            ProductPicSyncResultDTO r =
+                    pictureService.sync2ImgSearchServer(new ProductPicSyncDTO(storeProductId, picKeys));
+            log.info("商品图片同步至搜图服务器: id: {}, result: {}", storeProductId, JSONUtil.toJsonStr(r));
+        }
+    }
+
+    /**
+     * 新增商品时，新增系统通知
+     *
+     * @param storeProd 档口商品
+     * @param storeName 档口名称
+     */
+    private void createNotice(StoreProduct storeProd, String storeName) {
+        // 新增档口 商品动态 通知公告
+        Long userId = SecurityUtils.getUserId();
+        // 新增一条档口消息通知
+        Notice notice = new Notice().setNoticeTitle(storeName + "商品上新啦!").setNoticeType(NoticeType.NOTICE.getValue())
+                .setNoticeContent(storeName + "上新了货号为: " + storeProd.getProdArtNum() + " 的商品!请及时关注!")
+                .setOwnerType(NoticeOwnerType.STORE.getValue()).setStoreId(storeProd.getStoreId())
+                .setUserId(userId).setPerpetuity(1);
+        this.noticeMapper.insert(notice);
+        final Date voucherDate = java.sql.Date.valueOf(LocalDate.now());
+        // 新增消息通知列表
+        List<UserNotice> userNoticeList = new ArrayList<>();
+        // 新增档口商品动态
+        userNoticeList.add(new UserNotice().setNoticeId(notice.getId())
+                .setUserId(userId).setReadStatus(NoticeReadType.UN_READ.getValue()).setVoucherDate(voucherDate)
+                .setTargetNoticeType(UserNoticeType.PRODUCT_DYNAMIC.getValue()));
+        List<UserSubscriptions> userSubList = this.userSubMapper.selectList(new LambdaQueryWrapper<UserSubscriptions>()
+                .eq(UserSubscriptions::getStoreId, storeProd.getStoreId()));
+        if (CollectionUtils.isNotEmpty(userSubList)) {
+            userSubList.forEach(x -> userNoticeList.add(new UserNotice().setNoticeId(notice.getId())
+                    .setUserId(x.getUserId()).setReadStatus(NoticeReadType.UN_READ.getValue()).setVoucherDate(voucherDate)
+                    .setTargetNoticeType(UserNoticeType.FOCUS_STORE.getValue())));
+        }
+        if (CollectionUtils.isEmpty(userNoticeList)) {
+            return;
+        }
+        this.userNoticeMapper.insert(userNoticeList);
+    }
+
 
 }
 

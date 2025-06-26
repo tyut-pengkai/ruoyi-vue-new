@@ -13,55 +13,9 @@ import java.util.List;
  * @date 2025-03-26
  */
 public interface StoreProductCategoryAttributeMapper extends BaseMapper<StoreProductCategoryAttribute> {
-    /**
-     * 查询档口商品类目信息
-     *
-     * @param id 档口商品类目信息主键
-     * @return 档口商品类目信息
-     */
-    StoreProductCategoryAttribute selectStoreProductCategoryAttributeByStoreProdAttrId(Long id);
-
-    /**
-     * 查询档口商品类目信息列表
-     *
-     * @param storeProductCategoryAttribute 档口商品类目信息
-     * @return 档口商品类目信息集合
-     */
-    List<StoreProductCategoryAttribute> selectStoreProductCategoryAttributeList(StoreProductCategoryAttribute storeProductCategoryAttribute);
-
-    /**
-     * 新增档口商品类目信息
-     *
-     * @param storeProductCategoryAttribute 档口商品类目信息
-     * @return 结果
-     */
-    int insertStoreProductCategoryAttribute(StoreProductCategoryAttribute storeProductCategoryAttribute);
-
-    /**
-     * 修改档口商品类目信息
-     *
-     * @param storeProductCategoryAttribute 档口商品类目信息
-     * @return 结果
-     */
-    int updateStoreProductCategoryAttribute(StoreProductCategoryAttribute storeProductCategoryAttribute);
-
-    /**
-     * 删除档口商品类目信息
-     *
-     * @param id 档口商品类目信息主键
-     * @return 结果
-     */
-    int deleteStoreProductCategoryAttributeByStoreProdAttrId(Long id);
-
-    /**
-     * 批量删除档口商品类目信息
-     *
-     * @param storeProdAttrIds 需要删除的数据主键集合
-     * @return 结果
-     */
-    int deleteStoreProductCategoryAttributeByStoreProdAttrIds(Long[] storeProdAttrIds);
 
     void updateDelFlagByStoreProdId(Long storeProdId);
 
     StoreProductCategoryAttribute selectByStoreProdId(Long storeProdId);
+
 }

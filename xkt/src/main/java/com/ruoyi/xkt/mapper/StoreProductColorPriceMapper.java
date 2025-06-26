@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProductColorPrice;
 import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceResDTO;
 import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceSimpleDTO;
+import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdMinPriceDTO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -30,5 +31,13 @@ public interface StoreProductColorPriceMapper extends BaseMapper<StoreProductCol
      * @return List<StoreProdColorPriceResDTO>
      */
     List<StoreProdColorPriceResDTO> selectListByStoreProdIdAndStoreId(@Param("storeProdId") Long storeProdId, @Param("storeId") Long storeId);
+
+    /**
+     * 获取档口商品的最低定价
+     *
+     * @param storeProdIdList 档口商品ID列表
+     * @return List<StoreProdMinPriceDTO>
+     */
+    List<StoreProdMinPriceDTO> selectStoreProdMinPriceList(@Param("storeProdIdList") List<String> storeProdIdList);
 
 }

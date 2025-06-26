@@ -108,6 +108,13 @@ public class DailyTaskController extends BaseController {
         return R.ok();
     }
 
+    @PostMapping("/publish-prod")
+    public R hourPublicStoreProduct(SysJob sysJob) {
+        task.hourPublicStoreProduct();
+        return R.ok();
+    }
+
+
 
 
 }
