@@ -2,6 +2,7 @@ package com.ruoyi.system.service;
 
 import com.ruoyi.common.core.domain.model.*;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -90,4 +91,23 @@ public interface ISysRoleService {
      * @return
      */
     Set<Long> getSubRoleIdsByStore(Long storeId);
+
+    /**
+     * 角色用户绑定
+     *
+     * @param roleId
+     * @param userIds
+     * @return
+     */
+    int bindUser(Long roleId, Collection<Long> userIds);
+
+    /**
+     * 角色用户解绑
+     *
+     * @param roleId
+     * @param userIds
+     * @return
+     */
+    int unbindUser(Long roleId, Collection<Long> userIds);
+
 }

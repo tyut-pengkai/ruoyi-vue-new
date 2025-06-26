@@ -25,6 +25,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		WHERE
 			sur.role_id = #{roleId}
 	</select>
+	<select id="listRelRoleId" resultType="java.lang.Long">
+		SELECT DISTINCT
+			sur.role_id
+		FROM
+			sys_user_role sur
+		WHERE
+			sur.user_id = #{userId}
+	</select>
 	<select id="listRoleSelectItem" resultType="com.ruoyi.common.core.domain.model.RoleSelectItem">
 		SELECT
 			sur.role_id,

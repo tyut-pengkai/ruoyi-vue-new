@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.lang.Assert;
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ruoyi.common.constant.Constants;
@@ -11,10 +12,13 @@ import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.model.*;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.common.utils.spring.SpringUtils;
 import com.ruoyi.system.domain.SysRoleMenu;
+import com.ruoyi.system.domain.SysUserRole;
 import com.ruoyi.system.mapper.SysRoleMapper;
 import com.ruoyi.system.mapper.SysRoleMenuMapper;
+import com.ruoyi.system.mapper.SysUserMapper;
 import com.ruoyi.system.mapper.SysUserRoleMapper;
 import com.ruoyi.system.service.ISysRoleService;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +40,7 @@ public class SysRoleServiceImpl implements ISysRoleService {
     final SysRoleMapper roleMapper;
     final SysRoleMenuMapper roleMenuMapper;
     final SysUserRoleMapper userRoleMapper;
+    final SysUserMapper userMapper;
 
     @Override
     public RoleInfo getRoleById(Long roleId) {
@@ -164,6 +169,45 @@ public class SysRoleServiceImpl implements ISysRoleService {
                 .stream()
                 .map(SysRole::getRoleId)
                 .collect(Collectors.toSet());
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public int bindUser(Long roleId, Collection<Long> userIds) {
+        SysRole role = roleMapper.selectById(roleId);
+        Assert.isTrue(BeanValidators.exists(role));
+        Assert.notEmpty(userIds);
+        List<SysUserRole> urs;
+        if (ESystemRole.SUPPLIER.getId().equals(roleId)) {
+            //档口供应商
+            urs = userIds.stream().map(userId -> {
+                Long storeId = userMapper.getManageStoreId(userId);
+                SysUserRole ur = new SysUserRole();
+                ur.setUserId(userId);
+                ur.setRoleId(roleId);
+                ur.setStoreId(storeId);
+                return ur;
+            }).collect(Collectors.toList());
+        } else {
+            Long storeId = role.getStoreId();
+            urs = userIds.stream().map(userId -> {
+                SysUserRole ur = new SysUserRole();
+                ur.setUserId(userId);
+                ur.setRoleId(roleId);
+                ur.setStoreId(storeId);
+                return ur;
+            }).collect(Collectors.toList());
+        }
+        //TODO 用户只能关联一个系统角色，只有电商卖家才能关联档口子角色
+        return userRoleMapper.batchUserRole(urs);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public int unbindUser(Long roleId, Collection<Long> userIds) {
+        Assert.notNull(roleId);
+        Assert.notEmpty(userIds);
+        return userRoleMapper.deleteUserRoleInfos(roleId, ArrayUtil.toArray(userIds, Long.class));
     }
 
     /**

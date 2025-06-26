@@ -162,4 +162,12 @@ public interface ISysUserService {
      * @return 结果
      */
     public String importUser(List<SysUser> userList, Boolean isUpdateSupport, String operName);
+
+    /**
+     * 更新关联档口ID
+     *
+     * @param userId
+     * @param roleId
+     */
+    void refreshRelStore(Long userId, Long roleId);
 }

@@ -5,9 +5,14 @@ import cn.hutool.core.util.IdUtil;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.domain.model.LoginUser;
+import com.ruoyi.common.core.domain.model.UserInfo;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.oss.OSSClientWrapper;
+import com.ruoyi.framework.web.service.TokenService;
+import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.web.controller.xkt.vo.store.*;
 import com.ruoyi.xkt.dto.store.*;
 import com.ruoyi.xkt.service.IStoreService;
@@ -20,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 档口Controller
@@ -34,11 +40,24 @@ import java.util.List;
 public class StoreController extends XktBaseController {
 
     final IStoreService storeService;
+    final ISysUserService userService;
+    final TokenService tokenService;
 
     @Log(title = "新增档口", businessType = BusinessType.UPDATE)
     @PostMapping
     public R<Integer> create(@Validated @RequestBody StoreCreateVO createVO) {
-        return R.ok(storeService.create(BeanUtil.toBean(createVO, StoreCreateDTO.class)));
+        int count = storeService.create(BeanUtil.toBean(createVO, StoreCreateDTO.class));
+        if (Objects.equals(SecurityUtils.getUserId(), createVO.getUserId())) {
+            // 当前登录用户关联档口：更新关联用户缓存
+            LoginUser currentUser = SecurityUtils.getLoginUser();
+            UserInfo currentUserInfo = userService.getUserById(createVO.getUserId());
+            currentUser.updateByUser(currentUserInfo);
+            tokenService.refreshToken(currentUser);
+        } else {
+            // 非当前登录用户关联档口：删除关联用户缓存
+            tokenService.deleteCacheUser(createVO.getUserId());
+        }
+        return R.ok(count);
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")

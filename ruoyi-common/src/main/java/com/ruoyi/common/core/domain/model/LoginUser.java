@@ -1,11 +1,13 @@
 package com.ruoyi.common.core.domain.model;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.lang.Assert;
 import com.alibaba.fastjson2.annotation.JSONField;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -284,6 +286,18 @@ public class LoginUser implements UserDetails
     public void setUser(UserExt user)
     {
         this.user = user;
+    }
+
+    public void updateByUser(UserInfo user) {
+        Assert.notNull(user);
+        Assert.isTrue(Objects.equals(this.userId, user.getUserId()));
+        for (RoleInfo roleInfo : CollUtil.emptyIfNull(user.getRoles())) {
+            if (roleInfo.getRoleId().equals(this.currentRoleId)) {
+                this.currentStoreId = roleInfo.getRelStoreId();
+                break;
+            }
+        }
+        this.user = UserExt.create(user);
     }
 
     @Override

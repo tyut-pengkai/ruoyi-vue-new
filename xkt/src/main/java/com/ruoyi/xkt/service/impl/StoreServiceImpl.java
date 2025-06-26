@@ -9,6 +9,7 @@ import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
+import com.ruoyi.common.core.domain.model.ESystemRole;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
@@ -16,6 +17,7 @@ import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.bigDecimal.CollectorsUtil;
 import com.ruoyi.system.mapper.SysUserMapper;
+import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.store.*;
 import com.ruoyi.xkt.enums.StoreStatus;
@@ -57,6 +59,7 @@ public class StoreServiceImpl implements IStoreService {
     final StoreSaleDetailMapper saleDetailMapper;
     final StoreProductMapper storeProdMapper;
     final DailySaleProductMapper dailySaleProdMapper;
+    final ISysUserService userService;
 
 
     /**
@@ -81,6 +84,8 @@ public class StoreServiceImpl implements IStoreService {
         int count = this.storeMapper.insert(store);
         // 创建档口账户
         assetService.createInternalAccountIfNotExists(store.getId());
+        // 档口用户绑定
+        userService.refreshRelStore(store.getUserId(), ESystemRole.SUPPLIER.getId());
         // 放到redis中
         redisCache.setCacheObject(CacheConstants.STORE_KEY + store.getId(), store.getId());
         return count;

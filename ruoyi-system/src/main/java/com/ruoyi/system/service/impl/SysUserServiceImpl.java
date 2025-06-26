@@ -405,6 +405,29 @@ public class SysUserServiceImpl implements ISysUserService {
         return successMsg.toString();
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void refreshRelStore(Long userId, Long roleId) {
+        Assert.notNull(userId);
+        Assert.notNull(roleId);
+        Long storeId;
+        if (ESystemRole.SUPPLIER.getId().equals(roleId)) {
+            storeId = userMapper.getManageStoreId(userId);
+        } else {
+            SysRole role = roleMapper.selectById(roleId);
+            storeId = Optional.ofNullable(role).map(SysRole::getStoreId).orElse(null);
+        }
+        userRoleMapper.deleteUserRoleInfos(roleId, new Long[]{userId});
+        SysUserRole ur = new SysUserRole();
+        ur.setUserId(userId);
+        ur.setRoleId(roleId);
+        ur.setStoreId(storeId);
+        userRoleMapper.batchUserRole(Collections.singletonList(ur));
+        // 检查用户的角色是否合规
+        List<Long> roleIds = userRoleMapper.listRelRoleId(userId);
+        checkRoles(roleIds);
+    }
+
     /**
      * 新增用户
      *

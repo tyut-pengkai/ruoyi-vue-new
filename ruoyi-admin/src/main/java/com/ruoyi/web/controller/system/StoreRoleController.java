@@ -19,10 +19,7 @@ import com.ruoyi.framework.web.service.TokenService;
 import com.ruoyi.system.service.ISysMenuService;
 import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
-import com.ruoyi.web.controller.system.vo.BatchOptStatusVO;
-import com.ruoyi.web.controller.system.vo.RoleInfoEditByStoreVO;
-import com.ruoyi.web.controller.system.vo.RoleListItemVO;
-import com.ruoyi.web.controller.system.vo.RoleQueryVO;
+import com.ruoyi.web.controller.system.vo.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -143,6 +140,32 @@ public class StoreRoleController extends XktBaseController {
             tokenService.deleteCacheUser(scope.getUserIds());
         }
         return R.ok(scope.getCount());
+    }
+
+//    @PreAuthorize("@ss.hasAnyRoles('store')")
+//    @Log(title = "角色管理", businessType = BusinessType.UPDATE)
+//    @ApiOperation("授权角色 - 档口")
+//    @PostMapping("/bindUser")
+    public R<Integer> bindUser(@Validated @RequestBody UserRoleBindReqVO vo) {
+        RoleInfo info = roleService.getRoleById(vo.getRoleId());
+        Assert.isTrue(Objects.equals(info.getStoreId(), SecurityUtils.getStoreId()), "档口ID不匹配");
+        int count = roleService.bindUser(vo.getRoleId(), vo.getUserIds());
+        // 清除用户缓存（退出登录）
+        tokenService.deleteCacheUser(vo.getUserIds());
+        return R.ok(count);
+    }
+
+//    @PreAuthorize("@ss.hasAnyRoles('store')")
+//    @Log(title = "角色管理", businessType = BusinessType.UPDATE)
+//    @ApiOperation("取消授权角色 - 档口")
+//    @PostMapping("/unbindUser")
+    public R<Integer> unbindUser(@Validated @RequestBody UserRoleBindReqVO vo) {
+        RoleInfo info = roleService.getRoleById(vo.getRoleId());
+        Assert.isTrue(Objects.equals(info.getStoreId(), SecurityUtils.getStoreId()), "档口ID不匹配");
+        int count = roleService.unbindUser(vo.getRoleId(), vo.getUserIds());
+        // 清除用户缓存（退出登录）
+        tokenService.deleteCacheUser(vo.getUserIds());
+        return R.ok(count);
     }
 
 }

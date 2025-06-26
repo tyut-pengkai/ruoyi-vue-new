@@ -70,6 +70,14 @@ public interface SysUserRoleMapper {
     List<Long> listRelUserId(@Param("roleId") Long roleId);
 
     /**
+     * 获取用户关联角色ID
+     *
+     * @param userId
+     * @return
+     */
+    List<Long> listRelRoleId(@Param("userId") Long userId);
+
+    /**
      * 获取角色选择列表
      *
      * @param userId
