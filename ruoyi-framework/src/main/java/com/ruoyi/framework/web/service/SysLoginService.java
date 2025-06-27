@@ -41,9 +41,6 @@ public class SysLoginService {
     @Autowired
     private TokenService tokenService;
 
-    @Resource
-    private AuthenticationManager authenticationManager;
-
     @Autowired
     private RedisCache redisCache;
 

@@ -25,6 +25,8 @@
             WHEN 5 THEN '充值'
             WHEN 6 THEN '推广费'
             WHEN 7 THEN '推广费退款'
+            WHEN 8 THEN '会员费'
+            WHEN 9 THEN '会员费退款'
             ELSE '其他' END trans_type,
             fb.remark,
             fb.bill_type,

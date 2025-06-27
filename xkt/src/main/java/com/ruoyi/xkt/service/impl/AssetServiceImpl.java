@@ -255,6 +255,36 @@ public class AssetServiceImpl implements IAssetService {
 
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void payVipFee(Long storeId, BigDecimal amount, String transactionPassword) {
+        Assert.notNull(storeId);
+        Assert.notNull(amount);
+        InternalAccount internalAccount = internalAccountService.getAccountAndCheck(storeId, EAccountOwnerType.STORE);
+        if (!EAccountStatus.NORMAL.getValue().equals(internalAccount.getAccountStatus())) {
+            throw new ServiceException("档口账户已冻结");
+        }
+        if (StrUtil.isEmpty(internalAccount.getTransactionPassword())) {
+            throw new ServiceException("请先设置支付密码");
+        }
+        if (!StrUtil.equals(SecureUtil.md5(transactionPassword), internalAccount.getTransactionPassword())) {
+            throw new ServiceException("支付密码错误");
+        }
+        financeBillService.createInternalTransferBill(Constants.PLATFORM_INTERNAL_ACCOUNT_ID, internalAccount.getId(),
+                amount, EFinBillSrcType.VIP_PAID.getValue(), null, null, null, "会员费");
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void refundVipFee(Long storeId, BigDecimal amount) {
+        Assert.notNull(storeId);
+        Assert.notNull(amount);
+        InternalAccount internalAccount = internalAccountService.getAccountAndCheck(storeId, EAccountOwnerType.STORE);
+        financeBillService.createInternalTransferBill(internalAccount.getId(), Constants.PLATFORM_INTERNAL_ACCOUNT_ID,
+                amount, EFinBillSrcType.VIP_REFUND.getValue(), null, null, null,
+                "会员费退款");
+    }
+
     @Override
     public Map<EPayChannel, List<WithdrawPrepareResult>> getNeedContinueWithdrawGroupMap(Integer count) {
         //TODO 付款单据没有支付渠道和账户快照

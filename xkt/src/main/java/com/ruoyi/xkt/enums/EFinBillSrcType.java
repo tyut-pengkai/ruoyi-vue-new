@@ -18,6 +18,8 @@ public enum EFinBillSrcType {
     RECHARGE(5, "充值"),
     ADVERT_PAID(6, "推广费"),
     ADVERT_REFUND(7, "推广费退款"),
+    VIP_PAID(8, "会员费"),
+    VIP_REFUND(9, "会员费退款"),
     ;
 
     private final Integer value;
