@@ -133,11 +133,11 @@ public class DeviceUserServiceImpl implements IDeviceUserService
         int result = deviceUserMapper.insertDeviceUser(newDeviceUser);
 
         if(result > 0) {
-             // 绑定默认的智能体
-             AgentDevice agentDevice = new AgentDevice();
-             agentDevice.setAgentId(1001L);
-             agentDevice.setDeviceId(deviceId);
-             agentDeviceService.insertAgentDevice(agentDevice);
+            // 绑定默认的智能体
+            AgentDevice agentDevice = new AgentDevice();
+            agentDevice.setAgentId(1001L);
+            agentDevice.setDeviceId(deviceId);
+            agentDeviceService.insertAgentDevice(agentDevice);
             
             // 初始化赠送设备时长,时长从配置参数device.hour.init_free_hours获取. 先判断初始绑定(设备时长表是否有记录),非初始绑定初始化,不赠送
             // 检查设备时长记录是否已存在
