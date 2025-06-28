@@ -131,5 +131,5 @@ xss:
 # 微信小程序配置
 wx:
   minApp:
-    appId: wx12d9cd451e64a760
-    appSecret: 9094446bb87569958d05c85ce1ea06a8
+    appId: wx54aaa233e7a76d72
+    appSecret: 13e1e3b1da4ce17612a9c78ef7a82995

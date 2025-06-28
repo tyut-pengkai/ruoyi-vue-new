@@ -41,6 +41,11 @@ public class WxLoginBody
      * 手机号iv
      */
     private String phoneIv;
+    
+    /**
+     * 是否包含手机号信息
+     */
+    private Boolean hasPhoneInfo;
 
     public String getCode() {
         return code;
@@ -96,5 +101,13 @@ public class WxLoginBody
 
     public void setPhoneIv(String phoneIv) {
         this.phoneIv = phoneIv;
+    }
+    
+    public Boolean getHasPhoneInfo() {
+        return hasPhoneInfo;
+    }
+
+    public void setHasPhoneInfo(Boolean hasPhoneInfo) {
+        this.hasPhoneInfo = hasPhoneInfo;
     }
 }
