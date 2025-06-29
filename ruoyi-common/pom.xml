@@ -55,6 +55,11 @@
             <artifactId>alibabacloud-dysmsapi20170525</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.aliyun</groupId>
+            <artifactId>ocr_api20210707</artifactId>
+        </dependency>
+
         <!-- mybatis-plus -->
         <dependency>
             <groupId>com.baomidou</groupId>

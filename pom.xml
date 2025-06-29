@@ -44,6 +44,7 @@
         <alipay-sdk.version>4.40.54.ALL</alipay-sdk.version>
         <aliyun-imagesearch.version>4.2.2</aliyun-imagesearch.version>
         <alibabacloud-dysmsapi.version>4.0.1</alibabacloud-dysmsapi.version>
+        <aliyun-ocr.version>3.1.2</aliyun-ocr.version>
     </properties>
 
     <!-- 依赖声明 -->
@@ -271,6 +272,12 @@
                 <groupId>com.aliyun</groupId>
                 <artifactId>alibabacloud-dysmsapi20170525</artifactId>
                 <version>${alibabacloud-dysmsapi.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.aliyun</groupId>
+                <artifactId>ocr_api20210707</artifactId>
+                <version>${aliyun-ocr.version}</version>
             </dependency>
 
             <!-- ES相关 begin-->

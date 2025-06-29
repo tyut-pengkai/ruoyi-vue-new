@@ -261,5 +261,9 @@ public class CacheConstants {
      * 档口会员
      */
     public static final String STORE_MEMBER = "store_member:";
+    /**
+     * OCR缓存
+     */
+    public static final String OCR_CACHE = "ocr_cache:";
 
 }

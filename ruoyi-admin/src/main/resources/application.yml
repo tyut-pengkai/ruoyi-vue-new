@@ -40,6 +40,10 @@ sms:
   verificationCode:
     signName: 成都一方鹏商贸
     templateCode: SMS_318925388
+ocr:
+  accessKeyId: LTAI5tDTNoFKAUXJ996azKdS
+  accessKeySecret: tbchxLXOioKcQW9PF9sgjPUZyMA3zm
+  endpoint: ocr-api.cn-hangzhou.aliyuncs.com
 es:
   #多个用","分割
   hosts: es-cn-em94bkrrl0005djma.public.elasticsearch.aliyuncs.com:9200
