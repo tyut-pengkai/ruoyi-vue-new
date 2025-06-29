@@ -124,6 +124,23 @@ public interface IAssetService {
     void refundAdvertFee(Long storeId, BigDecimal amount);
 
     /**
+     * 支付会员费
+     *
+     * @param storeId
+     * @param amount
+     * @param transactionPassword
+     */
+    void payVipFee(Long storeId, BigDecimal amount, String transactionPassword);
+
+    /**
+     * 退回会员费
+     *
+     * @param storeId
+     * @param amount
+     */
+    void refundVipFee(Long storeId, BigDecimal amount);
+
+    /**
      * 获取需要继续处理的提现信息
      *
      * @param count
