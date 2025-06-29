@@ -44,16 +44,6 @@ public class StoreCertVO {
     @ApiModelProperty(value = "认证文件列表", required = true)
     @NotNull(message = "认证文件列表不能为空")
     private List<StoreFileVO> fileList;
-
-    /* @ApiModelProperty(value = "身份证人脸照片", required = true)
-     @NotNull(message = "身份证人脸照片不能为空")
-     private StoreFileVO idCardFace;
-     @ApiModelProperty(value = "身份证国徽照片", required = true)
-     @NotNull(message = "身份证国徽照片不能为空")
-     private StoreFileVO idCardFEmblem;
-     @ApiModelProperty(value = "营业执照照片", required = true)
-     @NotNull(message = "营业执照照片不能为空")
-     private StoreFileVO licenseFile;*/
     @ApiModelProperty(value = "统一社会信用代码", required = true)
     @NotBlank(message = "统一社会信用代码不能为空")
     @Pattern(regexp = "^[0-9A-HJ-NPQRTUWXY]{2}\\d{6}[0-9A-HJ-NPQRTUWXY]{10}$",

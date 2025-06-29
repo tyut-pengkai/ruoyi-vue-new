@@ -11,25 +11,23 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum StoreStatus {
+public enum UserAuthStatus {
 
     UN_AUDITED(1, "待审核"),
     AUDIT_REJECTED(2, "审核驳回"),
-    TRIAL_PERIOD(3, "试用期"),
-    FORMAL_USE(4, "正式使用"),
-    CLEARANCE(5, "强制清退")
+    FORMAL_USE(3, "正式使用"),
 
     ;
 
     private final Integer value;
     private final String label;
 
-    public static StoreStatus of(Integer value) {
-        for (StoreStatus e : StoreStatus.values()) {
+    public static UserAuthStatus of(Integer value) {
+        for (UserAuthStatus e : UserAuthStatus.values()) {
             if (e.getValue().equals(value)) {
                 return e;
             }
         }
-        throw new ServiceException("档口状态类型不存在!", HttpStatus.ERROR);
+        throw new ServiceException("代发状态类型不存在!", HttpStatus.ERROR);
     }
 }

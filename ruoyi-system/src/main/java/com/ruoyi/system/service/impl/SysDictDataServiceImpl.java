@@ -2,18 +2,13 @@ package com.ruoyi.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.entity.SysDictData;
-import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DictUtils;
-import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.domain.dto.dictData.DictDataDTO;
 import com.ruoyi.system.domain.dto.dictData.DictDataDeleteDTO;
-import com.ruoyi.system.domain.dto.dictData.DictDataPageDTO;
 import com.ruoyi.system.domain.dto.dictData.DictDataResDTO;
 import com.ruoyi.system.mapper.SysDictDataMapper;
 import com.ruoyi.system.service.ISysDictDataService;
@@ -24,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.ruoyi.common.utils.SecurityUtils.getUsername;
 
@@ -40,7 +36,6 @@ public class SysDictDataServiceImpl implements ISysDictDataService {
 
     private final static String STATUS_NORMAL = "0";
 
-
     @Override
     @Transactional
     public Integer create(DictDataDTO dataDTO) {
@@ -48,6 +43,7 @@ public class SysDictDataServiceImpl implements ISysDictDataService {
             throw new ServiceException("新增字典数据dictDataId必须为空!", HttpStatus.ERROR);
         }
         SysDictData dictData = BeanUtil.toBean(dataDTO, SysDictData.class);
+        dictData.setStatus("0");
         dictData.setCreateBy(getUsername());
         return this.dictDataMapper.insert(dictData);
     }
@@ -79,7 +75,7 @@ public class SysDictDataServiceImpl implements ISysDictDataService {
         SysDictData dictData = Optional.ofNullable(this.dictDataMapper.selectOne(new LambdaQueryWrapper<SysDictData>()
                         .eq(SysDictData::getId, dictDataId).eq(SysDictData::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("字典数据不存在!", HttpStatus.ERROR));
-        return BeanUtil.toBean(dictData, DictDataResDTO.class);
+        return BeanUtil.toBean(dictData, DictDataResDTO.class).setDictDataId(dictDataId);
     }
 
     @Override
@@ -87,7 +83,8 @@ public class SysDictDataServiceImpl implements ISysDictDataService {
     public List<DictDataResDTO> selectByDictType(String dictType) {
         List<SysDictData> dataList = this.dictDataMapper.selectList(new LambdaQueryWrapper<SysDictData>()
                 .eq(SysDictData::getDictType, dictType).eq(SysDictData::getDelFlag, Constants.UNDELETED));
-        return BeanUtil.copyToList(dataList, DictDataResDTO.class);
+        return dataList.stream().map(x -> BeanUtil.toBean(x, DictDataResDTO.class)
+                .setDictDataId(x.getId())).collect(Collectors.toList());
     }
 
 

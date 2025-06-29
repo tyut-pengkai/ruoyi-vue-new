@@ -125,12 +125,18 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService {
      */
     @Override
     @Transactional
-    public Integer delete(DictTypeDeleteDTO deleteDTO) {
+    public Long delete(DictTypeDeleteDTO deleteDTO) {
         List<SysDictType> dictList = Optional.ofNullable(this.dictTypeMapper.selectList(new LambdaQueryWrapper<SysDictType>()
                         .in(SysDictType::getDictId, deleteDTO.getDictIdList()).eq(SysDictType::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("字典类型不存在!", HttpStatus.ERROR));
         dictList.forEach(x -> x.setDelFlag(Constants.DELETED));
-        return this.dictTypeMapper.updateById(dictList).size();
+        long count = this.dictTypeMapper.updateById(dictList).size();
+        List<SysDictData> dataList = this.dictDataMapper.selectList(new LambdaQueryWrapper<SysDictData>()
+                .in(SysDictData::getDictType, dictList.stream().map(SysDictType::getDictType).collect(Collectors.toList()))
+                .eq(SysDictData::getDelFlag, Constants.UNDELETED));
+        dataList.forEach(x -> x.setDelFlag(Constants.DELETED));
+        this.dictDataMapper.updateById(dataList);
+        return count;
     }
 
 

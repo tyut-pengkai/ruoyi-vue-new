@@ -146,7 +146,7 @@ public interface ISysDictTypeService {
      * @param deleteDTO 删除字典类型入参
      * @return Integer
      */
-    Integer delete(DictTypeDeleteDTO deleteDTO);
+    Long delete(DictTypeDeleteDTO deleteDTO);
 
     /**
      * 根据所有字典类型

@@ -26,10 +26,9 @@ public interface IStoreService {
     /**
      * 注册时新增档口信息
      *
-     * @param createDTO 新增DTO
      * @return int
      */
-    int create(StoreCreateDTO createDTO);
+    int create();
 
     /**
      * 档口分页数据
@@ -150,4 +149,12 @@ public interface IStoreService {
      * @return
      */
     List<StoreNameResDTO> fuzzyQuery(String storeName);
+
+    /**
+     * 更新档口权重
+     *
+     * @param storeWeightUpdateDTO 更新入参
+     * @return Integer
+     */
+    Integer updateStoreWeight(StoreWeightUpdateDTO storeWeightUpdateDTO);
 }

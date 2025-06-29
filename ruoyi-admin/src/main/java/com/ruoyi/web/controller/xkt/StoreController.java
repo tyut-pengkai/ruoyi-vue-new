@@ -1,16 +1,11 @@
 package com.ruoyi.web.controller.xkt;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.util.IdUtil;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
-import com.ruoyi.common.core.domain.model.LoginUser;
-import com.ruoyi.common.core.domain.model.UserInfo;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.common.utils.SecurityUtils;
-import com.ruoyi.framework.oss.OSSClientWrapper;
 import com.ruoyi.framework.web.service.TokenService;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.web.controller.xkt.vo.store.*;
@@ -22,10 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * 档口Controller
@@ -42,23 +35,6 @@ public class StoreController extends XktBaseController {
     final IStoreService storeService;
     final ISysUserService userService;
     final TokenService tokenService;
-
-    @Log(title = "新增档口", businessType = BusinessType.UPDATE)
-    @PostMapping
-    public R<Integer> create(@Validated @RequestBody StoreCreateVO createVO) {
-        int count = storeService.create(BeanUtil.toBean(createVO, StoreCreateDTO.class));
-        if (Objects.equals(SecurityUtils.getUserId(), createVO.getUserId())) {
-            // 当前登录用户关联档口：更新关联用户缓存
-            LoginUser currentUser = SecurityUtils.getLoginUser();
-            UserInfo currentUserInfo = userService.getUserById(createVO.getUserId());
-            currentUser.updateByUser(currentUserInfo);
-            tokenService.refreshToken(currentUser);
-        } else {
-            // 非当前登录用户关联档口：删除关联用户缓存
-            tokenService.deleteCacheUser(createVO.getUserId());
-        }
-        return R.ok(count);
-    }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "模糊查询档口", httpMethod = "GET", response = R.class)
@@ -97,6 +73,14 @@ public class StoreController extends XktBaseController {
     @PutMapping("/approve")
     public R<Integer> approve(@Validated @RequestBody StoreAuditVO auditVO) {
         return R.ok(storeService.approve(BeanUtil.toBean(auditVO, StoreAuditDTO.class)));
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @ApiOperation(value = "修改档口权重", httpMethod = "PUT", response = R.class)
+    @Log(title = "修改档口权重", businessType = BusinessType.UPDATE)
+    @PutMapping("/store-weight")
+    public R<Integer> updateStoreWeight(@Validated @RequestBody StoreWeightUpdateVO storeWeightUpdateVO) {
+        return R.ok(storeService.updateStoreWeight(BeanUtil.toBean(storeWeightUpdateVO, StoreWeightUpdateDTO.class)));
     }
 
     @ApiOperation(value = "获取档口详细信息", httpMethod = "GET", response = R.class)
@@ -164,24 +148,6 @@ public class StoreController extends XktBaseController {
     @PostMapping(value = "/index/sale-cus/top10")
     public R<List<StoreIndexCusSaleTop10ResVO>> indexTop10SaleCus(@Validated @RequestBody StoreSaleCustomerTop10VO saleCusTop10VO) {
         return R.ok(BeanUtil.copyToList(storeService.indexTop10SaleCus(BeanUtil.toBean(saleCusTop10VO, StoreSaleCustomerTop10DTO.class)), StoreIndexCusSaleTop10ResVO.class));
-    }
-
-    final OSSClientWrapper ossClient;
-
-    @GetMapping("/getKey")
-    public R getKey() {
-        return R.ok(ossClient.createStsCredentials());
-    }
-
-    @PostMapping("/upload")
-    public void test(@RequestParam("file") MultipartFile file) throws Exception {
-        final String uuid = IdUtil.randomUUID();
-        ossClient.upload("advert/" + uuid + ".png", file.getInputStream());
-    }
-
-    @GetMapping("/getUrl/{key}/{expireTime}")
-    public R getUrl(@PathVariable("key") String key, @PathVariable("expireTime") Long expireTime) throws Exception {
-        return R.ok(ossClient.generateUrl(key, expireTime));
     }
 
 }

@@ -6,8 +6,6 @@ import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.XktBaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -150,39 +148,8 @@ public class Store extends XktBaseEntity {
     private Integer templateNum;
 
     /**
-     * 档口权重值 基础值大家都为1000，最低为-1000。
+     * 档口权重值 基础值为0，最高100  最低-100
      */
-    private Long storeWeight;
+    private Integer storeWeight;
 
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("id", getId())
-                .append("userId", getUserId())
-                .append("storeName", getStoreName())
-                .append("brandName", getBrandName())
-                .append("contactName", getContactName())
-                .append("contactPhone", getContactPhone())
-                .append("contactBackPhone", getContactBackPhone())
-                .append("wechatAccount", getWechatAccount())
-                .append("qqAccount", getQqAccount())
-                .append("alipayAccount", getAlipayAccount())
-                .append("operateYears", getOperateYears())
-                .append("storeAddress", getStoreAddress())
-                .append("facAddress", getFacAddress())
-                .append("prodScale", getProdScale())
-                .append("integrityGold", getIntegrityGold())
-                .append("trialEndTime", getTrialEndTime())
-                .append("storageUsage", getStorageUsage())
-                .append("storeStatus", getStoreStatus())
-                .append("templateNum", getTemplateNum())
-                .append("version", getVersion())
-                .append("delFlag", getDelFlag())
-                .append("createBy", getCreateBy())
-                .append("createTime", getCreateTime())
-                .append("updateBy", getUpdateBy())
-                .append("updateTime", getUpdateTime())
-                .toString();
-    }
 }

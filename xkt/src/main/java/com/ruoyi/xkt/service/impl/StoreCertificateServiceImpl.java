@@ -2,21 +2,32 @@ package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
+import com.ruoyi.common.core.domain.model.ESystemRole;
+import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.system.service.ISysUserService;
+import com.ruoyi.xkt.domain.Store;
 import com.ruoyi.xkt.domain.StoreCertificate;
 import com.ruoyi.xkt.domain.SysFile;
 import com.ruoyi.xkt.dto.storeCertificate.StoreCertDTO;
 import com.ruoyi.xkt.dto.storeCertificate.StoreCertResDTO;
 import com.ruoyi.xkt.enums.FileType;
-import com.ruoyi.xkt.mapper.StoreCertificateMapper;
-import com.ruoyi.xkt.mapper.SysFileMapper;
+import com.ruoyi.xkt.enums.StoreStatus;
+import com.ruoyi.xkt.mapper.*;
+import com.ruoyi.xkt.service.IAssetService;
 import com.ruoyi.xkt.service.IStoreCertificateService;
+import com.ruoyi.xkt.service.IStoreService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,6 +43,15 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
 
     final StoreCertificateMapper storeCertMapper;
     final SysFileMapper fileMapper;
+    final StoreMapper storeMapper;
+    final RedisCache redisCache;
+    final IAssetService assetService;
+    final DailySaleMapper dailySaleMapper;
+    final DailySaleCustomerMapper dailySaleCusMapper;
+    final StoreSaleDetailMapper saleDetailMapper;
+    final StoreProductMapper storeProdMapper;
+    final DailySaleProductMapper dailySaleProdMapper;
+    final ISysUserService userService;
 
     /**
      * 新增档口认证
@@ -45,7 +65,30 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
         StoreCertificate storeCert = BeanUtil.toBean(certDTO, StoreCertificate.class);
         // 新增档口认证的文件列表
         this.handleStoreCertFileList(certDTO, storeCert);
+        // 新增档口
+        this.create();
         return this.storeCertMapper.insert(storeCert);
+    }
+
+    public int create() {
+        Store store = new Store();
+        // 初始化注册时只需绑定用户ID即可
+        store.setUserId(SecurityUtils.getUserId());
+        // 默认档口状态为：待审核
+        store.setStoreStatus(StoreStatus.UN_AUDITED.getValue());
+        // 当前时间往后推1年为试用期时间
+        Date oneYearAfter = Date.from(LocalDate.now().plusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
+        store.setTrialEndTime(oneYearAfter);
+        // 设置档口默认权重 0
+        store.setStoreWeight(Constants.STORE_WEIGHT_DEFAULT_ZERO);
+        int count = this.storeMapper.insert(store);
+        // 创建档口账户
+        assetService.createInternalAccountIfNotExists(store.getId());
+        // 档口用户绑定
+        userService.refreshRelStore(store.getUserId(), ESystemRole.SUPPLIER.getId());
+        // 放到redis中
+        redisCache.setCacheObject(CacheConstants.STORE_KEY + store.getId(), store.getId());
+        return count;
     }
 
     /**
@@ -59,6 +102,9 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
     public StoreCertResDTO getInfo(Long storeId) {
         StoreCertificate storeCert = this.storeCertMapper.selectOne(new LambdaQueryWrapper<StoreCertificate>()
                 .eq(StoreCertificate::getStoreId, storeId).eq(StoreCertificate::getDelFlag, Constants.UNDELETED));
+        if (ObjectUtils.isEmpty(storeCert)) {
+            return new StoreCertResDTO();
+        }
         List<SysFile> fileList = Optional.ofNullable(this.fileMapper.selectList(new LambdaQueryWrapper<SysFile>()
                 .in(SysFile::getId, Arrays.asList(storeCert.getIdCardFaceFileId(), storeCert.getIdCardEmblemFileId(), storeCert.getLicenseFileId()))
                 .eq(SysFile::getDelFlag, Constants.UNDELETED))).orElseThrow(() -> new ServiceException("文件不存在!", HttpStatus.ERROR));

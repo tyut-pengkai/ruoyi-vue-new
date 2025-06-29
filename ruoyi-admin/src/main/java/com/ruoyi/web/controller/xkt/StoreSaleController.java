@@ -56,7 +56,7 @@ public class StoreSaleController extends XktBaseController {
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "新增档口销售出库", httpMethod = "POST", response = R.class)
-    @Log(title = "档口销售出库", businessType = BusinessType.INSERT)
+    @Log(title = "新增档口销售出库", businessType = BusinessType.INSERT)
     @PostMapping
     public R<Integer> add(@Validated @RequestBody StoreSaleVO storeSaleVO) {
         return R.ok(storeSaleService.insertStoreSale(BeanUtil.toBean(storeSaleVO, StoreSaleDTO.class)));

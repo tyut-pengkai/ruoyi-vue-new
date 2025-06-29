@@ -2,6 +2,7 @@ package com.ruoyi.system.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.common.core.domain.entity.SysDictType;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -10,6 +11,7 @@ import java.util.List;
  *
  * @author ruoyi
  */
+@Repository
 public interface SysDictTypeMapper extends BaseMapper<SysDictType> {
     /**
      * 根据条件分页查询字典类型

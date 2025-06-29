@@ -38,7 +38,7 @@ public class PCStoreRecommendTempDTO {
     @ApiModelProperty(value = "推荐数值")
     private Long recommendWeight;
     @ApiModelProperty(value = "档口权重")
-    private Long storeWeight;
+    private Integer storeWeight;
     @ApiModelProperty(value = "最新上新列表")
     List<PCSRNewProdDTO> prodList;
 

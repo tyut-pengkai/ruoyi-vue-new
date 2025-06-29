@@ -1,8 +1,8 @@
 package com.ruoyi.xkt.service;
 
-import com.ruoyi.xkt.domain.UserAuthentication;
-
-import java.util.List;
+import com.ruoyi.common.core.page.Page;
+import com.ruoyi.xkt.dto.store.StoreAuditDTO;
+import com.ruoyi.xkt.dto.userAuthentication.*;
 
 /**
  * 用户代发认证Service接口
@@ -11,51 +11,44 @@ import java.util.List;
  * @date 2025-03-26
  */
 public interface IUserAuthenticationService {
-    /**
-     * 查询用户代发认证
-     *
-     * @param userAuthId 用户代发认证主键
-     * @return 用户代发认证
-     */
-    public UserAuthentication selectUserAuthenticationByUserAuthId(Long userAuthId);
 
     /**
-     * 查询用户代发认证列表
-     *
-     * @param userAuthentication 用户代发认证
-     * @return 用户代发认证集合
+     * 新增代发
+     * @param createDTO 新增代发入参
+     * @return  Integer
      */
-    public List<UserAuthentication> selectUserAuthenticationList(UserAuthentication userAuthentication);
+    Integer create(UserAuthCreateDTO createDTO);
 
     /**
-     * 新增用户代发认证
+     * 代发分页
      *
-     * @param userAuthentication 用户代发认证
-     * @return 结果
+     * @param pageDTO 分页查询入参
+     * @return Page<UserAuthPageResDTO>
      */
-    public int insertUserAuthentication(UserAuthentication userAuthentication);
+    Page<UserAuthPageResDTO> page(UserAuthPageDTO pageDTO);
 
     /**
-     * 修改用户代发认证
+     * 代发详情
      *
-     * @param userAuthentication 用户代发认证
-     * @return 结果
+     * @param userAuthId 代发ID
+     * @return UserAuthResDTO
      */
-    public int updateUserAuthentication(UserAuthentication userAuthentication);
+    UserAuthResDTO getInfo(Long userAuthId);
 
     /**
-     * 批量删除用户代发认证
+     * 代发 停用 启用
      *
-     * @param userAuthIds 需要删除的用户代发认证主键集合
-     * @return 结果
+     * @param updateDelFlagDTO 停用启用入参
+     * @return Integer
      */
-    public int deleteUserAuthenticationByUserAuthIds(Long[] userAuthIds);
+    Integer updateDelFlag(UserAuthUpdateDelFlagDTO updateDelFlagDTO);
 
     /**
-     * 删除用户代发认证信息
+     * 代发审核
      *
-     * @param userAuthId 用户代发认证主键
-     * @return 结果
+     * @param auditDTO 审核入参
+     * @return Integer
      */
-    public int deleteUserAuthenticationByUserAuthId(Long userAuthId);
+    Integer approve(UserAuthAuditDTO auditDTO);
+
 }

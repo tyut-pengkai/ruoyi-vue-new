@@ -24,19 +24,16 @@ public class SysDictType extends XktBaseEntity {
      * 字典主键
      */
     @TableId(value = "dict_id")
-    @Excel(name = "字典主键", cellType = ColumnType.NUMERIC)
     private Long dictId;
 
     /**
      * 字典名称
      */
-    @Excel(name = "字典名称")
     private String dictName;
 
     /**
      * 字典类型
      */
-    @Excel(name = "字典类型")
     private String dictType;
 
 

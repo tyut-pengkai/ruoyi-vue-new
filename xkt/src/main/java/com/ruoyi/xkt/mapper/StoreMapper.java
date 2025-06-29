@@ -19,14 +19,6 @@ import java.util.List;
 @Repository
 public interface StoreMapper extends BaseMapper<Store> {
 
-    /**
-     * 修改档口
-     *
-     * @param store 档口
-     * @return 结果
-     */
-    int updateStore(Store store);
-
     List<StorePageResDTO> selectStorePage(StorePageDTO pageDTO);
 
     /**

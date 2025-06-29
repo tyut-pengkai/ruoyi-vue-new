@@ -55,7 +55,7 @@ public class StoreServiceImpl implements IStoreService {
     final RedisCache redisCache;
     final IAssetService assetService;
     final DailySaleMapper dailySaleMapper;
-    final DailySaleCustomerMapper  dailySaleCusMapper;
+    final DailySaleCustomerMapper dailySaleCusMapper;
     final StoreSaleDetailMapper saleDetailMapper;
     final StoreProductMapper storeProdMapper;
     final DailySaleProductMapper dailySaleProdMapper;
@@ -65,17 +65,16 @@ public class StoreServiceImpl implements IStoreService {
     /**
      * 注册时新增档口数据
      *
-     * @param createDTO 档口基础数据
      * @return 结果
      */
     @Override
     @Transactional
-    public int create(StoreCreateDTO createDTO) {
+    public int create() {
         Store store = new Store();
         // 初始化注册时只需绑定用户ID即可
-        store.setUserId(createDTO.getUserId());
-        // 默认档口状态为：已注册
-        store.setStoreStatus(StoreStatus.REGISTERED.getValue());
+        store.setUserId(SecurityUtils.getUserId());
+        // 默认档口状态为：待审核
+        store.setStoreStatus(StoreStatus.UN_AUDITED.getValue());
         // 当前时间往后推1年为试用期时间
         Date oneYearAfter = Date.from(LocalDate.now().plusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
         store.setTrialEndTime(oneYearAfter);
@@ -136,7 +135,7 @@ public class StoreServiceImpl implements IStoreService {
         if (auditDTO.getApprove()) {
             // 如果档口状态不为 待审核 或 审核驳回 则报错
             if (!Objects.equals(store.getStoreStatus(), StoreStatus.UN_AUDITED.getValue()) ||
-                !Objects.equals(store.getStoreStatus(), StoreStatus.AUDIT_REJECTED.getValue())) {
+                    !Objects.equals(store.getStoreStatus(), StoreStatus.AUDIT_REJECTED.getValue())) {
                 throw new ServiceException("当前状态不为待审核 或 审核驳回，不可审核!", HttpStatus.ERROR);
             }
             store.setStoreStatus(StoreStatus.TRIAL_PERIOD.getValue());
@@ -160,15 +159,6 @@ public class StoreServiceImpl implements IStoreService {
                 .eq(Store::getId, storeId))).orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
         StoreResDTO resDTO = BeanUtil.toBean(store, StoreResDTO.class);
         resDTO.setStoreId(storeId);
-
-        // TODO 用户名称
-        // TODO 用户名称
-        // TODO 用户名称
-
-        // 获取档口绑定的用户
-        /*SysUser user = Optional.ofNullable(this.userMapper.selectOne(new LambdaQueryWrapper<SysUser>()
-                .eq(SysUser::getUserId, store.getUserId()))).orElseThrow(() -> new ServiceException("用户不存在!", HttpStatus.ERROR));
-        resDTO.setUserName(user.getUserName());*/
         return resDTO;
     }
 
@@ -181,7 +171,7 @@ public class StoreServiceImpl implements IStoreService {
     @Override
     @Transactional(readOnly = true)
     public StoreApproveResDTO getApproveInfo(Long storeId) {
-        return new StoreApproveResDTO(){{
+        return new StoreApproveResDTO() {{
             setBasic(getInfo(storeId));
             setCertificate(storeCertService.getInfo(storeId));
         }};
@@ -222,7 +212,7 @@ public class StoreServiceImpl implements IStoreService {
     @Transactional(readOnly = true)
     public StoreAdvertResDTO getAdvertStoreInfo(Long storeId) {
         Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
-                .eq(Store::getId, storeId).eq(Store::getDelFlag, Constants.UNDELETED)))
+                        .eq(Store::getId, storeId).eq(Store::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
         return BeanUtil.toBean(store, StoreAdvertResDTO.class);
     }
@@ -240,11 +230,6 @@ public class StoreServiceImpl implements IStoreService {
                         .eq(Store::getId, storeUpdateDTO.getStoreId()).eq(Store::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
         BeanUtil.copyProperties(storeUpdateDTO, store);
-        // 如果当前状态为认证营业执照
-        if (Objects.equals(store.getStoreStatus(), StoreStatus.AUTH_LICENSE.getValue())) {
-            // 将档口状态更改为：认证基本信息
-            store.setStoreStatus(StoreStatus.AUTH_BASE_INFO.getValue());
-        }
         return storeMapper.updateById(store);
     }
 
@@ -362,21 +347,14 @@ public class StoreServiceImpl implements IStoreService {
      * @return StoreBasicResDTO
      */
     @Override
-    @Transactional (readOnly = true)
+    @Transactional(readOnly = true)
     public StoreSimpleResDTO getSimpleInfo(Long storeId) {
         StoreSimpleResDTO simpleDTO = this.storeMapper.getSimpleInfo(storeId);
-
-        return simpleDTO;
-
-        // TODO 获取用户是否关注档口
-        // TODO 获取用户是否关注档口
-        // TODO 获取用户是否关注档口
-
-        /*final Long userId = SecurityUtils.getUserId();
-        UserSubscriptions userSub = ObjectUtils.isEmpty(userId) ? null
-                : this.userSubMapper.selectOne(new LambdaQueryWrapper<UserSubscriptions>().eq(UserSubscriptions::getUserId, userId)
-                .eq(UserSubscriptions::getStoreId, storeId).eq(UserSubscriptions::getDelFlag, Constants.UNDELETED));
-        return simpleDTO.setFocus(ObjectUtils.isNotEmpty(userSub) ? Boolean.TRUE : Boolean.FALSE);*/
+        UserSubscriptions userSub = this.userSubMapper.selectOne(new LambdaQueryWrapper<UserSubscriptions>()
+                .eq(UserSubscriptions::getUserId, SecurityUtils.getUserId())
+                .eq(UserSubscriptions::getStoreId, storeId)
+                .eq(UserSubscriptions::getDelFlag, Constants.UNDELETED));
+        return simpleDTO.setFocus(ObjectUtils.isNotEmpty(userSub) ? Boolean.TRUE : Boolean.FALSE);
     }
 
     @Override
@@ -403,6 +381,25 @@ public class StoreServiceImpl implements IStoreService {
         List<Store> storeList = this.storeMapper.selectList(queryWrapper);
         return storeList.stream().map(x -> new StoreNameResDTO().setStoreId(x.getId()).setStoreName(x.getStoreName()))
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * 更新档口权重
+     *
+     * @param storeWeightUpdateDTO 更新入参
+     * @return Integer
+     */
+    @Override
+    @Transactional
+    public Integer updateStoreWeight(StoreWeightUpdateDTO storeWeightUpdateDTO) {
+        Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
+                        .eq(Store::getId, storeWeightUpdateDTO.getStoreId()).eq(Store::getDelFlag, Constants.UNDELETED)))
+                .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
+        if (storeWeightUpdateDTO.getStoreWeight() > 100 || store.getStoreWeight() < -100) {
+            throw new ServiceException("权重范围在-100-100之间!", HttpStatus.ERROR);
+        }
+        store.setStoreWeight(storeWeightUpdateDTO.getStoreWeight());
+        return this.storeMapper.updateById(store);
     }
 
 }

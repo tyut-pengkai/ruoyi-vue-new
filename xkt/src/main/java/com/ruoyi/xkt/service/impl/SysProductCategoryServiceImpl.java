@@ -126,8 +126,6 @@ public class SysProductCategoryServiceImpl implements ISysProductCategoryService
     @Transactional(readOnly = true)
     public List<ProdCateListResDTO> selectList(ProdCateListDTO listDTO) {
         LambdaQueryWrapper<SysProductCategory> queryWrapper = new LambdaQueryWrapper<SysProductCategory>()
-                // 筛选第一级菜单
-                .ne(SysProductCategory::getParentId, 0L)
                 .eq(SysProductCategory::getDelFlag, Constants.UNDELETED)
                 .orderByAsc(Arrays.asList(SysProductCategory::getOrderNum, SysProductCategory::getId));
         if (StringUtils.isNotBlank(listDTO.getName())) {
