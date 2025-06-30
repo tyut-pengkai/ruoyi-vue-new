@@ -225,28 +225,48 @@ public class SysLoginService
             String unionId = session.getUnionid();
             String sessionKey = session.getSessionKey();
 
-            // 2. 校验签名
-            boolean check = wxMaService.getUserService().checkUserInfo(sessionKey, wxLoginBody.getRawData(), wxLoginBody.getSignature());
-            if (!check) {
-                throw new ServiceException("微信用户信息签名校验失败");
+            // 2. 解密用户信息（昵称、头像、性别等）
+            String nickName = "微信用户";
+            String avatarUrl = "";
+            String gender = "0";
+            
+            // 如果有用户信息，则解密并获取
+            if (wxLoginBody.getEncryptedData() != null && wxLoginBody.getIv() != null) {
+                try {
+                    // 校验签名
+                    boolean check = wxMaService.getUserService().checkUserInfo(sessionKey, wxLoginBody.getRawData(), wxLoginBody.getSignature());
+                    if (check) {
+                        WxMaUserInfo wxUserInfo = wxMaService.getUserService().getUserInfo(sessionKey, wxLoginBody.getEncryptedData(), wxLoginBody.getIv());
+                        nickName = processNickName(wxUserInfo.getNickName());
+                        avatarUrl = wxUserInfo.getAvatarUrl();
+                        gender = wxUserInfo.getGender(); // 0未知 1男 2女
+                        log.info("成功获取微信用户信息，昵称: {}, 头像: {}, 性别: {}", nickName, avatarUrl, gender);
+                    } else {
+                        log.warn("微信用户信息签名校验失败，使用默认值");
+                    }
+                } catch (Exception e) {
+                    log.warn("微信用户信息解密失败: {}, 使用默认值", e.getMessage());
+                }
+            } else {
+                log.info("未提供微信用户信息，使用默认值");
             }
 
-            // 3. 解密用户信息（昵称、头像、性别等）
-            WxMaUserInfo wxUserInfo = wxMaService.getUserService().getUserInfo(sessionKey, wxLoginBody.getEncryptedData(), wxLoginBody.getIv());
-            String nickName = processNickName(wxUserInfo.getNickName());
-            String avatarUrl = wxUserInfo.getAvatarUrl();
-            String gender = wxUserInfo.getGender(); // 0未知 1男 2女
-            
-            // 4. 解密手机号
+            // 3. 解密手机号
             String phoneNumber = null;
             if (wxLoginBody.getPhoneEncryptedData() != null && wxLoginBody.getPhoneIv() != null) {
-                WxMaPhoneNumberInfo phoneInfo = wxMaService.getUserService().getPhoneNoInfo(sessionKey, wxLoginBody.getPhoneEncryptedData(), wxLoginBody.getPhoneIv());
-                if (phoneInfo != null) {
-                    phoneNumber = phoneInfo.getPhoneNumber();
+                try {
+                    WxMaPhoneNumberInfo phoneInfo = wxMaService.getUserService().getPhoneNoInfo(sessionKey, wxLoginBody.getPhoneEncryptedData(), wxLoginBody.getPhoneIv());
+                    if (phoneInfo != null) {
+                        phoneNumber = phoneInfo.getPhoneNumber();
+                        log.info("成功获取手机号: {}", phoneNumber);
+                    }
+                } catch (Exception e) {
+                    log.error("手机号解密失败: {}", e.getMessage());
+                    throw new ServiceException("手机号解密失败: " + e.getMessage());
                 }
             }
 
-            // 5. 查询用户是否存在，如果不存在则创建，如果存在则更新
+            // 4. 查询用户是否存在，如果不存在则创建，如果存在则更新
             SysUser user = userService.getUserByOpenId(openId);
             if (user == null) {
                 // 创建新用户
@@ -264,26 +284,45 @@ public class SysLoginService
                 user.setDeptId(103L);
                 user.setPassword(SecurityUtils.encryptPassword(configService.selectConfigByKey("sys.user.initPassword")));
                 userService.registerUser(user);
-                log.info("创建新用户，openId: {}", openId);
+                log.info("创建新用户，openId: {}, 昵称: {}, 头像: {}, 手机号: {}", openId, nickName, avatarUrl, phoneNumber);
             } else {
                 // 更新现有用户信息
                 user.setUnionId(unionId);
-                user.setNickName(nickName);
-                user.setAvatar(avatarUrl);
-                user.setSex(gender);
+                
+                // 更新昵称（如果微信昵称不为空）
+                if (StringUtils.isNotEmpty(nickName)) {
+                    user.setNickName(nickName);
+                    log.info("更新用户昵称: {}", nickName);
+                }
+                
+                // 更新头像（如果微信头像不为空）
+                if (StringUtils.isNotEmpty(avatarUrl)) {
+                    user.setAvatar(avatarUrl);
+                    log.info("更新用户头像: {}", avatarUrl);
+                }
+                
+                // 更新性别（如果微信性别不为空）
+                if (StringUtils.isNotEmpty(gender)) {
+                    user.setSex(gender);
+                    log.info("更新用户性别: {}", gender);
+                }
+                
+                // 更新手机号（如果微信手机号不为空）
                 if (phoneNumber != null) {
                     user.setPhonenumber(phoneNumber);
                 }
+                
                 userService.updateUser(user);
-                log.info("更新用户信息，openId: {}", openId);
+                log.info("更新用户信息，openId: {}, 昵称: {}, 头像: {}, 手机号: {}", openId, user.getNickName(), user.getAvatar(), phoneNumber);
             }
 
-            // 6. 登录并生成token
+            // 5. 登录并生成token
             UserDetails userDetail = userDetailsService.createLoginUser(user);
             LoginUser loginUser = cn.hutool.core.bean.BeanUtil.copyProperties(userDetail, LoginUser.class);
             recordLoginInfo(loginUser.getUserId());
             return tokenService.createToken(loginUser);
         } catch (Exception e) {
+            log.error("小程序登录失败: {}", e.getMessage(), e);
             throw new ServiceException("小程序登录失败: " + e.getMessage());
         }
     }
@@ -329,10 +368,27 @@ public class SysLoginService
                 return response;
             }
             
-            // 4. 如果用户有手机号，直接登录
-            log.info("用户已绑定手机号，直接登录，openId: {}", openId);
+            // 4. 如果用户有手机号，检查昵称和头像是否为空，如果为空则尝试获取微信信息并更新
+            if (StringUtils.isEmpty(user.getNickName()) || StringUtils.isEmpty(user.getAvatar())) {
+                log.info("用户昵称或头像为空，检查是否有微信用户信息，openId: {}", openId);
+                
+                // 如果有微信用户信息，尝试补充
+                if (wxLoginBody.getEncryptedData() != null && wxLoginBody.getIv() != null) {
+                    supplementUserInfo(user, sessionKey, wxLoginBody, unionId);
+                } else {
+                    // 没有微信用户信息，返回需要完善用户信息的状态
+                    log.info("用户信息不完整且未提供微信用户信息，需要完善用户信息，openId: {}", openId);
+                    WxLoginResponse response = new WxLoginResponse(2, "需要完善用户信息");
+                    response.setOpenId(openId);
+                    response.setHasPhone(true);
+                    response.setUserInfo(user);
+                    response.setToken(null);
+                    return response;
+                }
+            }
             
-            // 登录并生成token
+            // 5. 登录并生成token
+            log.info("用户已绑定手机号，直接登录，openId: {}", openId);
             UserDetails userDetail = userDetailsService.createLoginUser(user);
             LoginUser loginUser = cn.hutool.core.bean.BeanUtil.copyProperties(userDetail, LoginUser.class);
             recordLoginInfo(loginUser.getUserId());
@@ -364,32 +420,44 @@ public class SysLoginService
             String unionId = session.getUnionid();
             String sessionKey = session.getSessionKey();
 
-            // 2. 校验签名（如果有用户信息）
-            if (wxLoginBody.getEncryptedData() != null && wxLoginBody.getIv() != null) {
-                boolean check = wxMaService.getUserService().checkUserInfo(sessionKey, wxLoginBody.getRawData(), wxLoginBody.getSignature());
-                if (!check) {
-                    throw new ServiceException("微信用户信息签名校验失败");
-                }
-            }
-
-            // 3. 解密用户信息（昵称、头像、性别等）
+            // 2. 解密用户信息（昵称、头像、性别等）
             String nickName = "微信用户";
             String avatarUrl = "";
             String gender = "0";
             
+            // 如果有用户信息，则解密并获取
             if (wxLoginBody.getEncryptedData() != null && wxLoginBody.getIv() != null) {
-                WxMaUserInfo wxUserInfo = wxMaService.getUserService().getUserInfo(sessionKey, wxLoginBody.getEncryptedData(), wxLoginBody.getIv());
-                nickName = processNickName(wxUserInfo.getNickName());
-                avatarUrl = wxUserInfo.getAvatarUrl();
-                gender = wxUserInfo.getGender(); // 0未知 1男 2女
+                try {
+                    // 校验签名
+                    boolean check = wxMaService.getUserService().checkUserInfo(sessionKey, wxLoginBody.getRawData(), wxLoginBody.getSignature());
+                    if (check) {
+                        WxMaUserInfo wxUserInfo = wxMaService.getUserService().getUserInfo(sessionKey, wxLoginBody.getEncryptedData(), wxLoginBody.getIv());
+                        nickName = processNickName(wxUserInfo.getNickName());
+                        avatarUrl = wxUserInfo.getAvatarUrl();
+                        gender = wxUserInfo.getGender(); // 0未知 1男 2女
+                        log.info("成功获取微信用户信息，昵称: {}, 头像: {}, 性别: {}", nickName, avatarUrl, gender);
+                    } else {
+                        log.warn("微信用户信息签名校验失败，使用默认值");
+                    }
+                } catch (Exception e) {
+                    log.warn("微信用户信息解密失败: {}, 使用默认值", e.getMessage());
+                }
+            } else {
+                log.info("未提供微信用户信息，使用默认值");
             }
 
-            // 4. 解密手机号（必需）
+            // 3. 解密手机号（必需）
             String phoneNumber = null;
             if (wxLoginBody.getPhoneEncryptedData() != null && wxLoginBody.getPhoneIv() != null) {
-                WxMaPhoneNumberInfo phoneInfo = wxMaService.getUserService().getPhoneNoInfo(sessionKey, wxLoginBody.getPhoneEncryptedData(), wxLoginBody.getPhoneIv());
-                if (phoneInfo != null) {
-                    phoneNumber = phoneInfo.getPhoneNumber();
+                try {
+                    WxMaPhoneNumberInfo phoneInfo = wxMaService.getUserService().getPhoneNoInfo(sessionKey, wxLoginBody.getPhoneEncryptedData(), wxLoginBody.getPhoneIv());
+                    if (phoneInfo != null) {
+                        phoneNumber = phoneInfo.getPhoneNumber();
+                        log.info("成功获取手机号: {}", phoneNumber);
+                    }
+                } catch (Exception e) {
+                    log.error("手机号解密失败: {}", e.getMessage());
+                    throw new ServiceException("手机号解密失败: " + e.getMessage());
                 }
             }
             
@@ -398,7 +466,7 @@ public class SysLoginService
                 throw new ServiceException("手机号获取失败，请重新授权");
             }
 
-            // 5. 查询用户是否存在，如果不存在则创建，如果存在则更新
+            // 4. 查询用户是否存在，如果不存在则创建，如果存在则更新
             SysUser user = userService.getUserByOpenId(openId);
             if (user == null) {
                 // 创建新用户
@@ -416,19 +484,39 @@ public class SysLoginService
                 user.setDeptId(103L);
                 user.setPassword(SecurityUtils.encryptPassword(configService.selectConfigByKey("sys.user.initPassword")));
                 userService.registerUser(user);
-                log.info("创建新用户，openId: {}, 手机号: {}", openId, phoneNumber);
+                log.info("创建新用户，openId: {}, 昵称: {}, 头像: {}, 手机号: {}", openId, nickName, avatarUrl, phoneNumber);
             } else {
                 // 更新现有用户信息
                 user.setUnionId(unionId);
-                user.setNickName(nickName);
-                user.setAvatar(avatarUrl);
-                user.setSex(gender);
-                user.setPhonenumber(phoneNumber);
+                
+                // 更新昵称（如果微信昵称不为空）
+                if (StringUtils.isNotEmpty(nickName)) {
+                    user.setNickName(nickName);
+                    log.info("更新用户昵称: {}", nickName);
+                }
+                
+                // 更新头像（如果微信头像不为空）
+                if (StringUtils.isNotEmpty(avatarUrl)) {
+                    user.setAvatar(avatarUrl);
+                    log.info("更新用户头像: {}", avatarUrl);
+                }
+                
+                // 更新性别（如果微信性别不为空）
+                if (StringUtils.isNotEmpty(gender)) {
+                    user.setSex(gender);
+                    log.info("更新用户性别: {}", gender);
+                }
+                
+                // 更新手机号（如果微信手机号不为空）
+                if (phoneNumber != null) {
+                    user.setPhonenumber(phoneNumber);
+                }
+                
                 userService.updateUser(user);
-                log.info("更新用户信息，openId: {}, 手机号: {}", openId, phoneNumber);
+                log.info("更新用户信息，openId: {}, 昵称: {}, 头像: {}, 手机号: {}", openId, user.getNickName(), user.getAvatar(), phoneNumber);
             }
 
-            // 6. 登录并生成token
+            // 5. 登录并生成token
             UserDetails userDetail = userDetailsService.createLoginUser(user);
             LoginUser loginUser = cn.hutool.core.bean.BeanUtil.copyProperties(userDetail, LoginUser.class);
             recordLoginInfo(loginUser.getUserId());
@@ -468,5 +556,76 @@ public class SysLoginService
             log.info("获取到微信昵称: {}", originalNickName);
             return originalNickName;
         }
+    }
+
+    /**
+     * 补充更新用户微信信息（昵称、头像、性别）
+     * @param user 用户对象
+     * @param sessionKey 微信sessionKey
+     * @param wxLoginBody 微信登录参数
+     * @param unionId 微信unionId
+     * @return 是否有信息更新
+     */
+    private boolean supplementUserInfo(SysUser user, String sessionKey, WxLoginBody wxLoginBody, String unionId) {
+        boolean updated = false;
+        
+        // 检查是否需要补充用户信息
+        if (StringUtils.isNotEmpty(user.getNickName()) && StringUtils.isNotEmpty(user.getAvatar()) && StringUtils.isNotEmpty(user.getSex())) {
+            log.info("用户信息已完整，无需补充，openId: {}", user.getOpenId());
+            return false;
+        }
+        
+        // 如果有用户信息，则解密并获取
+        if (wxLoginBody.getEncryptedData() != null && wxLoginBody.getIv() != null) {
+            try {
+                // 校验签名
+                boolean check = wxMaService.getUserService().checkUserInfo(sessionKey, wxLoginBody.getRawData(), wxLoginBody.getSignature());
+                if (check) {
+                    WxMaUserInfo wxUserInfo = wxMaService.getUserService().getUserInfo(sessionKey, wxLoginBody.getEncryptedData(), wxLoginBody.getIv());
+                    String nickName = processNickName(wxUserInfo.getNickName());
+                    String avatarUrl = wxUserInfo.getAvatarUrl();
+                    String gender = wxUserInfo.getGender();
+                    
+                    // 补充昵称
+                    if (StringUtils.isEmpty(user.getNickName()) && StringUtils.isNotEmpty(nickName)) {
+                        user.setNickName(nickName);
+                        updated = true;
+                        log.info("补充用户昵称: {}", nickName);
+                    }
+                    
+                    // 补充头像
+                    if (StringUtils.isEmpty(user.getAvatar()) && StringUtils.isNotEmpty(avatarUrl)) {
+                        user.setAvatar(avatarUrl);
+                        updated = true;
+                        log.info("补充用户头像: {}", avatarUrl);
+                    }
+                    
+                    // 补充性别
+                    if (StringUtils.isEmpty(user.getSex()) && StringUtils.isNotEmpty(gender)) {
+                        user.setSex(gender);
+                        updated = true;
+                        log.info("补充用户性别: {}", gender);
+                    }
+                    
+                    // 更新unionId
+                    if (StringUtils.isNotEmpty(unionId)) {
+                        user.setUnionId(unionId);
+                    }
+                    
+                    if (updated) {
+                        userService.updateUser(user);
+                        log.info("成功补充用户微信信息，openId: {}", user.getOpenId());
+                    }
+                } else {
+                    log.warn("微信用户信息签名校验失败，无法补充用户信息");
+                }
+            } catch (Exception e) {
+                log.warn("微信用户信息解密失败，无法补充用户信息: {}", e.getMessage());
+            }
+        } else {
+            log.info("未提供微信用户信息，无法补充用户昵称和头像");
+        }
+        
+        return updated;
     }
 }
