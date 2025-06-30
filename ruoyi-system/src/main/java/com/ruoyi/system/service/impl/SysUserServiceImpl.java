@@ -1,6 +1,7 @@
 package com.ruoyi.system.service.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Validator;
@@ -15,10 +16,12 @@ import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.common.utils.spring.SpringUtils;
+import com.ruoyi.common.utils.uuid.IdUtils;
 import com.ruoyi.system.domain.SysPost;
 import com.ruoyi.system.domain.SysUserPost;
 import com.ruoyi.system.domain.SysUserRole;
@@ -389,7 +392,7 @@ public class SysUserServiceImpl implements ISysUserService
     @Override
     public int resetPwd(SysUser user)
     {
-        return userMapper.updateUser(user);
+        return resetUserPwd(user.getUserId(), user.getPassword());
     }
 
     /**
@@ -402,7 +405,7 @@ public class SysUserServiceImpl implements ISysUserService
     @Override
     public int resetUserPwd(Long userId, String password)
     {
-        return userMapper.resetUserPwd(userId, password);
+        return userMapper.resetUserPwd(userId, SecurityUtils.encryptPassword(password));
     }
 
     /**

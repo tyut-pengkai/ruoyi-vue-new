@@ -2,7 +2,7 @@ ruoyi:
   name: RuoYi
   version: 3.9.0
   copyrightYear: 2025
-  profile: D:/ruoyi/uploadPath
+  profile: C:/ruoyi/uploadPath
   addressEnabled: false
   captchaType: math
 server:

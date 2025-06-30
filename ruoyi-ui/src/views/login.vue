@@ -51,8 +51,10 @@
         </el-button>
         <div style="float: right;" v-if="register">
           <router-link class="link-type" :to="'/register'">立即注册</router-link>
-          <span style="margin: 0 10px;">|</span>
-          <router-link class="link-type" :to="'/emailLogin'">邮箱验证码登录</router-link>
+          <span style="margin: 0 5px;">|</span>
+          <router-link class="link-type" :to="'/emailLogin'">邮箱登录</router-link>
+          <span style="margin: 0 5px;">|</span>
+          <router-link class="link-type" :to="'/forgot-password'">忘记密码</router-link>
         </div>
       </el-form-item>
     </el-form>

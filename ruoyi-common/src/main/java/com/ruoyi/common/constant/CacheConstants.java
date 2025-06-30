@@ -23,6 +23,11 @@ public class CacheConstants
     public static final String EMAIL_CODE_KEY = "email_codes:";
 
     /**
+     * 密码重置验证码 redis key
+     */
+    public static final String PASSWORD_RESET_CODE_KEY = "password_reset_codes:";
+
+    /**
      * 参数管理 cache key
      */
     public static final String SYS_CONFIG_KEY = "sys_config:";

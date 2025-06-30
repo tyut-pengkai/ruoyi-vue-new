@@ -43,7 +43,7 @@ export function getInfo() {
 export function logout() {
   return request({
     url: '/logout',
-    method: 'post'
+    method: 'delete'
   })
 }
 
@@ -56,5 +56,29 @@ export function getCodeImg() {
     },
     method: 'get',
     timeout: 20000
+  })
+}
+
+// 发送密码重置验证码
+export function sendResetPasswordCode(data) {
+  return request({
+    url: '/send-reset-password-code',
+    headers: {
+      isToken: false
+    },
+    method: 'post',
+    data: data
+  })
+}
+
+// 通过验证码重置密码
+export function resetPasswordByCode(data) {
+  return request({
+    url: '/reset-password-by-code',
+    headers: {
+      isToken: false
+    },
+    method: 'post',
+    data: data
   })
 }
