@@ -76,6 +76,7 @@ spring:
     database: 0
     # 密码
     password: xTbJPhicHmEiRkt8
+    #本地
 #    password:
     # 连接超时时间
     timeout: 10s
