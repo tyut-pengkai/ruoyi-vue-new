@@ -29,6 +29,7 @@ import com.ruoyi.xkt.dto.dailySale.DailySaleCusDTO;
 import com.ruoyi.xkt.dto.dailySale.DailySaleDTO;
 import com.ruoyi.xkt.dto.dailySale.DailySaleProdDTO;
 import com.ruoyi.xkt.dto.dailySale.WeekCateSaleDTO;
+import com.ruoyi.xkt.dto.dailyStoreProd.DailyStoreProdSaleDTO;
 import com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO;
 import com.ruoyi.xkt.dto.es.ESProductDTO;
 import com.ruoyi.xkt.dto.order.StoreOrderCancelDTO;
@@ -717,6 +718,26 @@ public class XktTask {
 //        this.storeMapper.updateExpireStoreMember();
     }
 
+    /**
+     * 凌晨2:50 更新APP商品销量榜、分类商品销量榜
+     */
+    public void dailyProdSale() {
+        final Date oneMonthAgo = java.sql.Date.valueOf(LocalDate.now().minusMonths(1));
+        final Date now = java.sql.Date.valueOf(LocalDate.now());
+        // 销量前100的ID列表，直接放到redis中
+        List<DailyStoreProdSaleDTO> top100ProdList = this.dailySaleProdMapper.prodSaleTop100List(oneMonthAgo, now);
+        if (CollectionUtils.isNotEmpty(top100ProdList)) {
+            redisCache.setCacheObject(CacheConstants.TOP_100_SALE_PROD, top100ProdList);
+        }
+        // 按照商品分类来进行销量排序
+        List<DailyStoreProdSaleDTO> cateSaleTop100ProdList = this.dailySaleProdMapper.prodCateSaleTop100List(oneMonthAgo, now);
+        if (CollectionUtils.isEmpty(cateSaleTop100ProdList)) {
+            return;
+        }
+        // 将各个分类销量数据存到redis中
+        redisCache.setCacheObject(CacheConstants.CATE_TOP_100_SALE_PROD, cateSaleTop100ProdList);
+    }
+
 
     /**
      * 每晚22:00:10 更新广告位竞价状态 将biddingTempStatus赋值给biddingStatus
@@ -724,10 +745,6 @@ public class XktTask {
     @Transactional
     public void updateAdvertRoundBiddingStatus() throws ParseException {
         this.advertRoundService.updateBiddingStatus();
-    }
-
-    public static void main(String[] args) {
-        Date now = DateUtils.parseDate(DateTimeFormatter.ofPattern("yyyy-MM-dd HH").format(LocalDateTime.now()));
     }
 
     /**

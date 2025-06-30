@@ -235,7 +235,9 @@ public class SysProductCategoryServiceImpl implements ISysProductCategoryService
         List<SysProductCategory> subCateList = this.prodCateMapper.selectList(new LambdaQueryWrapper<SysProductCategory>()
                 .in(SysProductCategory::getParentId, topCateList.stream().map(SysProductCategory::getId).collect(Collectors.toList()))
                 .eq(SysProductCategory::getDelFlag, Constants.UNDELETED));
-        return subCateList.stream().map(x -> BeanUtil.toBean(x, ProdCateDTO.class).setProdCateId(x.getId())).collect(Collectors.toList());
+        return subCateList.stream().sorted(Comparator.comparing(SysProductCategory::getId))
+                .map(x -> BeanUtil.toBean(x, ProdCateDTO.class).setProdCateId(x.getId()))
+                .collect(Collectors.toList());
     }
 
 

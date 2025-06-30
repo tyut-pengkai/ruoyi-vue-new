@@ -27,5 +27,7 @@ public class StorePageResDTO {
     private Integer storeStatus;
     @ApiModelProperty(value = "启用状态")
     private String delFlag;
+    @ApiModelProperty(value = "档口权重")
+    private Integer storeWeight;
 
 }

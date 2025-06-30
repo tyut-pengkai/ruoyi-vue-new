@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 /**
  * @author liujiang
@@ -13,6 +14,7 @@ import lombok.Data;
 @ApiModel("代发详情")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Accessors(chain = true)
 public class UserAuthResDTO {
 
     @ApiModelProperty(value = "代发ID")
@@ -23,6 +25,10 @@ public class UserAuthResDTO {
     private String phonenumber;
     @ApiModelProperty(value = "身份证号")
     private String idCard;
+    @ApiModelProperty(value = "人脸图片")
+    private String faceUrl;
+    @ApiModelProperty(value = "国徽图片")
+    private String emblemUrl;
     @ApiModelProperty(value = "审核状态")
     private Integer authStatus;
     @ApiModelProperty(value = "审核状态名称")

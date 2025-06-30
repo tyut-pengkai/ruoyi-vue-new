@@ -170,6 +170,25 @@ public class SecurityUtils {
     }
 
     /**
+     * 获取用户ID
+     *
+     * @return
+     */
+    public static Long getUserIdSafe() {
+        Long userId = null;
+        try {
+            Authentication auth = getAuthentication();
+            if (auth != null) {
+                LoginUser user = (LoginUser) auth.getPrincipal();
+                userId = Optional.ofNullable(user).map(LoginUser::getUserId).orElse(null);
+            }
+        } catch (Exception e) {
+            log.error("获取用ID户异常", e);
+        }
+        return userId;
+    }
+
+    /**
      * 获取用户
      **/
     public static LoginUser getLoginUser() {

@@ -2,14 +2,17 @@ package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.xkt.domain.SysFile;
 import com.ruoyi.xkt.domain.UserAuthentication;
 import com.ruoyi.xkt.dto.userAuthentication.*;
 import com.ruoyi.xkt.enums.UserAuthStatus;
+import com.ruoyi.xkt.mapper.SysFileMapper;
 import com.ruoyi.xkt.mapper.UserAuthenticationMapper;
 import com.ruoyi.xkt.service.IUserAuthenticationService;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +34,7 @@ import java.util.Optional;
 public class UserAuthenticationServiceImpl implements IUserAuthenticationService {
 
     final UserAuthenticationMapper userAuthMapper;
+    final SysFileMapper fileMapper;
 
     /**
      * 新增代发
@@ -55,7 +59,9 @@ public class UserAuthenticationServiceImpl implements IUserAuthenticationService
     @Override
     @Transactional(readOnly = true)
     public Page<UserAuthPageResDTO> page(UserAuthPageDTO pageDTO) {
+        PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
         List<UserAuthPageResDTO> list = this.userAuthMapper.selectUserAuthPage(pageDTO);
+        list.forEach(x -> x.setAuthStatusName(UserAuthStatus.of(x.getAuthStatus()).getLabel()));
         return Page.convert(new PageInfo<>(list));
     }
 
@@ -71,7 +77,10 @@ public class UserAuthenticationServiceImpl implements IUserAuthenticationService
         UserAuthentication userAuth = Optional.ofNullable(this.userAuthMapper.selectOne(new LambdaQueryWrapper<UserAuthentication>()
                         .eq(UserAuthentication::getId, userAuthId)))
                 .orElseThrow(() -> new ServiceException("代发不存在!", HttpStatus.ERROR));
-        return BeanUtil.toBean(userAuth, UserAuthResDTO.class);
+        SysFile faceFile = this.fileMapper.selectById(userAuth.getIdCardFaceFileId());
+        SysFile emblemFile = this.fileMapper.selectById(userAuth.getIdCardEmblemFileId());
+        return BeanUtil.toBean(userAuth, UserAuthResDTO.class).setFaceUrl(faceFile.getFileUrl())
+                .setEmblemUrl(emblemFile.getFileUrl());
     }
 
     /**

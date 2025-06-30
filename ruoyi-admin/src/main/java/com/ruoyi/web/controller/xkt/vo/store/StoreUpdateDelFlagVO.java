@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("更改档口基本信息")
+@ApiModel("档口启用停用")
 @Data
 @Accessors(chain = true)
 public class StoreUpdateDelFlagVO {

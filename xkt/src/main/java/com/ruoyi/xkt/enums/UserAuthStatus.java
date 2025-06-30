@@ -28,6 +28,6 @@ public enum UserAuthStatus {
                 return e;
             }
         }
-        throw new ServiceException("代发状态类型不存在!", HttpStatus.ERROR);
+        throw new ServiceException("代发审核类型不存在!", HttpStatus.ERROR);
     }
 }

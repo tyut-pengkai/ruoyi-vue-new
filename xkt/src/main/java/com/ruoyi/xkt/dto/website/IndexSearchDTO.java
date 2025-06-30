@@ -7,7 +7,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -20,8 +19,8 @@ import java.util.List;
 @Data
 public class IndexSearchDTO extends BasePageDTO {
 
-    @ApiModelProperty(value = "档口ID")
-    private Long storeId;
+    @ApiModelProperty(value = "档口ID列表")
+    private List<String> storeIdList;
     @ApiModelProperty(value = "搜索内容")
     private String search;
     @ApiModelProperty(value = "商品状态列表")
@@ -30,6 +29,8 @@ public class IndexSearchDTO extends BasePageDTO {
     private List<String> parCateIdList;
     @ApiModelProperty(value = "二级类目ID列表")
     private List<String> prodCateIdList;
+    @ApiModelProperty(value = "档口商品ID列表")
+    private List<String> prodIdList;
     @ApiModelProperty(value = "最小价格")
     private String minPrice;
     @ApiModelProperty(value = "最大价格")

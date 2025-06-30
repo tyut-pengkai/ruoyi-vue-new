@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.DailySaleProduct;
 import com.ruoyi.xkt.dto.dailySale.CateSaleRankDTO;
 import com.ruoyi.xkt.dto.dailySale.DailySaleProdDTO;
+import com.ruoyi.xkt.dto.dailyStoreProd.DailyStoreProdSaleDTO;
 import com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO;
 import com.ruoyi.xkt.dto.store.StoreIndexSaleTop10ResDTO;
 import com.ruoyi.xkt.dto.store.StoreSaleTop10DTO;
@@ -19,6 +20,12 @@ import java.util.List;
  */
 public interface DailySaleProductMapper extends BaseMapper<DailySaleProduct> {
 
+    /**
+     * 查询档口商品销售数据
+     *
+     * @param voucherDate 昨天
+     * @return List<DailySaleProdDTO>
+     */
     List<DailySaleProdDTO> selectDailySale(Date voucherDate);
 
     /**
@@ -32,6 +39,7 @@ public interface DailySaleProductMapper extends BaseMapper<DailySaleProduct> {
 
     /**
      * 获取档口首页商品销量前10
+     *
      * @param saleTop10DTO 查询入参
      * @return List<StoreIndexSaleTop10ResDTO>
      */
@@ -39,7 +47,8 @@ public interface DailySaleProductMapper extends BaseMapper<DailySaleProduct> {
 
     /**
      * 获取爆款频出的前50商品及档口
-     * @param yesterday 昨天
+     *
+     * @param yesterday   昨天
      * @param oneMonthAgo 昨天往前推1个月
      * @return List<DailyStoreTagDTO>
      */
@@ -47,17 +56,36 @@ public interface DailySaleProductMapper extends BaseMapper<DailySaleProduct> {
 
     /**
      * 筛选销量超过1000的商品
+     *
      * @param oneMonthAgo 一月前
-     * @param yesterday 昨天
+     * @param yesterday   昨天
      * @return List<DailyStoreTagDTO>
      */
-    List<DailyStoreTagDTO> prodSale1000List(@Param("oneMonthAgo")Date oneMonthAgo,@Param("yesterday") Date yesterday);
+    List<DailyStoreTagDTO> prodSale1000List(@Param("oneMonthAgo") Date oneMonthAgo, @Param("yesterday") Date yesterday);
 
     /**
      * 筛选销量前十的商品
+     *
      * @param oneMonthAgo 一月前
-     * @param yesterday 昨天
+     * @param yesterday   昨天
      * @return List<DailyStoreTagDTO>
      */
     List<DailyStoreTagDTO> prodSaleTop10List(@Param("oneMonthAgo") Date oneMonthAgo, @Param("yesterday") Date yesterday);
+
+    /**
+     * 筛选销量前100的商品
+     * @param oneMonthAgo 一月前
+     * @param yesterday 昨天
+     * @return List<DailyStoreProdSaleDTO>
+     */
+    List<DailyStoreProdSaleDTO> prodSaleTop100List(@Param("oneMonthAgo") Date oneMonthAgo, @Param("yesterday") Date yesterday);
+
+    /**
+     * 每一个分类销量排名
+     * @param oneMonthAgo 一月前
+     * @param yesterday 昨天
+     * @return List<DailyStoreProdSaleDTO>
+     */
+    List<DailyStoreProdSaleDTO> prodCateSaleTop100List(@Param("oneMonthAgo") Date oneMonthAgo, @Param("yesterday") Date yesterday);
+
 }

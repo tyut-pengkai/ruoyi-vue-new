@@ -19,6 +19,12 @@ import java.util.List;
 @Repository
 public interface StoreMapper extends BaseMapper<Store> {
 
+    /**
+     * 筛选档口列表
+     *
+     * @param pageDTO 筛选参数
+     * @return 筛选结果
+     */
     List<StorePageResDTO> selectStorePage(StorePageDTO pageDTO);
 
     /**

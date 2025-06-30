@@ -16,7 +16,6 @@ import java.util.List;
  * @date 2025/3/27 15:12
  */
 @EqualsAndHashCode(callSuper = true)
-@ApiModel("网站首页搜索")
 @Data
 public class IndexSearchVO extends BasePageVO {
 

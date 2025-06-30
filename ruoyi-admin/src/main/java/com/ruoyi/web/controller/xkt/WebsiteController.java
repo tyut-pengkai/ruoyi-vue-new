@@ -6,6 +6,7 @@ import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.core.redis.RedisCache;
+import com.ruoyi.web.controller.xkt.vo.BasePageVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.app.category.APPCateVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.app.index.APPIndexHotSaleRightFixVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.app.index.APPIndexMidBrandVO;
@@ -20,10 +21,16 @@ import com.ruoyi.web.controller.xkt.vo.advertRound.pc.store.PCStoreTopBannerVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.picSearch.PicSearchAdvertVO;
 import com.ruoyi.web.controller.xkt.vo.website.IndexSearchVO;
 import com.ruoyi.web.controller.xkt.vo.website.StoreSearchVO;
+import com.ruoyi.xkt.dto.BasePageDTO;
 import com.ruoyi.xkt.dto.advertRound.app.index.APPIndexHotSaleDTO;
 import com.ruoyi.xkt.dto.advertRound.app.index.APPIndexNewProdDTO;
 import com.ruoyi.xkt.dto.advertRound.app.index.APPIndexPopularSaleDTO;
 import com.ruoyi.xkt.dto.advertRound.app.index.APPSearchDTO;
+import com.ruoyi.xkt.dto.advertRound.app.prod.APPProdCateSubDTO;
+import com.ruoyi.xkt.dto.advertRound.app.prod.APPProdCateTop3DTO;
+import com.ruoyi.xkt.dto.advertRound.app.prod.APPProdSaleDTO;
+import com.ruoyi.xkt.dto.advertRound.app.strength.APPStrengthProdDTO;
+import com.ruoyi.xkt.dto.advertRound.app.strength.APPStrengthStoreDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.PCSearchDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.index.PCIndexRecommendDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.newProd.PCNewRecommendDTO;
@@ -253,5 +260,37 @@ public class WebsiteController extends XktBaseController {
     public R<List<String>> getSearchHotList() {
         return R.ok(redisCache.getCacheObject(CacheConstants.SEARCH_HOT_KEY));
     }
+
+    @ApiOperation(value = "APP 实力质造专题页 商品列表", notes = "只需要传分页参数即可", httpMethod = "POST", response = R.class)
+    @PostMapping("/app/strength/prod")
+    public R<Page<APPStrengthProdDTO>> getAppStrengthProdPage(@Validated @RequestBody IndexSearchVO searchVO) throws IOException {
+        return R.ok(websiteAPPService.getAppStrengthProdPage(BeanUtil.toBean(searchVO, IndexSearchDTO.class)));
+    }
+
+    @ApiOperation(value = "APP 实力质造专题页 档口列表", notes = "只需要传分页参数即可", httpMethod = "POST", response = R.class)
+    @PostMapping("/app/strength/store")
+    public R<Page<APPStrengthStoreDTO>> getAppStrengthStorePage(@Validated @RequestBody IndexSearchVO searchVO) {
+        return R.ok(websiteAPPService. getAppStrengthStorePage(BeanUtil.toBean(searchVO, IndexSearchDTO.class)));
+    }
+
+    @ApiOperation(value = "APP 商品榜 销量列表", httpMethod = "GET", response = R.class)
+    @GetMapping("/app/prod/sale")
+    public R<List<APPProdSaleDTO>> getAppProdSaleTop100List() throws IOException {
+        return R.ok(websiteAPPService. getAppProdSaleTop100List());
+    }
+
+    @ApiOperation(value = "APP 商品榜 分类销量列表", httpMethod = "GET", response = R.class)
+    @GetMapping("/app/prod/cate")
+    public R<List<APPProdCateTop3DTO>> getAppCateProdSaleTop3List() throws IOException {
+        return R.ok(websiteAPPService. getAppCateProdSaleTop3List());
+    }
+
+    @ApiOperation(value = "APP 商品榜 分类销量 二级列表", httpMethod = "GET", response = R.class)
+    @GetMapping("/app/prod/cate/sub/{prodCateId}")
+    public R<List<APPProdCateSubDTO>> getAppCateSubProdSaleList(@PathVariable Long prodCateId) throws IOException {
+        return R.ok(websiteAPPService. getAppCateSubProdSaleList(prodCateId));
+    }
+
+
 
 }

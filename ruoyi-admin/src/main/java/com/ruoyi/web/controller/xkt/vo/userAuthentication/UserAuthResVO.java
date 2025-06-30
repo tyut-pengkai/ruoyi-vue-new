@@ -29,11 +29,15 @@ public class UserAuthResVO {
     private String phonenumber;
     @ApiModelProperty(value = "身份证号")
     private String idCard;
+    @ApiModelProperty(value = "人脸图片")
+    private String faceUrl;
+    @ApiModelProperty(value = "国徽图片")
+    private String emblemUrl;
     @ApiModelProperty(value = "审核状态")
     private Integer authStatus;
     @ApiModelProperty(value = "审核状态名称")
     private String authStatusName;
     @ApiModelProperty(value = "启用状态")
-    private Integer status;
+    private Integer delFlag;
 
 }

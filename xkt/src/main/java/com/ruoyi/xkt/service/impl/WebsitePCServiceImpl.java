@@ -1619,8 +1619,13 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
             boolQuery.must(multiMatchQuery._toQuery());
         }
         // 档口ID 过滤条件
-        if (ObjectUtils.isNotEmpty(searchDTO.getStoreId())) {
-            boolQuery.filter(f -> f.term(t -> t.field("storeId").value(searchDTO.getStoreId())));
+        if (CollectionUtils.isNotEmpty(searchDTO.getStoreIdList())) {
+            TermsQueryField termsQueryField = new TermsQueryField.Builder()
+                    .value(searchDTO.getStoreIdList().stream()
+                            .map(WebsitePCServiceImpl::newFieldValue)
+                            .collect(Collectors.toList()))
+                    .build();
+            boolQuery.filter(f -> f.terms(t -> t.field("storeId").terms(termsQueryField)));
         }
         // 添加prodStatus 过滤条件
         if (CollectionUtils.isNotEmpty(searchDTO.getProdStatusList())) {

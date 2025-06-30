@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.xkt.vo.store;
 
+import com.ruoyi.web.controller.xkt.vo.storeCertificate.StoreCertVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -25,5 +26,7 @@ public class StoreAuditVO {
     private Boolean approve;
     @ApiModelProperty(value = "拒绝理由")
     private String rejectReason;
+    @ApiModelProperty(value = "档口认证信息")
+    private StoreCertVO storeCert;
 
 }

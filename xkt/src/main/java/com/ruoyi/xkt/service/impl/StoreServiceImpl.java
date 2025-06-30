@@ -20,6 +20,7 @@ import com.ruoyi.system.mapper.SysUserMapper;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.store.*;
+import com.ruoyi.xkt.dto.storeCertificate.StoreCertResDTO;
 import com.ruoyi.xkt.enums.StoreStatus;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IAssetService;
@@ -48,7 +49,6 @@ import java.util.stream.Collectors;
 public class StoreServiceImpl implements IStoreService {
 
     final StoreMapper storeMapper;
-    final IStoreCertificateService storeCertService;
     final SysUserMapper userMapper;
     final DailyStoreTagMapper storeTagMapper;
     final UserSubscriptionsMapper userSubMapper;
@@ -60,6 +60,9 @@ public class StoreServiceImpl implements IStoreService {
     final StoreProductMapper storeProdMapper;
     final DailySaleProductMapper dailySaleProdMapper;
     final ISysUserService userService;
+    final StoreCertificateMapper storeCertMapper;
+    final SysFileMapper fileMapper;
+    final IStoreCertificateService storeCertService;
 
 
     /**
@@ -134,11 +137,13 @@ public class StoreServiceImpl implements IStoreService {
                 .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
         if (auditDTO.getApprove()) {
             // 如果档口状态不为 待审核 或 审核驳回 则报错
-            if (!Objects.equals(store.getStoreStatus(), StoreStatus.UN_AUDITED.getValue()) ||
+            if (!Objects.equals(store.getStoreStatus(), StoreStatus.UN_AUDITED.getValue()) &&
                     !Objects.equals(store.getStoreStatus(), StoreStatus.AUDIT_REJECTED.getValue())) {
                 throw new ServiceException("当前状态不为待审核 或 审核驳回，不可审核!", HttpStatus.ERROR);
             }
             store.setStoreStatus(StoreStatus.TRIAL_PERIOD.getValue());
+            // 更新档口认证信息
+            this.storeCertService.update(auditDTO.getStoreCert());
         } else {
             store.setStoreStatus(StoreStatus.AUDIT_REJECTED.getValue());
             store.setRejectReason(auditDTO.getRejectReason());
@@ -171,10 +176,26 @@ public class StoreServiceImpl implements IStoreService {
     @Override
     @Transactional(readOnly = true)
     public StoreApproveResDTO getApproveInfo(Long storeId) {
-        return new StoreApproveResDTO() {{
-            setBasic(getInfo(storeId));
-            setCertificate(storeCertService.getInfo(storeId));
-        }};
+        StoreApproveResDTO approveResDTO = new StoreApproveResDTO();
+        approveResDTO.setBasic(this.getInfo(storeId));
+        approveResDTO.setCertificate(this.getStoreCertificateInfo(storeId));
+        return approveResDTO;
+    }
+
+    private StoreCertResDTO getStoreCertificateInfo(Long storeId) {
+        StoreCertificate storeCert = this.storeCertMapper.selectOne(new LambdaQueryWrapper<StoreCertificate>()
+                .eq(StoreCertificate::getStoreId, storeId).eq(StoreCertificate::getDelFlag, Constants.UNDELETED));
+        if (ObjectUtils.isEmpty(storeCert)) {
+            return new StoreCertResDTO();
+        }
+        List<SysFile> fileList = Optional.ofNullable(this.fileMapper.selectList(new LambdaQueryWrapper<SysFile>()
+                .in(SysFile::getId, Arrays.asList(storeCert.getIdCardFaceFileId(), storeCert.getIdCardEmblemFileId(), storeCert.getLicenseFileId()))
+                .eq(SysFile::getDelFlag, Constants.UNDELETED))).orElseThrow(() -> new ServiceException("文件不存在!", HttpStatus.ERROR));
+        List<StoreCertResDTO.StoreCertFileDTO> fileDTOList = fileList.stream().map(x -> BeanUtil.toBean(x, StoreCertResDTO.StoreCertFileDTO.class)
+                .setFileType(Objects.equals(x.getId(), storeCert.getIdCardFaceFileId()) ? 4 :
+                        (Objects.equals(x.getId(), storeCert.getIdCardEmblemFileId()) ? 5 : 6))).collect(Collectors.toList());
+        return BeanUtil.toBean(storeCert, StoreCertResDTO.class).setStoreCertId(storeCert.getId()).setFileList(fileDTOList);
+
     }
 
     /**

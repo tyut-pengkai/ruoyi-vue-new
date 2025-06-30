@@ -12,7 +12,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             s.contact_phone,
             s.contact_back_phone,
             s.store_status,
-            s.del_flag
+            s.del_flag,
+            s.store_weight
         FROM
             store s
                 LEFT JOIN sys_user u ON s.user_id = u.user_id

@@ -1,5 +1,6 @@
 package com.ruoyi.xkt.dto.store;
 
+import com.ruoyi.xkt.dto.storeCertificate.StoreCertDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -23,5 +24,7 @@ public class StoreAuditDTO {
     private Boolean approve;
     @ApiModelProperty(value = "审核信息")
     private String rejectReason;
+    @ApiModelProperty(value = "档口认证信息")
+    private StoreCertDTO storeCert;
 
 }

@@ -8,6 +8,8 @@ import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.*;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.model.LoginUser;
@@ -17,11 +19,16 @@ import com.ruoyi.common.enums.AdType;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.es.EsClientWrapper;
-import com.ruoyi.xkt.domain.AdvertRound;
-import com.ruoyi.xkt.domain.SysFile;
+import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.advertRound.app.category.APPCateDTO;
 import com.ruoyi.xkt.dto.advertRound.app.index.*;
 import com.ruoyi.xkt.dto.advertRound.app.own.APPOwnGuessLikeDTO;
+import com.ruoyi.xkt.dto.advertRound.app.prod.APPProdCateSubDTO;
+import com.ruoyi.xkt.dto.advertRound.app.prod.APPProdCateTop3DTO;
+import com.ruoyi.xkt.dto.advertRound.app.prod.APPProdSaleDTO;
+import com.ruoyi.xkt.dto.advertRound.app.strength.APPStrengthProdDTO;
+import com.ruoyi.xkt.dto.advertRound.app.strength.APPStrengthStoreDTO;
+import com.ruoyi.xkt.dto.dailyStoreProd.DailyStoreProdSaleDTO;
 import com.ruoyi.xkt.dto.es.ESProductDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdPriceAndMainPicAndTagDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdPriceAndMainPicDTO;
@@ -72,6 +79,8 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
     final DailyStoreTagMapper dailyStoreTagMapper;
     final StoreMapper storeMapper;
     final StoreProductStatisticsMapper prodStatsMapper;
+    final UserSubscriptionsMapper userSubMapper;
+    final UserFavoritesMapper userFavMapper;
 
     /**
      * APP 首页热卖精选列表
@@ -302,6 +311,199 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
             }
         }
         return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), realDataList);
+    }
+
+    /**
+     * APP 实力质造专题页 列表
+     *
+     * @param searchDTO 分页入参
+     * @return Page<APPStrengthProdDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page<APPStrengthProdDTO> getAppStrengthProdPage(IndexSearchDTO searchDTO) throws IOException {
+        // 获取有哪些会员档口
+        Collection<String> keyList = this.redisCache.scanKeys(CacheConstants.STORE_MEMBER + "*");
+        if (CollectionUtils.isEmpty(keyList)) {
+            return Page.empty(searchDTO.getPageSize(), searchDTO.getPageNum());
+        }
+        // 设置档口
+        searchDTO.setStoreIdList(new ArrayList<>(keyList));
+        Page<ESProductDTO> page = this.search(searchDTO);
+        if (CollectionUtils.isEmpty(page.getList())) {
+            return Page.empty(searchDTO.getPageSize(), searchDTO.getPageNum());
+        }
+        List<APPStrengthProdDTO> list = BeanUtil.copyToList(page.getList(), APPStrengthProdDTO.class);
+        return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), list);
+    }
+
+    /**
+     * APP 实力质造专题页 档口列表
+     *
+     * @param searchDTO 搜索入参
+     * @return Page<APPStrengthStoreDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page<APPStrengthStoreDTO> getAppStrengthStorePage(IndexSearchDTO searchDTO) {
+        // 获取有哪些会员档口
+        Collection<String> keyList = this.redisCache.scanKeys(CacheConstants.STORE_MEMBER + "*");
+        if (CollectionUtils.isEmpty(keyList)) {
+            return Page.empty(searchDTO.getPageSize(), searchDTO.getPageNum());
+        }
+        PageHelper.startPage(searchDTO.getPageNum(), searchDTO.getPageSize());
+        List<Store> storeList = this.storeMapper.selectList(new LambdaQueryWrapper<Store>()
+                .eq(Store::getDelFlag, Constants.UNDELETED).in(Store::getId, new ArrayList<>(keyList))
+                .orderByDesc(Store::getStoreWeight));
+        if (CollectionUtils.isEmpty(storeList)) {
+            return Page.empty(searchDTO.getPageSize(), searchDTO.getPageNum());
+        }
+        // 当前登录人有哪些档口已关注
+        Long userId = SecurityUtils.getUserIdSafe();
+        Map<Long, Long> focusStoreIdMap = ObjectUtils.isEmpty(userId) ? new HashMap<>()
+                : this.userSubMapper.selectList(new LambdaQueryWrapper<UserSubscriptions>()
+                        .eq(UserSubscriptions::getUserId, userId).in(UserSubscriptions::getStoreId, storeList)
+                        .eq(UserSubscriptions::getDelFlag, Constants.UNDELETED)).stream()
+                .collect(Collectors.toMap(UserSubscriptions::getStoreId, UserSubscriptions::getStoreId));
+        List<APPStrengthStoreDTO> list = storeList.stream().map(store -> BeanUtil.toBean(store, APPStrengthStoreDTO.class)
+                        .setFocus(focusStoreIdMap.containsKey(store.getId())))
+                .collect(Collectors.toList());
+        return Page.convert(new PageInfo<>(list));
+    }
+
+    /**
+     * APP 商品榜 销量前100 商品列表
+     *
+     * @return List<APPStrengthStoreDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<APPProdSaleDTO> getAppProdSaleTop100List() throws IOException {
+        // 从redis中获取销量前100的商品
+        List<DailyStoreProdSaleDTO> top100ProdList = redisCache.getCacheObject(CacheConstants.TOP_100_SALE_PROD);
+        if (CollectionUtils.isEmpty(top100ProdList)) {
+            return Collections.emptyList();
+        }
+        List<String> prodIdList = top100ProdList.stream().map(DailyStoreProdSaleDTO::getStoreProdId).map(String::valueOf).collect(Collectors.toList());
+        // 构建入参
+        IndexSearchDTO searchDTO = new IndexSearchDTO();
+        searchDTO.setProdIdList(prodIdList);
+        searchDTO.setPageNum(1);
+        searchDTO.setPageSize(100);
+        searchDTO.setSort("recommendWeight");
+        Page<ESProductDTO> page = this.search(searchDTO);
+        // ES 中存的 商品信息
+        Map<String, ESProductDTO> esProdMap = page.getList().stream().collect(Collectors.toMap(ESProductDTO::getStoreProdId, Function.identity()));
+        Long userId = SecurityUtils.getUserIdSafe();
+        Map<String, UserFavorites> collectMap = ObjectUtils.isEmpty(userId) ? new HashMap<>()
+                : this.userFavMapper.selectList(new LambdaQueryWrapper<UserFavorites>()
+                .eq(UserFavorites::getDelFlag, Constants.UNDELETED).in(UserFavorites::getStoreProdId, prodIdList)
+                .eq(UserFavorites::getUserId, userId)).stream().collect(Collectors
+                .toMap(x -> x.getStoreProdId().toString(), Function.identity()));
+        return top100ProdList.stream()
+                .filter(x -> ObjectUtils.isNotEmpty(esProdMap.get(x.getStoreProdId().toString())))
+                .map(x -> BeanUtil.toBean(esProdMap.get(x.getStoreProdId().toString()), APPProdSaleDTO.class)
+                        // 是否为档口会员
+                        .setMemberLevel(redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId()))
+                        // 是否收藏商品
+                        .setCollectProd(ObjectUtils.isNotEmpty(collectMap.get(x.getStoreProdId().toString()))
+                                ? Boolean.TRUE : Boolean.FALSE))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * APP 商品榜 分类页 销量前3 的列表
+     *
+     * @return
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<APPProdCateTop3DTO> getAppCateProdSaleTop3List() throws IOException {
+        List<DailyStoreProdSaleDTO> cateSaleTop100ProdList = redisCache.getCacheObject(CacheConstants.CATE_TOP_100_SALE_PROD);
+        if (CollectionUtils.isEmpty(cateSaleTop100ProdList)) {
+            return new ArrayList<>();
+        }
+        // 商品分类ID 和 分类名称的map
+        Map<Long, String> prodCateNameMap = cateSaleTop100ProdList.stream().collect(Collectors
+                .toMap(DailyStoreProdSaleDTO::getProdCateId, DailyStoreProdSaleDTO::getProdCateName));
+        // 每一个分类ID与分类销量前3 的商品ID列表
+        Map<Long, List<String>> cateProdIdMap = new HashMap<>();
+        // 所有的商品销量榜
+        List<String> prodIdList = new ArrayList<>();
+        cateSaleTop100ProdList.stream().collect(Collectors.groupingBy(DailyStoreProdSaleDTO::getProdCateId))
+                .forEach((prodCateId, list) -> {
+                    // 每一个分类销量前3 的 id 列表
+                    List<String> top3ProdIdList = list.stream().sorted(Comparator.comparing(DailyStoreProdSaleDTO::getCount).reversed())
+                            .limit(3).map(String::valueOf).collect(Collectors.toList());
+                    prodIdList.addAll(top3ProdIdList);
+                    cateProdIdMap.put(prodCateId, top3ProdIdList);
+                });
+        // 构建入参
+        IndexSearchDTO searchDTO = new IndexSearchDTO();
+        searchDTO.setProdIdList(prodIdList);
+        searchDTO.setPageNum(1);
+        searchDTO.setPageSize(1000);
+        searchDTO.setSort("recommendWeight");
+        Page<ESProductDTO> page = this.search(searchDTO);
+        // ES 中存的 商品信息
+        Map<String, ESProductDTO> esProdMap = page.getList().stream().collect(Collectors.toMap(ESProductDTO::getStoreProdId, Function.identity()));
+        // 商品分类销量map
+        Map<Long, Integer> cateCountMap = cateSaleTop100ProdList.stream().collect(Collectors
+                .groupingBy(DailyStoreProdSaleDTO::getProdCateId, Collectors.summingInt(DailyStoreProdSaleDTO::getCount)));
+        // 按照cateCountMap 的 value 倒序排，并且只取key 的集合
+        List<Long> cateIdList = cateCountMap.entrySet().stream().sorted(Map.Entry.<Long, Integer>comparingByValue().reversed())
+                .map(Map.Entry::getKey).collect(Collectors.toList());
+        // 每一个分类前3的列表
+        return cateIdList.stream().map(prodCateId -> new APPProdCateTop3DTO()
+                        .setProdCateId(prodCateId).setProdCateName(prodCateNameMap.get(prodCateId))
+                        .setProdList(CollectionUtils.isEmpty(cateProdIdMap.get(prodCateId)) ? new ArrayList<>()
+                                : BeanUtil.copyToList(cateProdIdMap.get(prodCateId).stream()
+                                .map(esProdMap::get).collect(Collectors.toList()), APPProdCateTop3DTO.APPPCTProdDTO.class)))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * APP 商品榜 分类页 某个分类销量明细
+     *
+     * @param prodCateId 分类ID
+     * @return List<APPProdCateSubDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<APPProdCateSubDTO> getAppCateSubProdSaleList(Long prodCateId) throws IOException {
+        List<DailyStoreProdSaleDTO> cateSaleTop100ProdList = redisCache.getCacheObject(CacheConstants.CATE_TOP_100_SALE_PROD);
+        if (CollectionUtils.isEmpty(cateSaleTop100ProdList)) {
+            return new ArrayList<>();
+        }
+        // 某一个具体分类下的商品ID列表
+        List<String> prodIdList = cateSaleTop100ProdList.stream().filter(x -> x.getProdCateId().equals(prodCateId))
+                .sorted(Comparator.comparing(DailyStoreProdSaleDTO::getCount).reversed()).map(String::valueOf)
+                .collect(Collectors.toList());
+        // 构建入参
+        IndexSearchDTO searchDTO = new IndexSearchDTO();
+        searchDTO.setProdCateIdList(Collections.singletonList(prodCateId.toString()));
+        searchDTO.setProdIdList(prodIdList);
+        searchDTO.setPageNum(1);
+        searchDTO.setPageSize(1000);
+        searchDTO.setSort("recommendWeight");
+        Page<ESProductDTO> page = this.search(searchDTO);
+        Long userId = SecurityUtils.getUserIdSafe();
+        Map<String, UserFavorites> collectMap = ObjectUtils.isEmpty(userId) ? new HashMap<>()
+                : this.userFavMapper.selectList(new LambdaQueryWrapper<UserFavorites>()
+                .eq(UserFavorites::getDelFlag, Constants.UNDELETED).in(UserFavorites::getStoreProdId, prodIdList)
+                .eq(UserFavorites::getUserId, userId)).stream().collect(Collectors
+                .toMap(x -> x.getStoreProdId().toString(), Function.identity()));
+        // ES 中存的 商品信息
+        Map<String, ESProductDTO> esProdMap = page.getList().stream().collect(Collectors.toMap(ESProductDTO::getStoreProdId, Function.identity()));
+        return prodIdList.stream().map(prodId -> {
+            ESProductDTO esProd = esProdMap.get(prodId);
+            return BeanUtil.toBean(esProd, APPProdCateSubDTO.class)
+                    // 是否为档口会员
+                    .setMemberLevel(redisCache.getCacheObject(CacheConstants.STORE_MEMBER + esProd.getStoreId()))
+                    // 是否收藏商品
+                    .setCollectProd(ObjectUtils.isNotEmpty(collectMap.get(prodId))
+                            ? Boolean.TRUE : Boolean.FALSE);
+        }).collect(Collectors.toList());
     }
 
 
@@ -683,9 +885,14 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
             );
             boolQuery.must(multiMatchQuery._toQuery());
         }
-        // 档口ID 过滤条件
-        if (ObjectUtils.isNotEmpty(searchDTO.getStoreId())) {
-            boolQuery.filter(f -> f.term(t -> t.field("storeId").value(searchDTO.getStoreId())));
+        // 档口ID列表 过滤条件
+        if (CollectionUtils.isNotEmpty(searchDTO.getStoreIdList())) {
+            TermsQueryField termsQueryField = new TermsQueryField.Builder()
+                    .value(searchDTO.getStoreIdList().stream()
+                            .map(WebsiteAPPServiceImpl::newFieldValue)
+                            .collect(Collectors.toList()))
+                    .build();
+            boolQuery.filter(f -> f.terms(t -> t.field("storeId").terms(termsQueryField)));
         }
         // 添加prodStatus 过滤条件
         if (CollectionUtils.isNotEmpty(searchDTO.getProdStatusList())) {
