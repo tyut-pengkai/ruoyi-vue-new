@@ -114,6 +114,7 @@ public class XktTask {
     final NoticeMapper noticeMapper;
     final UserNoticeMapper userNoticeMapper;
     final UserSubscriptionsMapper userSubMapper;
+    final StoreMemberMapper storeMemberMapper;
 
     /**
      * 每年3月1日、6月1日、9月1日、12月1日执行
@@ -710,12 +711,17 @@ public class XktTask {
      * 凌晨2:45 更新档口会员过期
      */
     public void autoCloseExpireStoreMember() {
-
-        // TODO 更新档口过期会员 删除ES中商品标识
-        // TODO 更新档口过期会员 删除ES中商品标识
-        // TODO 更新档口过期会员 删除ES中商品标识
-
-//        this.storeMapper.updateExpireStoreMember();
+        final Date yesterday = java.sql.Date.valueOf(LocalDate.now().minusDays(1));
+        // 截止昨天，会员过期的档口
+        List<StoreMember> expireList = this.storeMemberMapper.selectList(new LambdaQueryWrapper<StoreMember>()
+                .eq(StoreMember::getDelFlag, Constants.UNDELETED).eq(StoreMember::getEndTime, yesterday));
+        if (CollectionUtils.isEmpty(expireList)) {
+            return;
+        }
+        expireList.forEach(x -> x.setDelFlag(Constants.DELETED));
+        this.storeMemberMapper.updateById(expireList);
+        // 删除redis中过期会员
+        expireList.forEach(x -> redisCache.deleteObject(CacheConstants.STORE_MEMBER + x.getId()));
     }
 
     /**
@@ -725,17 +731,17 @@ public class XktTask {
         final Date oneMonthAgo = java.sql.Date.valueOf(LocalDate.now().minusMonths(1));
         final Date now = java.sql.Date.valueOf(LocalDate.now());
         // 销量前100的ID列表，直接放到redis中
-        List<DailyStoreProdSaleDTO> top100ProdList = this.dailySaleProdMapper.prodSaleTop100List(oneMonthAgo, now);
-        if (CollectionUtils.isNotEmpty(top100ProdList)) {
-            redisCache.setCacheObject(CacheConstants.TOP_100_SALE_PROD, top100ProdList);
+        List<DailyStoreProdSaleDTO> top50ProdList = this.dailySaleProdMapper.prodSaleTop50List(oneMonthAgo, now);
+        if (CollectionUtils.isNotEmpty(top50ProdList)) {
+            redisCache.setCacheObject(CacheConstants.TOP_50_SALE_PROD, top50ProdList);
         }
         // 按照商品分类来进行销量排序
-        List<DailyStoreProdSaleDTO> cateSaleTop100ProdList = this.dailySaleProdMapper.prodCateSaleTop100List(oneMonthAgo, now);
-        if (CollectionUtils.isEmpty(cateSaleTop100ProdList)) {
+        List<DailyStoreProdSaleDTO> cateSaleTop50ProdList = this.dailySaleProdMapper.prodCateSaleTop50List(oneMonthAgo, now);
+        if (CollectionUtils.isEmpty(cateSaleTop50ProdList)) {
             return;
         }
         // 将各个分类销量数据存到redis中
-        redisCache.setCacheObject(CacheConstants.CATE_TOP_100_SALE_PROD, cateSaleTop100ProdList);
+        redisCache.setCacheObject(CacheConstants.CATE_TOP_50_SALE_PROD, cateSaleTop50ProdList);
     }
 
 

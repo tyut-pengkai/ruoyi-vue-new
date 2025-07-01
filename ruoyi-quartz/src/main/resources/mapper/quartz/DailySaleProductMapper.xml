@@ -130,7 +130,7 @@
             LIMIT 10
     </select>
 
-    <select id="prodSaleTop100List" resultType="com.ruoyi.xkt.dto.dailyStoreProd.DailyStoreProdSaleDTO">
+    <select id="prodSaleTop50List" resultType="com.ruoyi.xkt.dto.dailyStoreProd.DailyStoreProdSaleDTO">
         SELECT
             dsp.store_prod_id,
             COUNT( dsp.sale_num ) AS count
@@ -147,7 +147,7 @@
             LIMIT 100
     </select>
 
-    <select id="prodCateSaleTop100List" resultType="com.ruoyi.xkt.dto.dailyStoreProd.DailyStoreProdSaleDTO">
+    <select id="prodCateSaleTop50List" resultType="com.ruoyi.xkt.dto.dailyStoreProd.DailyStoreProdSaleDTO">
         WITH ranked_products AS (
             SELECT
                 sp.prod_cate_id,
@@ -172,7 +172,7 @@
         FROM
             ranked_products
         WHERE
-            rank_in_category &lt;= 100
+            rank_in_category &lt;= 50
         ORDER BY
             prod_cate_id,
             sale_count DESC;

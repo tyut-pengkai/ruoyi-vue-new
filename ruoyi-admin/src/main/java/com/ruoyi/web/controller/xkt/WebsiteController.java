@@ -285,7 +285,7 @@ public class WebsiteController extends XktBaseController {
         return R.ok(websiteAPPService. getAppCateProdSaleTop3List());
     }
 
-    @ApiOperation(value = "APP 商品榜 分类销量 二级列表", httpMethod = "GET", response = R.class)
+    @ApiOperation(value = "APP 商品榜 分类销量 次级详情列表", httpMethod = "GET", response = R.class)
     @GetMapping("/app/prod/cate/sub/{prodCateId}")
     public R<List<APPProdCateSubDTO>> getAppCateSubProdSaleList(@PathVariable Long prodCateId) throws IOException {
         return R.ok(websiteAPPService. getAppCateSubProdSaleList(prodCateId));

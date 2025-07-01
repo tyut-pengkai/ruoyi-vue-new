@@ -114,6 +114,12 @@ public class DailyTaskController extends BaseController {
         return R.ok();
     }
 
+    @PostMapping("/store-memeber")
+    public R expireStoreMember(SysJob sysJob) {
+        task.autoCloseExpireStoreMember();
+        return R.ok();
+    }
+
 
 
 

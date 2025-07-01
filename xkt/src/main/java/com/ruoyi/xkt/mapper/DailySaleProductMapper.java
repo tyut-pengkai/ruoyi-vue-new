@@ -74,18 +74,20 @@ public interface DailySaleProductMapper extends BaseMapper<DailySaleProduct> {
 
     /**
      * 筛选销量前100的商品
+     *
      * @param oneMonthAgo 一月前
-     * @param yesterday 昨天
+     * @param yesterday   昨天
      * @return List<DailyStoreProdSaleDTO>
      */
-    List<DailyStoreProdSaleDTO> prodSaleTop100List(@Param("oneMonthAgo") Date oneMonthAgo, @Param("yesterday") Date yesterday);
+    List<DailyStoreProdSaleDTO> prodSaleTop50List(@Param("oneMonthAgo") Date oneMonthAgo, @Param("yesterday") Date yesterday);
 
     /**
      * 每一个分类销量排名
+     *
      * @param oneMonthAgo 一月前
-     * @param yesterday 昨天
+     * @param yesterday   昨天
      * @return List<DailyStoreProdSaleDTO>
      */
-    List<DailyStoreProdSaleDTO> prodCateSaleTop100List(@Param("oneMonthAgo") Date oneMonthAgo, @Param("yesterday") Date yesterday);
+    List<DailyStoreProdSaleDTO> prodCateSaleTop50List(@Param("oneMonthAgo") Date oneMonthAgo, @Param("yesterday") Date yesterday);
 
 }

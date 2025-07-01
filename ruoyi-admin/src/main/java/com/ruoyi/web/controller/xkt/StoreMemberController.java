@@ -38,5 +38,8 @@ public class StoreMemberController extends XktBaseController {
         return R.ok(storeMemberService.create(BeanUtil.toBean(createVO, StoreMemberCreateDTO.class)));
     }
 
+    // TODO 每天获取档口会员过期提醒
+    // TODO 每天获取档口会员过期提醒
+
 
 }

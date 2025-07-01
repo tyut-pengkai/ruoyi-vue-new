@@ -268,11 +268,11 @@ public class CacheConstants {
     /**
      * 档口商品销售top100
      */
-    public static final String TOP_100_SALE_PROD = "top_100_sale_prod";
+    public static final String TOP_50_SALE_PROD = "top_50_sale_prod";
     /**
      * 商品分类销量前100
      */
-    public static final String CATE_TOP_100_SALE_PROD = "cate_top_100_sale_prod";
+    public static final String CATE_TOP_50_SALE_PROD = "cate_top_50_sale_prod";
 
 
 }

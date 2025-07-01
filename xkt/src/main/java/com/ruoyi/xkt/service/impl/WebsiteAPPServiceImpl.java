@@ -380,7 +380,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
     @Transactional(readOnly = true)
     public List<APPProdSaleDTO> getAppProdSaleTop100List() throws IOException {
         // 从redis中获取销量前100的商品
-        List<DailyStoreProdSaleDTO> top100ProdList = redisCache.getCacheObject(CacheConstants.TOP_100_SALE_PROD);
+        List<DailyStoreProdSaleDTO> top100ProdList = redisCache.getCacheObject(CacheConstants.TOP_50_SALE_PROD);
         if (CollectionUtils.isEmpty(top100ProdList)) {
             return Collections.emptyList();
         }
@@ -419,7 +419,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
     @Override
     @Transactional(readOnly = true)
     public List<APPProdCateTop3DTO> getAppCateProdSaleTop3List() throws IOException {
-        List<DailyStoreProdSaleDTO> cateSaleTop100ProdList = redisCache.getCacheObject(CacheConstants.CATE_TOP_100_SALE_PROD);
+        List<DailyStoreProdSaleDTO> cateSaleTop100ProdList = redisCache.getCacheObject(CacheConstants.CATE_TOP_50_SALE_PROD);
         if (CollectionUtils.isEmpty(cateSaleTop100ProdList)) {
             return new ArrayList<>();
         }
@@ -471,7 +471,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
     @Override
     @Transactional(readOnly = true)
     public List<APPProdCateSubDTO> getAppCateSubProdSaleList(Long prodCateId) throws IOException {
-        List<DailyStoreProdSaleDTO> cateSaleTop100ProdList = redisCache.getCacheObject(CacheConstants.CATE_TOP_100_SALE_PROD);
+        List<DailyStoreProdSaleDTO> cateSaleTop100ProdList = redisCache.getCacheObject(CacheConstants.CATE_TOP_50_SALE_PROD);
         if (CollectionUtils.isEmpty(cateSaleTop100ProdList)) {
             return new ArrayList<>();
         }
@@ -484,7 +484,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         searchDTO.setProdCateIdList(Collections.singletonList(prodCateId.toString()));
         searchDTO.setProdIdList(prodIdList);
         searchDTO.setPageNum(1);
-        searchDTO.setPageSize(1000);
+        searchDTO.setPageSize(100);
         searchDTO.setSort("recommendWeight");
         Page<ESProductDTO> page = this.search(searchDTO);
         Long userId = SecurityUtils.getUserIdSafe();

@@ -36,6 +36,12 @@ public class StoreController extends XktBaseController {
     final ISysUserService userService;
     final TokenService tokenService;
 
+
+    // TODO 获取试用期即将到期的档口
+
+    // TODO 获取获取正式使用即将到期的档口
+
+
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "模糊查询档口", httpMethod = "GET", response = R.class)
     @Log(title = "模糊查询档口", businessType = BusinessType.UPDATE)
