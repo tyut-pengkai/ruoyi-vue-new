@@ -51,7 +51,6 @@ public class SysJobServiceImpl implements ISysJobService {
         scheduler.clear();
         List<SysJob> jobList = this.jobMapper.selectList(new LambdaQueryWrapper<SysJob>()
                 .eq(SysJob::getDelFlag, Constants.UNDELETED));
-//        List<SysJob> jobList = jobMapper.selectJobAll();
         for (SysJob job : jobList) {
             ScheduleUtils.createScheduleJob(scheduler, job);
         }
@@ -66,7 +65,8 @@ public class SysJobServiceImpl implements ISysJobService {
     @Override
     @Transactional(readOnly = true)
     public Page<JobPageResDTO> page(JobPageDTO pageDTO) {
-        LambdaQueryWrapper<SysJob> queryWrapper = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper<SysJob> queryWrapper = new LambdaQueryWrapper<SysJob>()
+                .eq(SysJob::getDelFlag, Constants.UNDELETED);
         if (StringUtils.isNotBlank(pageDTO.getJobName())) {
             queryWrapper.like(SysJob::getJobName, pageDTO.getJobName());
         }
