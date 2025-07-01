@@ -33,9 +33,7 @@ RUN addgroup -g 1001 -S appgroup && \
 COPY --from=builder /build/ruoyi-admin/target/ruoyi-admin.jar app.jar
 
 # 创建日志目录
-RUN mkdir -p /app/logs && \
-    mkdir -p /home/ruoyi/logs && \
-    chown -R appuser:appgroup /app
+RUN mkdir -p /home/ruoyi/logs && chown -R appuser:appgroup /home/ruoyi/logs
 
 # 切换到应用用户
 USER appuser
