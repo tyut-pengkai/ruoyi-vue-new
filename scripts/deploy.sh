@@ -40,7 +40,7 @@ docker run -d \
   --name $CONTAINER_NAME \
   --restart unless-stopped \
   -p $PORT:8080 \
-  -e SPRING_PROFILES_ACTIVE=prod \
+#  -e SPRING_PROFILES_ACTIVE=prod \
   $IMAGE_NAME
 
 # 4. 检查容器状态
