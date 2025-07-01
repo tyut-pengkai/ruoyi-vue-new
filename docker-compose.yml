@@ -1,9 +1,9 @@
 version: '3.8'
 
 services:
-  BeautyClub:
+  beautyclub:
     build: .
-    container_name: BeautyClub
+    container_name: beautyclub
     restart: always
     ports:
       - "8080:8080"
@@ -32,7 +32,7 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - upload_path:/app/uploadPath
     depends_on:
-      - BeautyClub
+      - beautyclub
     networks:
       - beautyclub-network
 

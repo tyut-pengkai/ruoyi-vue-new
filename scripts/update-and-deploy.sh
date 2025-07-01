@@ -197,7 +197,7 @@ build_and_deploy() {
     
     if [ "$FORCE_DEPLOY" = true ]; then
         log "强制模式：不使用缓存构建"
-        docker-compose build --no-cache BeautyClub
+        docker-compose build --no-cache beautyclub
     fi
     
     docker-compose up -d --build
@@ -268,7 +268,7 @@ show_result() {
     echo
     
     echo "=== 常用命令 ==="
-    echo "查看日志: docker-compose logs BeautyClub"
+    echo "查看日志: docker-compose logs beautyclub"
     echo "重启服务: docker-compose restart"
     echo "停止服务: docker-compose down"
     echo "更新代码: ./scripts/update-and-deploy.sh -b ${GIT_BRANCH}"
