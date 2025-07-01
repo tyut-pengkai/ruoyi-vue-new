@@ -11,8 +11,6 @@
 *.iws
 
 # Maven相关
-target/
-!ruoyi-admin/target/ruoyi-admin.jar
 .mvn/
 mvnw
 mvnw.cmd

@@ -1,4 +1,30 @@
-# 使用OpenJDK 8作为基础镜像
+# 使用Maven作为构建阶段
+FROM maven:3.8-openjdk-8 AS builder
+
+# 设置工作目录
+WORKDIR /build
+
+# 复制Maven配置文件
+COPY pom.xml .
+COPY ruoyi-admin/pom.xml ruoyi-admin/
+COPY ruoyi-common/pom.xml ruoyi-common/
+COPY ruoyi-framework/pom.xml ruoyi-framework/
+COPY ruoyi-system/pom.xml ruoyi-system/
+COPY ruoyi-quartz/pom.xml ruoyi-quartz/
+COPY ruoyi-generator/pom.xml ruoyi-generator/
+
+# 复制源代码
+COPY ruoyi-admin/src ruoyi-admin/src
+COPY ruoyi-common/src ruoyi-common/src
+COPY ruoyi-framework/src ruoyi-framework/src
+COPY ruoyi-system/src ruoyi-system/src
+COPY ruoyi-quartz/src ruoyi-quartz/src
+COPY ruoyi-generator/src ruoyi-generator/src
+
+# 构建项目
+RUN mvn clean package -DskipTests
+
+# 运行阶段
 FROM openjdk:8-jdk-alpine
 
 # 设置工作目录
@@ -17,8 +43,8 @@ RUN apk add --no-cache tzdata && \
 RUN addgroup -g 1001 -S appgroup && \
     adduser -u 1001 -S appuser -G appgroup
 
-# 复制Maven构建的jar包
-COPY ruoyi-admin/target/ruoyi-admin.jar app.jar
+# 从构建阶段复制jar包
+COPY --from=builder /build/ruoyi-admin/target/ruoyi-admin.jar app.jar
 
 # 创建日志目录
 RUN mkdir -p /app/logs && \
