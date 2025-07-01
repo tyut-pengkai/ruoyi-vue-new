@@ -8,7 +8,7 @@ set -e
 # 配置变量
 PROJECT_NAME="beautyclub"
 IMAGE_NAME="beautyclub:latest"
-CONTAINER_NAME="beautyclub-app"
+CONTAINER_NAME="beautyclub-backend"
 PORT=8080
 
 echo "=== BeautyClub 部署脚本 ==="
@@ -65,7 +65,7 @@ done
 
 echo ""
 echo "=== 部署完成 ==="
-echo "容器名称: $CONTAINER_NAME"
+echo "容器名称: beautyclub-backend"
 echo "访问端口: $PORT"
-echo "查看日志: docker logs $CONTAINER_NAME"
-echo "停止服务: docker stop $CONTAINER_NAME" 
+echo "查看日志: docker logs beautyclub-backend"
+echo "停止服务: docker stop beautyclub-backend" 

@@ -19,8 +19,8 @@ fi
 
 # 1. 停止并删除容器
 echo "1. 停止并删除容器..."
-docker stop beautyclub-app 2>/dev/null || true
-docker rm beautyclub-app 2>/dev/null || true
+docker stop beautyclub-backend 2>/dev/null || true
+docker rm beautyclub-backend 2>/dev/null || true
 
 # 2. 删除镜像
 echo "2. 删除镜像..."
