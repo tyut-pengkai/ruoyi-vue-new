@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-  # BeautyClub应用服务
   BeautyClub:
     build: .
     container_name: BeautyClub
@@ -21,7 +20,6 @@ services:
     networks:
       - beautyclub-network
 
-  # Nginx反向代理服务
   nginx:
     image: nginx:alpine
     container_name: beautyclub-nginx
@@ -45,7 +43,3 @@ volumes:
 networks:
   beautyclub-network:
     driver: bridge
-
-# 说明：
-# SPRING_DATASOURCE_URL 中的 172.17.0.2 请替换为宝塔MySQL容器的实际IP
-# SPRING_REDIS_HOST 中的 172.17.0.3 请替换为宝塔Redis容器的实际IP 
