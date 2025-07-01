@@ -8,7 +8,7 @@ set -e
 # 配置变量
 PROJECT_PATH="/www/wwwroot/beautyclub"
 GIT_REPO="https://gitee.com/why110/BeautyClub.git"
-GIT_BRANCH="main"  # 默认分支
+GIT_BRANCH="sg-dev"  # 默认分支
 
 # 日志函数
 log() {
