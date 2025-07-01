@@ -35,6 +35,9 @@
           <span v-if="!loading">登 录</span>
           <span v-else>登 录 中...</span>
         </el-button>
+        <div style="padding-top: 10px;">
+            <span style="font-size: 12px; color: #999;">提示：未注册的邮箱将自动创建账户并登录</span>
+        </div>
         <div style="float: right;" v-if="register">
           <router-link class="link-type" :to="'/register'">立即注册</router-link>
           <span style="margin: 0 10px;">|</span>
