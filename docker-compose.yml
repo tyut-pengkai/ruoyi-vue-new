@@ -1,59 +1,23 @@
 version: '3.8'
 
 services:
-  # MySQL数据库服务
-  mysql:
-    image: mysql:8.0
-    container_name: beautyclub-mysql
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: root123456
-      MYSQL_DATABASE: beautyclub
-      MYSQL_USER: beautyclub
-      MYSQL_PASSWORD: beautyclub123
-      TZ: Asia/Shanghai
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./sql:/docker-entrypoint-initdb.d
-    command: --default-authentication-plugin=mysql_native_password
-    networks:
-      - beautyclub-network
-
-  # Redis缓存服务
-  redis:
-    image: redis:7-alpine
-    container_name: beautyclub-redis
-    restart: always
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    command: redis-server --appendonly yes
-    networks:
-      - beautyclub-network
-
-  # RuoYi应用服务
-  beautyclub-app:
+  # BeautyClub应用服务
+  BeautyClub:
     build: .
-    container_name: beautyclub-app
+    container_name: BeautyClub
     restart: always
     ports:
       - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/beautyclub?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-      - SPRING_DATASOURCE_USERNAME=beautyclub
-      - SPRING_DATASOURCE_PASSWORD=beautyclub123
-      - SPRING_REDIS_HOST=redis
-      - SPRING_REDIS_PORT=6379
+      - SPRING_DATASOURCE_URL=jdbc:mysql://121.40.218.168:13306/mmclub?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+      - SPRING_DATASOURCE_USERNAME=mmclub
+      - SPRING_DATASOURCE_PASSWORD=8DDPpAQBrbxx!
+      - SPRING_REDIS_HOST=121.40.218.168
+      - SPRING_REDIS_PORT=26739
     volumes:
       - app_logs:/app/logs
       - upload_path:/app/uploadPath
-    depends_on:
-      - mysql
-      - redis
     networks:
       - beautyclub-network
 
@@ -70,16 +34,18 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - upload_path:/app/uploadPath
     depends_on:
-      - beautyclub-app
+      - BeautyClub
     networks:
       - beautyclub-network
 
 volumes:
-  mysql_data:
-  redis_data:
   app_logs:
   upload_path:
 
 networks:
   beautyclub-network:
-    driver: bridge 
+    driver: bridge
+
+# 说明：
+# SPRING_DATASOURCE_URL 中的 172.17.0.2 请替换为宝塔MySQL容器的实际IP
+# SPRING_REDIS_HOST 中的 172.17.0.3 请替换为宝塔Redis容器的实际IP 
