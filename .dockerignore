@@ -1,0 +1,42 @@
+# Git相关
+.git
+.gitignore
+.gitattributes
+
+# IDE相关
+.idea
+.vscode
+*.iml
+*.ipr
+*.iws
+
+# Maven相关
+target/
+!ruoyi-admin/target/ruoyi-admin.jar
+.mvn/
+mvnw
+mvnw.cmd
+
+# 日志文件
+*.log
+logs/
+
+# 临时文件
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# 文档
+README.md
+*.md
+docs/
+
+# 前端相关
+ruoyi-ui/
+beautyClub-App/
+
+# 其他
+bin/
+*.bat
+*.sh 
