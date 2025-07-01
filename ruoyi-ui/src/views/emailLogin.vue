@@ -104,12 +104,13 @@ export default {
             // 存储token
             setToken(res.token)
             this.$store.commit('SET_TOKEN', res.token)
+            this.$router.push({ path: this.redirect || "/" }).catch(()=>{})
             // 获取用户信息
-            this.$store.dispatch('GetInfo').then(() => {
-              this.$router.push({ path: this.redirect || "/" }).catch(()=>{})
-            }).catch(() => {
-              this.loading = false
-            })
+            // this.$store.dispatch('GetInfo').then(() => {
+            //   this.$router.push({ path: this.redirect || "/" }).catch(()=>{})
+            // }).catch(() => {
+            //   this.loading = false
+            // })
           }).catch(() => {
             this.loading = false
           })
