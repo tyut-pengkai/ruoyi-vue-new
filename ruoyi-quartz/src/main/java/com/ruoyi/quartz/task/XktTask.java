@@ -116,6 +116,10 @@ public class XktTask {
     final UserSubscriptionsMapper userSubMapper;
     final StoreMemberMapper storeMemberMapper;
 
+    public void test() throws IOException {
+        System.err.println("aaa");
+    }
+
     /**
      * 每年3月1日、6月1日、9月1日、12月1日执行
      */

@@ -1,7 +1,9 @@
 package com.ruoyi.quartz.service;
 
+import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.job.TaskException;
 import com.ruoyi.quartz.domain.SysJob;
+import com.ruoyi.quartz.domain.dto.*;
 import org.quartz.SchedulerException;
 
 import java.util.List;
@@ -13,90 +15,56 @@ import java.util.List;
  */
 public interface ISysJobService {
     /**
-     * 获取quartz调度器的计划任务
+     * 定时任务表达式分页
      *
-     * @param job 调度信息
-     * @return 调度任务集合
+     * @param pageDTO 分页参数
+     * @return Page<JobPageResDTO>
      */
-    public List<SysJob> selectJobList(SysJob job);
+    Page<JobPageResDTO> page(JobPageDTO pageDTO);
 
     /**
-     * 通过调度任务ID查询调度信息
+     * 新增定时任务
      *
-     * @param jobId 调度任务ID
-     * @return 调度任务对象信息
+     * @param createDTO 创建入参
+     * @return Integer
      */
-    public SysJob selectJobById(Long jobId);
+    Integer create(JobCreateDTO createDTO) throws SchedulerException, TaskException;
 
     /**
-     * 暂停任务
+     * 获取定时任务详情
      *
-     * @param job 调度信息
-     * @return 结果
+     * @param jobId 任务ID
+     * @return JobResDTO
      */
-    public int pauseJob(SysJob job) throws SchedulerException;
+    JobResDTO getInfo(Long jobId);
 
     /**
-     * 恢复任务
+     * 更新定时任务
      *
-     * @param job 调度信息
-     * @return 结果
+     * @param updateDTO 更新入参
+     * @return Integer
      */
-    public int resumeJob(SysJob job) throws SchedulerException;
+    Integer update(JobUpdateDTO updateDTO) throws SchedulerException, TaskException;
 
     /**
-     * 删除任务后，所对应的trigger也将被删除
+     * 删除定时任务
      *
-     * @param job 调度信息
-     * @return 结果
+     * @param jobId 任务ID
+     * @return Integer
      */
-    public int deleteJob(SysJob job) throws SchedulerException;
+    Integer delete(Long jobId) throws SchedulerException;
 
     /**
-     * 批量删除调度信息
-     *
-     * @param jobIds 需要删除的任务ID
-     * @return 结果
+     * 更改定时任务状态
+     * @param updateStatusDTO 更新状态入参
+     * @return Integer
      */
-    public void deleteJobByIds(Long[] jobIds) throws SchedulerException;
+    Integer updateStatus(JobUpdateStatusDTO updateStatusDTO) throws SchedulerException;
 
     /**
-     * 任务调度状态修改
-     *
-     * @param job 调度信息
-     * @return 结果
+     * 立即运行定时任务
+     * @param jobId jobId
+     * @return Integer
      */
-    public int changeStatus(SysJob job) throws SchedulerException;
-
-    /**
-     * 立即运行任务
-     *
-     * @param job 调度信息
-     * @return 结果
-     */
-    public boolean run(SysJob job) throws SchedulerException;
-
-    /**
-     * 新增任务
-     *
-     * @param job 调度信息
-     * @return 结果
-     */
-    public int insertJob(SysJob job) throws SchedulerException, TaskException;
-
-    /**
-     * 更新任务
-     *
-     * @param job 调度信息
-     * @return 结果
-     */
-    public int updateJob(SysJob job) throws SchedulerException, TaskException;
-
-    /**
-     * 校验cron表达式是否有效
-     *
-     * @param cronExpression 表达式
-     * @return 结果
-     */
-    public boolean checkCronExpressionIsValid(String cronExpression);
+    void run(Long jobId) throws SchedulerException;
 }

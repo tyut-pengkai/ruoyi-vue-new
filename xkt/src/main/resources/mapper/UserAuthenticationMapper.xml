@@ -10,7 +10,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             ua.real_name,
             u.phonenumber,
             ua.id_card,
-            ua.auth_status
+            ua.auth_status,
+            ua.del_flag
         FROM
             user_authentication ua
                 LEFT JOIN sys_user u ON ua.user_id = u.user_id

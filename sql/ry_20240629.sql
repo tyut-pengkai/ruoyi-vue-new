@@ -779,6 +779,8 @@ create table sys_job (
   misfire_policy      varchar(20)   default '3'                comment '计划执行错误策略（1立即执行 2执行一次 3放弃执行）',
   concurrent          char(1)       default '1'                comment '是否并发执行（0允许 1禁止）',
   status              char(1)       default '0'                comment '状态（0正常 1暂停）',
+  `version`           bigint        UNSIGNED NOT NULL          COMMENT '版本号',
+  `del_flag`          char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '删除标志（0代表存在 2代表删除）',
   create_by           varchar(64)   default ''                 comment '创建者',
   create_time         datetime                                 comment '创建时间',
   update_by           varchar(64)   default ''                 comment '更新者',

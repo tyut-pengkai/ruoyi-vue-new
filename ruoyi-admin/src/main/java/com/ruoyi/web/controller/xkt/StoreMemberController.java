@@ -9,6 +9,7 @@ import com.ruoyi.web.controller.xkt.vo.storeMember.StoreMemberCreateVO;
 import com.ruoyi.xkt.dto.storeMember.StoreMemberCreateDTO;
 import com.ruoyi.xkt.service.IStoreMemberService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -31,8 +32,9 @@ public class StoreMemberController extends XktBaseController {
 
     final IStoreMemberService storeMemberService;
 
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')")
-    @Log(title = "", businessType = BusinessType.INSERT)
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store'||@ss.hasSupplierSubRole())")
+    @ApiOperation(value = "新增档口会员", httpMethod = "POST", response = R.class)
+    @Log(title = "新增档口会员", businessType = BusinessType.INSERT)
     @PostMapping
     public R<Integer> create(@Validated @RequestBody StoreMemberCreateVO createVO) {
         return R.ok(storeMemberService.create(BeanUtil.toBean(createVO, StoreMemberCreateDTO.class)));

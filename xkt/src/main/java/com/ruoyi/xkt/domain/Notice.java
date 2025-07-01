@@ -35,7 +35,7 @@ public class Notice extends XktBaseEntity {
      */
     private String noticeContent;
     /**
-     * 1 系统  2 档口
+     * 1 档口  2 系统
      */
     private Integer ownerType;
     /**
