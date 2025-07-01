@@ -34,6 +34,7 @@ COPY --from=builder /build/ruoyi-admin/target/ruoyi-admin.jar app.jar
 
 # 创建日志目录
 RUN mkdir -p /app/logs && \
+    mkdir -p /home/ruoyi/logs && \
     chown -R appuser:appgroup /app
 
 # 切换到应用用户
