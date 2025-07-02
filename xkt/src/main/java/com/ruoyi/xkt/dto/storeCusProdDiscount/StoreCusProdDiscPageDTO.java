@@ -12,7 +12,6 @@ import lombok.EqualsAndHashCode;
  * @date 2025/3/27 15:12
  */
 @EqualsAndHashCode(callSuper = true)
-@ApiModel("档口客户销售分页查询入参")
 @Data
 public class StoreCusProdDiscPageDTO extends BasePageDTO {
 

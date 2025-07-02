@@ -3,7 +3,6 @@ package com.ruoyi.xkt.dto.storeProdColorPrice;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
 

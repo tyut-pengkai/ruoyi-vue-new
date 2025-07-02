@@ -3,8 +3,6 @@ package com.ruoyi.xkt.dto.order;
 import com.ruoyi.xkt.enums.EExpressStatus;
 import lombok.Data;
 
-import java.util.Date;
-
 /**
  * 代发订单物流轨迹
  *

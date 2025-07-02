@@ -5,7 +5,6 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 /**
  * 物流信息
@@ -16,7 +15,7 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class ExpressFeeDTO extends ExpressDTO{
+public class ExpressFeeDTO extends ExpressDTO {
 
     private BigDecimal expressFee;
 }

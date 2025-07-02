@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.advertRoundRecord;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +10,6 @@ import lombok.experimental.Accessors;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("推广营销记录返回数据")
 @Data
 @Builder
 @Accessors(chain = true)

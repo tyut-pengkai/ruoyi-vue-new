@@ -6,9 +6,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import javax.validation.constraints.NotNull;
-import java.util.Date;
-
 /**
  * @author liujiang
  * @version v1.0

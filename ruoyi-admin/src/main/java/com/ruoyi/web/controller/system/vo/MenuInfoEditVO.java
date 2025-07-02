@@ -25,7 +25,7 @@ public class MenuInfoEditVO {
      * 菜单名称
      */
     @NotBlank(message = "菜单名称不能为空")
-    @Size(min = 1, max = 50, message = "菜单名称长度不能超过50个字")
+    @Size(min = 0, max = 50, message = "菜单名称长度不能超过50个字")
     @ApiModelProperty("菜单名称")
     private String menuName;
 

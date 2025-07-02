@@ -1,12 +1,10 @@
 package com.ruoyi.xkt.dto.storeCertificate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -16,7 +14,6 @@ import java.util.List;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("新增档口认证信息")
 @Data
 @Accessors(chain = true)
 public class StoreCertResDTO {
@@ -67,7 +64,6 @@ public class StoreCertResDTO {
     private Date approvalDate;
 
     @Data
-    @ApiModel(value = "档口文件")
     @Accessors(chain = true)
     public static class StoreCertFileDTO {
         @ApiModelProperty(value = "文件名称")

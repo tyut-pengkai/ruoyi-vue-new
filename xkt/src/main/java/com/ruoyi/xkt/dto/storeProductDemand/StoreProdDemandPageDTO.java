@@ -1,7 +1,6 @@
 package com.ruoyi.xkt.dto.storeProductDemand;
 
 import com.ruoyi.xkt.dto.BasePageDTO;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,14 +13,13 @@ import javax.validation.constraints.NotNull;
  * @date 2025/3/27 15:12
  */
 @EqualsAndHashCode(callSuper = true)
-@ApiModel("档口需求分页查询入参")
 @Data
 public class StoreProdDemandPageDTO extends BasePageDTO {
 
     @ApiModelProperty(value = "档口ID")
     @NotNull(message = "档口ID不能为空")
     private Long storeId;
-    @ApiModelProperty(value = "需求状态" ,notes = "1 待生产 2 生产中 3 生产完成")
+    @ApiModelProperty(value = "需求状态", notes = "1 待生产 2 生产中 3 生产完成")
     private Integer demandStatus;
     @ApiModelProperty(value = "档口工厂ID")
     private Long storeFactoryId;

@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.store;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -11,7 +10,6 @@ import java.math.BigDecimal;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("档口首页商品销量前10")
 @Data
 public class StoreIndexSaleTop10ResDTO {
 

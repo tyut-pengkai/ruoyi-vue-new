@@ -1,14 +1,12 @@
 package com.ruoyi.xkt.dto.storeProdStorage;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -17,7 +15,6 @@ import java.util.List;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("档口商品入库")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreProdStorageDTO {

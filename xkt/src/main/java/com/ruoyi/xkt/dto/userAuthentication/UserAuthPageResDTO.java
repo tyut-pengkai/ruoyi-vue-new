@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.userAuthentication;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -9,7 +8,6 @@ import lombok.Data;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("代发分页返回数据")
 @Data
 public class UserAuthPageResDTO {
 

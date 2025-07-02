@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.storeProductStock;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -10,7 +9,6 @@ import lombok.experimental.Accessors;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("档口商品库存详情数据")
 @Data
 @Accessors(chain = true)
 public class StoreProdStockResDTO {

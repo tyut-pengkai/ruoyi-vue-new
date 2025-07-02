@@ -2,7 +2,6 @@ package com.ruoyi.xkt.dto.advert;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -15,7 +14,6 @@ import java.util.Date;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("推广营销列表返回数据")
 @Data
 @Accessors(chain = true)
 public class AdvertResDTO {
@@ -67,7 +65,6 @@ public class AdvertResDTO {
     private String deadline;
 
     @Data
-    @ApiModel(value = "广告范例图")
     public static class AdvertFileDTO {
         @ApiModelProperty(value = "文件名称", required = true)
         private String fileName;

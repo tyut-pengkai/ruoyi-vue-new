@@ -14,7 +14,6 @@ import java.util.List;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("档口客户批量减价、批量抹零")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreCusProdBatchDiscountDTO {
@@ -28,7 +27,6 @@ public class StoreCusProdBatchDiscountDTO {
 
     @Data
     @Valid
-    @ApiModel(value = "档口优惠列表")
     public static class DiscountItemDTO {
         @ApiModelProperty(value = "档口商品ID")
         private Long storeProdId;

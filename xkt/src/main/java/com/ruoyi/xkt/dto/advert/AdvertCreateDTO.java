@@ -1,10 +1,8 @@
 package com.ruoyi.xkt.dto.advert;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.Value;
 import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotBlank;
@@ -17,7 +15,6 @@ import java.util.Date;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("创建推广营销")
 @Data
 @Accessors(chain = true)
 public class AdvertCreateDTO {
@@ -64,7 +61,6 @@ public class AdvertCreateDTO {
     private String deadline;
 
     @Data
-    @ApiModel(value = "广告范例图")
     public static class AdvertFileDTO {
         @NotBlank(message = "文件名称不能为空!")
         @ApiModelProperty(value = "文件名称", required = true)

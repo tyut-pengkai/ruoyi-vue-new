@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.storeMember;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -12,7 +11,6 @@ import java.math.BigDecimal;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("档口购买会员")
 @Data
 @Accessors(chain = true)
 public class StoreMemberCreateDTO {

@@ -1,7 +1,6 @@
 package com.ruoyi.xkt.dto.storeProduct;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -10,7 +9,6 @@ import lombok.Data;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("档口首页返回数据")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreProdStatusCountDTO {

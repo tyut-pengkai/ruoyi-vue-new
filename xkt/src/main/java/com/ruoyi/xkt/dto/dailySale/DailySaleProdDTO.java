@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.dailySale;
 
-import com.ruoyi.common.annotation.Excel;
 import lombok.Data;
 
 import java.math.BigDecimal;

@@ -1,7 +1,6 @@
 package com.ruoyi.xkt.dto.userShoppingCart;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -14,7 +13,6 @@ import java.util.List;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("电商卖家新增进货车")
 @Data
 @Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -34,7 +32,6 @@ public class ShoppingCartDTO {
     List<SCDetailDTO> detailList;
 
     @Data
-    @ApiModel(value = "档口优惠列表")
     @Accessors(chain = true)
     public static class SCDetailDTO {
         @ApiModelProperty(value = "档口商品颜色尺寸ID")

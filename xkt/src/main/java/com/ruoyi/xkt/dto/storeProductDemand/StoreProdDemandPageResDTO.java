@@ -1,7 +1,6 @@
 package com.ruoyi.xkt.dto.storeProductDemand;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -13,15 +12,14 @@ import java.util.Date;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("档口商品需求分页返回数据")
 @Data
 @Accessors(chain = true)
 public class StoreProdDemandPageResDTO {
 
-    @ApiModelProperty(value = "storeProdDemandId")
-    private Long storeProdDemandId;
     @ApiModelProperty(value = "storeProdDemandDetailId")
     private Long storeProdDemandDetailId;
+    @ApiModelProperty(value = "storeProdDemandId")
+    private Long storeProdDemandId;
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
     @ApiModelProperty(value = "档口工厂名称")

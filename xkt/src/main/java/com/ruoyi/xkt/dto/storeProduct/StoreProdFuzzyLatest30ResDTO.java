@@ -2,7 +2,6 @@ package com.ruoyi.xkt.dto.storeProduct;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.Accessors;
 

@@ -1,11 +1,8 @@
 package com.ruoyi.xkt.dto.storeProductDemand;
 
-import com.ruoyi.common.annotation.Excel;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
@@ -14,7 +11,6 @@ import java.util.List;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("档口商品在产数量及库存数量")
 @Data
 @Builder
 public class StoreProdDemandQuantityDTO {

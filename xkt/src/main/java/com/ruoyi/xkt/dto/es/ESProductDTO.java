@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.es;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -13,7 +12,6 @@ import java.util.List;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("ES返回商品数据")
 @Data
 @Accessors(chain = true)
 public class ESProductDTO {

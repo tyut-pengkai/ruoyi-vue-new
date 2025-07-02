@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.advertRound.pc.newProd;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -10,9 +9,7 @@ import lombok.experimental.Accessors;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("PC 新品馆 品牌馆")
 @Data
-
 @Accessors(chain = true)
 public class PCNewMidBrandDTO {
 

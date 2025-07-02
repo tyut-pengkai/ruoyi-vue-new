@@ -1,7 +1,6 @@
 package com.ruoyi.xkt.dto.userFavorite;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -12,7 +11,6 @@ import java.util.List;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("电商卖家新增商品收藏")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserFavBatchAddToShopCartDTO {
@@ -21,7 +19,6 @@ public class UserFavBatchAddToShopCartDTO {
     List<BatchDTO> batchList;
 
     @Data
-    @ApiModel(value = "批量操作列表")
     public static class BatchDTO {
         @ApiModelProperty(value = "档口ID")
         private Long storeId;

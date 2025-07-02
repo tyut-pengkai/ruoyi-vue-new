@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.storeRoleAccount;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -12,7 +11,6 @@ import java.util.List;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("档口子账号详情数据")
 @Data
 @Accessors(chain = true)
 public class StoreRoleAccDetailResDTO {
@@ -27,7 +25,6 @@ public class StoreRoleAccDetailResDTO {
     private List<StoreRoleDTO> roleList;
 
     @Data
-    @ApiModel(value = "档口所有角色")
     public static class StoreRoleDTO {
         @ApiModelProperty(value = "档口子角色ID")
         private Long storeRoleId;

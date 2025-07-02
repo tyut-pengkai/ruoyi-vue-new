@@ -1,7 +1,6 @@
 package com.ruoyi.xkt.dto.advertRound.app.index;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -13,7 +12,6 @@ import java.math.BigDecimal;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("APP首页热卖精选右侧固定广告位")
 @Data
 @Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)

@@ -5,7 +5,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -21,5 +20,5 @@ public class NoticeDeleteDTO {
     @ApiModelProperty(value = "公告ID列表")
     List<Long> noticeIdList;
 
-   
+
 }

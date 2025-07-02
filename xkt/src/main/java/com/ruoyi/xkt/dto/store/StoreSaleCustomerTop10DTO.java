@@ -1,11 +1,9 @@
 package com.ruoyi.xkt.dto.store;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
@@ -13,7 +11,6 @@ import java.util.Date;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("档口前10销售额")
 @Data
 @Accessors(chain = true)
 public class StoreSaleCustomerTop10DTO {

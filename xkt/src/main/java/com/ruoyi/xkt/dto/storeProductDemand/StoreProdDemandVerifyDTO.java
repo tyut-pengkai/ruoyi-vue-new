@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.storeProductDemand;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -11,7 +10,6 @@ import java.util.List;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("档口商品生产入库校验是否存在需求单")
 @Data
 public class StoreProdDemandVerifyDTO {
 
@@ -21,7 +19,6 @@ public class StoreProdDemandVerifyDTO {
     private List<DetailDTO> detailList;
 
     @Data
-    @ApiModel(value = "需求列表")
     public static class DetailDTO {
         @ApiModelProperty(value = "档口商品ID", required = true)
         private Long storeProdId;

@@ -1,7 +1,6 @@
 package com.ruoyi.xkt.dto.userAuthentication;
 
 import com.ruoyi.xkt.dto.BasePageDTO;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -12,7 +11,6 @@ import lombok.EqualsAndHashCode;
  * @date 2025/3/27 15:12
  */
 @EqualsAndHashCode(callSuper = true)
-@ApiModel("代发分页查询入参")
 @Data
 public class UserAuthPageDTO extends BasePageDTO {
 

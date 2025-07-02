@@ -2,7 +2,6 @@ package com.ruoyi.xkt.dto.userFavorite;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ruoyi.xkt.dto.BasePageDTO;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -15,7 +14,6 @@ import java.util.List;
  * @date 2025/3/27 15:12
  */
 @EqualsAndHashCode(callSuper = true)
-@ApiModel("用户收藏列表查询入参")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserFavoritePageDTO extends BasePageDTO {

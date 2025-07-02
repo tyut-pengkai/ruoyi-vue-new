@@ -1,7 +1,6 @@
 package com.ruoyi.xkt.dto.storeProduct;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.ruoyi.common.annotation.Excel;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -21,7 +20,7 @@ import java.util.List;
 @Accessors(chain = true)
 public class StoreProdPageResDTO {
 
-    @ApiModelProperty(value = "档口商品ID" )
+    @ApiModelProperty(value = "档口商品ID")
     private Long storeProdId;
     @ApiModelProperty(value = "档口ID")
     private Long storeId;

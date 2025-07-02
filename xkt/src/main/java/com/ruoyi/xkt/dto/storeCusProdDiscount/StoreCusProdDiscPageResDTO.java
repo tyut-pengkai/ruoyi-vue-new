@@ -14,7 +14,6 @@ import java.util.Date;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("档口客户销售管理分页数据")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreCusProdDiscPageResDTO {
