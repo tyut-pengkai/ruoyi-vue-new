@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.userAuthentication;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -12,7 +11,6 @@ import javax.validation.constraints.NotNull;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("代发审核")
 @Data
 @Accessors(chain = true)
 public class UserAuthAuditVO {

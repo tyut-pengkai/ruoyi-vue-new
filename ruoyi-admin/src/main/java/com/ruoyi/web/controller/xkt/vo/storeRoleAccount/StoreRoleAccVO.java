@@ -1,7 +1,6 @@
 package com.ruoyi.web.controller.xkt.vo.storeRoleAccount;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -15,7 +14,6 @@ import javax.validation.constraints.Size;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("档口子账号")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreRoleAccVO {

@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.advertRound.pc.index;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -9,9 +8,7 @@ import lombok.Data;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("PC 首页 搜索框下档口名称")
 @Data
-
 public class PCIndexSearchUnderlineStoreNameVO {
 
     @ApiModelProperty(value = "4 档口名称")

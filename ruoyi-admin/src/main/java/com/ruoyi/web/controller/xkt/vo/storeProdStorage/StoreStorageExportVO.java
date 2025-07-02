@@ -1,7 +1,6 @@
 package com.ruoyi.web.controller.xkt.vo.storeProdStorage;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -14,7 +13,6 @@ import java.util.List;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("档口入库导出数据")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreStorageExportVO {

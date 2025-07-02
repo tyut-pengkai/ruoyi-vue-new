@@ -114,10 +114,9 @@ public interface StoreProductMapper extends BaseMapper<StoreProduct> {
      * 获取档口各个状态的数量
      *
      * @param storeId    档口ID
-     * @param statusList 状态列表
      * @return StoreProdStatusCountResDTO
      */
-    StoreProdStatusCountResDTO getStatusNum(@Param("storeId") Long storeId, @Param("statusList") List<Integer> statusList);
+    StoreProdStatusCountResDTO getStatusNum(@Param("storeId") Long storeId);
 
     /**
      * 获取档口各个状态的分类数量

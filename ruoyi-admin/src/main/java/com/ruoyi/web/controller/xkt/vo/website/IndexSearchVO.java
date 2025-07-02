@@ -2,7 +2,6 @@ package com.ruoyi.web.controller.xkt.vo.website;
 
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import com.ruoyi.web.controller.xkt.vo.BasePageVO;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

@@ -1,7 +1,6 @@
 package com.ruoyi.web.controller.xkt.vo.userAuthentication;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -14,7 +13,6 @@ import java.math.BigDecimal;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("代发新增")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserAuthCreateVO {

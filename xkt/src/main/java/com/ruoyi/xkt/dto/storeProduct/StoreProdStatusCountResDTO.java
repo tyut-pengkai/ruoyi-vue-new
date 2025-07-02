@@ -15,11 +15,15 @@ import lombok.Data;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreProdStatusCountResDTO {
 
+    @ApiModelProperty(value = "未发布数量")
+    private Integer unPublishedNum;
     @ApiModelProperty(value = "在售数量")
     private Integer onSaleNum;
     @ApiModelProperty(value = "尾货数量")
     private Integer tailGoodsNum;
     @ApiModelProperty(value = "已下架数量")
     private Integer offSaleNum;
+    @ApiModelProperty(value = "已删除数量")
+    private Integer removedNum;
 
 }

@@ -245,9 +245,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="getStatusNum" resultType="com.ruoyi.xkt.dto.storeProduct.StoreProdStatusCountResDTO">
         SELECT
+            SUM(CASE WHEN sp.prod_status = 1 THEN 1 ELSE 0 END) AS unPublishedNum,
             SUM(CASE WHEN sp.prod_status = 2 THEN 1 ELSE 0 END) AS onSaleNum,
             SUM(CASE WHEN sp.prod_status = 3 THEN 1 ELSE 0 END) AS tailGoodsNum,
-            SUM(CASE WHEN sp.prod_status = 4 THEN 1 ELSE 0 END) AS offSaleNum
+            SUM(CASE WHEN sp.prod_status = 4 THEN 1 ELSE 0 END) AS offSaleNum,
+            SUM(CASE WHEN sp.prod_status = 5 THEN 1 ELSE 0 END) AS removedNum
         FROM
             store_product sp
         WHERE

@@ -1,7 +1,6 @@
 package com.ruoyi.web.controller.xkt.vo.storeCertificate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -19,7 +18,6 @@ import java.util.List;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("新增档口认证信息")
 @Data
 @Accessors(chain = true)
 public class StoreCertVO {

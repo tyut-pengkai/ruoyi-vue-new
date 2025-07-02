@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.adminAdvertRound;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -11,7 +10,6 @@ import javax.validation.constraints.NotNull;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("管理员审核档口推广图")
 @Data
 public class AdminAdRoundAuditVO {
 

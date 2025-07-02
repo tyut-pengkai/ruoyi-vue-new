@@ -1,7 +1,6 @@
 package com.ruoyi.web.controller.xkt.vo.store;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -13,7 +12,6 @@ import java.util.Date;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("档口基本信息")
 @Data
 public class StoreResVO {
 

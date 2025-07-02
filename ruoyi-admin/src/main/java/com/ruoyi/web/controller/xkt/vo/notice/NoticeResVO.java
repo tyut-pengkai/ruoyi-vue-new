@@ -1,14 +1,10 @@
 package com.ruoyi.web.controller.xkt.vo.notice;
 
-import com.ruoyi.common.xss.Xss;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.util.Date;
 
 /**

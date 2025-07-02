@@ -2,9 +2,7 @@ package com.ruoyi.web.controller.xkt.vo.storeProd;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Builder;
 import lombok.Data;
-import lombok.experimental.Accessors;
 
 /**
  * @author liujiang

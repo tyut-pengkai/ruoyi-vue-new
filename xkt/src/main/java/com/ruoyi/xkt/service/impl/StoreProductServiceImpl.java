@@ -758,8 +758,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
     @Override
     @Transactional(readOnly = true)
     public StoreProdStatusCountResDTO getStatusNum(Long storeId) {
-        return this.storeProdMapper.getStatusNum(storeId, Arrays
-                .asList(EProductStatus.ON_SALE.getValue(), EProductStatus.TAIL_GOODS.getValue(), EProductStatus.OFF_SALE.getValue()));
+        return this.storeProdMapper.getStatusNum(storeId);
     }
 
     /**

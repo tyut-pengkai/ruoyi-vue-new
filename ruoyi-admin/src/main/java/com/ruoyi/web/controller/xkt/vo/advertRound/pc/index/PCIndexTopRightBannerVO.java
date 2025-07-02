@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.advertRound.pc.index;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -9,9 +8,7 @@ import lombok.Data;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("PC 首页 顶部纵向轮播图")
 @Data
-
 public class PCIndexTopRightBannerVO {
 
     @ApiModelProperty(value = "展示类型 1推广图、2商品、3推广图及商品、4店铺名称")

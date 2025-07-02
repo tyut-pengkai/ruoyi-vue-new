@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.userNotice;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -12,7 +11,6 @@ import java.util.Date;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("用户消息APP返回数据")
 @Data
 @Accessors(chain = true)
 public class UserNoticeAppListResVO {

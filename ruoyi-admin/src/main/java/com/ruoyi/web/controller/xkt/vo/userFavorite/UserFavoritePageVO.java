@@ -2,7 +2,6 @@ package com.ruoyi.web.controller.xkt.vo.userFavorite;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ruoyi.web.controller.xkt.vo.BasePageVO;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,7 +15,6 @@ import java.util.List;
  * @date 2025/3/27 15:12
  */
 @EqualsAndHashCode(callSuper = true)
-@ApiModel("用户收藏列表查询入参")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserFavoritePageVO extends BasePageVO {
