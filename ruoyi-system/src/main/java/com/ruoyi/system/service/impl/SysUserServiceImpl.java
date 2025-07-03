@@ -435,7 +435,9 @@ public class SysUserServiceImpl implements ISysUserService {
     private void insertUserBase(SysUser user) {
         checkUserBase(user);
         Assert.isNull(user.getUserId());
-        user.setStatus(Constants.SYS_NORMAL_STATUS);
+        if (StrUtil.isBlank(user.getStatus())) {
+            user.setStatus(Constants.SYS_NORMAL_STATUS);
+        }
         user.setDelFlag(Constants.UNDELETED);
         user.setVersion(0L);
         String currentUser = SecurityUtils.getUsernameSafe();

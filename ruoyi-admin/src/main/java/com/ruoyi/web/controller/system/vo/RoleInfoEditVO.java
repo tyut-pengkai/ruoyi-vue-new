@@ -51,6 +51,9 @@ public class RoleInfoEditVO {
     @ApiModelProperty("档口ID")
     private Long storeId;
 
+    @ApiModelProperty("菜单状态（0正常 1停用）")
+    private String status;
+
     /**
      * 菜单集
      */

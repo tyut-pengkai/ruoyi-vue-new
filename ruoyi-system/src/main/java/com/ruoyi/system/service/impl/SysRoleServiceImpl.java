@@ -240,7 +240,9 @@ public class SysRoleServiceImpl implements ISysRoleService {
         if (role.getRoleSort() == null) {
             role.setRoleSort(1);
         }
-        role.setStatus(Constants.SYS_NORMAL_STATUS);
+        if (StrUtil.isBlank(role.getStatus())) {
+            role.setStatus(Constants.SYS_NORMAL_STATUS);
+        }
         role.setDelFlag(Constants.UNDELETED);
         role.setVersion(0L);
         String currentUser = SecurityUtils.getUsernameSafe();

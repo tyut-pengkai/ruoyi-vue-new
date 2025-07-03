@@ -166,7 +166,9 @@ public class SysMenuServiceImpl implements ISysMenuService {
         if (menu.getOrderNum() == null) {
             menu.setOrderNum(1);
         }
-        menu.setStatus(Constants.SYS_NORMAL_STATUS);
+        if (StrUtil.isBlank(menu.getStatus())) {
+            menu.setStatus(Constants.SYS_NORMAL_STATUS);
+        }
         menu.setDelFlag(Constants.UNDELETED);
         menu.setVersion(0L);
         String currentUser = SecurityUtils.getUsernameSafe();
