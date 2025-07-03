@@ -26,6 +26,10 @@ public class ExpressFeeConfigDTO {
      */
     private String regionCode;
     /**
+     * 地区名称
+     */
+    private String regionName;
+    /**
      * 上级地区编码，没有上级的默认空
      */
     private String parentRegionCode;

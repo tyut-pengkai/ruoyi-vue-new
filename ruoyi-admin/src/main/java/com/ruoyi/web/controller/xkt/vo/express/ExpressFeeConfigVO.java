@@ -31,6 +31,9 @@ public class ExpressFeeConfigVO {
      */
     @ApiModelProperty(value = "地区编码")
     private String regionCode;
+
+    @ApiModelProperty(value = "地区名称")
+    private String regionName;
     /**
      * 上级地区编码，没有上级的默认空
      */

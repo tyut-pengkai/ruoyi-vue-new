@@ -325,7 +325,10 @@ public class ExpressServiceImpl implements IExpressService {
     @Override
     public ExpressFeeConfigDTO getExpressFeeConfigById(Long id) {
         ExpressFeeConfig config = expressFeeConfigMapper.selectById(id);
-        return BeanUtil.toBean(config, ExpressFeeConfigDTO.class);
+        ExpressFeeConfigDTO dto = BeanUtil.toBean(config, ExpressFeeConfigDTO.class);
+        String regionName = getAllExpressNameMap().get(config.getRegionCode());
+        dto.setRegionName(regionName);
+        return dto;
     }
 
     @Transactional(rollbackFor = Exception.class)
