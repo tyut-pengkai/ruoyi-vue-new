@@ -328,9 +328,9 @@ public class SysLoginService
     }
 
     /**
-     * 小程序分步骤登录
+     * 小程序分步骤登录第一步：根据openId查询用户信息
      * @param wxLoginBody 微信小程序登录参数对象
-     * @return 登录响应对象
+     * @return WxLoginResponse
      */
     public WxLoginResponse wxStepLogin(WxLoginBody wxLoginBody) {
         try {
@@ -368,26 +368,8 @@ public class SysLoginService
                 return response;
             }
             
-            // 4. 如果用户有手机号，检查昵称和头像是否为空，如果为空则尝试获取微信信息并更新
-            if (StringUtils.isEmpty(user.getNickName()) || StringUtils.isEmpty(user.getAvatar())) {
-                log.info("用户昵称或头像为空，检查是否有微信用户信息，openId: {}", openId);
-                
-                // 如果有微信用户信息，尝试补充
-                if (wxLoginBody.getEncryptedData() != null && wxLoginBody.getIv() != null) {
-                    supplementUserInfo(user, sessionKey, wxLoginBody, unionId);
-                } else {
-                    // 没有微信用户信息，返回需要完善用户信息的状态
-                    log.info("用户信息不完整且未提供微信用户信息，需要完善用户信息，openId: {}", openId);
-                    WxLoginResponse response = new WxLoginResponse(2, "需要完善用户信息");
-                    response.setOpenId(openId);
-                    response.setHasPhone(true);
-                    response.setUserInfo(user);
-                    response.setToken(null);
-                    return response;
-                }
-            }
-            
-            // 5. 登录并生成token
+            // 4. 用户已有手机号，直接登录（即使昵称或头像为空）
+            // 昵称和头像可以在后续登录时通过getUserProfile获取并更新
             log.info("用户已绑定手机号，直接登录，openId: {}", openId);
             UserDetails userDetail = userDetailsService.createLoginUser(user);
             LoginUser loginUser = cn.hutool.core.bean.BeanUtil.copyProperties(userDetail, LoginUser.class);
@@ -420,55 +402,70 @@ public class SysLoginService
             String unionId = session.getUnionid();
             String sessionKey = session.getSessionKey();
 
-            // 2. 解密用户信息（昵称、头像、性别等）
+            // 2. 获取用户信息（昵称、头像、性别等）
             String nickName = "微信用户";
             String avatarUrl = "";
             String gender = "0";
             
-            // 如果有用户信息，则解密并获取
-            if (wxLoginBody.getEncryptedData() != null && wxLoginBody.getIv() != null) {
-                try {
-                    // 校验签名
-                    boolean check = wxMaService.getUserService().checkUserInfo(sessionKey, wxLoginBody.getRawData(), wxLoginBody.getSignature());
-                    if (check) {
-                        WxMaUserInfo wxUserInfo = wxMaService.getUserService().getUserInfo(sessionKey, wxLoginBody.getEncryptedData(), wxLoginBody.getIv());
-                        nickName = processNickName(wxUserInfo.getNickName());
-                        avatarUrl = wxUserInfo.getAvatarUrl();
-                        gender = wxUserInfo.getGender(); // 0未知 1男 2女
-                        log.info("成功获取微信用户信息，昵称: {}, 头像: {}, 性别: {}", nickName, avatarUrl, gender);
-                    } else {
-                        log.warn("微信用户信息签名校验失败，使用默认值");
-                    }
-                } catch (Exception e) {
-                    log.warn("微信用户信息解密失败: {}, 使用默认值", e.getMessage());
+            // 优先使用传递过来的用户信息
+            WxLoginBody.WxUserInfo userInfo = wxLoginBody.getUserInfo();
+            if (userInfo != null) {
+                if (StringUtils.isNotEmpty(userInfo.getNickName())) {
+                    nickName = processNickName(userInfo.getNickName());
                 }
+                if (StringUtils.isNotEmpty(userInfo.getAvatarUrl())) {
+                    avatarUrl = userInfo.getAvatarUrl();
+                }
+                if (StringUtils.isNotEmpty(userInfo.getGender())) {
+                    gender = userInfo.getGender();
+                }
+                log.info("使用传递的用户信息，昵称: {}, 头像: {}, 性别: {}", nickName, avatarUrl, gender);
             } else {
-                log.info("未提供微信用户信息，使用默认值");
-            }
-
-            // 3. 解密手机号（必需）
-            String phoneNumber = null;
-            if (wxLoginBody.getPhoneEncryptedData() != null && wxLoginBody.getPhoneIv() != null) {
-                try {
-                    WxMaPhoneNumberInfo phoneInfo = wxMaService.getUserService().getPhoneNoInfo(sessionKey, wxLoginBody.getPhoneEncryptedData(), wxLoginBody.getPhoneIv());
-                    if (phoneInfo != null) {
-                        phoneNumber = phoneInfo.getPhoneNumber();
-                        log.info("成功获取手机号: {}", phoneNumber);
+                // 如果没有传递用户信息，则尝试解密
+                if (wxLoginBody.getEncryptedData() != null && wxLoginBody.getIv() != null) {
+                    try {
+                        // 校验签名
+                        boolean check = wxMaService.getUserService().checkUserInfo(sessionKey, wxLoginBody.getRawData(), wxLoginBody.getSignature());
+                        if (check) {
+                            WxMaUserInfo wxUserInfo = wxMaService.getUserService().getUserInfo(sessionKey, wxLoginBody.getEncryptedData(), wxLoginBody.getIv());
+                            nickName = processNickName(wxUserInfo.getNickName());
+                            avatarUrl = wxUserInfo.getAvatarUrl();
+                            gender = wxUserInfo.getGender(); // 0未知 1男 2女
+                            log.info("成功解密微信用户信息，昵称: {}, 头像: {}, 性别: {}", nickName, avatarUrl, gender);
+                        } else {
+                            log.warn("微信用户信息签名校验失败，使用默认值");
+                        }
+                    } catch (Exception e) {
+                        log.warn("微信用户信息解密失败: {}, 使用默认值", e.getMessage());
                     }
-                } catch (Exception e) {
-                    log.error("手机号解密失败: {}", e.getMessage());
-                    throw new ServiceException("手机号解密失败: " + e.getMessage());
+                } else {
+                    log.info("未提供微信用户信息，使用默认值");
                 }
             }
-            
-            // 验证手机号是否获取成功
-            if (StringUtils.isEmpty(phoneNumber)) {
-                throw new ServiceException("手机号获取失败，请重新授权");
-            }
 
-            // 4. 查询用户是否存在，如果不存在则创建，如果存在则更新
+            // 3. 查询用户是否存在
             SysUser user = userService.getUserByOpenId(openId);
             if (user == null) {
+                // 用户不存在，需要获取手机号创建新用户
+                String phoneNumber = null;
+                if (wxLoginBody.getPhoneEncryptedData() != null && wxLoginBody.getPhoneIv() != null) {
+                    try {
+                        WxMaPhoneNumberInfo phoneInfo = wxMaService.getUserService().getPhoneNoInfo(sessionKey, wxLoginBody.getPhoneEncryptedData(), wxLoginBody.getPhoneIv());
+                        if (phoneInfo != null) {
+                            phoneNumber = phoneInfo.getPhoneNumber();
+                            log.info("成功获取手机号: {}", phoneNumber);
+                        }
+                    } catch (Exception e) {
+                        log.error("手机号解密失败: {}", e.getMessage());
+                        throw new ServiceException("手机号解密失败: " + e.getMessage());
+                    }
+                }
+                
+                // 验证手机号是否获取成功
+                if (StringUtils.isEmpty(phoneNumber)) {
+                    throw new ServiceException("手机号获取失败，请重新授权");
+                }
+
                 // 创建新用户
                 user = new SysUser();
                 user.setOpenId(openId);
@@ -486,6 +483,36 @@ public class SysLoginService
                 userService.registerUser(user);
                 log.info("创建新用户，openId: {}, 昵称: {}, 头像: {}, 手机号: {}", openId, nickName, avatarUrl, phoneNumber);
             } else {
+                // 用户已存在，检查是否需要获取手机号
+                Boolean hasPhoneInfo = wxLoginBody.getHasPhoneInfo();
+                if (hasPhoneInfo != null && hasPhoneInfo) {
+                    // 标记用户已有手机号，不需要获取
+                    log.info("用户已有手机号，跳过手机号获取，openId: {}", openId);
+                } else {
+                    // 需要获取手机号的情况
+                    String phoneNumber = null;
+                    if (wxLoginBody.getPhoneEncryptedData() != null && wxLoginBody.getPhoneIv() != null) {
+                        try {
+                            WxMaPhoneNumberInfo phoneInfo = wxMaService.getUserService().getPhoneNoInfo(sessionKey, wxLoginBody.getPhoneEncryptedData(), wxLoginBody.getPhoneIv());
+                            if (phoneInfo != null) {
+                                phoneNumber = phoneInfo.getPhoneNumber();
+                                log.info("成功获取手机号: {}", phoneNumber);
+                            }
+                        } catch (Exception e) {
+                            log.error("手机号解密失败: {}", e.getMessage());
+                            throw new ServiceException("手机号解密失败: " + e.getMessage());
+                        }
+                    }
+                    
+                    // 验证手机号是否获取成功
+                    if (StringUtils.isEmpty(phoneNumber)) {
+                        throw new ServiceException("手机号获取失败，请重新授权");
+                    }
+                    
+                    // 更新手机号
+                    user.setPhonenumber(phoneNumber);
+                }
+                
                 // 更新现有用户信息
                 user.setUnionId(unionId);
                 
@@ -507,16 +534,11 @@ public class SysLoginService
                     log.info("更新用户性别: {}", gender);
                 }
                 
-                // 更新手机号（如果微信手机号不为空）
-                if (phoneNumber != null) {
-                    user.setPhonenumber(phoneNumber);
-                }
-                
                 userService.updateUser(user);
-                log.info("更新用户信息，openId: {}, 昵称: {}, 头像: {}, 手机号: {}", openId, user.getNickName(), user.getAvatar(), phoneNumber);
+                log.info("更新用户信息，openId: {}, 昵称: {}, 头像: {}, 手机号: {}", openId, user.getNickName(), user.getAvatar(), user.getPhonenumber());
             }
 
-            // 5. 登录并生成token
+            // 4. 登录并生成token
             UserDetails userDetail = userDetailsService.createLoginUser(user);
             LoginUser loginUser = cn.hutool.core.bean.BeanUtil.copyProperties(userDetail, LoginUser.class);
             recordLoginInfo(loginUser.getUserId());
