@@ -17,6 +17,7 @@ import com.ruoyi.common.core.domain.SimpleEntity;
 import com.ruoyi.common.core.domain.XktBaseEntity;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.system.mapper.SysUserMapper;
 import com.ruoyi.xkt.domain.*;
@@ -193,12 +194,12 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         order.setVersion(0L);
         order.setDelFlag(Constants.UNDELETED);
         //落库
-        storeOrderMapper.insert(order);
+        storeOrderMapper.insert(prepareInsert(order));
         Long orderId = order.getId();
         List<Long> orderDetailIdList = new ArrayList<>(orderDetailList.size());
         orderDetailList.forEach(storeOrderDetail -> {
             storeOrderDetail.setStoreOrderId(orderId);
-            storeOrderDetailMapper.insert(storeOrderDetail);
+            storeOrderDetailMapper.insert(prepareInsert(storeOrderDetail));
             orderDetailIdList.add(storeOrderDetail.getId());
         });
         //操作记录
@@ -324,7 +325,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         order.setDeliveryType(storeOrderUpdateDTO.getDeliveryType());
         order.setDeliveryEndTime(storeOrderUpdateDTO.getDeliveryEndTime());
         //落库
-        int r = storeOrderMapper.updateById(order);
+        int r = storeOrderMapper.updateById(prepareUpdate(order));
         if (r == 0) {
             throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
         }
@@ -332,7 +333,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         //删除原明细
         for (StoreOrderDetail originDetail : originDetails) {
             originDetail.setDelFlag(Constants.DELETED);
-            storeOrderDetailMapper.updateById(originDetail);
+            storeOrderDetailMapper.updateById(prepareUpdate(originDetail));
         }
         //操作记录
         addOperationRecords(orderId, EOrderAction.UPDATE,
@@ -342,7 +343,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         List<Long> orderDetailIdList = new ArrayList<>(orderDetailList.size());
         orderDetailList.forEach(storeOrderDetail -> {
             storeOrderDetail.setStoreOrderId(orderId);
-            storeOrderDetailMapper.insert(storeOrderDetail);
+            storeOrderDetailMapper.insert(prepareInsert(storeOrderDetail));
             orderDetailIdList.add(storeOrderDetail.getId());
         });
         //操作记录
@@ -498,7 +499,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                     order.getOrderNo()));
         }
         order.setPayStatus(EPayStatus.PAYING.getValue());
-        int orderSuccess = storeOrderMapper.updateById(order);
+        int orderSuccess = storeOrderMapper.updateById(prepareUpdate(order));
         if (orderSuccess == 0) {
             throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
         }
@@ -513,7 +514,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                         orderDetail.getId()));
             }
             orderDetail.setPayStatus(EPayStatus.PAYING.getValue());
-            int orderDetailSuccess = storeOrderDetailMapper.updateById(orderDetail);
+            int orderDetailSuccess = storeOrderDetailMapper.updateById(prepareUpdate(orderDetail));
             if (orderDetailSuccess == 0) {
                 throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
             }
@@ -543,7 +544,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         order.setPayTradeNo(payTradeNo);
         //TODO 暂时使用总金额
         order.setRealTotalAmount(order.getTotalAmount());
-        int orderSuccess = storeOrderMapper.updateById(order);
+        int orderSuccess = storeOrderMapper.updateById(prepareUpdate(order));
         if (orderSuccess == 0) {
             throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
         }
@@ -561,7 +562,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             orderDetail.setDetailStatus(EOrderStatus.PENDING_SHIPMENT.getValue());
             orderDetail.setPayStatus(EPayStatus.PAID.getValue());
             orderDetail.setRealTotalAmount(orderDetail.getTotalAmount());
-            int orderDetailSuccess = storeOrderDetailMapper.updateById(orderDetail);
+            int orderDetailSuccess = storeOrderDetailMapper.updateById(prepareUpdate(orderDetail));
             if (orderDetailSuccess == 0) {
                 throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
             }
@@ -595,7 +596,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         }
         //订单已取消
         order.setOrderStatus(EOrderStatus.CANCELLED.getValue());
-        int orderSuccess = storeOrderMapper.updateById(order);
+        int orderSuccess = storeOrderMapper.updateById(prepareUpdate(order));
         if (orderSuccess == 0) {
             throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
         }
@@ -607,7 +608,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         for (StoreOrderDetail orderDetail : orderDetails) {
             //明细已取消
             orderDetail.setDetailStatus(EOrderStatus.CANCELLED.getValue());
-            int orderDetailSuccess = storeOrderDetailMapper.updateById(orderDetail);
+            int orderDetailSuccess = storeOrderDetailMapper.updateById(prepareUpdate(orderDetail));
             if (orderDetailSuccess == 0) {
                 throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
             }
@@ -685,7 +686,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             orderDetail.setExpressStatus(EExpressStatus.PLACED.getValue());
             orderDetail.setExpressReqNo(shipReq.getExpressReqNo());
             orderDetail.setExpressWaybillNo(expressWaybillNo);
-            int orderDetailSuccess = storeOrderDetailMapper.updateById(orderDetail);
+            int orderDetailSuccess = storeOrderDetailMapper.updateById(prepareUpdate(orderDetail));
             if (orderDetailSuccess == 0) {
                 throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
             }
@@ -704,7 +705,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         }
         //订单 -> 代发货/已发货
         order.setOrderStatus(currentOrderStatus.getValue());
-        int orderSuccess = storeOrderMapper.updateById(order);
+        int orderSuccess = storeOrderMapper.updateById(prepareUpdate(order));
         if (orderSuccess == 0) {
             throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
         }
@@ -766,7 +767,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             orderDetail.setExpressType(EExpressType.STORE.getValue());
             orderDetail.setExpressStatus(EExpressStatus.COMPLETED.getValue());
             orderDetail.setExpressWaybillNo(expressWaybillNo);
-            int orderDetailSuccess = storeOrderDetailMapper.updateById(orderDetail);
+            int orderDetailSuccess = storeOrderDetailMapper.updateById(prepareUpdate(orderDetail));
             if (orderDetailSuccess == 0) {
                 throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
             }
@@ -785,7 +786,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         }
         //订单 -> 代发货/已发货
         order.setOrderStatus(currentOrderStatus.getValue());
-        int orderSuccess = storeOrderMapper.updateById(order);
+        int orderSuccess = storeOrderMapper.updateById(prepareUpdate(order));
         if (orderSuccess == 0) {
             throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
         }
@@ -835,7 +836,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         }
         //订单->已完成
         order.setOrderStatus(EOrderStatus.COMPLETED.getValue());
-        int orderSuccess = storeOrderMapper.updateById(order);
+        int orderSuccess = storeOrderMapper.updateById(prepareUpdate(order));
         if (orderSuccess == 0) {
             throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
         }
@@ -852,7 +853,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             }
             //订单明细->已完成
             orderDetail.setDetailStatus(EOrderStatus.COMPLETED.getValue());
-            int orderDetailSuccess = storeOrderDetailMapper.updateById(orderDetail);
+            int orderDetailSuccess = storeOrderDetailMapper.updateById(prepareUpdate(orderDetail));
             if (orderDetailSuccess == 0) {
                 throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
             }
@@ -910,7 +911,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                             afterSaleOrder.getOrderNo()));
                 }
                 //售后订单更新一次，触发乐观锁
-                int r = storeOrderMapper.updateById(afterSaleOrder);
+                int r = storeOrderMapper.updateById(prepareUpdate(afterSaleOrder));
                 if (r == 0) {
                     throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
                 }
@@ -918,7 +919,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         }
         //订单->已完成
         order.setOrderStatus(EOrderStatus.COMPLETED.getValue());
-        int orderSuccess = storeOrderMapper.updateById(order);
+        int orderSuccess = storeOrderMapper.updateById(prepareUpdate(order));
         if (orderSuccess == 0) {
             throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
         }
@@ -935,7 +936,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             }
             //订单明细->已完成
             orderDetail.setDetailStatus(EOrderStatus.COMPLETED.getValue());
-            int orderDetailSuccess = storeOrderDetailMapper.updateById(orderDetail);
+            int orderDetailSuccess = storeOrderDetailMapper.updateById(prepareUpdate(orderDetail));
             if (orderDetailSuccess == 0) {
                 throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
             }
@@ -1061,15 +1062,15 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         order.setVersion(0L);
         order.setDelFlag(Constants.UNDELETED);
         //落库
-        storeOrderMapper.insert(order);
+        storeOrderMapper.insert(prepareInsert(order));
         List<Long> orderDetailIdList = new ArrayList<>(orderDetails.size());
         orderDetails.forEach(orderDetail -> {
             orderDetail.setStoreOrderId(order.getId());
-            storeOrderDetailMapper.insert(orderDetail);
+            storeOrderDetailMapper.insert(prepareInsert(orderDetail));
             orderDetailIdList.add(orderDetail.getId());
         });
         //原订单更新一次，触发乐观锁，防止退货明细重复创建
-        int r = storeOrderMapper.updateById(originOrder);
+        int r = storeOrderMapper.updateById(prepareUpdate(originOrder));
         if (r == 0) {
             throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
         }
@@ -1107,14 +1108,14 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             }
             orderDetail.setDetailStatus(EOrderStatus.AFTER_SALE_REJECTED.getValue());
             orderDetail.setRefundRejectReason(refundRejectDTO.getRefundRejectReason());
-            int orderDetailSuccess = storeOrderDetailMapper.updateById(orderDetail);
+            int orderDetailSuccess = storeOrderDetailMapper.updateById(prepareUpdate(orderDetail));
             if (orderDetailSuccess == 0) {
                 throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
             }
         }
         order.setOrderStatus(EOrderStatus.AFTER_SALE_REJECTED.getValue());
         order.setRefundRejectReason(refundRejectDTO.getRefundRejectReason());
-        int orderSuccess = storeOrderMapper.updateById(order);
+        int orderSuccess = storeOrderMapper.updateById(prepareUpdate(order));
         if (orderSuccess == 0) {
             throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
         }
@@ -1154,7 +1155,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             }
             orderDetail.setPayStatus(EPayStatus.PAYING.getValue());
             orderDetail.setDetailStatus(EOrderStatus.AFTER_SALE_COMPLETED.getValue());
-            int orderDetailSuccess = storeOrderDetailMapper.updateById(orderDetail);
+            int orderDetailSuccess = storeOrderDetailMapper.updateById(prepareUpdate(orderDetail));
             if (orderDetailSuccess == 0) {
                 throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
             }
@@ -1173,7 +1174,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             }
         }
         order.setOrderStatus(orderStatus.getValue());
-        int orderSuccess = storeOrderMapper.updateById(order);
+        int orderSuccess = storeOrderMapper.updateById(prepareUpdate(order));
         if (orderSuccess == 0) {
             throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
         }
@@ -1210,12 +1211,12 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                 throw new ServiceException(CharSequenceUtil.format("订单明细[{}]状态异常", storeOrderDetailId));
             }
             orderDetail.setPayStatus(EPayStatus.PAID.getValue());
-            int orderDetailSuccess = storeOrderDetailMapper.updateById(orderDetail);
+            int orderDetailSuccess = storeOrderDetailMapper.updateById(prepareUpdate(orderDetail));
             if (orderDetailSuccess == 0) {
                 throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
             }
         }
-        int orderSuccess = storeOrderMapper.updateById(order);
+        int orderSuccess = storeOrderMapper.updateById(prepareUpdate(order));
         if (orderSuccess == 0) {
             throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
         }
@@ -1249,14 +1250,14 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             if (EExpressStatus.PICKED_UP == trackAddDTO.getExpressStatus()) {
                 if (storeOrderDetail.getExpressStatus() == null) {
                     storeOrderDetail.setExpressStatus(EExpressStatus.PICKED_UP.getValue());
-                    int orderDetailSuccess = storeOrderDetailMapper.updateById(storeOrderDetail);
+                    int orderDetailSuccess = storeOrderDetailMapper.updateById(prepareUpdate(storeOrderDetail));
                     if (orderDetailSuccess == 0) {
                         throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
                     }
                 } else {
                     if (storeOrderDetail.getExpressStatus() < EExpressStatus.PICKED_UP.getValue()) {
                         storeOrderDetail.setExpressStatus(EExpressStatus.PICKED_UP.getValue());
-                        int orderDetailSuccess = storeOrderDetailMapper.updateById(storeOrderDetail);
+                        int orderDetailSuccess = storeOrderDetailMapper.updateById(prepareUpdate(storeOrderDetail));
                         if (orderDetailSuccess == 0) {
                             throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
                         }
@@ -1265,7 +1266,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             }
             if (EExpressStatus.COMPLETED == trackAddDTO.getExpressStatus()) {
                 storeOrderDetail.setExpressStatus(EExpressStatus.COMPLETED.getValue());
-                int orderDetailSuccess = storeOrderDetailMapper.updateById(storeOrderDetail);
+                int orderDetailSuccess = storeOrderDetailMapper.updateById(prepareUpdate(storeOrderDetail));
                 if (orderDetailSuccess == 0) {
                     throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
                 }
@@ -1550,6 +1551,19 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         reqDTO.setOrderItems(orderItems);
 
         return reqDTO;
+    }
+
+    private <T extends SimpleEntity> T prepareInsert(T obj) {
+        String username = SecurityUtils.getUsernameSafe();
+        obj.setCreateBy(username);
+        obj.setUpdateBy(username);
+        return obj;
+    }
+
+    private <T extends SimpleEntity> T prepareUpdate(T obj) {
+        obj.setUpdateBy(SecurityUtils.getUsernameSafe());
+        obj.setUpdateTime(new Date());
+        return obj;
     }
 
     @Data

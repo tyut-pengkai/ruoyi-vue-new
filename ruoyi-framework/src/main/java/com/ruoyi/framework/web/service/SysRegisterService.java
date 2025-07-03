@@ -42,9 +42,6 @@ public class SysRegisterService {
     private ISysUserService userService;
 
     @Autowired
-    private ISysConfigService configService;
-
-    @Autowired
     private RedisCache redisCache;
 
     @Autowired
@@ -73,56 +70,14 @@ public class SysRegisterService {
         }
         //创建账号
         Long userId = userService.createUser(userEdit);
+        //日志
+        AsyncManager.me().execute(AsyncFactory.recordLogininfor(phoneNumber, Constants.REGISTER,
+                MessageUtils.message("user.register.success")));
         //登录
         UserInfo userInfo = userService.getUserById(userId);
         LoginUser loginUser = new LoginUser(userInfo);
         // 生成token
         return loginService.createToken(loginUser);
-    }
-
-    /**
-     * 注册
-     */
-    public String register(RegisterBody registerBody) {
-        String msg = "", username = registerBody.getUsername(), password = registerBody.getPassword();
-        UserInfoEdit sysUser = new UserInfoEdit();
-        sysUser.setUserName(username);
-
-        // 验证码开关
-        boolean captchaEnabled = configService.selectCaptchaEnabled();
-        if (captchaEnabled) {
-            validateCaptcha(registerBody.getCode(), registerBody.getUuid());
-        }
-
-        if (StringUtils.isEmpty(username)) {
-            msg = "用户名不能为空";
-        } else if (StringUtils.isEmpty(password)) {
-            msg = "用户密码不能为空";
-        } else if (username.length() < UserConstants.USERNAME_MIN_LENGTH
-                || username.length() > UserConstants.USERNAME_MAX_LENGTH) {
-            msg = "账户长度必须在2到20个字符之间";
-        } else if (password.length() < UserConstants.PASSWORD_MIN_LENGTH
-                || password.length() > UserConstants.PASSWORD_MAX_LENGTH) {
-            msg = "密码长度必须在5到20个字符之间";
-        } else if (!userService.checkUserNameUnique(sysUser)) {
-            msg = "保存用户'" + username + "'失败，注册账号已存在";
-        } else {
-            sysUser.setNickName(username);
-            sysUser.setPassword(SecurityUtils.encryptPassword(password));
-            boolean regFlag = false;
-            try {
-                //TODO USER
-                userService.createUser(sysUser);
-            } catch (Exception e) {
-                log.error("用户注册失败", e);
-            }
-            if (!regFlag) {
-                msg = "注册失败,请联系系统管理人员";
-            } else {
-                AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.REGISTER, MessageUtils.message("user.register.success")));
-            }
-        }
-        return msg;
     }
 
     /**

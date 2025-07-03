@@ -5,7 +5,6 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.StrUtil;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysMenu;
@@ -13,7 +12,6 @@ import com.ruoyi.common.core.domain.model.*;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.system.domain.SysRoleMenu;
 import com.ruoyi.system.domain.vo.menu.SysMenuDTO;
 import com.ruoyi.system.mapper.SysMenuMapper;
 import com.ruoyi.system.mapper.SysRoleMapper;
@@ -275,8 +273,7 @@ public class SysMenuServiceImpl implements ISysMenuService {
 
     @Override
     public Set<Long> storeUsableMenuIds() {
-        //TODO USER
-        return roleMenuMapper.selectList(Wrappers.emptyWrapper()).stream().map(SysRoleMenu::getMenuId).collect(Collectors.toSet());
+        return new HashSet<>(roleMenuMapper.listRelMenuId(ESystemRole.SUPPLIER.getId()));
     }
 
 

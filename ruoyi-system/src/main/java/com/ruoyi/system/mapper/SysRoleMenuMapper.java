@@ -52,4 +52,12 @@ public interface SysRoleMenuMapper extends BaseMapper<SysRoleMenu> {
      */
     List<Long> listRelUserId(@Param("menuId") Long menuId);
 
+    /**
+     * 获取角色关联菜单ID
+     *
+     * @param roleId
+     * @return
+     */
+    List<Long> listRelMenuId(@Param("roleId") Long roleId);
+
 }

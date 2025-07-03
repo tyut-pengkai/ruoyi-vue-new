@@ -105,8 +105,8 @@ public class SysUserController extends BaseController {
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @Log(title = "用户管理", businessType = BusinessType.EXPORT)
-    @ApiOperation("导出 - 管理员")
-    @PostMapping("/export")
+//    @ApiOperation("导出 - 管理员")
+//    @PostMapping("/export")
     public void export(@Validated @RequestBody UserQueryVO vo, HttpServletResponse response) {
         UserQuery query = BeanUtil.toBean(vo, UserQuery.class);
         List<UserListItem> list = userService.listUser(query);
@@ -116,8 +116,8 @@ public class SysUserController extends BaseController {
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @Log(title = "用户管理", businessType = BusinessType.IMPORT)
-    @ApiOperation("导入 - 管理员")
-    @PostMapping("/importData")
+//    @ApiOperation("导入 - 管理员")
+//    @PostMapping("/importData")
     public AjaxResult importData(MultipartFile file, boolean updateSupport) throws Exception {
         ExcelUtil<SysUser> util = new ExcelUtil<SysUser>(SysUser.class);
         List<SysUser> userList = util.importExcel(file.getInputStream());

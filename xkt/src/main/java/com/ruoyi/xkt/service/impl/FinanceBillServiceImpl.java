@@ -13,6 +13,7 @@ import com.github.pagehelper.PageHelper;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.SimpleEntity;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.xkt.domain.FinanceBill;
 import com.ruoyi.xkt.domain.FinanceBillDetail;
@@ -90,7 +91,7 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
                 orderExt.getOrder().getRealTotalAmount().toPlainString()));
         bill.setVersion(0L);
         bill.setDelFlag(Constants.UNDELETED);
-        financeBillMapper.insert(bill);
+        financeBillMapper.insert(prepareInsert(bill));
         List<FinanceBillDetail> billDetails = new ArrayList<>(orderExt.getOrderDetails().size());
         for (StoreOrderDetail orderDetail : orderExt.getOrderDetails()) {
             FinanceBillDetail billDetail = new FinanceBillDetail();
@@ -100,7 +101,7 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
             billDetail.setBusinessAmount(orderDetail.getTotalAmount());
             billDetail.setTransAmount(orderDetail.getRealTotalAmount());
             billDetail.setDelFlag(Constants.UNDELETED);
-            financeBillDetailMapper.insert(billDetail);
+            financeBillDetailMapper.insert(prepareInsert(billDetail));
             billDetails.add(billDetail);
         }
         TransInfo transInfo = TransInfo.builder()
@@ -148,7 +149,7 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
                 orderExt.getOrder().getRealTotalAmount().toPlainString()));
         bill.setVersion(0L);
         bill.setDelFlag(Constants.UNDELETED);
-        financeBillMapper.insert(bill);
+        financeBillMapper.insert(prepareInsert(bill));
         List<FinanceBillDetail> billDetails = new ArrayList<>(orderExt.getOrderDetails().size());
         for (StoreOrderDetail orderDetail : orderExt.getOrderDetails()) {
             FinanceBillDetail billDetail = new FinanceBillDetail();
@@ -158,7 +159,7 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
             billDetail.setBusinessAmount(orderDetail.getTotalAmount());
             billDetail.setTransAmount(orderDetail.getRealTotalAmount());
             billDetail.setDelFlag(Constants.UNDELETED);
-            financeBillDetailMapper.insert(billDetail);
+            financeBillDetailMapper.insert(prepareInsert(billDetail));
             billDetails.add(billDetail);
         }
         TransInfo transInfo = TransInfo.builder()
@@ -269,10 +270,10 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
                 transAmount.toPlainString()));
         bill.setVersion(0L);
         bill.setDelFlag(Constants.UNDELETED);
-        financeBillMapper.insert(bill);
+        financeBillMapper.insert(prepareInsert(bill));
         for (FinanceBillDetail billDetail : billDetails) {
             billDetail.setFinanceBillId(bill.getId());
-            financeBillDetailMapper.insert(billDetail);
+            financeBillDetailMapper.insert(prepareInsert(billDetail));
         }
         TransInfo transInfo = TransInfo.builder()
                 .srcBillId(bill.getId())
@@ -322,7 +323,7 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
                 transferAmount.toPlainString()));
         bill.setVersion(0L);
         bill.setDelFlag(Constants.UNDELETED);
-        financeBillMapper.insert(bill);
+        financeBillMapper.insert(prepareInsert(bill));
         List<FinanceBillDetail> billDetails = new ArrayList<>(orderExt.getOrderDetails().size());
         for (StoreOrderDetail orderDetail : orderExt.getOrderDetails()) {
             FinanceBillDetail billDetail = new FinanceBillDetail();
@@ -332,7 +333,7 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
             billDetail.setBusinessAmount(orderDetail.getTotalAmount());
             billDetail.setTransAmount(orderDetail.getRealTotalAmount());
             billDetail.setDelFlag(Constants.UNDELETED);
-            financeBillDetailMapper.insert(billDetail);
+            financeBillDetailMapper.insert(prepareInsert(billDetail));
             billDetails.add(billDetail);
         }
         TransInfo transInfo = TransInfo.builder()
@@ -368,7 +369,7 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
             throw new ServiceException(CharSequenceUtil.format("付款单[{}]状态异常", financeBill.getId()));
         }
         financeBill.setBillStatus(EFinBillStatus.SUCCESS.getValue());
-        int r = financeBillMapper.updateById(financeBill);
+        int r = financeBillMapper.updateById(prepareUpdate(financeBill));
         if (r == 0) {
             throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
         }
@@ -404,7 +405,7 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
         bill.setRemark(CharSequenceUtil.format("账户提现{}元", amount.toPlainString()));
         bill.setVersion(0L);
         bill.setDelFlag(Constants.UNDELETED);
-        financeBillMapper.insert(bill);
+        financeBillMapper.insert(prepareInsert(bill));
         TransInfo transInfo = TransInfo.builder()
                 .srcBillId(bill.getId())
                 .srcBillType(bill.getBillType())
@@ -441,7 +442,7 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
             throw new ServiceException(CharSequenceUtil.format("付款单[{}]状态异常", financeBill.getId()));
         }
         financeBill.setBillStatus(EFinBillStatus.SUCCESS.getValue());
-        int r = financeBillMapper.updateById(financeBill);
+        int r = financeBillMapper.updateById(prepareUpdate(financeBill));
         if (r == 0) {
             throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
         }
@@ -474,7 +475,7 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
         bill.setRemark(CharSequenceUtil.format("档口充值{}元", amount.toPlainString()));
         bill.setVersion(0L);
         bill.setDelFlag(Constants.UNDELETED);
-        financeBillMapper.insert(bill);
+        financeBillMapper.insert(prepareInsert(bill));
         TransInfo transInfo = TransInfo.builder()
                 .srcBillId(bill.getId())
                 .srcBillType(bill.getBillType())
@@ -510,7 +511,7 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
             throw new ServiceException(CharSequenceUtil.format("收款单[{}]状态异常", financeBill.getId()));
         }
         financeBill.setBillStatus(EFinBillStatus.SUCCESS.getValue());
-        int r = financeBillMapper.updateById(financeBill);
+        int r = financeBillMapper.updateById(prepareUpdate(financeBill));
         if (r == 0) {
             throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
         }
@@ -548,7 +549,7 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
         bill.setRemark(remark);
         bill.setVersion(0L);
         bill.setDelFlag(Constants.UNDELETED);
-        financeBillMapper.insert(bill);
+        financeBillMapper.insert(prepareInsert(bill));
         TransInfo transInfo = TransInfo.builder()
                 .srcBillId(bill.getId())
                 .srcBillType(bill.getBillType())
@@ -589,5 +590,18 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
     public String generateBillNo(EFinBillType billType) {
         //未确定规则，暂时用UUID代替
         return IdUtil.simpleUUID();
+    }
+
+    private <T extends SimpleEntity> T prepareInsert(T obj) {
+        String username = SecurityUtils.getUsernameSafe();
+        obj.setCreateBy(username);
+        obj.setUpdateBy(username);
+        return obj;
+    }
+
+    private <T extends SimpleEntity> T prepareUpdate(T obj) {
+        obj.setUpdateBy(SecurityUtils.getUsernameSafe());
+        obj.setUpdateTime(new Date());
+        return obj;
     }
 }
