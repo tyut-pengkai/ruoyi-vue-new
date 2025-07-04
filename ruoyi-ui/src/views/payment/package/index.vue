@@ -70,38 +70,6 @@
           v-hasPermi="['payment:package:add']"
         >新增</el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['payment:package:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['payment:package:remove']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['payment:package:export']"
-        >导出</el-button>
-      </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
@@ -126,20 +94,34 @@
       <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
+          <!--  只有在草稿状态显示修改按钮 -->
           <el-button
+            v-if="scope.row.status === '2'"
             size="mini"
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['payment:package:edit']"
+            :disabled="scope.row.status !== '2'"
           >修改</el-button>
-          <el-button
+          <!-- 不等于上线状态0时显示上线按钮 -->
+          <el-button         
+            v-if="scope.row.status !== '0'"
             size="mini"
             type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['payment:package:remove']"
-          >删除</el-button>
+            icon="el-icon-top"
+            @click="handleStatusChange(scope.row, '0')"
+            v-hasPermi="['payment:package:edit']"
+          >上线</el-button>
+          <!-- 只有上线状态0才显示 下线按钮 -->
+          <el-button
+            v-if="scope.row.status === '0'"
+            size="mini"
+            type="text"
+            icon="el-icon-bottom"
+            @click="handleStatusChange(scope.row, '1')"
+            v-hasPermi="['payment:package:edit']"
+          >下线</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -180,21 +162,20 @@
         <el-form-item label="折扣标签" prop="discountLabel">
           <el-input v-model="form.discountLabel" placeholder="请输入折扣标签" />
         </el-form-item>
-        <el-form-item label="状态" prop="status">
+        <el-form-item label="状态" prop="status" v-show="false">
           <el-radio-group v-model="form.status">
             <el-radio
               v-for="dict in dict.type.payment_package_status"
               :key="dict.value"
               :label="dict.value"
+              :disabled="true"             
             >{{dict.label}}</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
         </el-form-item>
-        <el-form-item label="删除标志" prop="delFlag">
-          <el-input v-model="form.delFlag" placeholder="请输入删除标志" />
-        </el-form-item>
+        
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -257,9 +238,7 @@ export default {
         currency: [
           { required: true, message: "币种不能为空", trigger: "change" }
         ],
-        status: [
-          { required: true, message: "状态不能为空", trigger: "change" }
-        ],
+        
       }
     }
   },
@@ -368,7 +347,20 @@ export default {
       this.download('payment/package/export', {
         ...this.queryParams
       }, `package_${new Date().getTime()}.xlsx`)
-    }
+    },
+    /** 修改状态 */
+    handleStatusChange(row, status) {
+      let text = status === "0" ? "上线" : "下线";
+      this.$modal.confirm('确认要"' + text + '""' + row.name + '"套餐吗？').then(function() {
+        return updatePackage({
+          ...row,
+          status: status
+        });
+      }).then(() => {
+        this.$modal.msgSuccess(text + "成功");
+        this.getList();
+      }).catch(() => {});
+    },
   }
 }
 </script>

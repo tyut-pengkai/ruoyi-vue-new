@@ -104,41 +104,6 @@ export const constantRoutes = [
         meta: { title: '个人中心', icon: 'user' }
       }
     ]
-  },
-  {
-    path: '/payment',
-    component: Layout,
-    hidden: false,
-    redirect: 'noRedirect',
-    name: 'Payment',
-    meta: { title: '支付管理', icon: 'money' },
-    children: [
-      {
-        path: 'package',
-        component: () => import('@/views/payment/package/index'),
-        name: 'Package',
-        meta: { title: '套餐管理', icon: 'shopping' }
-      },
-      {
-        path: 'order',
-        component: () => import('@/views/payment/order/index'),
-        name: 'Order',
-        meta: { title: '订单管理', icon: 'list' }
-      },
-      {
-        path: 'recharge',
-        component: () => import('@/views/payment/recharge/index'),
-        name: 'Recharge',
-        meta: { title: '时长充值', icon: 'time' }
-      },
-      {
-        path: 'pay',
-        component: () => import('@/views/payment/pay/index'),
-        name: 'Pay',
-        meta: { title: '支付', icon: 'money' },
-        hidden: true
-      }
-    ]
   }
 ]
 

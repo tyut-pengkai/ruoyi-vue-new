@@ -37,7 +37,10 @@
           <img :src="codeUrl" @click="getCode" class="login-code-img"/>
         </div>
       </el-form-item>
-      <el-checkbox v-model="loginForm.rememberMe" style="margin:0px 0px 25px 0px;">记住密码</el-checkbox>
+      <div class="form-actions">
+        <el-checkbox v-model="loginForm.rememberMe">记住密码</el-checkbox>
+        <router-link class="link-type forgot-password" :to="'/forgot-password'" v-if="register">忘记密码?</router-link>
+      </div>
       <el-form-item style="width:100%;">
         <el-button
           :loading="loading"
@@ -46,16 +49,21 @@
           style="width:100%;"
           @click.native.prevent="handleLogin"
         >
-          <span v-if="!loading">登 录</span>
-          <span v-else>登 录 中...</span>
+          <span v-if="!loading">登录</span>
+          <span v-else>登录中...</span>
         </el-button>
-        <div style="float: right;" v-if="register">
-          <router-link class="link-type" :to="'/register'">立即注册</router-link>
-          <span style="margin: 0 5px;">|</span>
-          <router-link class="link-type" :to="'/emailLogin'">邮箱登录</router-link>
-          <span style="margin: 0 5px;">|</span>
-          <router-link class="link-type" :to="'/forgot-password'">忘记密码</router-link>
+        <div class="divider" v-if="register">
+          <span>或</span>
         </div>
+        <el-button
+          v-if="register"
+          size="medium"
+          type="primary"
+          style="width:100%;"
+          @click="$router.push('/register')"
+        >
+          注册
+        </el-button>
       </el-form-item>
     </el-form>
     <!--  底部  -->
@@ -214,6 +222,50 @@ export default {
     margin-left: 2px;
   }
 }
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.forgot-password {
+  color: #409EFF;
+  text-decoration: none;
+  font-size: 14px;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.divider {
+  position: relative;
+  text-align: center;
+  margin: 20px 0;
+  &:before,
+  &:after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 45%;
+    height: 1px;
+    background-color: #dcdfe6;
+  }
+  &:before {
+    left: 0;
+  }
+  &:after {
+    right: 0;
+  }
+  span {
+    background-color: #fff;
+    padding: 0 10px;
+    color: #909399;
+    font-size: 14px;
+  }
+}
+
 .login-tip {
   font-size: 13px;
   text-align: center;
