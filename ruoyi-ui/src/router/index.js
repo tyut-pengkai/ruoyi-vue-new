@@ -72,6 +72,13 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/payment/pay/success',
+    component: () => import('@/views/payment/pay/success'),
+    name: 'PaymentSuccess',
+    meta: { title: '支付确认', icon: 'check' },
+    hidden: true
+  },
+  {
     path: '',
     component: Layout,
     redirect: 'index',
@@ -97,8 +104,42 @@ export const constantRoutes = [
         meta: { title: '个人中心', icon: 'user' }
       }
     ]
+  },
+  {
+    path: '/payment',
+    component: Layout,
+    hidden: false,
+    redirect: 'noRedirect',
+    name: 'Payment',
+    meta: { title: '支付管理', icon: 'money' },
+    children: [
+      {
+        path: 'package',
+        component: () => import('@/views/payment/package/index'),
+        name: 'Package',
+        meta: { title: '套餐管理', icon: 'shopping' }
+      },
+      {
+        path: 'order',
+        component: () => import('@/views/payment/order/index'),
+        name: 'Order',
+        meta: { title: '订单管理', icon: 'list' }
+      },
+      {
+        path: 'recharge',
+        component: () => import('@/views/payment/recharge/index'),
+        name: 'Recharge',
+        meta: { title: '时长充值', icon: 'time' }
+      },
+      {
+        path: 'pay',
+        component: () => import('@/views/payment/pay/index'),
+        name: 'Pay',
+        meta: { title: '支付', icon: 'money' },
+        hidden: true
+      }
+    ]
   }
-  
 ]
 
 // 动态路由，基于用户权限动态去加载
@@ -187,8 +228,19 @@ Router.prototype.replace = function push(location) {
   return routerReplace.call(this, location).catch(err => err)
 }
 
-export default new Router({
-  mode: 'history', // 去掉url中的#
+// 创建路由
+export const createRouter = () => new Router({
+  mode: 'history', // 添加这一行，使用history模式
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes
 })
+
+// 重置路由
+export function resetRouter() {
+  const newRouter = createRouter()
+  router.matcher = newRouter.matcher
+}
+
+const router = createRouter()
+
+export default router

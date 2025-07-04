@@ -79,6 +79,17 @@ public class PaymentOrderController extends BaseController
         return success(paymentOrderService.selectPaymentOrderByOrderId(orderId));
     }
 
+    @PreAuthorize("@ss.hasPermi('payment:order:query')")
+    @GetMapping(value = "/getOrder/{orderNo}")
+    public AjaxResult getOrder(@PathVariable("orderNo") String orderNo) {
+        PaymentOrder order = paymentOrderService.getOrderByOrderNo(orderNo);
+        if (order == null) {
+            return AjaxResult.error("订单不存在");
+        }
+        return AjaxResult.success(order);
+    }
+
+
     /**
      * 新增支付订单
      */

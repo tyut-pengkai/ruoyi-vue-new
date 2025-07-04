@@ -66,4 +66,12 @@ public interface PaymentOrderMapper
      * @return 结果
      */
     public int deletePaymentOrderByOrderIds(Long[] orderIds);
+
+    /**
+     * 查询支付订单
+     * 
+     * @param token PayPal Token
+     * @return 支付订单
+     */
+    public PaymentOrder selectPaymentOrderByToken(String token);
 }

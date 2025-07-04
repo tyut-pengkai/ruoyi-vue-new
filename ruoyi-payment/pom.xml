@@ -28,11 +28,27 @@
             <artifactId>ruoyi-system</artifactId>
         </dependency>
 
+        <!-- 设备模块 -->
         <dependency>
             <groupId>com.ruoyi</groupId>
             <artifactId>ruoyi-device</artifactId>
+            <version>${ruoyi.version}</version>
+        </dependency>
+        
+
+        <!-- IJPay-PayPal  -->
+        <dependency>
+           <groupId>com.github.javen205</groupId>
+           <artifactId>IJPay-PayPal</artifactId>
+           <version>2.9.12.1</version>
         </dependency>
 
+        <!-- JSON处理 -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20230618</version>
+        </dependency>
     </dependencies>
 
 </project> 

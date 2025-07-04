@@ -105,7 +105,7 @@ export default {
             setToken(res.token)
             this.$store.commit('SET_TOKEN', res.token)
             this.$router.push({ path: this.redirect || "/" }).catch(()=>{})
-            // 获取用户信息
+            // 获取用户信息, 加上这个就不会出菜单
             // this.$store.dispatch('GetInfo').then(() => {
             //   this.$router.push({ path: this.redirect || "/" }).catch(()=>{})
             // }).catch(() => {

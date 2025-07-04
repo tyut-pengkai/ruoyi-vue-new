@@ -83,23 +83,14 @@ export default {
         return createOrder(orderRequest);
       }).then((response) => {
         const order = response.data;
-        return this.$alert(`订单创建成功！<br>订单号为：<strong>${order.orderNo}</strong><br>请尽快完成支付。`, "操作成功", {
-          dangerouslyUseHTMLString: true,
-          confirmButtonText: "去支付",
-          type: 'success'
-        }).then(() => {
-          // 用户点击了"去支付"
-          return mockPay(order.orderNo);
+        // 创建订单成功后直接跳转到支付页面
+        this.$router.push({
+          path: '/payment/pay',
+          query: { orderNo: order.orderNo }
         });
-      }).then(() => {
-        this.$message.success("支付成功！时长已到账。");
       }).catch((err) => {
-        // 在浏览器控制台打印详细的错误信息，用于诊断
-        //console.error("支付流程捕获到错误:", err);
-        // 如果err是 'cancel'，则是用户主动关闭了弹窗，此时可以不提示或用更柔和的方式
         if (err !== 'cancel') {
-          // 对于其他错误，比如网络问题或后端返回的错误，使用$message.error
-          this.$message.error("操作失败或支付被取消");
+          this.$message.error("创建订单失败");
         }
       });
     }

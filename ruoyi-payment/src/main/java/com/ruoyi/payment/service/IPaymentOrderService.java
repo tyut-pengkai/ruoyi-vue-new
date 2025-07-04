@@ -13,6 +13,14 @@ import com.ruoyi.payment.domain.dto.CreateOrderRequest;
 public interface IPaymentOrderService 
 {
     /**
+     * 根据订单号查询订单
+     *
+     * @param orderNo 订单号
+     * @return 订单信息
+     */
+    public PaymentOrder getOrderByOrderNo(String orderNo);
+
+    /**
      * 用户创建订单
      * @param request
      * @return

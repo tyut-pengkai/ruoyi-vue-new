@@ -268,4 +268,16 @@ public class PaymentOrderServiceImpl implements IPaymentOrderService
         updateOrder.setStatus("2"); // 2=已取消
         return paymentOrderMapper.updatePaymentOrder(updateOrder);
     }
+
+    /**
+     * 根据订单号查询订单
+     *
+     * @param orderNo 订单号
+     * @return 订单信息
+     */
+    @Override
+    public PaymentOrder getOrderByOrderNo(String orderNo)
+    {
+        return paymentOrderMapper.selectPaymentOrderByOrderNo(orderNo);
+    }
 }

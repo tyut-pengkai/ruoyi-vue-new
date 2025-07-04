@@ -61,13 +61,29 @@ public class PaymentOrder extends BaseEntity
     @Excel(name = "订单状态", readConverterExp = "0=待支付,1=已完成,2=已取消,3=支付失败")
     private String status;
 
-    /** 支付渠道（Stripe, PayPal等） */
+    /** 支付渠道（paypal/wechat/alipay等） */
     @Excel(name = "支付渠道")
     private String paymentChannel;
 
-    /** 第三方交易号 */
-    @Excel(name = "第三方交易号")
-    private String thirdPartyNo;
+    /** 支付平台的支付/交易ID */
+    @Excel(name = "支付/交易ID")
+    private String paymentId;
+
+    /** 支付令牌 */
+    @Excel(name = "支付令牌")
+    private String paymentToken;
+    
+    /** 支付平台用户标识 */
+    @Excel(name = "支付平台用户标识")
+    private String payerId;
+    
+    /** 支付方式 */
+    @Excel(name = "支付方式")
+    private String paymentMethod;
+    
+    /** 描述 */
+    @Excel(name = "描述")
+    private String description;
 
     /** 支付成功时间 */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -209,14 +225,54 @@ public class PaymentOrder extends BaseEntity
         return paymentChannel;
     }
 
-    public void setThirdPartyNo(String thirdPartyNo) 
+    public void setPaymentId(String paymentId) 
     {
-        this.thirdPartyNo = thirdPartyNo;
+        this.paymentId = paymentId;
     }
 
-    public String getThirdPartyNo() 
+    public String getPaymentId() 
     {
-        return thirdPartyNo;
+        return paymentId;
+    }
+
+    public void setPaymentToken(String paymentToken) 
+    {
+        this.paymentToken = paymentToken;
+    }
+
+    public String getPaymentToken() 
+    {
+        return paymentToken;
+    }
+
+    public void setPayerId(String payerId) 
+    {
+        this.payerId = payerId;
+    }
+
+    public String getPayerId() 
+    {
+        return payerId;
+    }
+
+    public void setPaymentMethod(String paymentMethod) 
+    {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public String getPaymentMethod() 
+    {
+        return paymentMethod;
+    }
+
+    public void setDescription(String description) 
+    {
+        this.description = description;
+    }
+
+    public String getDescription() 
+    {
+        return description;
     }
 
     public void setPayTime(Date payTime) 
@@ -280,7 +336,7 @@ public class PaymentOrder extends BaseEntity
             .append("currency", getCurrency())
             .append("status", getStatus())
             .append("paymentChannel", getPaymentChannel())
-            .append("thirdPartyNo", getThirdPartyNo())
+            .append("paymentId", getPaymentId())
             .append("payTime", getPayTime())
             .append("deviceId", getDeviceId())
             .append("deviceName", getDeviceName())

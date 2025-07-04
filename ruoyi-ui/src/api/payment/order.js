@@ -67,3 +67,20 @@ export function cancelOrder(orderId) {
     method: 'post'
   })
 }
+
+// 处理支付回调
+export function handlePaymentCallback(params) {
+  return request({
+    url: '/payment/api/callback',
+    method: 'get',
+    params: params
+  })
+}
+
+// 查询支付状态
+export function getPaymentStatus(orderNo) {
+  return request({
+    url: '/payment/api/status/' + orderNo,
+    method: 'get'
+  })
+}

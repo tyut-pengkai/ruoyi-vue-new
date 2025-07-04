@@ -112,6 +112,8 @@ public class SecurityConfig
                 permitAllUrl.getUrls().forEach(url -> requests.antMatchers(url).permitAll());
                 // 对于登录login 注册register 验证码captchaImage 邮箱验证码sendEmailCode 测试邮件testEmail 用户名校验checkUsernameUnique 邮箱校验checkEmailUnique 允许匿名访问
                 requests.antMatchers("/login", "/register", "/captchaImage", "/sendEmailCode", "/testEmail", "/checkUsernameUnique", "/checkEmailUnique", "/emailLogin", "/send-reset-password-code", "/reset-password-by-code").permitAll()
+                    // 支付相关接口，允许匿名访问
+                    .antMatchers("/payment/api/callback/**", "/payment/api/status/**", "/payment/api/pay/**").permitAll()
                     // 静态资源，可匿名访问
                     .antMatchers(HttpMethod.GET, "/", "/*.html", "/**/*.html", "/**/*.css", "/**/*.js", "/profile/**").permitAll()
                     .antMatchers("/swagger-ui.html", "/swagger-resources/**", "/webjars/**", "/*/api-docs", "/druid/**").permitAll()
