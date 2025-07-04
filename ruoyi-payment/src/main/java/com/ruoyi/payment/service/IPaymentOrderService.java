@@ -1,6 +1,7 @@
 package com.ruoyi.payment.service;
 
 import java.util.List;
+import java.util.Map;
 import com.ruoyi.payment.domain.PaymentOrder;
 import com.ruoyi.payment.domain.dto.CreateOrderRequest;
 
@@ -83,9 +84,17 @@ public interface IPaymentOrderService
     public int cancelOrder(Long orderId);
 
     /**
-     * 处理支付成功后的逻辑
-     * @param orderNo
-     * @return
+     * 处理支付成功后的逻辑,更新套餐订单信息:关联paypal订单ID,支付状态,支付方式,支付时间,支付金额等
+     * @param orderNo 订单号
+     * @param payParams 支付参数 (包含支付订单ID,支付方式,支付状态,支付时间,支付金额,支付者等)
+     * @return PaymentOrder
      */
-    public boolean processPaymentSuccess(String orderNo);
+    public PaymentOrder processPaymentSuccess(String orderNo,Map<String,String> payParams);
+
+    /**
+     * 处理支付成功后的逻辑,更新套餐订单信息:关联paypal订单ID,支付状态,支付方式,支付时间,支付金额等
+     * @param PaymentOrder 订单号
+     * @return PaymentOrder
+     */
+    public PaymentOrder processPaymentSuccess(PaymentOrder PaymentOrder);
 }

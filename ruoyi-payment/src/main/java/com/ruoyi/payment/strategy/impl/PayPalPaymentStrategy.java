@@ -17,12 +17,13 @@ import com.ruoyi.payment.domain.PaymentOrder;
 import com.ruoyi.payment.mapper.PaymentOrderMapper;
 import com.ruoyi.payment.model.PaymentResponse;
 import com.ruoyi.payment.model.PaymentResult;
+import com.ruoyi.payment.service.IPaymentOrderService;
 import com.ruoyi.payment.strategy.PaymentStrategy;
 import com.ruoyi.payment.util.HttpUtils;
 import com.ruoyi.payment.util.PayKit;
 import com.ruoyi.payment.util.PayPalApiConfigKit;
 import com.ruoyi.payment.util.PayPalApiUrl;
-
+import com.ruoyi.common.utils.DateUtils;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -43,6 +44,11 @@ public class PayPalPaymentStrategy implements PaymentStrategy {
     @Autowired
     private PaymentOrderMapper orderMapper;
     
+    @Autowired
+    private IPaymentOrderService paymentOrderService;
+    
+
+
     /**
      * 获取PayPal配置
      */
@@ -54,6 +60,12 @@ public class PayPalPaymentStrategy implements PaymentStrategy {
         return apiConfig;
     }
 
+    /**
+     * 处理支付
+     *     1.创建PayPal订单,返回paypal订单ID和批准URL,前端跳转到批准URL进行支付
+     *     2.更新套餐订单信息:关联paypal订单ID,支付方式
+     * order:套餐订单信息(注意与paypal订单不同,里面字段paymentid关联paypal订单ID)
+     */
     @Override
     public PaymentResponse processPayment(PaymentOrder order) {
         try {
@@ -101,7 +113,16 @@ public class PayPalPaymentStrategy implements PaymentStrategy {
     }
     
    
-
+    /**
+     * 处理买家授权支付成功后,PayPal回调(买家授权支付成功状态是APPROVED,还需执行捕获操作,完成支付)
+     *     1.查询PayPal订单状态
+     *     2.如果状态是APPROVED,则执行捕获操作,完成支付
+     *     3.更新套餐订单信息:关联paypal订单ID,支付状态,支付方式,支付时间,支付金额等
+     *     4.返回支付结果
+     * params:PayPal订单ID和支付者ID
+     *        params.get("token") paypal订单ID
+     *        params.get("PayerID") paypal支付者ID
+     */
     @Override
     public PaymentResponse handleCallbackSuccess(Map<String, String> params) {
         try {
@@ -122,7 +143,11 @@ public class PayPalPaymentStrategy implements PaymentStrategy {
             JSONObject orderJson = JSONUtil.parseObj(result);
             String status = orderJson.getStr("status");
             String payer = orderJson.getStr("payer");
-            
+            String orderNo = orderJson.getJSONArray("purchase_units").getJSONObject(0).getStr("reference_id");
+            String payer_email = orderJson.getJSONObject("payer").getStr("email_address");
+            //String payer_id    = captureJson.getJSONObject("payer").getStr("payer_id");
+
+            PaymentOrder paymentOrder = orderMapper.selectPaymentOrderByOrderNo(orderNo);
             // 如果状态是APPROVED，执行capture操作
             if ("APPROVED".equalsIgnoreCase(status)) {
                 log.info("订单已授权，开始执行capture操作，orderId: {}", payPalOrderId);
@@ -136,15 +161,35 @@ public class PayPalPaymentStrategy implements PaymentStrategy {
                 JSONObject captureJson = JSONUtil.parseObj(captureResult);
                 status = captureJson.getStr("status");
                 log.info("Capture完成，最终状态: {}", status);
+                log.info("Capture完成，最终captureJson: {}", captureJson);
+            
+             
+               // Map<String,String> payParams = new HashMap<>();
+               // payParams.put("payer_email", payer_email);
+               // payParams.put("paymentId", payPalOrderId);
+               // //payParams.put("payerId", payerId);
+               // payParams.put("paymentMethod", "paypal");
+               // // 处理支付成功,更新套餐订单信息:关联paypal订单ID,支付状态,支付方式,支付时间,支付金额等
+               // paymentOrder = paymentOrderService.processPaymentSuccess(orderNo, payParams);
+                
+               // 处理支付成功,更新套餐订单信息:关联paypal订单ID,支付状态,支付方式,支付时间,支付金额等
+                paymentOrder.setPaymentId(payPalOrderId);
+                paymentOrder.setPaymentMethod("paypal");
+                paymentOrder.setPayTime(DateUtils.getNowDate());
+                paymentOrder.setPayerId(payer_email);
+                paymentOrderService.processPaymentSuccess(paymentOrder);
             }
             
             // 构建返回数据
             Map<String, Object> resultMap = new HashMap<>();
             resultMap.put("paymentId", payPalOrderId);
             resultMap.put("payerId", payerId);
+            resultMap.put("payer_email", payer_email);
             resultMap.put("paymentMethod", "paypal");
-            resultMap.put("payer", payer);
             resultMap.put("status", status);
+            resultMap.put("packageName", paymentOrder.getPackageName());
+            resultMap.put("amount", paymentOrder.getAmount().toString());
+            resultMap.put("currency", paymentOrder.getCurrency());
             
             return new PaymentResponse(true, "处理回调成功", resultMap);
         } catch (Exception e) {
@@ -167,6 +212,41 @@ public class PayPalPaymentStrategy implements PaymentStrategy {
             log.error("处理PayPal回调异常", e);
             return new PaymentResponse(false, "处理PayPal回调异常: " + e.getMessage(), null);
         }
+    }
+
+
+     /**
+     * 处理买家取消支付后,PayPal回调
+     * params:PayPal订单ID
+     *        params.get("token") paypal订单ID     
+     * return 返回PaymentOrder订单orderNo
+     */ 
+    @Override
+    public PaymentResponse handleCallbackCancel(Map<String, String> params) {
+        // 获取PayPal订单ID和支付者ID
+        String payPalOrderId = params.get("token");
+        
+        if (StrUtil.isBlank(payPalOrderId)) {
+            return new PaymentResponse(false, "回调参数中缺少必要参数", null);
+        }
+        
+        // 查询订单状态
+        String result = queryOrder(payPalOrderId);
+        if (StrUtil.isBlank(result)) {
+            return new PaymentResponse(false, "获取PayPal订单失败", null);
+        }
+        
+        JSONObject orderJson = JSONUtil.parseObj(result);
+        //String status = orderJson.getStr("status");
+        String orderNo = orderJson.getJSONArray("purchase_units").getJSONObject(0).getStr("reference_id");
+
+        //PaymentOrder paymentOrder = orderMapper.selectPaymentOrderByOrderNo(orderNo);
+
+        // 构建返回数据
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("paymentId", payPalOrderId);
+        resultMap.put("orderNo", orderNo);
+        return new PaymentResponse(true, "处理回调成功", resultMap);
     }
     
     @Override

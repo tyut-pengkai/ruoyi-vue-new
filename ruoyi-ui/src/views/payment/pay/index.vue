@@ -34,11 +34,11 @@
           </div>
           <div class="info-item">
             <span class="label">充值时长：</span>
-            <span class="value">{{ order.hours }} 小时</span>
+            <span class="value highlight">{{ order.packageHours }} 小时</span>
           </div>
-          <div class="info-item" v-if="order.freeHours > 0">
+          <div class="info-item" >
             <span class="label">赠送时长：</span>
-            <span class="value highlight">+{{ order.freeHours }} 小时</span>
+            <span class="value highlight">{{ order.packageFreeHours }} 小时</span>
           </div>
         </div>
 
@@ -47,7 +47,7 @@
           <div class="section-title">支付信息</div>
           <div class="info-item">
             <span class="label">支付金额：</span>
-            <span class="value price">${{ order.amount }} {{ order.currency }}</span>
+            <span class="value price">{{ order.amount }} {{ order.currency }}</span>
           </div>
           <div class="payment-methods" v-if="!isPaid">
             <div class="section-title">选择支付方式</div>
@@ -104,21 +104,23 @@ export default {
   },
   computed: {
     isPaid() {
-      return this.order.status === 'PAID';
+      return this.order.status === '1'; // 1=已完成(支付成功)
     },
     statusClass() {
       const statusMap = {
-        'UNPAID': 'status-unpaid',
-        'PAID': 'status-paid',
-        'CANCELLED': 'status-cancelled'
+        '0': 'status-unpaid',
+        '1': 'status-paid',
+        '2': 'status-cancelled',
+        '3': 'status-failed'
       };
       return statusMap[this.order.status] || '';
     },
     statusText() {
       const statusMap = {
-        'UNPAID': '待支付',
-        'PAID': '已支付',
-        'CANCELLED': '已取消'
+        '0': '待支付',
+        '1': '已完成',
+        '2': '已取消',
+        '3': '支付失败'
       };
       return statusMap[this.order.status] || this.order.status;
     }

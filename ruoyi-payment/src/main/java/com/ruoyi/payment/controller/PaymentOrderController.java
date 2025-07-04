@@ -21,10 +21,11 @@ import com.ruoyi.payment.domain.dto.CreateOrderRequest;
 import com.ruoyi.payment.service.IPaymentOrderService;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.page.TableDataInfo;
-import com.ruoyi.common.core.domain.model.LoginUser;
+
 import com.ruoyi.common.utils.SecurityUtils;
 
 import java.util.Map;
+import java.util.HashMap;
 
 /**
  * 支付订单Controller
@@ -87,6 +88,7 @@ public class PaymentOrderController extends BaseController
             return AjaxResult.error("订单不存在");
         }
         return AjaxResult.success(order);
+
     }
 
 
@@ -150,7 +152,12 @@ public class PaymentOrderController extends BaseController
     @PostMapping("/mock-pay/{orderNo}")
     public AjaxResult mockPay(@PathVariable String orderNo)
     {
-        paymentOrderService.processPaymentSuccess(orderNo);
+        Map<String, String> payParams = new HashMap<>();
+        payParams.put("paymentId", "mock_" + System.currentTimeMillis());
+        payParams.put("paymentMethod", "mock");
+        payParams.put("payer_email", "mock@example.com");
+        
+        paymentOrderService.processPaymentSuccess(orderNo, payParams);
         return AjaxResult.success("模拟支付成功");
     }
 }

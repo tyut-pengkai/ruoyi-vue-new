@@ -205,5 +205,22 @@ public class PaymentService {
         }
     }
 
-
+    /**
+     * 处理支付取消回调
+     * 
+     * @param paymentMethod 支付方式
+     * @param request HTTP请求
+     * @return 支付结果
+     */
+    public PaymentResponse handleCallbackCancel(String paymentMethod, Map<String, String> params) {
+        try {
+            // 根据支付方式获取对应的策略
+            PaymentStrategy strategy = paymentStrategyFactory.getStrategy(paymentMethod);
+            // 调用策略处理回调
+            return strategy.handleCallbackCancel(params);
+        } catch (Exception e) {
+            log.error("处理支付回调异常", e);
+            return new PaymentResponse(false, "处理PayPal回调异常: " + e.getMessage(), null);
+        }
+    }
 } 

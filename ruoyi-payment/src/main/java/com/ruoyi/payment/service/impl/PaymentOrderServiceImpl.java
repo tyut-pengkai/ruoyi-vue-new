@@ -1,8 +1,8 @@
 package com.ruoyi.payment.service.impl;
 
 import java.util.List;
+import java.util.Map;
 import com.ruoyi.common.utils.DateUtils;
-import com.ruoyi.common.utils.uuid.IdUtils;
 import com.ruoyi.payment.domain.PaymentPackage;
 import com.ruoyi.payment.mapper.PaymentPackageMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +14,7 @@ import com.ruoyi.payment.service.IPaymentOrderService;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.LoginUser;
-import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.utils.SecurityUtils;
-import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.device.domain.DeviceInfo;
 import com.ruoyi.device.domain.DeviceHour;
 import com.ruoyi.device.domain.DeviceUser;
@@ -24,8 +22,6 @@ import com.ruoyi.device.mapper.DeviceHourMapper;
 import com.ruoyi.device.mapper.DeviceUserMapper;
 import com.ruoyi.device.service.IDeviceInfoService;
 import com.ruoyi.payment.domain.dto.CreateOrderRequest;
-
-import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -190,28 +186,59 @@ public class PaymentOrderServiceImpl implements IPaymentOrderService
      */
     @Override
     @Transactional
-    public boolean processPaymentSuccess(String orderNo)
+    public PaymentOrder processPaymentSuccess(String orderNo,Map<String,String> payParams)
     {
-        PaymentOrder order = paymentOrderMapper.selectPaymentOrderByOrderNo(orderNo);
+        PaymentOrder updateOrder = paymentOrderMapper.selectPaymentOrderByOrderNo(orderNo);
 
         // 1. 验证订单
-        if (order == null) {
+        if (updateOrder == null) {
             throw new ServiceException("订单不存在");
         }
-        if (!"0".equals(order.getStatus())) {
+        if (!"0".equals(updateOrder.getStatus())) {
             // 订单状态不为"待支付"，可能已处理，直接返回成功，防止重复处理
-            return true;
+            return updateOrder;
         }
 
         // 2. 更新订单状态
-        PaymentOrder updateOrder = new PaymentOrder();
-        updateOrder.setOrderId(order.getOrderId());
-        updateOrder.setStatus("1"); // 1=已支付
+        updateOrder.setStatus("1"); // 1=已完成(支付成功)
+        updateOrder.setPayTime(DateUtils.getNowDate());
+        updateOrder.setPaymentId(payParams.get("paymentId"));
+        updateOrder.setPaymentMethod(payParams.get("paymentMethod"));
+        updateOrder.setPayerId(payParams.get("payer_email"));
+
+        return processPaymentSuccess(updateOrder);
+
+    }
+
+
+/**
+     * 处理支付成功逻辑
+     *
+     * @param orderNo 订单号
+     * @return 结果
+     */
+    @Override
+    @Transactional
+    public PaymentOrder processPaymentSuccess(PaymentOrder updateOrder)
+    {
+        
+
+        // 1. 验证订单
+        if (updateOrder == null) {
+            throw new ServiceException("订单不存在");
+        }
+        if (!"0".equals(updateOrder.getStatus())) {
+            // 订单状态不为"待支付"，可能已处理，直接返回成功，防止重复处理
+            return updateOrder;
+        }
+
+        // 2. 更新订单状态
+        updateOrder.setStatus("1"); // 1=已完成(支付成功)
         updateOrder.setPayTime(DateUtils.getNowDate());
         paymentOrderMapper.updatePaymentOrder(updateOrder);
 
         // 3. 增加设备Pro时长
-        DeviceHour deviceHour = deviceHourMapper.selectDeviceHourByDeviceId(order.getDeviceId());
+        DeviceHour deviceHour = deviceHourMapper.selectDeviceHourByDeviceId(updateOrder.getDeviceId());
         if (deviceHour == null) {
             throw new ServiceException("订单关联的设备时长记录不存在,未初始化");
         }
@@ -221,7 +248,7 @@ public class PaymentOrderServiceImpl implements IPaymentOrderService
         boolean needUpdate = false;
 
         // 增加Pro时长
-        Integer proHours = order.getPackageHours();
+        Integer proHours = updateOrder.getPackageHours();
         if (proHours != null && proHours > 0) {
             long currentProHours = deviceHour.getAvailProHours() != null ? deviceHour.getAvailProHours() : 0L;
             updateDeviceHour.setAvailProHours(currentProHours + proHours);
@@ -229,7 +256,7 @@ public class PaymentOrderServiceImpl implements IPaymentOrderService
         }
 
         // 增加免费时长
-        Integer freeHours = order.getPackageFreeHours();
+        Integer freeHours = updateOrder.getPackageFreeHours();
         if (freeHours != null && freeHours > 0) {
             long currentFreeHours = deviceHour.getAvailFreeHours() != null ? deviceHour.getAvailFreeHours() : 0L;
             updateDeviceHour.setAvailFreeHours(currentFreeHours + freeHours);
@@ -240,8 +267,9 @@ public class PaymentOrderServiceImpl implements IPaymentOrderService
             deviceHourMapper.updateDeviceHour(updateDeviceHour);
         }
         
-        return true;
+        return updateOrder;
     }
+
 
     @Override
     @Transactional

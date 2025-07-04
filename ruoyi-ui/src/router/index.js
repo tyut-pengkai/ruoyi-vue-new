@@ -72,10 +72,24 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/payment/pay',
+    component: () => import('@/views/payment/pay/index'),
+    name: 'Pay',
+    meta: { title: '支付', icon: 'money' },
+    hidden: true
+  },
+  {
     path: '/payment/pay/success',
     component: () => import('@/views/payment/pay/success'),
     name: 'PaymentSuccess',
     meta: { title: '支付确认', icon: 'check' },
+    hidden: true
+  },
+  {
+    path: '/payment/pay/cancel',
+    component: () => import('@/views/payment/pay/cancel'),
+    name: 'PaymentCancel',
+    meta: { title: '支付取消', icon: 'close' },
     hidden: true
   },
   {

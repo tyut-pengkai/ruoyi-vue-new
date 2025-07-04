@@ -22,7 +22,7 @@
           <span class="value">{{ account }}</span>
         </div>
         <div class="info-item">
-          <span class="label">会员计划</span>
+          <span class="label">订单项目</span>
           <span class="value">{{ membershipPlan }}</span>
         </div>
         <div class="info-item">
@@ -30,7 +30,7 @@
           <span class="value">{{ amount }} {{ currency }}</span>
         </div>
         <div class="info-item">
-          <span class="label">支付网关</span>
+          <span class="label">支付方式</span>
           <div class="payment-method">
             <img v-if="paymentMethod === 'paypal'" src="@/assets/images/payment/paypal.png" alt="PayPal" class="payment-logo">
             <span>{{ paymentMethod }}</span>
@@ -77,17 +77,18 @@ export default {
   methods: {
     async getOrderInfo(token, payerId) {
       try {
-        const response = await getPaymentCallback({
+        const response = await getPaymentCallback('success', 'paypal',{
           token: token,
           PayerID: payerId
         });
+ 
         
         if (response.code === 200) {
           const orderInfo = response.data;
           this.orderNo = orderInfo.paymentId;
           this.status = orderInfo.status;
-          this.account = orderInfo.account;
-          this.membershipPlan = orderInfo.membershipPlan;
+          this.account = orderInfo.payer_email;
+          this.membershipPlan = orderInfo.packageName;
           this.amount = orderInfo.amount;
           this.currency = orderInfo.currency;
           this.paymentMethod = orderInfo.paymentMethod;

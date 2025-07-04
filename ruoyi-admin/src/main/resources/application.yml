@@ -190,6 +190,6 @@ payment:
     # successUrl: http://localhost:8081/payment/api/callback/success/paypal
     successUrl: http://localhost:81/payment/pay/success
     # 取消回调地址
-    cancelUrl: http://localhost:8081/payment/pay/cancel
+    cancelUrl: http://localhost:81/payment/pay/cancel
     # 通知回调地址
-    notifyUrl: http://localhost:8081/payment/paypal/notify
+    notifyUrl: http://localhost:81/payment/paypal/notify

@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-// 获取订单详情
+// 获取订单信息
 export function getOrder(orderNo) {
   return request({
     url: '/payment/order/getOrder/' + orderNo,
@@ -8,19 +8,20 @@ export function getOrder(orderNo) {
   })
 }
 
-// 获取支付回调信息
-export function getPaymentCallback(params) {
+// 获取支付回调结果
+export function getPaymentCallback(type, paymentMethod,params) {
   return request({
-    url: '/payment/api/callback/success/paypal',
+    url: `/payment/api/callback/${type}/${paymentMethod}`,
     method: 'get',
     params: params
+
   })
 }
 
 // 发起支付
 export function processPayment(data) {
   return request({
-    url: '/payment/api/pay',
+    url: '/payment/api/process',
     method: 'post',
     data: data
   })

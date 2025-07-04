@@ -36,7 +36,7 @@ public class PaymentApiController extends BaseController {
   
     
     /**
-     * 获取订单详情
+     * 处理买家授权支付成功后回调
      */
      @GetMapping("/callback/success/paypal")
      public AjaxResult handleCallbackSuccess(@RequestParam Map<String, String> params) {
@@ -55,6 +55,26 @@ public class PaymentApiController extends BaseController {
          }
      }
     
+    /**
+     * 处理买家取消支付后回调
+     */
+    @GetMapping("/callback/cancel/{paymentMethod}")
+    public AjaxResult handleCallbackCancel(@PathVariable("paymentMethod") String paymentMethod,@RequestParam Map<String, String> params) {
+        try {
+            // 处理回调
+            PaymentResponse response = paymentService.handleCallbackCancel(paymentMethod,params);
+            
+            if (response.isSuccess()) {
+                return AjaxResult.success("支付取消", response.getData());
+            } else {
+                return AjaxResult.error(response.getMessage());
+            }
+        } catch (Exception e) {
+            log.error("处理支付回调失败", e);
+            return AjaxResult.error("处理支付回调失败: " + e.getMessage());
+        }
+    }
+
     /**
      * 查询支付状态
      */
@@ -129,7 +149,7 @@ public class PaymentApiController extends BaseController {
      * 发起支付
      */
     @Anonymous
-    @PostMapping("/pay")
+    @PostMapping("/process")
     public AjaxResult pay(@RequestBody Map<String, String> params) {
         String orderNo = params.get("orderNo");
         String paymentMethod = params.get("paymentMethod");

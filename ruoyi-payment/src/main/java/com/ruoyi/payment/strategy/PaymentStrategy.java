@@ -39,6 +39,13 @@ public interface PaymentStrategy {
     PaymentResponse handleCallbackSuccess(HttpServletRequest request);
     
     /**
+     * 处理支付取消回调
+     * 
+     * @param request HTTP请求
+     * @return 处理结果
+     */
+    PaymentResponse handleCallbackCancel(Map<String, String> params) ;
+    /**
      * 查询支付状态
      * 
      * @param orderId 订单ID
