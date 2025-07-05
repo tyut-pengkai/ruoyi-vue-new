@@ -14,7 +14,7 @@ import lombok.Getter;
 public enum ProductSizeStatus {
 
     STANDARD(1, "标准码"),
-    UN_STANDARD(2, "非标准码");
+    UN_STANDARD(0, "非标准码");
 
     private final Integer value;
     private final String label;

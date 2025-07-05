@@ -1,7 +1,6 @@
 package com.ruoyi.xkt.dto.storeCusProdDiscount;
 
 import com.ruoyi.xkt.dto.BasePageDTO;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

@@ -21,24 +21,36 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             del_flag = 0 AND store_prod_id = #{storeProdId}
     </select>
 
-    <select id="selectStoreProdColorPage" parameterType="com.ruoyi.xkt.dto.storeProduct.StoreProdPageDTO" resultType="com.ruoyi.xkt.dto.storeProduct.StoreProdPageResDTO">
-        SELECT
+    <select id="selectStoreProdColorPage" parameterType="com.ruoyi.xkt.dto.storeProduct.StoreProdPageDTO"
+            resultType="com.ruoyi.xkt.dto.storeProduct.StoreProdPageResDTO">
+        SELECT DISTINCT
+            spc.id AS storeProdColorId,
             spc.store_prod_id AS storeProdId,
             spc.store_id AS storeId,
             sp.prod_art_num AS prodArtNum,
             spc.color_name AS colorName,
             sp.prod_cate_id AS prodCateId,
+            pc.`name` AS prodCateName,
             spcp.price,
             sp.prod_status AS prodStatus,
-            spc.create_time AS createTime
+            spc.create_time AS createTime,
+            sf.file_url AS mainPicUrl,
+            CONCAT(
+            ( SELECT MIN( size ) FROM store_product_color_size WHERE store_color_id = spc.id AND del_flag = 0 AND standard = 1 ),
+            '-',
+            ( SELECT MAX( size ) FROM store_product_color_size WHERE store_color_id = spc.id AND del_flag = 0 AND standard = 1 )
+            ) AS standard
         FROM
             store_product_color spc
             LEFT JOIN store_product sp ON spc.store_prod_id = sp.id
             LEFT JOIN store_product_color_price spcp ON spc.store_color_id = spcp.store_color_id
-            AND spc.store_prod_id = spcp.store_prod_id
-            AND spc.store_color_id = spcp.store_color_id
+                AND spc.store_prod_id = spcp.store_prod_id AND spc.store_color_id = spcp.store_color_id AND spcp.del_flag = 0
+            LEFT JOIN sys_product_category pc ON sp.prod_cate_id = pc.id
+            LEFT JOIN store_product_file spf ON sp.id = spf.store_prod_id
+                AND spf.file_type = 1 AND spf.order_num = 1 AND spf.del_flag = 0
+            LEFT JOIN sys_file sf ON spf.file_id = sf.id
         WHERE
-            spc.store_id = #{storeId} AND sp.prod_status = #{prodStatus}
+            spc.del_flag = 0 AND spc.store_id = #{storeId} AND sp.prod_status = #{prodStatus}
             <if test="prodArtNum != null  and prodArtNum != ''"> and sp.prod_art_num like concat('%', #{prodArtNum}, '%')</if>
             <if test="prodCateId != null "> and sp.prod_cate_id = #{prodCateId}</if>
         ORDER BY

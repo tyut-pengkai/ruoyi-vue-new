@@ -40,7 +40,6 @@ import com.ruoyi.xkt.dto.storeProdSvc.StoreProdSvcDTO;
 import com.ruoyi.xkt.dto.storeProduct.*;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO;
-import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
 import com.ruoyi.xkt.dto.userBrowsingHistory.UserBrowsingHisDTO;
 import com.ruoyi.xkt.dto.userNotice.UserFocusAndFavUserIdDTO;
 import com.ruoyi.xkt.enums.*;
@@ -192,27 +191,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
         // 调用Mapper方法查询商店产品分页信息
         List<StoreProdPageResDTO> prodList = storeProdColorMapper.selectStoreProdColorPage(pageDTO);
-        // 如果查询结果为空，则直接返回空列表
-        if (CollectionUtils.isEmpty(prodList)) {
-            return Page.empty(pageDTO.getPageSize(), pageDTO.getPageNum());
-        }
-        // 提取查询结果中的商店产品ID列表
-        List<Long> storeProdIdList = prodList.stream().map(StoreProdPageResDTO::getStoreProdId).collect(Collectors.toList());
-        // 查找排名第一个商品主图列表
-        List<StoreProdMainPicDTO> mainPicList = this.storeProdFileMapper.selectMainPicByStoreProdIdList(storeProdIdList, FileType.MAIN_PIC.getValue(), 1);
-        Map<Long, String> mainPicMap = CollectionUtils.isEmpty(mainPicList) ? new HashMap<>() : mainPicList.stream()
-                .collect(Collectors.toMap(StoreProdMainPicDTO::getStoreProdId, StoreProdMainPicDTO::getFileUrl));
-        // 查找档口商品的标准尺码
-        LambdaQueryWrapper<StoreProductColorSize> queryWrapper = new LambdaQueryWrapper<StoreProductColorSize>().in(StoreProductColorSize::getStoreProdId, storeProdIdList)
-                .eq(StoreProductColorSize::getDelFlag, Constants.UNDELETED).eq(StoreProductColorSize::getStandard, ProductSizeStatus.STANDARD.getValue());
-        List<StoreProductColorSize> standardSizeList = this.storeProdColorSizeMapper.selectList(queryWrapper);
-        // 将标准尺码列表转换为映射，以便后续处理
-        Map<Long, List<Integer>> standardSizeMap = CollectionUtils.isEmpty(standardSizeList) ? new HashMap<>() : standardSizeList.stream().collect(Collectors
-                .groupingBy(StoreProductColorSize::getStoreProdId, Collectors.mapping(StoreProductColorSize::getSize, Collectors.toList())));
-        // 为每个产品设置主图URL和标准尺码列表
-        prodList.forEach(x -> x.setMainPicUrl(mainPicMap.get(x.getStoreProdId())).setStandardSizeList(standardSizeMap.get(x.getStoreProdId())));
-        // 使用公共方法转换 PageInfo 到 Page
-        return Page.convert(new PageInfo<>(prodList), BeanUtil.copyToList(prodList, StoreProdPageResDTO.class));
+        return CollectionUtils.isEmpty(prodList) ? Page.empty(pageDTO.getPageSize(), pageDTO.getPageNum()) : Page.convert(new PageInfo<>(prodList));
     }
 
     @Override
@@ -236,20 +215,24 @@ public class StoreProductServiceImpl implements IStoreProductService {
         StoreProduct storeProd = BeanUtil.toBean(storeProdDTO, StoreProduct.class).setVoucherDate(DateUtils.getNowDate())
                 .setRecommendWeight(0L).setSaleWeight(0L).setPopularityWeight(0L);
         int count = this.storeProdMapper.insert(storeProd);
+        // 处理档口所有颜色
+        Map<String, StoreColor> storeColorMap = this.handleStoreColor(storeProdDTO);
         // 处理编辑档口商品颜色
-        this.handleStoreProdColorList(storeProd, storeProdDTO.getColorList(), storeProd.getId(), storeProd.getStoreId(), Boolean.TRUE);
+        this.handleStoreProdColorList(storeColorMap, storeProd, storeProdDTO.getColorList(), storeProd.getId(), storeProd.getStoreId(), Boolean.TRUE);
         // 处理编辑档口商品颜色尺码
-        this.handleStoreProdColorSizeList(storeProdDTO.getSizeList(), storeProd.getId(), Boolean.TRUE);
+        this.handleStoreProdColorSizeList(storeColorMap, storeProdDTO.getSizeList(), storeProd.getId(), Boolean.TRUE);
         // 处理StoreProduct其它属性
-        this.handleStoreProdProperties(storeProd, storeProdDTO);
+        this.handleStoreProdProperties(storeColorMap, storeProd, storeProdDTO);
         // 立即发布 将商品同步到 ES 商品文档，并将商品主图同步到 以图搜款服务中
         if (Objects.equals(storeProd.getListingWay(), ListingType.RIGHT_NOW.getValue())) {
+            // redis中的档口
+            Store store = this.redisCache.getCacheObject(CacheConstants.STORE_KEY + storeProd.getStoreId());
             // 向ES索引: product_info 创建文档
-            this.createESDoc(storeProd, storeProdDTO);
+            this.createESDoc(storeProd, storeProdDTO, store.getStoreName());
             // 搜图服务同步
             sync2ImgSearchServer(storeProd.getId(), storeProdDTO.getFileList());
             // 新增档口商品动态、关注档口通知公告
-            this.createNotice(storeProd, storeProdDTO.getStoreName());
+            this.createNotice(storeProd, store.getStoreName());
         }
         return count;
     }
@@ -293,38 +276,68 @@ public class StoreProductServiceImpl implements IStoreProductService {
         this.storeProdSvcMapper.updateDelFlagByStoreProdId(storeProdId);
         // 档口工艺信息的del_flag置为2
         this.storeProdProcMapper.updateDelFlagByStoreProdId(storeProdId);
+        // 处理档口所有颜色
+        Map<String, StoreColor> storeColorMap = this.handleStoreColor(storeProdDTO);
         // 处理更新逻辑
-        this.handleStoreProdProperties(storeProd, storeProdDTO);
+        this.handleStoreProdProperties(storeColorMap, storeProd, storeProdDTO);
         // 处理编辑档口商品颜色
-        this.handleStoreProdColorList(storeProd, storeProdDTO.getColorList(), storeProdId, storeProd.getStoreId(), Boolean.FALSE);
+        this.handleStoreProdColorList(storeColorMap, storeProd, storeProdDTO.getColorList(), storeProdId, storeProd.getStoreId(), Boolean.FALSE);
         // 处理编辑档口商品颜色尺码
-        this.handleStoreProdColorSizeList(storeProdDTO.getSizeList(), storeProdId, Boolean.FALSE);
+        this.handleStoreProdColorSizeList(storeColorMap, storeProdDTO.getSizeList(), storeProdId, Boolean.FALSE);
         // 只有在售和尾货状态，更新ES 信息 及 图搜
         if (Objects.equals(storeProd.getProdStatus(), EProductStatus.ON_SALE.getValue())
                 || Objects.equals(storeProd.getProdStatus(), EProductStatus.TAIL_GOODS.getValue())) {
+            // 从redis中获取store
+            Store store = this.redisCache.getCacheObject(CacheConstants.STORE_KEY + storeProd.getStoreId());
             // 更新索引: product_info 的文档
-            this.updateESDoc(storeProd, storeProdDTO);
+            this.updateESDoc(storeProd, storeProdDTO, store.getStoreName());
             // 搜图服务同步
             sync2ImgSearchServer(storeProd.getId(), storeProdDTO.getFileList());
             // 更新档口商品动态、关注档口、收藏商品通知公告
-            this.updateNotice(storeProd, storeProdDTO.getStoreName());
+            this.updateNotice(storeProd, store.getStoreName());
         }
         return count;
+    }
+
+    /**
+     * 处理档口所有的颜色
+     *
+     * @param storeProdDTO 入参
+     * @return Map<String, StoreColor>
+     */
+    private Map<String, StoreColor> handleStoreColor(StoreProdDTO storeProdDTO) {
+        // 处理档口所有颜色列表
+        List<StoreColor> storeColorList = this.storeColorMapper.selectList(new LambdaQueryWrapper<StoreColor>()
+                .eq(StoreColor::getStoreId, storeProdDTO.getStoreId()).eq(StoreColor::getDelFlag, Constants.UNDELETED));
+        List<Long> dbStoreColorIdList = storeColorList.stream().map(StoreColor::getId).collect(Collectors.toList());
+        // 新增的颜色列表
+        List<StoreColor> addColorList = storeProdDTO.getAllColorList().stream().filter(x -> !dbStoreColorIdList.contains(x.getStoreColorId()))
+                .map(x -> BeanUtil.toBean(x, StoreColor.class).setStoreId(storeProdDTO.getStoreId())).collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(addColorList)) {
+            this.storeColorMapper.insert(addColorList);
+        }
+        // 所有的档口颜色
+        CollectionUtils.addAll(addColorList, storeColorList);
+        return addColorList.stream().collect(Collectors.toMap(StoreColor::getColorName, Function.identity()));
     }
 
 
     /**
      * 处理店铺商品颜色尺码列表
      *
-     * @param sizeDTOList 店铺商品颜色尺码DTO列表
-     * @param storeProdId 店铺商品ID
-     * @param isInsert    是否是插入操作
+     * @param storeColorMap
+     * @param sizeDTOList   店铺商品颜色尺码DTO列表
+     * @param storeProdId   店铺商品ID
+     * @param isInsert      是否是插入操作
      */
-    private void handleStoreProdColorSizeList(List<StoreProdColorSizeDTO> sizeDTOList, Long storeProdId, Boolean isInsert) {
+    private void handleStoreProdColorSizeList(Map<String, StoreColor> storeColorMap, List<StoreProdColorSizeDTO> sizeDTOList, Long storeProdId, Boolean isInsert) {
+        sizeDTOList.forEach(x -> x.setStoreColorId(storeColorMap.get(x.getColorName()).getId()));
         if (isInsert) {
             // 如果是插入操作，直接插入新的颜色尺码信息
-            List<StoreProductColorSize> toAddList = sizeDTOList.stream().filter(x -> ObjectUtils.isEmpty(x.getStoreProdColorSizeId()))
-                    .map(x -> BeanUtil.toBean(x, StoreProductColorSize.class).setStoreProdId(storeProdId)).collect(Collectors.toList());
+            List<StoreProductColorSize> toAddList = sizeDTOList.stream().sorted(Comparator.comparing(StoreProdColorSizeDTO::getStoreColorId))
+                    .filter(x -> ObjectUtils.isEmpty(x.getStoreProdColorSizeId())).map(x -> BeanUtil
+                            .toBean(x, StoreProductColorSize.class).setStoreProdId(storeProdId))
+                    .collect(Collectors.toList());
             this.storeProdColorSizeMapper.insert(toAddList);
         } else {
             // 查询当前商品最新的颜色，并与现在做对比
@@ -399,13 +412,16 @@ public class StoreProductServiceImpl implements IStoreProductService {
     /**
      * 处理店铺商品颜色列表
      *
-     * @param storeProd    档口商品
-     * @param colorDTOList 商品颜色DTO列表
-     * @param storeProdId  店铺商品ID
-     * @param storeId      店铺ID
-     * @param isInsert     是否是插入操作
+     * @param storeColorMap
+     * @param storeProd     档口商品
+     * @param colorDTOList  商品颜色DTO列表
+     * @param storeProdId   店铺商品ID
+     * @param storeId       店铺ID
+     * @param isInsert      是否是插入操作
      */
-    private void handleStoreProdColorList(StoreProduct storeProd, List<StoreProdColorDTO> colorDTOList, Long storeProdId, Long storeId, Boolean isInsert) {
+    private void handleStoreProdColorList(Map<String, StoreColor> storeColorMap, StoreProduct storeProd, List<StoreProdColorDTO> colorDTOList, Long storeProdId, Long storeId, Boolean isInsert) {
+        // 档口商品颜色map，给入参赋值
+        colorDTOList.forEach(x -> x.setStoreColorId(storeColorMap.get(x.getColorName()).getId()));
         if (isInsert) {
             // 过滤出需要添加的商品颜色，并转换为StoreProductColor对象
             List<StoreProductColor> toAddList = colorDTOList.stream().filter(x -> ObjectUtils.isEmpty(x.getStoreProdColorId()))
@@ -813,10 +829,11 @@ public class StoreProductServiceImpl implements IStoreProductService {
     /**
      * 处理档口商品属性
      *
-     * @param storeProd    档口商品实体
-     * @param storeProdDTO 档口商品数据传输对象
+     * @param storeColorMap 档口颜色map
+     * @param storeProd     档口商品实体
+     * @param storeProdDTO  档口商品数据传输对象
      */
-    private void handleStoreProdProperties(StoreProduct storeProd, StoreProdDTO storeProdDTO) {
+    private void handleStoreProdProperties(Map<String, StoreColor> storeColorMap, StoreProduct storeProd, StoreProdDTO storeProdDTO) {
         // 上传的文件列表
         final List<StoreProdFileDTO> fileDTOList = storeProdDTO.getFileList();
         // 将文件插入到SysFile表中
@@ -834,7 +851,8 @@ public class StoreProductServiceImpl implements IStoreProductService {
                 .setStoreProdId(storeProd.getId()).setStoreId(storeProd.getStoreId()));
         // 档口颜色价格列表
         List<StoreProductColorPrice> priceList = storeProdDTO.getPriceList().stream().map(x -> BeanUtil.toBean(x, StoreProductColorPrice.class)
-                .setStoreProdId(storeProd.getId())).collect(Collectors.toList());
+                        .setStoreProdId(storeProd.getId()).setStoreColorId(storeColorMap.get(x.getColorName()).getId()))
+                .collect(Collectors.toList());
         this.storeProdColorPriceMapper.insert(priceList);
         // 档口详情内容
         StoreProductDetail storeProdDetail = new StoreProductDetail().setDetail(storeProdDTO.getDetail()).setStoreProdId(storeProd.getId());
@@ -847,16 +865,6 @@ public class StoreProductServiceImpl implements IStoreProductService {
         if (ObjectUtils.isNotEmpty(storeProdDTO.getProcess())) {
             this.storeProdProcMapper.insert(BeanUtil.toBean(storeProdDTO.getProcess(), StoreProductProcess.class).setStoreProdId(storeProd.getId()));
         }
-        // 处理档口所有颜色列表
-        List<StoreColor> storeColorList = this.storeColorMapper.selectList(new LambdaQueryWrapper<StoreColor>()
-                .eq(StoreColor::getStoreId, storeProdDTO.getStoreId()).eq(StoreColor::getDelFlag, Constants.UNDELETED));
-        List<Long> dbStoreColorIdList = storeColorList.stream().map(StoreColor::getId).collect(Collectors.toList());
-        // 新增的颜色列表
-        List<StoreColor> addColorList = storeProdDTO.getAllColorList().stream().filter(x -> !dbStoreColorIdList.contains(x.getStoreColorId()))
-                .map(x -> BeanUtil.toBean(x, StoreColor.class).setStoreId(storeProdDTO.getStoreId())).collect(Collectors.toList());
-        if (CollectionUtils.isNotEmpty(addColorList)) {
-            this.storeColorMapper.insert(addColorList);
-        }
     }
 
     /**
@@ -864,14 +872,21 @@ public class StoreProductServiceImpl implements IStoreProductService {
      *
      * @param storeProd    档口产品
      * @param storeProdDTO 档口产品新增入参
+     * @param storeName    档口名称
      * @throws IOException
      */
-    private void createESDoc(StoreProduct storeProd, StoreProdDTO storeProdDTO) throws IOException {
-        ESProductDTO esProductDTO = this.getESDTO(storeProd, storeProdDTO);
-        // 向索引中添加数据
-        CreateResponse createResponse = esClientWrapper.getEsClient().create(e -> e.index(Constants.ES_IDX_PRODUCT_INFO)
-                .id(storeProd.getId().toString()).document(esProductDTO));
-        System.out.println("createResponse.result() = " + createResponse.result());
+    private void createESDoc(StoreProduct storeProd, StoreProdDTO storeProdDTO, String storeName) throws IOException {
+        ESProductDTO esProductDTO = this.getESDTO(storeProd, storeProdDTO, storeName);
+        try {
+            // 向索引中添加数据
+            CreateResponse createResponse = esClientWrapper.getEsClient().create(e -> e.index(Constants.ES_IDX_PRODUCT_INFO)
+                    .id(storeProd.getId().toString()).document(esProductDTO));
+            log.info("createResponse.result() = {}", createResponse.result());
+        } catch (IOException | RuntimeException e) {
+            // 记录日志并抛出或处理异常
+            log.error("向ES写入文档失败，商品ID: {}, 错误信息: {}", storeProd.getId(), e.getMessage(), e);
+            throw e; // 或者做其他补偿处理，比如异步重试
+        }
     }
 
     /**
@@ -879,23 +894,31 @@ public class StoreProductServiceImpl implements IStoreProductService {
      *
      * @param storeProd    档口商品
      * @param storeProdDTO 档口商品更新入参
+     * @param storeName    档口名称
      * @throws IOException
      */
-    private void updateESDoc(StoreProduct storeProd, StoreProdDTO storeProdDTO) throws IOException {
-        ESProductDTO esProductDTO = this.getESDTO(storeProd, storeProdDTO);
-        UpdateResponse<ESProductDTO> updateResponse = esClientWrapper.getEsClient().update(u -> u
-                .index(Constants.ES_IDX_PRODUCT_INFO).doc(esProductDTO).id(storeProd.getId().toString()), ESProductDTO.class);
-        System.out.println("deleteResponse.result() = " + updateResponse.result());
+    private void updateESDoc(StoreProduct storeProd, StoreProdDTO storeProdDTO, String storeName) throws IOException {
+        ESProductDTO esProductDTO = this.getESDTO(storeProd, storeProdDTO, storeName);
+        try {
+            UpdateResponse<ESProductDTO> updateResponse = esClientWrapper.getEsClient().update(u -> u
+                    .index(Constants.ES_IDX_PRODUCT_INFO).doc(esProductDTO).id(storeProd.getId().toString()), ESProductDTO.class);
+            log.info("updateResponse.result() = {}", updateResponse.result());
+        } catch (IOException | RuntimeException e) {
+            log.error("更新商品[{}]到ES失败: {}", storeProd.getId(), e.getMessage(), e);
+            throw e; // 或者根据业务需求进行重试、异步补偿等处理
+        }
     }
+
 
     /**
      * 组装ES 入参 DTO
      *
      * @param storeProd    档口商品
      * @param storeProdDTO 档口商品更新入参
+     * @param storeName    档口名称
      * @return
      */
-    private ESProductDTO getESDTO(StoreProduct storeProd, StoreProdDTO storeProdDTO) {
+    private ESProductDTO getESDTO(StoreProduct storeProd, StoreProdDTO storeProdDTO, String storeName) {
         // 获取第一张主图
         String firstMainPic = storeProdDTO.getFileList().stream().filter(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC.getValue()))
                 .min(Comparator.comparing(StoreProdFileDTO::getOrderNum)).map(StoreProdFileDTO::getFileUrl)
@@ -913,7 +936,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
         String style = storeProdDTO.getCateAttr().getStyle();
         return BeanUtil.toBean(storeProd, ESProductDTO.class).setHasVideo(hasVideo)
                 .setProdCateName(storeProdDTO.getProdCateName()).setSaleWeight("0").setRecommendWeight("0").setPopularityWeight("0")
-                .setCreateTime(DateUtils.getTime()).setStoreName(storeProdDTO.getStoreName()).setMainPicUrl(firstMainPic)
+                .setCreateTime(DateUtils.getTime()).setStoreName(storeName).setMainPicUrl(firstMainPic)
                 .setParCateId(parCate.getProdCateId().toString()).setParCateName(parCate.getName()).setProdPrice(minPrice.toString())
                 .setSeason(season).setStyle(style).setTags(Collections.singletonList(style));
     }

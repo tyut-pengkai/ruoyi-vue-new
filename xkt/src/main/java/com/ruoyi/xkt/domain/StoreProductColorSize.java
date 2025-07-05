@@ -52,9 +52,9 @@ public class StoreProductColorSize extends XktBaseEntity {
     private String barcodePrefix;
 
     /**
-     * 是否是标准尺码（2不是 1是）
+     * 是否是标准尺码（0不是 1是）
      */
-    @Excel(name = "是否是标准尺码", readConverterExp = "2=不是,1=是")
+    @Excel(name = "是否是标准尺码", readConverterExp = "0=不是,1=是")
     private Integer standard;
 
     @Override

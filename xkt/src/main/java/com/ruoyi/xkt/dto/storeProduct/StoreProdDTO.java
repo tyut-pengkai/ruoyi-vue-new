@@ -33,8 +33,6 @@ public class StoreProdDTO {
     private String prodName;
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
-    @ApiModelProperty(value = "档口名称")
-    private String storeName;
     @ApiModelProperty(value = "商品分类ID")
     private Long prodCateId;
     @ApiModelProperty(value = "商品分类名称")

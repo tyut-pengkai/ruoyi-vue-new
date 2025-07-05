@@ -31,13 +31,10 @@ public class StoreProdVO {
     @ApiModelProperty(value = "档口ID", required = true)
     @NotNull(message = "档口ID不能为空!")
     private Long storeId;
-    @ApiModelProperty(value = "档口名称")
-    @NotBlank(message = "档口名称不能为空!")
-    private String storeName;
     @ApiModelProperty(value = "商品分类ID", required = true)
     @NotNull(message = "商品分类ID不能为空!")
     private Long prodCateId;
-    @ApiModelProperty(value = "商品分类名称")
+    @ApiModelProperty(value = "商品分类名称", required = true)
     @NotBlank(message = "商品分类名称不能为空!")
     private String prodCateName;
     @ApiModelProperty(value = "工厂货号")
@@ -62,7 +59,7 @@ public class StoreProdVO {
     @ApiModelProperty(value = "上架方式:1 立即上架 2 定时上架", required = true)
     @NotNull(message = "上架方式不能为空!")
     private Integer listingWay;
-    @ApiModelProperty(value = "商品状态：1.未发布 2. 在售 3. 尾货 4.已下架 4. 已删除", required = true)
+    @ApiModelProperty(value = "商品状态：1.未发布 2. 在售 3. 尾货 4.已下架 5. 已删除", required = true)
     @NotNull(message = "商品状态不能为空!")
     private Integer prodStatus;
     @ApiModelProperty(value = "定时发货时间(精确到小时)")
@@ -95,12 +92,13 @@ public class StoreProdVO {
     private StoreProdSvcVO svc;
     @NotBlank(message = "详情内容不能为空!")
     @ApiModelProperty(value = "详情内容", required = true)
-    @Xss
+//    @Xss
     private String detail;
     @ApiModelProperty(value = "档口生产工艺")
     private StoreProdProcessVO process;
 
     @Data
+    @Valid
     public static class StoreProdFileVO {
         @NotBlank(message = "文件名称不能为空!")
         @ApiModelProperty(value = "文件名称", required = true)
@@ -169,6 +167,7 @@ public class StoreProdVO {
     }
 
     @Data
+    @Valid
     public static class StoreProdColorVO {
         @ApiModelProperty(value = "档口颜色ID")
         private Long storeColorId;
@@ -183,9 +182,13 @@ public class StoreProdVO {
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
+    @Valid
     public static class StoreProdColorSizeVO {
         @ApiModelProperty(value = "档口颜色ID")
         private Long storeColorId;
+        @NotBlank(message = "颜色名称不能为空!")
+        @ApiModelProperty(value = "颜色名称")
+        private String colorName;
         @ApiModelProperty(value = "商品尺码", required = true)
         @NotNull(message = "档口商品定价不能为空!")
         private Integer size;
@@ -195,6 +198,7 @@ public class StoreProdVO {
     }
 
     @Data
+    @Valid
     public static class StoreProdColorPriceVO {
         @ApiModelProperty(value = "档口商品颜色ID")
         private Long storeColorId;

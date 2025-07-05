@@ -116,7 +116,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             StoreProduct sp = spMap.get(spcs.getStoreProdId());
             StoreColor sc = scMap.get(spcs.getStoreColorId());
             orderDetail.setStoreProdId(sp.getId());
-            orderDetail.setProdName(sp.getProdName());
+//            orderDetail.setProdName(sp.getProdName());
             orderDetail.setProdArtNum(sp.getProdArtNum());
             orderDetail.setProdTitle(sp.getProdTitle());
             orderDetail.setStoreColorId(sc.getId());
@@ -259,7 +259,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             StoreProduct sp = spMap.get(spcs.getStoreProdId());
             StoreColor sc = scMap.get(spcs.getStoreColorId());
             orderDetail.setStoreProdId(sp.getId());
-            orderDetail.setProdName(sp.getProdName());
+//            orderDetail.setProdName(sp.getProdName());
             orderDetail.setProdArtNum(sp.getProdArtNum());
             orderDetail.setProdTitle(sp.getProdTitle());
             orderDetail.setStoreColorId(sc.getId());

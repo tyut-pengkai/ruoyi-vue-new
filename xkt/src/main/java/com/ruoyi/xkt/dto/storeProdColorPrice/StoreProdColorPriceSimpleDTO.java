@@ -17,6 +17,8 @@ public class StoreProdColorPriceSimpleDTO {
 
     @ApiModelProperty(value = "档口商品颜色ID")
     private Long storeColorId;
+    @ApiModelProperty(value = "颜色名称")
+    private String colorName;
     @ApiModelProperty(value = "档口商品定价")
     private BigDecimal price;
 

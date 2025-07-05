@@ -97,7 +97,7 @@ public class StoreProductController extends XktBaseController {
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
-    @Log(title = "档口商品", businessType = BusinessType.INSERT)
+    @Log(title = "新增档口商品", businessType = BusinessType.INSERT)
     @ApiOperation(value = "新增档口商品", httpMethod = "POST", response = R.class)
     @PostMapping
     public R<Integer> create(@Validated @RequestBody StoreProdVO storeProdVO) throws IOException {
@@ -106,7 +106,7 @@ public class StoreProductController extends XktBaseController {
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "修改档口商品", httpMethod = "PUT", response = R.class)
-    @Log(title = "档口商品", businessType = BusinessType.UPDATE)
+    @Log(title = "修改档口商品", businessType = BusinessType.UPDATE)
     @PutMapping("/{storeProdId}")
     public R<Integer> edit(@PathVariable Long storeProdId, @Validated @RequestBody StoreProdVO storeProdVO) throws IOException {
         return R.ok(storeProdService.updateStoreProduct(storeProdId, BeanUtil.toBean(storeProdVO, StoreProdDTO.class)));
@@ -152,7 +152,7 @@ public class StoreProductController extends XktBaseController {
     @PostMapping("/export")
     public void export(HttpServletResponse response, StoreProduct storeProduct) {
         List<StoreProduct> list = storeProdService.selectStoreProductList(storeProduct);
-        ExcelUtil<StoreProduct> util = new ExcelUtil<StoreProduct>(StoreProduct.class);
+        ExcelUtil<StoreProduct> util = new ExcelUtil<>(StoreProduct.class);
         util.exportExcel(response, list, "档口商品数据");
     }
 

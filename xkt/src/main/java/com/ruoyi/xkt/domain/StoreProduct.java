@@ -37,12 +37,6 @@ public class StoreProduct extends XktBaseEntity {
     private Long storeId;
 
     /**
-     * 档口商品名称
-     */
-    @Excel(name = "档口商品名称")
-    private String prodName;
-
-    /**
      * 商品分类ID
      */
     @Excel(name = "商品分类ID")
@@ -140,31 +134,4 @@ public class StoreProduct extends XktBaseEntity {
      */
     private Long popularityWeight;
 
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("id", getId())
-                .append("prodName", getProdName())
-                .append("prodCateId", getProdCateId())
-                .append("factoryArtNum", getFactoryArtNum())
-                .append("prodArtNum", getProdArtNum())
-                .append("prodTitle", getProdTitle())
-                .append("prodWeight", getProdWeight())
-                .append("producePrice", getProducePrice())
-                .append("overPrice", getOverPrice())
-                .append("deliveryTime", getDeliveryTime())
-                .append("listingWay", getListingWay())
-                .append("nextBarcodeNum", getNextBarcodeNum())
-                .append("listingWaySchedule", getListingWaySchedule())
-                .append("voucherDate", getVoucherDate())
-                .append("prodStatus", getProdStatus())
-                .append("version", getVersion())
-                .append("delFlag", getDelFlag())
-                .append("createBy", getCreateBy())
-                .append("createTime", getCreateTime())
-                .append("updateBy", getUpdateBy())
-                .append("updateTime", getUpdateTime())
-                .toString();
-    }
 }

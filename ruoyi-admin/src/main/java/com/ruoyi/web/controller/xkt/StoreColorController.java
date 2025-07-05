@@ -8,6 +8,7 @@ import com.ruoyi.xkt.service.IStoreColorService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +30,7 @@ public class StoreColorController extends XktBaseController {
 
     final IStoreColorService storeColorService;
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "查询档口颜色列表", httpMethod = "GET", response = R.class)
     @GetMapping("/list/{storeId}")
     public R<List<StoreColorVO>> list(@PathVariable Long storeId) {

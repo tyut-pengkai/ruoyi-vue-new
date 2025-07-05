@@ -20,6 +20,8 @@ import java.util.List;
 @Accessors(chain = true)
 public class StoreProdPageResDTO {
 
+    @ApiModelProperty(value = "档口商品颜色ID")
+    private Long storeProdColorId;
     @ApiModelProperty(value = "档口商品ID")
     private Long storeProdId;
     @ApiModelProperty(value = "档口ID")
@@ -35,7 +37,7 @@ public class StoreProdPageResDTO {
     @ApiModelProperty(value = "分类类目")
     private String prodCateName;
     @ApiModelProperty(value = "标准尺码")
-    private List<Integer> standardSizeList;
+    private String standard;
     @ApiModelProperty(value = "销售金额（元）")
     private BigDecimal price;
     @ApiModelProperty(value = "状态:1未发布，2在售，3尾货，4已下架，5已删除")

@@ -114,7 +114,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                 .map(x -> {
                     StoreHomeDecorationResDTO.DecorationDTO decorationDTO = BeanUtil.toBean(x, StoreHomeDecorationResDTO.DecorationDTO.class)
                             .setBizName((Objects.equals(x.getJumpType(), HomepageJumpType.JUMP_PRODUCT.getValue()))
-                                    ? (storeProdMap.containsKey(x.getBizId()) ? storeProdMap.get(x.getBizId()).getProdName() : null)
+                                    ? (storeProdMap.containsKey(x.getBizId()) ? storeProdMap.get(x.getBizId()).getProdArtNum() : null)
                                     : (ObjectUtils.isEmpty(x.getBizId()) ? null : store.getStoreName()));
                     if (fileMap.containsKey(x.getFileId())) {
                         decorationDTO.setFileType(x.getFileType()).setFileName(fileMap.get(x.getFileId()).getFileName())
@@ -126,7 +126,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
         List<StoreHomeDecorationResDTO.DecorationDTO> decorList = homeList.stream().filter(x -> !Objects.equals(x.getFileType(), HomepageType.SLIDING_PICTURE.getValue()))
                 .map(x -> {
                     StoreHomeDecorationResDTO.DecorationDTO decorationDTO = BeanUtil.toBean(x, StoreHomeDecorationResDTO.DecorationDTO.class)
-                            .setBizName(storeProdMap.containsKey(x.getBizId()) ? storeProdMap.get(x.getBizId()).getProdName() : null);
+                            .setBizName(storeProdMap.containsKey(x.getBizId()) ? storeProdMap.get(x.getBizId()).getProdArtNum() : null);
                     if (fileMap.containsKey(x.getFileId())) {
                         decorationDTO.setFileType(x.getFileType()).setFileName(fileMap.get(x.getFileId()).getFileName())
                                 .setFileUrl(fileMap.get(x.getFileId()).getFileUrl()).setFileSize(fileMap.get(x.getFileId()).getFileSize());

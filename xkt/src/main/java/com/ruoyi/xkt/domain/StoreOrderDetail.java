@@ -33,7 +33,7 @@ public class StoreOrderDetail extends SimpleEntity {
     /**
      * 商品名称
      */
-    private String prodName;
+//    private String prodName;
     /**
      * 商品货号
      */
