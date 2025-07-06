@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -39,6 +40,7 @@ public class StoreCertVO {
     @NotBlank(message = "身份证号不能为空")
     @Pattern(regexp = "(^\\d{15}$)|(^\\d{17}([0-9]|X|x)$)", message = "身份证号格式不正确，请输入有效的15位或18位身份证号")
     private String idCard;
+    @Valid
     @ApiModelProperty(value = "认证文件列表", required = true)
     @NotNull(message = "认证文件列表不能为空")
     private List<StoreFileVO> fileList;

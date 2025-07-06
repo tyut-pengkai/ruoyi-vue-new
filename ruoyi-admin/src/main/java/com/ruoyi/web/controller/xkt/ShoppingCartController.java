@@ -33,6 +33,13 @@ public class ShoppingCartController extends XktBaseController {
     final IShoppingCartService shopCartService;
 
     @PreAuthorize("@ss.hasRole('seller')")
+    @ApiOperation(value = "获取用户进货车各状态数量", httpMethod = "GET", response = R.class)
+    @GetMapping("/status/num")
+    public R<ShopCartStatusCountResVO> getStatusNum() {
+        return R.ok(BeanUtil.toBean(shopCartService.getStatusNum(), ShopCartStatusCountResVO.class));
+    }
+
+    @PreAuthorize("@ss.hasRole('seller')")
     @ApiOperation(value = "电商卖家添加商品到进货车", httpMethod = "POST", response = R.class)
     @Log(title = "电商卖家添加商品到进货车", businessType = BusinessType.INSERT)
     @PostMapping

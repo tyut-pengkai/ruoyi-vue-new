@@ -948,11 +948,18 @@ public class StoreProductServiceImpl implements IStoreProductService {
      * @throws IOException
      */
     private void deleteESDoc(List<Long> storeProdIdList) throws IOException {
-        List<BulkOperation> list = storeProdIdList.stream().map(x -> new BulkOperation.Builder().delete(
-                d -> d.id(String.valueOf(x)).index(Constants.ES_IDX_PRODUCT_INFO)).build()).collect(Collectors.toList());
-        // 调用bulk方法执行批量插入操作
-        BulkResponse bulkResponse = esClientWrapper.getEsClient().bulk(e -> e.index(Constants.ES_IDX_PRODUCT_INFO).operations(list));
-        System.out.println("bulkResponse.items() = " + bulkResponse.items());
+        try {
+            // 删除ES索引文档
+            List<BulkOperation> list = storeProdIdList.stream().map(x -> new BulkOperation.Builder().delete(
+                    d -> d.id(String.valueOf(x)).index(Constants.ES_IDX_PRODUCT_INFO)).build()).collect(Collectors.toList());
+            // 调用bulk方法执行批量插入操作
+            BulkResponse bulkResponse = esClientWrapper.getEsClient().bulk(e -> e.index(Constants.ES_IDX_PRODUCT_INFO).operations(list));
+            log.info("bulkResponse.items() = {}", bulkResponse.items());
+        } catch (IOException | RuntimeException e) {
+            // 记录日志并抛出或处理异常
+            log.error("删除ES文档失败，商品ID: {}, 错误信息: {}", storeProdIdList, e.getMessage(), e);
+            throw e; // 或者做其他补偿处理，比如异步重试
+        }
     }
 
     /**

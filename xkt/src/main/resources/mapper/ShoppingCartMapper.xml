@@ -66,5 +66,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             sc.id DESC
     </select>
 
+    <select id="getStatusNum">
+        SELECT
+            sc.id,
+            IFNULL( SUM( CASE WHEN sp.prod_status IN ( 2, 3 ) THEN 1 ELSE 0 END ), 0 ) AS onSaleNum,
+            IFNULL( SUM( CASE WHEN sp.prod_status IN ( 4, 5 ) THEN 1 ELSE 0 END ), 0 ) AS expiredNum
+        FROM
+            shopping_cart sc
+                LEFT JOIN store_product sp ON sc.store_prod_id = sp.id
+        WHERE
+            sc.del_flag = 0
+            AND sp.prod_status IN ( 2, 3, 4, 5 )
+            AND sc.user_id = #{userId}
+        GROUP BY
+            sc.id
+    </select>
+
 
 </mapper>

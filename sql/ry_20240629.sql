@@ -516,6 +516,36 @@ create table gen_table_column (
 ) engine=innodb auto_increment=1 comment = '代码生成业务表字段';
 
 
+
+DROP TABLE IF EXISTS `voucher_sequence`;
+CREATE TABLE `voucher_sequence`  (
+     `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '单据编号ID',
+     `store_id` bigint UNSIGNED NOT NULL COMMENT '档口ID',
+     `type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '单据类型',
+     `date_format` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '单据格式化类型',
+     `next_sequence` int NOT NULL COMMENT '下一个单据编号',
+     `prefix` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '单据编号前缀',
+     `sequence_format` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '格式化类型',
+     `version` bigint UNSIGNED NOT NULL COMMENT '版本号',
+     `del_flag` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '删除标志（0代表存在 2代表删除）',
+     `create_by` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '创建者',
+     `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
+     `update_by` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '更新者',
+     `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
+     PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '系统code生成规则' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of voucher_sequence
+-- ----------------------------
+INSERT INTO `voucher_sequence` VALUES (1, 1, 'STORE_SALE', 'yyyy-MM-dd', 1, 'SD', '%04d', 0, '0', '', '2025-03-30 16:09:23', '', '2025-03-30 16:09:26');
+INSERT INTO `voucher_sequence` VALUES (2, 1, 'STORAGE', 'yyyy-MM-dd', 1, 'RK', '%04d', 0, '0', '', '2025-03-30 16:09:23', '', '2025-03-30 16:09:26');
+INSERT INTO `voucher_sequence` VALUES (3, 1, 'DEMAND', 'yyyy-MM-dd', 1, 'XQ', '%04d', 0, '0', '', '2025-03-30 16:09:23', '', '2025-03-30 16:09:26');
+INSERT INTO `voucher_sequence` VALUES (4, 1, 'STORE_ORDER', 'yyyy-MM-dd', 1, 'DF', '%04d', 0, '0', '', '2025-03-30 16:09:23', '', '2025-05-15 01:54:15');
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+
 DROP TABLE IF EXISTS `sys_product_category`;
 CREATE TABLE `sys_product_category`  (
   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '商品分类ID',

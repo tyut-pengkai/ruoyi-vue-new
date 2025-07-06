@@ -36,9 +36,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             spc.create_time AS createTime,
             sf.file_url AS mainPicUrl,
             CONCAT(
-            ( SELECT MIN( size ) FROM store_product_color_size WHERE store_color_id = spc.id AND del_flag = 0 AND standard = 1 ),
+            ( SELECT MIN( size ) FROM store_product_color_size WHERE store_color_id = spc.store_color_id AND store_prod_id = spc.store_prod_id AND del_flag = 0 AND standard = 1 ),
             '-',
-            ( SELECT MAX( size ) FROM store_product_color_size WHERE store_color_id = spc.id AND del_flag = 0 AND standard = 1 )
+            ( SELECT MAX( size ) FROM store_product_color_size WHERE store_color_id = spc.store_color_id AND store_prod_id = spc.store_prod_id AND del_flag = 0 AND standard = 1 )
             ) AS standard
         FROM
             store_product_color spc

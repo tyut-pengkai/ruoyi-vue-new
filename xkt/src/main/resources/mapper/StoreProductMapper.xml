@@ -281,7 +281,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             sp.id AS storeProdId,
             sp.store_id,
             s.store_name,
-            sp.prod_name,
             sp.prod_art_num,
             sp.prod_title,
             sp.create_time,

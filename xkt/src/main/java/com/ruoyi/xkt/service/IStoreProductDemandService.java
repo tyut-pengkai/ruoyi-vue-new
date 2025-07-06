@@ -19,7 +19,7 @@ public interface IStoreProductDemandService {
      * @param deleteDTO 需要删除的档口商品需求单主键集合
      * @return 结果
      */
-    public int deleteByStoreProdDemandIds(StoreProdDemandDeleteDTO deleteDTO);
+    int deleteByStoreProdDemandIds(StoreProdDemandDeleteDTO deleteDTO);
 
     /**
      * 获取指定门店及商品的库存和生产数量
@@ -68,5 +68,12 @@ public interface IStoreProductDemandService {
      * @return 返回一个包含校验结果的DTO对象，包括是否存在以及相关的验证信息
      */
     StoreProdDemandVerifyResDTO verifyDemandExist(StoreProdDemandVerifyDTO demandVerifyDTO);
+    /**
+     * 导出生产需求单
+     *
+     * @param exportDTO 导出入参
+     * @return List<StoreProdDemandDownloadDTO>
+     */
+    List<StoreProdDemandDownloadDTO> export(StoreProdDemandExportDTO exportDTO);
 
 }

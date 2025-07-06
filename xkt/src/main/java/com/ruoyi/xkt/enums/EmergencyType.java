@@ -12,7 +12,7 @@ import lombok.Getter;
 public enum EmergencyType {
 
     PROD_STORAGE(1, "紧急单"),
-    OTHER_STORAGE(2, "正常单");
+    OTHER_STORAGE(0, "正常单");
 
     private final Integer value;
     private final String label;

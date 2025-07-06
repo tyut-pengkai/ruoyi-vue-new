@@ -75,7 +75,8 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
         List<Long> storeProdColorIdList = prodColorList.stream().map(StoreProductColor::getId).collect(Collectors.toList());
         // 根据各个颜色查询库存信息
         List<StoreProductStock> prodStockList = this.storeProdStockMapper.selectList(new LambdaQueryWrapper<StoreProductStock>()
-                .in(StoreProductStock::getStoreProdColorId, storeProdColorIdList).eq(StoreProductStock::getDelFlag, Constants.UNDELETED).eq(StoreProductStock::getStoreId, storeId));
+                .in(StoreProductStock::getStoreProdColorId, storeProdColorIdList).eq(StoreProductStock::getDelFlag, Constants.UNDELETED)
+                .eq(StoreProductStock::getStoreId, storeId));
         // 将库存信息封装成Map
         Map<Long, StoreProdStockDTO> stockMap = prodStockList.stream().collect(Collectors
                 .toMap(StoreProductStock::getStoreProdColorId, x -> BeanUtil.toBean(x, StoreProdStockDTO.class)));
@@ -144,32 +145,21 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
         StoreProductDemand demand = new StoreProductDemand();
         // 生成code
         demand.setCode(this.sequenceService.generateCode(demandDTO.getStoreId(), EVoucherSequenceType.DEMAND.getValue(), DateUtils.parseDateToStr(DateUtils.YYYYMMDD, new Date())))
-                .setDemandStatus(1).setStoreId(demandDTO.getStoreId()).setStoreFactoryId(demandDTO.getStoreFactoryId());
+                .setDemandStatus(1).setStoreId(demandDTO.getStoreId()).setStoreFactoryId(demandDTO.getStoreFactoryId()).setCreateBy(SecurityUtils.getUsername());
         int count = this.storeProdDemandMapper.insert(demand);
         // 生产需求详情
-        List<StoreProductDemandDetail> detailList = demandDTO.getDetailList().stream()
-                .map(x -> BeanUtil.toBean(x, StoreProductDemandDetail.class).setStoreId(demandDTO.getStoreId())
-                        .setStoreProdDemandId(demand.getId()).setDetailStatus(1)).collect(Collectors.toList());
+        List<StoreProductDemandDetail> detailList = demandDTO.getDetailList().stream().map(x -> {
+            StoreProductDemandDetail detail = BeanUtil.toBean(x, StoreProductDemandDetail.class).setStoreId(demandDTO.getStoreId())
+                    .setStoreProdDemandId(demand.getId()).setDetailStatus(1);
+            detail.setCreateBy(SecurityUtils.getUsername());
+            return detail;
+        }).collect(Collectors.toList());
         this.storeProdDemandDetailMapper.insert(detailList);
         return count;
     }
 
-    /**
-     * 根据需求选择页面
-     * 此方法用于根据提供的页面查询条件，返回相应的页面数据
-     * 主要用于处理分页查询请求，以便在界面上展示特定的需求信息
-     *
-     * @param pageDTO 包含页面查询条件的DTO对象，如页码、每页条数等
-     * @return 返回一个对象，该对象包含了根据查询条件筛选出的页面数据
-     */
     @Override
     @Transactional(readOnly = true)
-    /**
-     * 根据页面查询条件查询门店生产需求信息
-     *
-     * @param pageDTO 页面查询条件对象，包含页码和页面大小等信息
-     * @return 返回一个包含查询结果的分页对象
-     */
     public Page<StoreProdDemandPageResDTO> selectPage(StoreProdDemandPageDTO pageDTO) {
         // 用户是否为档口管理者或子账户
         if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(pageDTO.getStoreId())) {
@@ -202,8 +192,6 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
 
     /**
      * 更新产品的生产状态
-     * 此方法通过接收一个包含产品生产信息的DTO对象来更新数据库中对应产品的生产状态
-     * 主要用于在生产流程中更新产品当前的加工状态或者生产阶段
      *
      * @param workingDTO 包含产品生产信息的数据传输对象用于更新产品生产状态
      * @return
@@ -217,10 +205,22 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
         }
         List<StoreProductDemandDetail> demandDetailList = Optional.ofNullable(this.storeProdDemandDetailMapper.selectList(new LambdaQueryWrapper<StoreProductDemandDetail>()
                         .eq(StoreProductDemandDetail::getStoreId, workingDTO.getStoreId()).eq(StoreProductDemandDetail::getDelFlag, Constants.UNDELETED)
-                        .in(StoreProductDemandDetail::getId, workingDTO.getStoreProdDemandDetailIdList())))
+                        .in(StoreProductDemandDetail::getStoreProdDemandId, workingDTO.getStoreProdDemandIdList())))
                 .orElseThrow(() -> new ServiceException("需求单明细不存在!", HttpStatus.ERROR));
-        demandDetailList.forEach(x -> x.setDetailStatus(DemandStatus.IN_PRODUCTION.getValue()));
+        // 更新需求明细单的状态为 生产中
+        demandDetailList.stream().filter(x -> workingDTO.getStoreProdDemandDetailIdList().contains(x.getId()))
+                .forEach(x -> x.setDetailStatus(DemandStatus.IN_PRODUCTION.getValue()));
         List<BatchResult> list = this.storeProdDemandDetailMapper.updateById(demandDetailList);
+        Map<Long, List<StoreProductDemandDetail>> detailMap = demandDetailList.stream().collect(Collectors.groupingBy(StoreProductDemandDetail::getStoreProdDemandId));
+        // 所有的需求单
+        List<StoreProductDemand> demandList = this.storeProdDemandMapper.selectByIds(workingDTO.getStoreProdDemandIdList());
+        demandList.forEach(demand -> {
+            List<StoreProductDemandDetail> detailList = detailMap.get(demand.getId());
+            if (CollectionUtils.isNotEmpty(detailList) && detailList.stream().allMatch(x -> Objects.equals(x.getDetailStatus(), DemandStatus.IN_PRODUCTION.getValue()))) {
+                demand.setDemandStatus(DemandStatus.IN_PRODUCTION.getValue());
+            }
+        });
+        this.storeProdDemandMapper.updateById(demandList);
         return list.size();
     }
 
@@ -369,6 +369,31 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
     }
 
     /**
+     * 导出生产需求单
+     *
+     * @param exportDTO 导出入参
+     * @return List<StoreProdDemandDownloadDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<StoreProdDemandDownloadDTO> export(StoreProdDemandExportDTO exportDTO) {
+        List<StoreProductDemandDetail> demandDetailList = this.storeProdDemandDetailMapper.selectList(new LambdaQueryWrapper<StoreProductDemandDetail>()
+                .eq(StoreProductDemandDetail::getStoreId, exportDTO.getStoreId()).eq(StoreProductDemandDetail::getDelFlag, Constants.UNDELETED)
+                .in(StoreProductDemandDetail::getId, exportDTO.getStoreProdDemandDetailIdList()));
+        List<StoreProdDemandDownloadDTO> downLoadList = demandDetailList.stream().sorted(Comparator.comparing(StoreProductDemandDetail::getProdArtNum))
+                .map(x -> new StoreProdDemandDownloadDTO()
+                        .setProdArtNum(x.getProdArtNum()).setColorName(x.getColorName()).setSize30Quantity(x.getSize30()).setSize31Quantity(x.getSize31())
+                        .setSize32Quantity(x.getSize32()).setSize33Quantity(x.getSize33()).setSize34Quantity(x.getSize34()).setSize35Quantity(x.getSize35())
+                        .setSize36Quantity(x.getSize36()).setSize37Quantity(x.getSize37()).setSize38Quantity(x.getSize38()).setSize39Quantity(x.getSize39())
+                        .setSize40Quantity(x.getSize40()).setSize41Quantity(x.getSize41()).setSize42Quantity(x.getSize42()).setSize43Quantity(x.getSize43()))
+                .collect(Collectors.toList());
+        for (int i = 0; i < downLoadList.size(); i++) {
+            downLoadList.get(i).setOrderNum(i + 1);
+        }
+        return downLoadList;
+    }
+
+    /**
      * 批量删除档口商品需求单
      *
      * @param deleteDTO 需要删除的档口商品需求单主键
@@ -381,10 +406,12 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
         if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(deleteDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
-        List<StoreProductDemandDetail> demandDetailList = Optional.ofNullable(this.storeProdDemandDetailMapper.selectList(new LambdaQueryWrapper<StoreProductDemandDetail>()
-                        .eq(StoreProductDemandDetail::getStoreId, deleteDTO.getStoreId()).eq(StoreProductDemandDetail::getDelFlag, Constants.UNDELETED)
-                        .in(StoreProductDemandDetail::getId, deleteDTO.getStoreProdDemandDetailIdList())))
-                .orElseThrow(() -> new ServiceException("需求单明细不存在!", HttpStatus.ERROR));
+        List<StoreProductDemandDetail> demandDetailList = this.storeProdDemandDetailMapper.selectList(new LambdaQueryWrapper<StoreProductDemandDetail>()
+                .eq(StoreProductDemandDetail::getStoreId, deleteDTO.getStoreId()).eq(StoreProductDemandDetail::getDelFlag, Constants.UNDELETED)
+                .in(StoreProductDemandDetail::getId, deleteDTO.getStoreProdDemandDetailIdList()));
+        if (CollectionUtils.isEmpty(demandDetailList)) {
+            throw new ServiceException("需求单明细不存在!", HttpStatus.ERROR);
+        }
         // 根据需求明细ID能否找到对应的入库与需求抵扣关系数据
         List<StoreProductStorageDemandDeduct> deductList = this.storageDemandDeductMapper.selectList(new LambdaQueryWrapper<StoreProductStorageDemandDeduct>()
                 .in(StoreProductStorageDemandDeduct::getStoreProdDemandDetailId, deleteDTO.getStoreProdDemandDetailIdList())

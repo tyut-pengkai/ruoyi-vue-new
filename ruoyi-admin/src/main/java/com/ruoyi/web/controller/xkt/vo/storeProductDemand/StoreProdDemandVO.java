@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -24,6 +25,7 @@ public class StoreProdDemandVO {
     @ApiModelProperty(value = "档口工厂ID", required = true)
     private Long storeFactoryId;
     @NotNull(message = "需求列表不能为空")
+    @Valid
     @ApiModelProperty(value = "新增需求列表", required = true)
     private List<DetailVO> detailList;
 
@@ -41,10 +43,11 @@ public class StoreProdDemandVO {
         @NotBlank(message = "颜色不能为空")
         @ApiModelProperty(value = "颜色", required = true)
         private String colorName;
-        @NotBlank(message = "是否紧急单不能为空")
-        @ApiModelProperty(value = "是否紧急单：2=正常,1=紧急", required = true)
+        @NotNull(message = "是否紧急单不能为空")
+        @ApiModelProperty(value = "是否紧急单：0=正常,1=紧急", required = true)
         private Integer emergency;
-        @ApiModelProperty(value = "总的数量")
+        @ApiModelProperty(value = "总的数量", required = true)
+        @NotNull(message = "总数量不能为空")
         private Integer quantity;
         @ApiModelProperty(value = "尺码30")
         private Integer size30;

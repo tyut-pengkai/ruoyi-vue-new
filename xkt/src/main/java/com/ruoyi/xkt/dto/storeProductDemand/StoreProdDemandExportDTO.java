@@ -1,9 +1,9 @@
 package com.ruoyi.xkt.dto.storeProductDemand;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -12,15 +12,12 @@ import java.util.List;
  * @date 2025/3/27 15:12
  */
 @Data
-public class StoreProdDemandWorkingDTO {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class StoreProdDemandExportDTO {
 
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
     @ApiModelProperty(value = "档口需求明细ID")
     private List<Long> storeProdDemandDetailIdList;
-    @ApiModelProperty(value = "档口需求ID列表")
-    private List<Long> storeProdDemandIdList;
-    @ApiModelProperty(value = "是否导出生产单")
-    private Boolean download;
 
 }

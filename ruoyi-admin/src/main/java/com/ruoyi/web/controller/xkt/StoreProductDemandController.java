@@ -6,6 +6,8 @@ import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.web.controller.xkt.vo.storeProductDemand.*;
 import com.ruoyi.xkt.dto.storeProductDemand.*;
 import com.ruoyi.xkt.service.IStoreProductDemandService;
@@ -16,6 +18,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 
 /**
@@ -69,11 +74,6 @@ public class StoreProductDemandController extends XktBaseController {
     @PutMapping
     public R<Integer> updateWorkingStatus(@Validated @RequestBody StoreProdDemandWorkingVO workingVO) {
         return R.ok(storeProdDemandService.updateWorkingStatus(BeanUtil.toBean(workingVO, StoreProdDemandWorkingDTO.class)));
-
-        // TODO 是否需要导出excel表格
-        // TODO 是否需要导出excel表格
-        // TODO 是否需要导出excel表格
-
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
@@ -83,5 +83,19 @@ public class StoreProductDemandController extends XktBaseController {
     public R<Integer> remove(@Validated @RequestBody StoreProdDemandDeleteVO deleteVO) {
         return R.ok(storeProdDemandService.deleteByStoreProdDemandIds(BeanUtil.toBean(deleteVO, StoreProdDemandDeleteDTO.class)));
     }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
+    @ApiOperation(value = "导出生产需求", httpMethod = "POST", response = R.class)
+    @Log(title = "导出生产需求", businessType = BusinessType.EXPORT)
+    @PostMapping("/export")
+    public void export(HttpServletResponse response, @Validated @RequestBody StoreProdDemandExportVO exportVO) throws UnsupportedEncodingException {
+        List<StoreProdDemandDownloadDTO> downloadList = storeProdDemandService.export(BeanUtil.toBean(exportVO, StoreProdDemandExportDTO.class));
+        ExcelUtil<StoreProdDemandDownloadDTO> util = new ExcelUtil<>(StoreProdDemandDownloadDTO.class);
+        // 设置下载excel名
+        String encodedFileName = URLEncoder.encode("生产需求" + DateUtils.getDate(), "UTF-8").replaceAll("\\+", "%20");
+        response.setHeader("Content-disposition", "attachment;filename=" + encodedFileName + ".xlsx");
+        util.exportExcel(response, downloadList, "生产需求记录");
+    }
+
 
 }

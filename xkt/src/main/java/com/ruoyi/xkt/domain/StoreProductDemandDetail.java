@@ -62,9 +62,9 @@ public class StoreProductDemandDetail extends XktBaseEntity {
     private Long storeProdId;
 
     /**
-     * 是否紧急单（2正常 1紧急）
+     * 是否紧急单（0正常 1紧急）
      */
-    @Excel(name = "是否紧急单", readConverterExp = "2=正常,1=紧急")
+    @Excel(name = "是否紧急单", readConverterExp = "0=正常,1=紧急")
     private Integer emergency;
 
     /**

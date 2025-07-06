@@ -9,6 +9,8 @@ import lombok.experimental.Accessors;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import java.util.Date;
+
 /**
  * 档口商品需求单对象 store_product_demand
  *
@@ -48,12 +50,10 @@ public class StoreProductDemand extends XktBaseEntity {
      */
     @Excel(name = "需求状态")
     private Integer demandStatus;
-
     /**
      * 备注
      */
     private String remark;
-
 
     @Override
     public String toString() {

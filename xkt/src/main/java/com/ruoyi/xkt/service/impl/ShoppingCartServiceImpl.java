@@ -13,6 +13,7 @@ import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
 import com.ruoyi.xkt.dto.userShoppingCart.*;
+import com.ruoyi.xkt.enums.EProductStatus;
 import com.ruoyi.xkt.enums.FileType;
 import com.ruoyi.xkt.enums.ProductSizeStatus;
 import com.ruoyi.xkt.mapper.*;
@@ -302,6 +303,17 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
             }).collect(Collectors.toList());
             return shopCartDTO.setDetailList(shopCartDetailList);
         }).collect(Collectors.toList());
+    }
+
+    /**
+     * 获取用户进货车各状态数量
+     *
+     * @return ShopCartStatusCountResDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public ShopCartStatusCountResDTO getStatusNum() {
+        return this.shopCartMapper.getStatusNum(SecurityUtils.getUserId());
     }
 
     /**

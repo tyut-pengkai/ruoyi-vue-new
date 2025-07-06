@@ -61,4 +61,11 @@ public interface IShoppingCartService {
      */
     List<ShoppingCartDTO> getList(ShopCartListDTO listDTO);
 
+    /**
+     * 获取用户进货车各状态数量
+     *
+     * @return ShopCartStatusCountResDTO
+     */
+    ShopCartStatusCountResDTO getStatusNum();
+
 }
