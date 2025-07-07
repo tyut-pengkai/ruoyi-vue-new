@@ -1,7 +1,7 @@
 # 生产环境配置
 server:
   # 服务器的HTTP端口，默认为8080
-  port: 18080
+  port: 18088
   servlet:
     # 应用的访问路径
     context-path: /
@@ -19,13 +19,13 @@ spring:
   # redis 配置
   redis:
     # 地址
-    host: 127.0.0.1
+    host: 121.40.218.168
     # 端口，默认为6379
-    port: 6379
+    port: 26379
     # 数据库索引
     database: 0
     # 密码
-    password: 
+    password: xTbJPhicHmEiRkt8
     # 连接超时时间
     timeout: 10s
     lettuce:
