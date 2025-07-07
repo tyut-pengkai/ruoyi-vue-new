@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mmclub.mapper.MCategorysMapper">
+    
+    <resultMap type="MCategorys" id="MCategorysResult">
+        <result property="id"    column="id"    />
+        <result property="categoryName"    column="category_name"    />
+        <result property="categoryNameCn"    column="category_name_cn"    />
+        <result property="categoryCode"    column="category_code"    />
+        <result property="parentId"    column="parent_id"    />
+        <result property="level"    column="level"    />
+        <result property="sortOrder"    column="sort_order"    />
+        <result property="description"    column="description"    />
+        <result property="iconUrl"    column="icon_url"    />
+        <result property="status"    column="status"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="deleted"    column="deleted"    />
+    </resultMap>
+
+    <sql id="selectMCategorysVo">
+        select id, category_name, category_name_cn, category_code, parent_id, level, sort_order, description, icon_url, status, create_time, update_time, deleted from m_categorys
+    </sql>
+
+    <select id="selectMCategorysList" parameterType="MCategorys" resultMap="MCategorysResult">
+        <include refid="selectMCategorysVo"/>
+        <where>  
+            <if test="categoryName != null  and categoryName != ''"> and category_name like concat('%', #{categoryName}, '%')</if>
+            <if test="categoryNameCn != null  and categoryNameCn != ''"> and category_name_cn = #{categoryNameCn}</if>
+            <if test="categoryCode != null  and categoryCode != ''"> and category_code = #{categoryCode}</if>
+        </where>
+    </select>
+    
+    <select id="selectMCategorysById" parameterType="Long" resultMap="MCategorysResult">
+        <include refid="selectMCategorysVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertMCategorys" parameterType="MCategorys" useGeneratedKeys="true" keyProperty="id">
+        insert into m_categorys
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="categoryName != null and categoryName != ''">category_name,</if>
+            <if test="categoryNameCn != null and categoryNameCn != ''">category_name_cn,</if>
+            <if test="categoryCode != null and categoryCode != ''">category_code,</if>
+            <if test="parentId != null">parent_id,</if>
+            <if test="level != null">level,</if>
+            <if test="sortOrder != null">sort_order,</if>
+            <if test="description != null">description,</if>
+            <if test="iconUrl != null">icon_url,</if>
+            <if test="status != null">status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="deleted != null">deleted,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="categoryName != null and categoryName != ''">#{categoryName},</if>
+            <if test="categoryNameCn != null and categoryNameCn != ''">#{categoryNameCn},</if>
+            <if test="categoryCode != null and categoryCode != ''">#{categoryCode},</if>
+            <if test="parentId != null">#{parentId},</if>
+            <if test="level != null">#{level},</if>
+            <if test="sortOrder != null">#{sortOrder},</if>
+            <if test="description != null">#{description},</if>
+            <if test="iconUrl != null">#{iconUrl},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="deleted != null">#{deleted},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMCategorys" parameterType="MCategorys">
+        update m_categorys
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="categoryName != null and categoryName != ''">category_name = #{categoryName},</if>
+            <if test="categoryNameCn != null and categoryNameCn != ''">category_name_cn = #{categoryNameCn},</if>
+            <if test="categoryCode != null and categoryCode != ''">category_code = #{categoryCode},</if>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="level != null">level = #{level},</if>
+            <if test="sortOrder != null">sort_order = #{sortOrder},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="iconUrl != null">icon_url = #{iconUrl},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="deleted != null">deleted = #{deleted},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMCategorysById" parameterType="Long">
+        delete from m_categorys where id = #{id}
+    </delete>
+
+    <delete id="deleteMCategorysByIds" parameterType="String">
+        delete from m_categorys where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

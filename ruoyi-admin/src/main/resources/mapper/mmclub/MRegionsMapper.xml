@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mmclub.mapper.MRegionsMapper">
+    
+    <resultMap type="MRegions" id="MRegionsResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="nameCn"    column="name_cn"    />
+        <result property="parentId"    column="parent_id"    />
+        <result property="level"    column="level"    />
+        <result property="regionCode"    column="region_code"    />
+        <result property="sortOrder"    column="sort_order"    />
+        <result property="status"    column="status"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="deleted"    column="deleted"    />
+    </resultMap>
+
+    <sql id="selectMRegionsVo">
+        select id, name, name_cn, parent_id, level, region_code, sort_order, status, create_time, update_time, deleted from m_regions
+    </sql>
+
+    <select id="selectMRegionsList" parameterType="MRegions" resultMap="MRegionsResult">
+        <include refid="selectMRegionsVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="nameCn != null  and nameCn != ''"> and name_cn like concat('%', #{nameCn}, '%')</if>
+            <if test="regionCode != null  and regionCode != ''"> and region_code = #{regionCode}</if>
+            <if test="status != null "> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectMRegionsById" parameterType="Long" resultMap="MRegionsResult">
+        <include refid="selectMRegionsVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertMRegions" parameterType="MRegions" useGeneratedKeys="true" keyProperty="id">
+        insert into m_regions
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+            <if test="nameCn != null and nameCn != ''">name_cn,</if>
+            <if test="parentId != null">parent_id,</if>
+            <if test="level != null">level,</if>
+            <if test="regionCode != null">region_code,</if>
+            <if test="sortOrder != null">sort_order,</if>
+            <if test="status != null">status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="deleted != null">deleted,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="nameCn != null and nameCn != ''">#{nameCn},</if>
+            <if test="parentId != null">#{parentId},</if>
+            <if test="level != null">#{level},</if>
+            <if test="regionCode != null">#{regionCode},</if>
+            <if test="sortOrder != null">#{sortOrder},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="deleted != null">#{deleted},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMRegions" parameterType="MRegions">
+        update m_regions
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="nameCn != null and nameCn != ''">name_cn = #{nameCn},</if>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="level != null">level = #{level},</if>
+            <if test="regionCode != null">region_code = #{regionCode},</if>
+            <if test="sortOrder != null">sort_order = #{sortOrder},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="deleted != null">deleted = #{deleted},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMRegionsById" parameterType="Long">
+        delete from m_regions where id = #{id}
+    </delete>
+
+    <delete id="deleteMRegionsByIds" parameterType="String">
+        delete from m_regions where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
