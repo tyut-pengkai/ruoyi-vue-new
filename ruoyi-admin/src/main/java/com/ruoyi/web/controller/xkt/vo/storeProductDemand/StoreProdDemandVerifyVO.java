@@ -3,6 +3,7 @@ package com.ruoyi.web.controller.xkt.vo.storeProductDemand;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -18,6 +19,7 @@ public class StoreProdDemandVerifyVO {
     @NotNull(message = "档口ID不能为空")
     @ApiModelProperty(value = "档口ID", required = true)
     private Long storeId;
+    @Valid
     @NotNull(message = "需求列表不能为空")
     @ApiModelProperty(value = "需求列表", required = true)
     private List<DetailVO> detailList;

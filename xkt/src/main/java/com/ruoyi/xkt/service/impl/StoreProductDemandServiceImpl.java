@@ -10,6 +10,7 @@ import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.storeProductDemand.*;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockDTO;
@@ -248,9 +249,9 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
         List<String> errorsMsgList = new ArrayList<>();
         if (CollectionUtils.isEmpty(demandDetailList)) {
             demandVerifyDTO.getDetailList().forEach(x -> {
-                List<String> errors = this.addErrorMsg(x);
-                if (CollectionUtils.isNotEmpty(errors)) {
-                    errorsMsgList.addAll(errors);
+                String errors = this.addErrorMsg(x);
+                if (StringUtils.isNotEmpty(errors)) {
+                    errorsMsgList.add(errors);
                 }
             });
         } else {
@@ -309,56 +310,59 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
             // 按照入库的数量依次进行对比，若需求单中不存在匹配信息，则直接返回错误信息
             demandVerifyDTO.getDetailList().forEach(x -> {
                 Map<Integer, Integer> sizeQuantityMap = colorSizeQuantityMap.get(x.getStoreProdColorId());
-                final String prefix = x.getProdArtNum() + x.getColorName();
-                final String suffix = "码";
+                final String prefix = x.getProdArtNum() + x.getColorName() + ": ";
                 // 如果没有对应的需求单则直接返回错误信息
                 if (MapUtils.isEmpty(sizeQuantityMap)) {
-                    List<String> errors = this.addErrorMsg(x);
-                    if (CollectionUtils.isNotEmpty(errors)) {
-                        errorsMsgList.addAll(errors);
+                    String errors = this.addErrorMsg(x);
+                    if (StringUtils.isNotEmpty(errors)) {
+                        errorsMsgList.add(errors);
                     }
                 } else {
+                    List<String> tempErrors = new ArrayList<>();
                     if (ObjectUtils.isNotEmpty(x.getSize30()) && ObjectUtils.isEmpty(sizeQuantityMap.get(SIZE_30))) {
-                        errorsMsgList.add(prefix + SIZE_30 + suffix);
+                        tempErrors.add(SIZE_30.toString());
                     }
                     if (ObjectUtils.isNotEmpty(x.getSize31()) && ObjectUtils.isEmpty(sizeQuantityMap.get(SIZE_31))) {
-                        errorsMsgList.add(prefix + SIZE_31 + suffix);
+                        tempErrors.add(SIZE_31.toString());
                     }
                     if (ObjectUtils.isNotEmpty(x.getSize32()) && ObjectUtils.isEmpty(sizeQuantityMap.get(SIZE_32))) {
-                        errorsMsgList.add(prefix + SIZE_32 + suffix);
+                        tempErrors.add(SIZE_32.toString());
                     }
                     if (ObjectUtils.isNotEmpty(x.getSize33()) && ObjectUtils.isEmpty(sizeQuantityMap.get(SIZE_33))) {
-                        errorsMsgList.add(prefix + SIZE_33 + suffix);
+                        tempErrors.add(SIZE_33.toString());
                     }
                     if (ObjectUtils.isNotEmpty(x.getSize34()) && ObjectUtils.isEmpty(sizeQuantityMap.get(SIZE_34))) {
-                        errorsMsgList.add(prefix + SIZE_34 + suffix);
+                        tempErrors.add(SIZE_34.toString());
                     }
                     if (ObjectUtils.isNotEmpty(x.getSize35()) && ObjectUtils.isEmpty(sizeQuantityMap.get(SIZE_35))) {
-                        errorsMsgList.add(prefix + SIZE_35 + suffix);
+                        tempErrors.add(SIZE_35.toString());
                     }
                     if (ObjectUtils.isNotEmpty(x.getSize36()) && ObjectUtils.isEmpty(sizeQuantityMap.get(SIZE_36))) {
-                        errorsMsgList.add(prefix + SIZE_36 + suffix);
+                        tempErrors.add(SIZE_36.toString());
                     }
                     if (ObjectUtils.isNotEmpty(x.getSize37()) && ObjectUtils.isEmpty(sizeQuantityMap.get(SIZE_37))) {
-                        errorsMsgList.add(prefix + SIZE_37 + suffix);
+                        tempErrors.add(SIZE_37.toString());
                     }
                     if (ObjectUtils.isNotEmpty(x.getSize38()) && ObjectUtils.isEmpty(sizeQuantityMap.get(SIZE_38))) {
-                        errorsMsgList.add(prefix + SIZE_38 + suffix);
+                        tempErrors.add(SIZE_38.toString());
                     }
                     if (ObjectUtils.isNotEmpty(x.getSize39()) && ObjectUtils.isEmpty(sizeQuantityMap.get(SIZE_39))) {
-                        errorsMsgList.add(prefix + SIZE_39 + suffix);
+                        tempErrors.add(SIZE_39.toString());
                     }
                     if (ObjectUtils.isNotEmpty(x.getSize40()) && ObjectUtils.isEmpty(sizeQuantityMap.get(SIZE_40))) {
-                        errorsMsgList.add(prefix + SIZE_40 + suffix);
+                        tempErrors.add(SIZE_40.toString());
                     }
                     if (ObjectUtils.isNotEmpty(x.getSize41()) && ObjectUtils.isEmpty(sizeQuantityMap.get(SIZE_41))) {
-                        errorsMsgList.add(prefix + SIZE_41 + suffix);
+                        tempErrors.add(SIZE_41.toString());
                     }
                     if (ObjectUtils.isNotEmpty(x.getSize42()) && ObjectUtils.isEmpty(sizeQuantityMap.get(SIZE_42))) {
-                        errorsMsgList.add(prefix + SIZE_42 + suffix);
+                        tempErrors.add(SIZE_42.toString());
                     }
                     if (ObjectUtils.isNotEmpty(x.getSize43()) && ObjectUtils.isEmpty(sizeQuantityMap.get(SIZE_43))) {
-                        errorsMsgList.add(prefix + SIZE_43 + suffix);
+                        tempErrors.add(SIZE_43.toString());
+                    }
+                    if (CollectionUtils.isNotEmpty(tempErrors)) {
+                        errorsMsgList.add(prefix + String.join(",", tempErrors));
                     }
                 }
             });
@@ -576,53 +580,52 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
      * @param detailDTO 商品详情对象，包含商品的各个尺寸信息
      * @return 返回一个字符串列表，包含所有错误消息
      */
-    private List<String> addErrorMsg(StoreProdDemandVerifyDTO.DetailDTO detailDTO) {
+    private String addErrorMsg(StoreProdDemandVerifyDTO.DetailDTO detailDTO) {
         List<String> errorMsgList = new ArrayList<>();
-        final String prefix = detailDTO.getProdArtNum() + detailDTO.getColorName();
-        final String suffix = "码";
+        final String prefix = detailDTO.getProdArtNum() + detailDTO.getColorName() + ": ";
         if (ObjectUtils.isNotEmpty(detailDTO.getSize30())) {
-            errorMsgList.add(prefix + SIZE_30 + suffix);
+            errorMsgList.add(SIZE_30.toString());
         }
         if (ObjectUtils.isNotEmpty(detailDTO.getSize31())) {
-            errorMsgList.add(prefix + SIZE_31 + suffix);
+            errorMsgList.add(SIZE_31.toString());
         }
         if (ObjectUtils.isNotEmpty(detailDTO.getSize32())) {
-            errorMsgList.add(prefix + SIZE_32 + suffix);
+            errorMsgList.add(SIZE_32.toString());
         }
         if (ObjectUtils.isNotEmpty(detailDTO.getSize33())) {
-            errorMsgList.add(prefix + SIZE_33 + suffix);
+            errorMsgList.add(SIZE_33.toString());
         }
         if (ObjectUtils.isNotEmpty(detailDTO.getSize34())) {
-            errorMsgList.add(prefix + SIZE_34 + suffix);
+            errorMsgList.add(SIZE_34.toString());
         }
         if (ObjectUtils.isNotEmpty(detailDTO.getSize35())) {
-            errorMsgList.add(prefix + SIZE_35 + suffix);
+            errorMsgList.add(SIZE_35.toString());
         }
         if (ObjectUtils.isNotEmpty(detailDTO.getSize36())) {
-            errorMsgList.add(prefix + SIZE_36 + suffix);
+            errorMsgList.add(SIZE_36.toString());
         }
         if (ObjectUtils.isNotEmpty(detailDTO.getSize37())) {
-            errorMsgList.add(prefix + SIZE_37 + suffix);
+            errorMsgList.add(SIZE_37.toString());
         }
         if (ObjectUtils.isNotEmpty(detailDTO.getSize38())) {
-            errorMsgList.add(prefix + SIZE_38 + suffix);
+            errorMsgList.add(SIZE_38.toString());
         }
         if (ObjectUtils.isNotEmpty(detailDTO.getSize39())) {
-            errorMsgList.add(prefix + SIZE_39 + suffix);
+            errorMsgList.add(SIZE_39.toString());
         }
         if (ObjectUtils.isNotEmpty(detailDTO.getSize40())) {
-            errorMsgList.add(prefix + SIZE_40 + suffix);
+            errorMsgList.add(SIZE_40.toString());
         }
         if (ObjectUtils.isNotEmpty(detailDTO.getSize41())) {
-            errorMsgList.add(prefix + SIZE_41 + suffix);
+            errorMsgList.add(SIZE_41.toString());
         }
         if (ObjectUtils.isNotEmpty(detailDTO.getSize42())) {
-            errorMsgList.add(prefix + SIZE_42 + suffix);
+            errorMsgList.add(SIZE_42.toString());
         }
         if (ObjectUtils.isNotEmpty(detailDTO.getSize43())) {
-            errorMsgList.add(prefix + SIZE_43 + suffix);
+            errorMsgList.add(SIZE_43.toString());
         }
-        return errorMsgList;
+        return prefix + String.join(",", errorMsgList);
     }
 
 

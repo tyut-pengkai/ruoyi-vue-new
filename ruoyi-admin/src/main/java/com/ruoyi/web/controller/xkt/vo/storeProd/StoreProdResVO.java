@@ -2,9 +2,15 @@ package com.ruoyi.web.controller.xkt.vo.storeProd;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.web.controller.xkt.vo.storeColor.StoreColorVO;
+import com.ruoyi.xkt.dto.storeProdColorSize.StoreProdColorSizeDTO;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -54,6 +60,8 @@ public class StoreProdResVO {
     private List<StoreColorVO> colorList;
     @ApiModelProperty(value = "档口颜色价格列表")
     private List<StoreProdColorPriceVO> priceList;
+    @ApiModelProperty(value = "档口商品尺码列表")
+    private List<StoreProdColorSizeVO> sizeList;
     @ApiModelProperty(value = "档口服务承诺")
     private StoreProdSvcVO svc;
     @ApiModelProperty(value = "详情内容")
@@ -61,6 +69,23 @@ public class StoreProdResVO {
     @ApiModelProperty(value = "档口商品生产工艺")
     private StoreProdProcessVO process;
 
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Valid
+    public static class StoreProdColorSizeVO {
+        @ApiModelProperty(value = "档口颜色ID")
+        private Long storeColorId;
+        @NotBlank(message = "颜色名称不能为空!")
+        @ApiModelProperty(value = "颜色名称")
+        private String colorName;
+        @ApiModelProperty(value = "商品尺码", required = true)
+        @NotNull(message = "档口商品定价不能为空!")
+        private Integer size;
+        @NotNull(message = "是否是标准尺码不能为空!")
+        @ApiModelProperty(value = "是否是标准尺码", required = true)
+        private Integer standard;
+    }
 
     @Data
     public static class StoreProdFileVO {

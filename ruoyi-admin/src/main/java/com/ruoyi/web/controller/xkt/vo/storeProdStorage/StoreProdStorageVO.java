@@ -24,7 +24,7 @@ public class StoreProdStorageVO {
     @ApiModelProperty(value = "档口ID", required = true)
     @NotNull(message = "档口ID不能为空!")
     private Long storeId;
-    @NotBlank(message = "入库类型不能为空!")
+    @NotNull(message = "入库类型不能为空!")
     @ApiModelProperty(value = "入库类型", required = true)
     private Integer storageType;
     @Valid
@@ -41,6 +41,9 @@ public class StoreProdStorageVO {
         @NotNull(message = "档口商品颜色ID不能为空!")
         @ApiModelProperty(value = "档口商品颜色ID", required = true)
         private Long storeProdColorId;
+        @NotNull(message = "档口颜色ID不能为空!")
+        @ApiModelProperty(value = "档口颜色ID", required = true)
+        private Long storeColorId;
         @NotBlank(message = "颜色名称不能为空!")
         @ApiModelProperty(value = "颜色名称", required = true)
         private String colorName;

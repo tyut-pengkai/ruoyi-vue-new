@@ -83,6 +83,7 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
     @Override
     @Transactional
     public int create(StoreProdStorageDTO storeProdStorageDTO) {
+        long start = System.currentTimeMillis();
         // 用户是否为档口管理者或子账户
         if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(storeProdStorageDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
@@ -106,10 +107,16 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
         this.storageDetailMapper.insert(detailList);
         // 构造增加库存的入参DTO
         List<StoreProdStockDTO> increaseStockList = BeanUtil.copyToList(detailList, StoreProdStockDTO.class);
+        long second = System.currentTimeMillis();
+        System.err.println("入库耗时：" + (second - start));
         // 增加档口商品的库存
         this.stockService.increaseStock(storeProdStorageDTO.getStoreId(), increaseStockList);
+        long third = System.currentTimeMillis();
+        System.err.println("库存耗时：" + (third - second));
         // 处理档口商品需求单的抵扣
         this.handleStorageDemandDeduct(storeProdStorageDTO.getStoreId(), storeProdStorage.getCode(), detailList);
+        long last = System.currentTimeMillis();
+        System.err.println("处理需求耗时：" + (last - third));
         return count;
     }
 
@@ -122,6 +129,7 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
      * @param detailList  入库明细列表
      */
     private void handleStorageDemandDeduct(Long storeId, String storageCode, List<StoreProductStorageDetail> detailList) {
+        long fourth = System.currentTimeMillis();
         // 根据明细列表找到所有提交的需求
         List<StoreProductDemandDetail> demandDetailList = this.demandDetailMapper.selectList(new LambdaQueryWrapper<StoreProductDemandDetail>()
                 .eq(StoreProductDemandDetail::getStoreId, storeId).eq(StoreProductDemandDetail::getDelFlag, Constants.UNDELETED)
@@ -134,24 +142,32 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
         // 所有的需求单ID列表
         final List<Long> demandIdList = demandDetailList.stream().map(StoreProductDemandDetail::getStoreProdDemandId).distinct().collect(Collectors.toList());
         // 所有颜色尺码需要抵扣的需求数量
-        Map<Long, Map<Integer, Map<Long, Integer>>> unDeductMap = this.getUnDeductMap(demandDetailList, detailList);
+        Map<Long, Map<Integer, Map<Long, Integer>>> unDeductMap = this.getUnDeductMap(demandDetailList, detailList.stream()
+                .map(StoreProductStorageDetail::getStoreProdColorId).collect(Collectors.toList()));
+        long fifth = System.currentTimeMillis();
+        System.err.println("查询需求耗时:" + (fifth -  fourth));
         if (MapUtils.isEmpty(unDeductMap)) {
             return;
         }
         // 按照入库明细列表依次进行需求数量扣减
         Map<Long, Map<Long, Map<Integer, Integer>>> storageQuantityMap = this.getStorageQuantityMap(detailList);
-        if (MapUtils.isEmpty(storageQuantityMap)) {
-            return;
-        }
+        long sixth = System.currentTimeMillis();
+        System.err.println("库存转map耗时: " + (sixth - fifth));
         // 按照入库的数量明细依次判断哪些需求订单明细还未抵扣完毕
         Map<Long, Map<Long, Map<Integer, Map<Long, Integer>>>> totalMatchMap = this.getTotalMatchMap(storageQuantityMap, unDeductMap);
+        long  seventh = System.currentTimeMillis();
+        System.err.println("处理需求抵扣明细耗时:" + (seventh - sixth));
         if (MapUtils.isEmpty(totalMatchMap)) {
             return;
         }
         // 新增入库与需求的抵扣关系
         List<Long> updateDetailIdList = this.createDemandDeduct(storageCode, demandDetailList, totalMatchMap);
+        long eighth = System.currentTimeMillis();
+        System.err.println("新增入库需求抵扣明细耗时:" + (eighth - seventh));
         // 根据最新的数据更新需求单的抵扣状态
         this.updateLatestDemandStatus(updateDetailIdList, demandIdList, totalMatchMap);
+        long ninth = System.currentTimeMillis();
+        System.err.println("更新需求单状态耗时:" + (ninth - eighth));
     }
 
     /**
@@ -372,8 +388,8 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
             if (MapUtils.isEmpty(sizeRequireMap) || MapUtils.isEmpty(detailSizeStorageMap)) {
                 return;
             }
-            Map<Long, Map<Integer, Map<Long, Integer>>> storageDetailIdSizeMatchMap = new LinkedHashMap<>();
             // 匹配的尺码集合
+            Map<Long, Map<Integer, Map<Long, Integer>>> storageDetailIdSizeMatchMap = new LinkedHashMap<>();
             detailSizeStorageMap.forEach((storageDetailId, sizeStorageMap) -> {
                 if (MapUtils.isEmpty(sizeStorageMap)) {
                     return;
@@ -392,6 +408,8 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
                         // 尺码的入库数量 + 当前尺码的需求明细数量
                         final int tempCompareQuantity = storageQuantity + entry.getValue();
                         if (tempCompareQuantity == 0) {
+                            // 数量刚好抵扣完毕
+                            itemMatchMap.put(entry.getKey(), Math.abs(entry.getValue()));
                             continue;
                         }
                         if (tempCompareQuantity > 0) {
@@ -476,10 +494,11 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
         return storageQuantityMap;
     }
 
-    private Map<Long, Map<Integer, Map<Long, Integer>>> getUnDeductMap(List<StoreProductDemandDetail> demandDetailList, List<StoreProductStorageDetail> detailList) {
+    private Map<Long, Map<Integer, Map<Long, Integer>>> getUnDeductMap(List<StoreProductDemandDetail> demandDetailList, List<Long> storeProdColorIdList) {
         List<StoreProductStorageDemandDeduct> deductedList = this.deductMapper.selectList(new LambdaQueryWrapper<StoreProductStorageDemandDeduct>()
-                .in(StoreProductStorageDemandDeduct::getStoreProdColorId, detailList.stream().map(StoreProductStorageDetail::getStoreProdColorId).collect(Collectors.toList()))
-                .eq(StoreProductStorageDemandDeduct::getDelFlag, Constants.UNDELETED));
+                .in(StoreProductStorageDemandDeduct::getStoreProdColorId, storeProdColorIdList).eq(StoreProductStorageDemandDeduct::getDelFlag, Constants.UNDELETED)
+                // 根据需求明细ID去找，否则 会把 所有的需求明细 对应的数据都找出来
+                .in(StoreProductStorageDemandDeduct::getStoreProdDemandDetailId, demandDetailList.stream().map(StoreProductDemandDetail::getId).collect(Collectors.toList())));
         // 已存在的需求抵扣明细列表
         Map<Long, Map<Integer, Integer>> deductedExistsMap = deductedList.stream().collect(Collectors.groupingBy(StoreProductStorageDemandDeduct::getStoreProdColorId,
                 Collectors.groupingBy(StoreProductStorageDemandDeduct::getSize, Collectors.summingInt(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)))));
@@ -495,20 +514,20 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
             // 已存在抵扣的数量
             Map<Integer, Integer> sizeDeductedMap = ObjectUtils.defaultIfNull(deductedExistsMap.get(storeProdColorId), new LinkedHashMap<>());
             // 尺码为30的已抵扣需求数量
-            Integer size30Deduct = ObjectUtils.defaultIfNull(sizeDeductedMap.get(30), 0);
-            Integer size31Deduct = ObjectUtils.defaultIfNull(sizeDeductedMap.get(31), 0);
-            Integer size32Deduct = ObjectUtils.defaultIfNull(sizeDeductedMap.get(32), 0);
-            Integer size33Deduct = ObjectUtils.defaultIfNull(sizeDeductedMap.get(33), 0);
-            Integer size34Deduct = ObjectUtils.defaultIfNull(sizeDeductedMap.get(34), 0);
-            Integer size35Deduct = ObjectUtils.defaultIfNull(sizeDeductedMap.get(35), 0);
-            Integer size36Deduct = ObjectUtils.defaultIfNull(sizeDeductedMap.get(36), 0);
-            Integer size37Deduct = ObjectUtils.defaultIfNull(sizeDeductedMap.get(37), 0);
-            Integer size38Deduct = ObjectUtils.defaultIfNull(sizeDeductedMap.get(38), 0);
-            Integer size39Deduct = ObjectUtils.defaultIfNull(sizeDeductedMap.get(39), 0);
-            Integer size40Deduct = ObjectUtils.defaultIfNull(sizeDeductedMap.get(40), 0);
-            Integer size41Deduct = ObjectUtils.defaultIfNull(sizeDeductedMap.get(41), 0);
-            Integer size42Deduct = ObjectUtils.defaultIfNull(sizeDeductedMap.get(42), 0);
-            Integer size43Deduct = ObjectUtils.defaultIfNull(sizeDeductedMap.get(43), 0);
+            Integer size30Deduct = ObjectUtils.defaultIfNull(sizeDeductedMap.get(SIZE_30), 0);
+            Integer size31Deduct = ObjectUtils.defaultIfNull(sizeDeductedMap.get(SIZE_31), 0);
+            Integer size32Deduct = ObjectUtils.defaultIfNull(sizeDeductedMap.get(SIZE_32), 0);
+            Integer size33Deduct = ObjectUtils.defaultIfNull(sizeDeductedMap.get(SIZE_33), 0);
+            Integer size34Deduct = ObjectUtils.defaultIfNull(sizeDeductedMap.get(SIZE_34), 0);
+            Integer size35Deduct = ObjectUtils.defaultIfNull(sizeDeductedMap.get(SIZE_35), 0);
+            Integer size36Deduct = ObjectUtils.defaultIfNull(sizeDeductedMap.get(SIZE_36), 0);
+            Integer size37Deduct = ObjectUtils.defaultIfNull(sizeDeductedMap.get(SIZE_37), 0);
+            Integer size38Deduct = ObjectUtils.defaultIfNull(sizeDeductedMap.get(SIZE_38), 0);
+            Integer size39Deduct = ObjectUtils.defaultIfNull(sizeDeductedMap.get(SIZE_39), 0);
+            Integer size40Deduct = ObjectUtils.defaultIfNull(sizeDeductedMap.get(SIZE_40), 0);
+            Integer size41Deduct = ObjectUtils.defaultIfNull(sizeDeductedMap.get(SIZE_41), 0);
+            Integer size42Deduct = ObjectUtils.defaultIfNull(sizeDeductedMap.get(SIZE_42), 0);
+            Integer size43Deduct = ObjectUtils.defaultIfNull(sizeDeductedMap.get(SIZE_43), 0);
             Map<Long, Integer> size30DemandMap = new LinkedHashMap<>();
             Map<Long, Integer> size31DemandMap = new LinkedHashMap<>();
             Map<Long, Integer> size32DemandMap = new LinkedHashMap<>();
