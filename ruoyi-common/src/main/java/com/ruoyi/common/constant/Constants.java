@@ -2,6 +2,7 @@ package com.ruoyi.common.constant;
 
 import io.jsonwebtoken.Claims;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Locale;
@@ -264,5 +265,9 @@ public class Constants
      * 档口搜索结果，广告插入位置 2 9 18 27 36
      */
     public static final Set<Integer> STORE_RECOMMEND_INSERT_POSITIONS = new HashSet<>(Arrays.asList(2, 9, 18, 27, 36));
+
+    public static final String ALIPAY_DEFAULT_FORMAT = "json";
+
+    public static final BigDecimal ZERO_POINT_ONE = BigDecimal.valueOf(0.1);
 
 }

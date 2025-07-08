@@ -6,11 +6,13 @@ import cn.hutool.core.util.NumberUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
+import com.alipay.api.AlipayConfig;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.diagnosis.DiagnosisUtils;
 import com.alipay.api.domain.*;
 import com.alipay.api.request.*;
 import com.alipay.api.response.*;
+import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.framework.notice.fs.FsNotice;
 import com.ruoyi.xkt.domain.StoreOrderDetail;
@@ -24,6 +26,7 @@ import com.ruoyi.xkt.enums.EPayStatus;
 import com.ruoyi.xkt.manager.PaymentManager;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -38,55 +41,67 @@ import java.util.Date;
 @Slf4j
 @Getter
 @Component
-public class AliPaymentMangerImpl implements PaymentManager {
+public class AliPaymentMangerImpl implements PaymentManager, InitializingBean {
 
-    private static final String DEFAULT_FORMAT = "json";
-    private static final String PAY_PRODUCT_CODE_WEB = "FAST_INSTANT_TRADE_PAY";
-    private static final String PAY_PRODUCT_CODE_WAP = "QUICK_WAP_WAY";
-    private static final String PAY_PRODUCT_CODE_APP = "QUICK_MSECURITY_PAY";
-    /**
-     * 应用ID,您的APPID，收款账号既是您的APPID对应支付宝账号
-     */
-    @Value("${alipay.appId:9021000144616672}")
+    @Value("${alipay.appId:}")
     private String appId;
-    /**
-     * 商户私钥，您的PKCS8格式RSA2私钥
-     */
-    @Value("${alipay.privateKey:MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC3x52ARikELwpOPvPcpY9jj7aEWIPivfBwkf3YRyUKnM7L6mOTxD1v3b7QLcL1+l0QmvOPSGgt2O3Qbjtvq+5ih4T32TlAzHGe8VqGVqrEv7ANQicsXz600ze5LdxCDRgBZWhO/GroGJKfenHf7K+arN4KXWWmHyZHCYD5z85TEvZZoA9e9MTMskXeDS8+fwP6McuNf4fR07kVuzblks+wWm1PsWfxFM7qNwSYKXbmEoyDe7+M9vBr7cwuj2OB3PEtj/FZjKMxVnFyVm61KiFAGUf3oUqWmPASTPDkFboRCS/njv980hk3sPba/qMDfMEpjoMZrcLBVzoj747oEi/DAgMBAAECggEAcVoXlRSxG7l/278MXl1nUXtEkeCeh+2rLWN+dDV9bUxGaJOLE4sIccUNeg2foGPpnuJTs15vk0endtVmp3weLntz0gMTQxpWQjiPIyi1b2Djz2msC7w7SwCz7+2PWtYEpmfLrFwX/Eubs+2r6vdrYDWbRj1RAuNXkp0UBgDcO3P9AFeGln5gUWxni4biN6B9sGGdsSwcm1A9biBPRsH2zMSVVWkhLVq+S73smm2Sh7WTIVEyeAuWEDeMs5oI2jQjPHMlUKmWW6JZ3uD5xbRm3Nkvve/nvfJ4ZXx58ABTI9EWzcBlEuLYef4T+P9q4KHZQljpJ4UliIxUVIDSk3GNMQKBgQDevjYnLW2FBNDYQvPf6FkD2iNzKFe80cQYR0+/jiSBgkmtQhXZgyJ2ZqQ5t20MjgLpeY0WJL2twBlFcYGico6Vnv+JMiJDtIjTu1UozAqV2VPeJ34nX34nqJptGwehiPXJupAiulAWtvTqsiYWlFHsr3dMtj6z07M+gDV8PU7P/QKBgQDTOCGgdrS3XYD680eH9vGKbH1DpIOMr3JokLk6kv4yui9Jxk5DMCxcJWkEQRnCrw2UYM8PfX17FqXrwhccmR9hskSmmbLONYzk4SDB73fM2nPqBw+VLO6jbWctylUsGaYfVxDOLDWPQkktKUsHK8pQHLNQ4jwlP5SGQUoIM/OqvwKBgHfRrmPIxh9GBeovqeyKmke+Mk+iJgBGfsvooHeUyQJ5yZRP9lz5c7JpaHI7v4d/ZQWfA0wkG3y5115JvshaA2VtEF0HAPOWy/vJy/eUOyV8sObSK8SWU9CVm+yRG7vDZyRLHXnw62AsrvcJOf/vbVp60RwM9RHbEZLPePYKLLkpAoGADPMaDK56ceuHptsXfZyEPopcO7NwZUW0a/jDgnXUo+OKVqmTzsa7UYLxp1MeczMsT/aHe1mkQdGnpoalyBkTNXgqgVRXBBGAa9/plDpMTADwrl50dB7nGpnwg3wuMJ/58V3zJ9DKD9huiBhKA0yKANNhownbyiTVxE1oboxQ2h0CgYEAkV4hjGe4t6mu5rhqvuIZkDskjuSOwO0dZsGXBZ/sOZusKNmskxeNZht4BajnATN4EaPg265k8ytWnOEQH041J8Wac1M+jAQQp6D1nkQWZZlrclTu7xvM+p6ypVtqNFTseIQtEhtyPw+fcsYrXM4u8LHpGlAzlwQ30lFg+K/Q++Y=}")
-    private String privateKey;
-    /**
-     * 支付宝公钥,查看地址：https://openhome.alipay.com/platform/keyManage.htm 对应APPID下的支付宝公钥。
-     */
-    @Value("${alipay.alipayPublicKey:MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAkiTTeQLIkyVHnYiNmRKEtsdlwKftUySN1SLkrhn6CgmHl5ovjPeYteweZEZmsf2kt6wRnaLkODVP7xUQiRVC2cu6StdJyvDzyiYI00u72PvSOvaWHcpzgKqTFpGiQseJQlHnI8U3ob4PxfJylBy8RDQHG9fZwNY1WOCsnSb3m2ufV1EQIjndzTq13yQE6jCz639rO8atlAG3PtJW/QRiGUzyGaOuKsS4HRzPbbpmVtsXoN76+x+WLWkeqlTBEu35X4Hdbkf1C36wp3b68sI5fVyLksF6elRv/It4aUzjXSXbO/Dx+zvMIN01FgwaFV6nLh++k3qlmo87p4I+hvsGiQIDAQAB}")
-    private String alipayPublicKey;
-    /**
-     * 服务器异步通知页面路径
-     */
+
+    @Value("${alipay.appPrivateKey:}")
+    private String appPrivateKey;
+
+    @Value("${alipay.appCertPath:}")
+    private String appCertPath;
+
+    @Value("${alipay.rootCertPath:}")
+    private String rootCertPath;
+
+    @Value("${alipay.alipayPublicCertPath:}")
+    private String alipayPublicCertPath;
+
     @Value("${alipay.notifyUrl:}")
     private String notifyUrl;
-    /**
-     * 页面跳转同步通知页面路径
-     */
+
     @Value("${alipay.returnUrl:}")
     private String returnUrl;
-    /**
-     * 签名方式
-     */
-    @Value("${alipay.signType:RSA2}")
+
+    @Value("${alipay.signType:}")
     private String signType;
-    /**
-     * 字符编码格式
-     */
-    @Value("${alipay.charset:UTF-8}")
+
+    @Value("${alipay.charset:}")
     private String charset;
-    /**
-     * 支付宝网关
-     */
-    @Value("${alipay.gatewayUrl:https://openapi-sandbox.dl.alipaydev.com/gateway.do}")
+
+    @Value("${alipay.gatewayUrl:}")
     private String gatewayUrl;
 
     @Autowired
     private FsNotice fsNotice;
+
+    private AlipayClient alipayClient;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        AlipayConfig alipayConfig = new AlipayConfig();
+        //设置网关地址
+        alipayConfig.setServerUrl(gatewayUrl);
+        //设置应用APPID
+        alipayConfig.setAppId(appId);
+        //设置应用私钥
+        alipayConfig.setPrivateKey(appPrivateKey);
+        //设置应用公钥证书路径
+        alipayConfig.setAppCertPath(appCertPath);
+        //设置支付宝公钥证书路径
+        alipayConfig.setAlipayPublicCertPath(alipayPublicCertPath);
+        //设置支付宝根证书路径
+        alipayConfig.setRootCertPath(rootCertPath);
+        //设置请求格式，固定值json
+        alipayConfig.setFormat(Constants.ALIPAY_DEFAULT_FORMAT);
+        //设置字符集
+        alipayConfig.setCharset(charset);
+        //设置签名类型
+        alipayConfig.setSignType(signType);
+        //构造client
+        alipayClient = new DefaultAlipayClient(alipayConfig);
+    }
 
     @Override
     public EPayChannel channel() {
@@ -105,11 +120,9 @@ public class AliPaymentMangerImpl implements PaymentManager {
         reqDTO.setSubject(subject);
         reqDTO.setTimeExpire(DateUtil.formatDateTime(expireTime));
 
-        AlipayClient alipayClient = new DefaultAlipayClient(gatewayUrl, appId, privateKey, DEFAULT_FORMAT, charset,
-                alipayPublicKey, signType);
         switch (payPage) {
             case WEB:
-                reqDTO.setProductCode(PAY_PRODUCT_CODE_WEB);
+                reqDTO.setProductCode("FAST_INSTANT_TRADE_PAY");
                 AlipayTradePagePayRequest webReq = new AlipayTradePagePayRequest();
                 webReq.setReturnUrl(returnUrl);
                 webReq.setNotifyUrl(notifyUrl);
@@ -128,7 +141,7 @@ public class AliPaymentMangerImpl implements PaymentManager {
                 }
                 break;
             case WAP:
-                reqDTO.setProductCode(PAY_PRODUCT_CODE_WAP);
+                reqDTO.setProductCode("QUICK_WAP_WAY");
                 AlipayTradeWapPayRequest wapReq = new AlipayTradeWapPayRequest();
                 wapReq.setReturnUrl(returnUrl);
                 wapReq.setNotifyUrl(notifyUrl);
@@ -147,7 +160,7 @@ public class AliPaymentMangerImpl implements PaymentManager {
                 }
                 break;
             case APP:
-                reqDTO.setProductCode(PAY_PRODUCT_CODE_APP);
+                reqDTO.setProductCode("QUICK_MSECURITY_PAY");
                 AlipayTradeAppPayRequest appReq = new AlipayTradeAppPayRequest();
                 appReq.setReturnUrl(returnUrl);
                 appReq.setNotifyUrl(notifyUrl);
@@ -191,8 +204,6 @@ public class AliPaymentMangerImpl implements PaymentManager {
         Assert.notNull(orderRefund.getRefundOrder());
         Assert.notEmpty(orderRefund.getRefundOrderDetails());
         Assert.notEmpty(orderRefund.getOriginOrder().getPayTradeNo());
-        AlipayClient alipayClient = new DefaultAlipayClient(gatewayUrl, appId, privateKey, DEFAULT_FORMAT, charset,
-                alipayPublicKey, signType);
         // 构造请求参数以调用接口
         AlipayTradeRefundRequest request = new AlipayTradeRefundRequest();
         AlipayTradeRefundModel model = new AlipayTradeRefundModel();
@@ -213,8 +224,7 @@ public class AliPaymentMangerImpl implements PaymentManager {
         model.setOutRequestNo(orderRefund.getRefundOrder().getOrderNo());
         try {
             //TODO 沙箱环境接口无法完全退款？
-//                    AlipayTradeRefundResponse response = alipayClient.certificateExecute(request);
-            AlipayTradeRefundResponse response = alipayClient.execute(request);
+            AlipayTradeRefundResponse response = alipayClient.certificateExecute(request);
             log.info("支付宝退款：{}", response.getBody());
             String fundChange = JSON.parseObject(response.getBody())
                     .getJSONObject("alipay_trade_refund_response")
@@ -241,8 +251,6 @@ public class AliPaymentMangerImpl implements PaymentManager {
     public ENetResult queryStoreOrderRefundResult(String refundOrderNo, String originOrderNo) {
         Assert.notEmpty(refundOrderNo);
         Assert.notEmpty(originOrderNo);
-        AlipayClient alipayClient = new DefaultAlipayClient(gatewayUrl, appId, privateKey, DEFAULT_FORMAT, charset,
-                alipayPublicKey, signType);
         // 构造请求参数以调用接口
         AlipayTradeFastpayRefundQueryRequest request = new AlipayTradeFastpayRefundQueryRequest();
         AlipayTradeFastpayRefundQueryModel model = new AlipayTradeFastpayRefundQueryModel();
@@ -250,7 +258,7 @@ public class AliPaymentMangerImpl implements PaymentManager {
         model.setOutTradeNo(originOrderNo);
         request.setBizModel(model);
         try {
-            AlipayTradeFastpayRefundQueryResponse response = alipayClient.execute(request);
+            AlipayTradeFastpayRefundQueryResponse response = alipayClient.certificateExecute(request);
             log.warn("查询支付宝订单退款结果: {}", response.getBody());
             if (response.isSuccess()) {
                 String refundStatus = JSON.parseObject(response.getBody())
@@ -277,15 +285,13 @@ public class AliPaymentMangerImpl implements PaymentManager {
     @Override
     public ENetResult queryStoreOrderPayResult(String orderNo) {
         Assert.notEmpty(orderNo);
-        AlipayClient alipayClient = new DefaultAlipayClient(gatewayUrl, appId, privateKey, DEFAULT_FORMAT, charset,
-                alipayPublicKey, signType);
         // 构造请求参数以调用接口
         AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
         AlipayTradeQueryModel model = new AlipayTradeQueryModel();
         model.setOutTradeNo(orderNo);
         request.setBizModel(model);
         try {
-            AlipayTradeQueryResponse response = alipayClient.execute(request);
+            AlipayTradeQueryResponse response = alipayClient.certificateExecute(request);
             log.warn("查询订单支付结果: {}", response.getBody());
             if (response.isSuccess()) {
                 String tradeStatus = JSON.parseObject(response.getBody())
@@ -328,8 +334,7 @@ public class AliPaymentMangerImpl implements PaymentManager {
         Assert.notEmpty(identity);
         Assert.notEmpty(realName);
         Assert.notNull(amount);
-        AlipayClient alipayClient = new DefaultAlipayClient(gatewayUrl, appId, privateKey, DEFAULT_FORMAT, charset,
-                alipayPublicKey, signType);
+        Assert.isTrue(NumberUtil.isGreaterOrEqual(amount, Constants.ZERO_POINT_ONE), "提现金额不能低于0.1元");
         // 构造请求参数以调用接口
         AlipayFundTransUniTransferRequest request = new AlipayFundTransUniTransferRequest();
         AlipayFundTransUniTransferModel model = new AlipayFundTransUniTransferModel();
@@ -354,8 +359,7 @@ public class AliPaymentMangerImpl implements PaymentManager {
         request.setBizModel(model);
         try {
             //TODO 测试
-//          AlipayFundTransUniTransferResponse  response = alipayClient.certificateExecute(request);
-            AlipayFundTransUniTransferResponse response = alipayClient.execute(request);
+            AlipayFundTransUniTransferResponse response = alipayClient.certificateExecute(request);
             log.info("支付宝转账: {}", response.getBody());
             if (response.isSuccess()) {
                 String status = JSON.parseObject(response.getBody())
@@ -379,8 +383,6 @@ public class AliPaymentMangerImpl implements PaymentManager {
     @Override
     public ENetResult queryTransferResult(String bizNo) {
         Assert.notEmpty(bizNo);
-        AlipayClient alipayClient = new DefaultAlipayClient(gatewayUrl, appId, privateKey, DEFAULT_FORMAT, charset,
-                alipayPublicKey, signType);
         // 构造请求参数以调用接口
         AlipayFundTransCommonQueryRequest request = new AlipayFundTransCommonQueryRequest();
         AlipayFundTransCommonQueryModel model = new AlipayFundTransCommonQueryModel();
@@ -392,7 +394,7 @@ public class AliPaymentMangerImpl implements PaymentManager {
         model.setProductCode("TRANS_ACCOUNT_NO_PWD");
         request.setBizModel(model);
         try {
-            AlipayFundTransCommonQueryResponse response = alipayClient.execute(request);
+            AlipayFundTransCommonQueryResponse response = alipayClient.certificateExecute(request);
             log.info("查询支付宝转账结果: {}", response.getBody());
             if (response.isSuccess()) {
                 String status = JSON.parseObject(response.getBody())

@@ -67,7 +67,7 @@ public class AlipayCallbackController extends XktBaseController {
         boolean signVerified = false;
         try {
             //验证签名
-            signVerified = AlipaySignature.rsaCheckV1(params, paymentManger.getAlipayPublicKey(),
+            signVerified = AlipaySignature.rsaCertCheckV1(params, paymentManger.getAlipayPublicCertPath(),
                     paymentManger.getCharset(), paymentManger.getSignType());
         } catch (AlipayApiException e) {
             logger.error("支付宝验签异常", e);
