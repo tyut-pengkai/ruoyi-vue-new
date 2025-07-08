@@ -82,7 +82,26 @@ export default {
       resizeHandler: null
     }
   },
+  mounted() {
+    // 捕获可能的getUserMedia错误
+    this.handleMediaDeviceErrors();
+  },
   methods: {
+    // 处理媒体设备错误
+    handleMediaDeviceErrors() {
+      // 检查是否在安全上下文中
+      if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+        console.warn('头像功能在非HTTPS环境下可能受限，建议配置HTTPS证书');
+      }
+      
+      // 全局错误处理
+      window.addEventListener('error', (event) => {
+        if (event.message && event.message.includes('getUserMedia')) {
+          console.warn('媒体设备访问受限，请确保在HTTPS环境下使用');
+          event.preventDefault();
+        }
+      });
+    },
     // 编辑头像
     editCropper() {
       this.open = true

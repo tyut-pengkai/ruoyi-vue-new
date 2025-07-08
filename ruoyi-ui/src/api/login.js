@@ -58,3 +58,39 @@ export function getCodeImg() {
     timeout: 20000
   })
 }
+
+// 微信小程序分步骤登录
+export function wxStepLogin(data) {
+  return request({
+    url: '/wxStepLogin',
+    headers: {
+      isToken: false
+    },
+    method: 'post',
+    data: data
+  })
+}
+
+// 微信小程序完善用户信息并登录
+export function wxCompleteUserInfo(data) {
+  return request({
+    url: '/wxCompleteUserInfo',
+    headers: {
+      isToken: false
+    },
+    method: 'post',
+    data: data
+  })
+}
+
+// 微信小程序一键登录（保留原有接口）
+export function wxLogin(data) {
+  return request({
+    url: '/wxLogin',
+    headers: {
+      isToken: false
+    },
+    method: 'post',
+    data: data
+  })
+}

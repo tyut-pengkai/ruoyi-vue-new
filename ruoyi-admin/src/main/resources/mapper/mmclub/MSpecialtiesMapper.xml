@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.mmclub.mapper.MSpecialtiesMapper">
+    
+    <resultMap type="MSpecialties" id="MSpecialtiesResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="nameCn"    column="name_cn"    />
+        <result property="specialtyCode"    column="specialty_code"    />
+        <result property="description"    column="description"    />
+        <result property="sortOrder"    column="sort_order"    />
+        <result property="status"    column="status"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="deleted"    column="deleted"    />
+    </resultMap>
+
+    <sql id="selectMSpecialtiesVo">
+        select id, name, name_cn, specialty_code, description, sort_order, status, create_time, update_time, deleted from m_specialties
+    </sql>
+
+    <select id="selectMSpecialtiesList" parameterType="MSpecialties" resultMap="MSpecialtiesResult">
+        <include refid="selectMSpecialtiesVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="nameCn != null  and nameCn != ''"> and name_cn like concat('%', #{nameCn}, '%')</if>
+            <if test="specialtyCode != null  and specialtyCode != ''"> and specialty_code like concat('%', #{specialtyCode}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectMSpecialtiesById" parameterType="Long" resultMap="MSpecialtiesResult">
+        <include refid="selectMSpecialtiesVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertMSpecialties" parameterType="MSpecialties" useGeneratedKeys="true" keyProperty="id">
+        insert into m_specialties
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+            <if test="nameCn != null and nameCn != ''">name_cn,</if>
+            <if test="specialtyCode != null">specialty_code,</if>
+            <if test="description != null">description,</if>
+            <if test="sortOrder != null">sort_order,</if>
+            <if test="status != null">status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="deleted != null">deleted,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="nameCn != null and nameCn != ''">#{nameCn},</if>
+            <if test="specialtyCode != null">#{specialtyCode},</if>
+            <if test="description != null">#{description},</if>
+            <if test="sortOrder != null">#{sortOrder},</if>
+            <if test="status != null">#{status},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="deleted != null">#{deleted},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMSpecialties" parameterType="MSpecialties">
+        update m_specialties
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="nameCn != null and nameCn != ''">name_cn = #{nameCn},</if>
+            <if test="specialtyCode != null">specialty_code = #{specialtyCode},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="sortOrder != null">sort_order = #{sortOrder},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="deleted != null">deleted = #{deleted},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMSpecialtiesById" parameterType="Long">
+        delete from m_specialties where id = #{id}
+    </delete>
+
+    <delete id="deleteMSpecialtiesByIds" parameterType="String">
+        delete from m_specialties where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

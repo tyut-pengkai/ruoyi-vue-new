@@ -128,6 +128,11 @@ public class SysUserServiceImpl implements ISysUserService
         return userMapper.selectUserById(userId);
     }
 
+    @Override
+    public SysUser getUserByOpenId(String openId) {
+        return userMapper.getUserByOpenId(openId);
+    }
+
     /**
      * 查询用户所属角色组
      * 

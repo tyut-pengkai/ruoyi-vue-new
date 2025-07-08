@@ -14,6 +14,7 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.MessageUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.service.ISysUserService;
+import java.util.Set;
 
 /**
  * 用户验证处理
@@ -61,6 +62,41 @@ public class UserDetailsServiceImpl implements UserDetailsService
 
     public UserDetails createLoginUser(SysUser user)
     {
-        return new LoginUser(user.getUserId(), user.getDeptId(), user, permissionService.getMenuPermission(user));
+        if (user == null) {
+            throw new ServiceException("用户信息为空，无法创建登录用户");
+        }
+        
+        if (user.getUserId() == null) {
+            throw new ServiceException("用户ID为空，无法创建登录用户");
+        }
+        
+        if (user.getUserName() == null) {
+            throw new ServiceException("用户名为空，无法创建登录用户");
+        }
+        
+        Long deptId = user.getDeptId();
+        if (deptId == null) {
+            deptId = 103L;
+            log.warn("用户 {} 的部门ID为空，使用默认部门ID: {}", user.getUserName(), deptId);
+        }
+        
+        if (permissionService == null) {
+            log.error("权限服务未注入，无法创建登录用户");
+            throw new ServiceException("系统配置错误：权限服务未初始化");
+        }
+        
+        Set<String> permissions;
+        try {
+            permissions = permissionService.getMenuPermission(user);
+            if (permissions == null) {
+                log.warn("用户 {} 的权限为空，使用空权限集合", user.getUserName());
+                permissions = new java.util.HashSet<>();
+            }
+        } catch (Exception e) {
+            log.error("获取用户 {} 权限失败: {}", user.getUserName(), e.getMessage());
+            permissions = new java.util.HashSet<>();
+        }
+        
+        return new LoginUser(user.getUserId(), deptId, user, permissions);
     }
 }
