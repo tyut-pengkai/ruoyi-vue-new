@@ -8,7 +8,6 @@ import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.StoreCustomer;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusDTO;
@@ -116,7 +115,7 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
                         .eq(StoreCustomer::getId, storeCusDTO.getStoreCusId()).eq(StoreCustomer::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口客户不存在!"));
         BeanUtil.copyProperties(storeCusDTO, storeCus);
-        return storeCusMapper.updateStoreCustomer(storeCus);
+        return storeCusMapper.updateById(storeCus);
     }
 
 
@@ -134,56 +133,5 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
                 .orElseThrow(() -> new ServiceException("档口客户不存在!", HttpStatus.ERROR));
         return BeanUtil.toBean(storeCus, StoreCusDTO.class);
     }
-
-    /**
-     * 查询档口客户列表
-     *
-     * @param storeCustomer 档口客户
-     * @return 档口客户
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public List<StoreCustomer> selectStoreCustomerList(StoreCustomer storeCustomer) {
-        return storeCusMapper.selectStoreCustomerList(storeCustomer);
-    }
-
-    /**
-     * 新增档口客户
-     *
-     * @param storeCustomer 档口客户
-     * @return 结果
-     */
-    @Override
-    @Transactional
-    public int insertStoreCustomer(StoreCustomer storeCustomer) {
-        storeCustomer.setCreateTime(DateUtils.getNowDate());
-        return storeCusMapper.insertStoreCustomer(storeCustomer);
-    }
-
-
-    /**
-     * 批量删除档口客户
-     *
-     * @param storeCusIds 需要删除的档口客户主键
-     * @return 结果
-     */
-    @Override
-    @Transactional
-    public int deleteStoreCustomerByStoreCusIds(Long[] storeCusIds) {
-        return storeCusMapper.deleteStoreCustomerByStoreCusIds(storeCusIds);
-    }
-
-    /**
-     * 删除档口客户信息
-     *
-     * @param storeCusId 档口客户主键
-     * @return 结果
-     */
-    @Override
-    @Transactional
-    public int deleteStoreCustomerByStoreCusId(Long storeCusId) {
-        return storeCusMapper.deleteStoreCustomerByStoreCusId(storeCusId);
-    }
-
 
 }

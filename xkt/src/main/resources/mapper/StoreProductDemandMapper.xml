@@ -4,85 +4,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.xkt.mapper.StoreProductDemandMapper">
     
-    <resultMap type="StoreProductDemand" id="StoreProductDemandResult">
-        <result property="id"    column="id"    />
-        <result property="code"    column="code"    />
-        <result property="demandStatus"    column="demand_status"    />
-        <result property="version"    column="version"    />
-        <result property="delFlag"    column="del_flag"    />
-        <result property="createBy"    column="create_by"    />
-        <result property="createTime"    column="create_time"    />
-        <result property="updateBy"    column="update_by"    />
-        <result property="updateTime"    column="update_time"    />
-    </resultMap>
-
-    <sql id="selectStoreProductDemandVo">
-        select id, code, demand_status, version, del_flag, create_by, create_time, update_by, update_time from store_product_demand
-    </sql>
-
-    <select id="selectStoreProductDemandList" parameterType="StoreProductDemand" resultMap="StoreProductDemandResult">
-        <include refid="selectStoreProductDemandVo"/>
-        <where>  
-            <if test="code != null  and code != ''"> and code = #{code}</if>
-            <if test="demandStatus != null "> and demand_status = #{demandStatus}</if>
-            <if test="version != null "> and version = #{version}</if>
-        </where>
-    </select>
-    
-    <select id="selectStoreProductDemandByStoreProdDemandId" parameterType="Long" resultMap="StoreProductDemandResult">
-        <include refid="selectStoreProductDemandVo"/>
-        where id = #{id}
-    </select>
-
-    <insert id="insertStoreProductDemand" parameterType="StoreProductDemand" useGeneratedKeys="true" keyProperty="storeProdDemandId">
-        insert into store_product_demand
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="code != null and code != ''">code,</if>
-            <if test="demandStatus != null">demand_status,</if>
-            <if test="version != null">version,</if>
-            <if test="delFlag != null">del_flag,</if>
-            <if test="createBy != null">create_by,</if>
-            <if test="createTime != null">create_time,</if>
-            <if test="updateBy != null">update_by,</if>
-            <if test="updateTime != null">update_time,</if>
-         </trim>
-        <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="code != null and code != ''">#{code},</if>
-            <if test="demandStatus != null">#{demandStatus},</if>
-            <if test="version != null">#{version},</if>
-            <if test="delFlag != null">#{delFlag},</if>
-            <if test="createBy != null">#{createBy},</if>
-            <if test="createTime != null">#{createTime},</if>
-            <if test="updateBy != null">#{updateBy},</if>
-            <if test="updateTime != null">#{updateTime},</if>
-         </trim>
-    </insert>
-
-    <update id="updateStoreProductDemand" parameterType="StoreProductDemand">
-        update store_product_demand
-        <trim prefix="SET" suffixOverrides=",">
-            <if test="code != null and code != ''">code = #{code},</if>
-            <if test="demandStatus != null">demand_status = #{demandStatus},</if>
-            <if test="version != null">version = #{version},</if>
-            <if test="delFlag != null">del_flag = #{delFlag},</if>
-            <if test="createBy != null">create_by = #{createBy},</if>
-            <if test="createTime != null">create_time = #{createTime},</if>
-            <if test="updateBy != null">update_by = #{updateBy},</if>
-            <if test="updateTime != null">update_time = #{updateTime},</if>
-        </trim>
-        where id = #{id}
-    </update>
-
-    <delete id="deleteStoreProductDemandByStoreProdDemandId" parameterType="Long">
-        delete from store_product_demand where id = #{id}
-    </delete>
-
-    <delete id="deleteStoreProductDemandByStoreProdDemandIds" parameterType="String">
-        delete from store_product_demand where id in
-        <foreach item="id" collection="array" open="(" separator="," close=")">
-            #{id}
-        </foreach>
-    </delete>
 
     <update id="updateStatusByIds">
         UPDATE
@@ -103,6 +24,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+
+    <select id="getStatusNum" resultType="com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandStatusCountResDTO">
+        SELECT
+            COALESCE(SUM(CASE WHEN spd.demand_status  = 1 THEN 1 ELSE 0 END),0) AS unProductionNum,
+            COALESCE(SUM(CASE WHEN spd.demand_status  = 2 THEN 1 ELSE 0 END),0) AS inProductionNum,
+            COALESCE(SUM(CASE WHEN spd.demand_status  = 3 THEN 1 ELSE 0 END),0) AS productionCompleteNum
+        FROM
+            store_product_demand spd
+        WHERE
+            spd.del_flag = 0 AND spd.store_id = #{storeId}
+    </select>
 
 
 

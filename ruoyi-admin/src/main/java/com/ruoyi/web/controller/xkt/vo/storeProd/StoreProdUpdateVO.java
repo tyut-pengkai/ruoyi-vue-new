@@ -23,7 +23,7 @@ import java.util.List;
  */
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class StoreProdVO {
+public class StoreProdUpdateVO {
 
     @ApiModelProperty(value = "档口商品名称")
     private String prodName;
@@ -67,11 +67,11 @@ public class StoreProdVO {
     @ApiModelProperty(value = "档口文件列表", required = true)
     @NotNull(message = "档口文件不能为空!")
     @Valid
-    private List<StoreProdCreateVO.StoreProdFileVO> fileList;
+    private List<StoreProdFileVO> fileList;
     @NotNull(message = "档口类目属性不能为空!")
     @Valid
     @ApiModelProperty(value = "档口类目属性", required = true)
-    private StoreProdCreateVO.StoreProdCateAttrVO cateAttr;
+    private StoreProdCateAttrVO cateAttr;
     @NotNull(message = "档口所有颜色列表不能为空!")
     @ApiModelProperty(value = "档口所有颜色列表", required = true)
     @Valid
@@ -79,18 +79,20 @@ public class StoreProdVO {
     @NotNull(message = "档口尺码列表不能为空!")
     @Valid
     @ApiModelProperty(value = "档口尺码列表", required = true)
-    private List<StoreProdCreateVO.SPCSizeVO> sizeList;
+    private List<SPCSizeVO> sizeList;
     @Valid
     @NotNull(message = "商品颜色价格列表不能为空!")
     @ApiModelProperty(value = "档口颜色价格列表", required = true)
-    private List<StoreProdCreateVO.SPCColorPriceVO> colorPriceList;
+    private List<SPCColorPriceVO> colorPriceList;
     @ApiModelProperty(value = "档口服务承诺")
-    private StoreProdCreateVO.StoreProdSvcVO svc;
+    private StoreProdSvcVO svc;
     @NotBlank(message = "详情内容不能为空!")
     @ApiModelProperty(value = "详情内容", required = true)
+//    @Xss
     private String detail;
     @ApiModelProperty(value = "档口生产工艺")
-    private StoreProdCreateVO.StoreProdProcessVO process;
+    private StoreProdProcessVO process;
+
 
 
     @Data

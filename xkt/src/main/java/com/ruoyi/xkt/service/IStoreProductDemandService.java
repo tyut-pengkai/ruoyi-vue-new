@@ -68,6 +68,7 @@ public interface IStoreProductDemandService {
      * @return 返回一个包含校验结果的DTO对象，包括是否存在以及相关的验证信息
      */
     StoreProdDemandVerifyResDTO verifyDemandExist(StoreProdDemandVerifyDTO demandVerifyDTO);
+
     /**
      * 导出生产需求单
      *
@@ -76,4 +77,19 @@ public interface IStoreProductDemandService {
      */
     List<StoreProdDemandDownloadDTO> export(StoreProdDemandExportDTO exportDTO);
 
+    /**
+     * 获取需求单各个状态对应的数量
+     *
+     * @param storeId 档口ID
+     * @return StoreProdDemandStatusCountResDTO
+     */
+    StoreProdDemandStatusCountResDTO getStatusNum(Long storeId);
+
+    /**
+     * 全部完成
+     *
+     * @param finishAllDTO 全部完成
+     * @return Integer
+     */
+    Integer finishAll(StoreProdDemandFinishAllDTO finishAllDTO);
 }

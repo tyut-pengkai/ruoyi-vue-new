@@ -37,6 +37,12 @@ public class StoreProductDemandController extends XktBaseController {
 
     final IStoreProductDemandService storeProdDemandService;
 
+    @ApiOperation(value = "获取所有需求单状态", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/status/num/{storeId}")
+    public R<StoreProdDemandStatusCountResVO> getStatusNum(@PathVariable Long storeId) {
+        return R.ok(BeanUtil.toBean(storeProdDemandService.getStatusNum(storeId), StoreProdDemandStatusCountResVO.class));
+    }
+
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "商品入库校验是否存在需求单", httpMethod = "POST", response = R.class)
     @Log(title = "商品入库校验是否存在需求单", businessType = BusinessType.INSERT)
@@ -82,6 +88,14 @@ public class StoreProductDemandController extends XktBaseController {
     @DeleteMapping("")
     public R<Integer> remove(@Validated @RequestBody StoreProdDemandDeleteVO deleteVO) {
         return R.ok(storeProdDemandService.deleteByStoreProdDemandIds(BeanUtil.toBean(deleteVO, StoreProdDemandDeleteDTO.class)));
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
+    @ApiOperation(value = "全部完成", httpMethod = "PUT", response = R.class)
+    @Log(title = "全部完成", businessType = BusinessType.UPDATE)
+    @PutMapping("/finish-all")
+    public R<Integer> finishAll(@Validated @RequestBody StoreProdDemandFinishAllVO allFinishVO) {
+        return R.ok(storeProdDemandService.finishAll(BeanUtil.toBean(allFinishVO, StoreProdDemandFinishAllDTO.class)));
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")

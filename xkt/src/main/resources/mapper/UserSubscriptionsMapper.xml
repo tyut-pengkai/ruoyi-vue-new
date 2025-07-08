@@ -72,14 +72,14 @@
         SELECT us.user_id, 3 AS targetNoticeType
         FROM user_subscriptions us
         WHERE us.del_flag = 0
-          AND us.store_id = ?
+          AND us.store_id = #{storeId}
 
         UNION
 
         SELECT uf.user_id , 4 AS targetNoticeType
         FROM user_favorites uf
         WHERE uf.del_flag = 0
-          AND uf.store_prod_id = ?
+          AND uf.store_prod_id = #{storeProdId}
     </select>
 
 

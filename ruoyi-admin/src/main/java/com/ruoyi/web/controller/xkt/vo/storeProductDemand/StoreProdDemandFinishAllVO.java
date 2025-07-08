@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.storeProductDemand;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -13,13 +12,16 @@ import java.util.List;
  * @date 2025/3/27 15:12
  */
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class StoreProdDemandExportVO {
+public class StoreProdDemandFinishAllVO {
 
     @ApiModelProperty(value = "档口ID", required = true)
     @NotNull(message = "档口ID不能为空")
     private Long storeId;
-    @ApiModelProperty(value = "档口需求明细ID")
+    @NotNull(message = "档口需求明细ID不能为空")
+    @ApiModelProperty(value = "档口需求明细ID", required = true)
     private List<Long> storeProdDemandDetailIdList;
+    @NotNull(message = "档口需求ID列表不能为空")
+    @ApiModelProperty(value = "档口需求ID列表", required = true)
+    private List<Long> storeProdDemandIdList;
 
 }

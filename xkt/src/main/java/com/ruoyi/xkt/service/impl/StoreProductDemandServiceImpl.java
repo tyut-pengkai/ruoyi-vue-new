@@ -52,6 +52,18 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
 
 
     /**
+     * 获取需求单各个状态对应的数量
+     *
+     * @param storeId 档口ID
+     * @return StoreProdDemandStatusCountResDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public StoreProdDemandStatusCountResDTO getStatusNum(Long storeId) {
+        return this.storeProdDemandMapper.getStatusNum(storeId);
+    }
+
+    /**
      * 获取指定门店及商品的库存和生产数量
      * 此方法用于查询特定门店中特定商品的库存和生产数量信息，帮助进行库存管理和生产计划制定
      *
@@ -381,9 +393,12 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
     @Override
     @Transactional(readOnly = true)
     public List<StoreProdDemandDownloadDTO> export(StoreProdDemandExportDTO exportDTO) {
-        List<StoreProductDemandDetail> demandDetailList = this.storeProdDemandDetailMapper.selectList(new LambdaQueryWrapper<StoreProductDemandDetail>()
-                .eq(StoreProductDemandDetail::getStoreId, exportDTO.getStoreId()).eq(StoreProductDemandDetail::getDelFlag, Constants.UNDELETED)
-                .in(StoreProductDemandDetail::getId, exportDTO.getStoreProdDemandDetailIdList()));
+        LambdaQueryWrapper<StoreProductDemandDetail> queryWrapper = new LambdaQueryWrapper<StoreProductDemandDetail>()
+                .eq(StoreProductDemandDetail::getStoreId, exportDTO.getStoreId()).eq(StoreProductDemandDetail::getDelFlag, Constants.UNDELETED);
+        if (CollectionUtils.isNotEmpty(exportDTO.getStoreProdDemandDetailIdList())) {
+            queryWrapper.in(StoreProductDemandDetail::getId, exportDTO.getStoreProdDemandDetailIdList());
+        }
+        List<StoreProductDemandDetail> demandDetailList = this.storeProdDemandDetailMapper.selectList(queryWrapper);
         List<StoreProdDemandDownloadDTO> downLoadList = demandDetailList.stream().sorted(Comparator.comparing(StoreProductDemandDetail::getProdArtNum))
                 .map(x -> new StoreProdDemandDownloadDTO()
                         .setProdArtNum(x.getProdArtNum()).setColorName(x.getColorName()).setSize30Quantity(x.getSize30()).setSize31Quantity(x.getSize31())
@@ -552,8 +567,8 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
                         // 更新数量为最新数量
                         .setQuantity(quantity);
             });
-            this.storeProdDemandDetailMapper.updateById(demandDetailList);
             // 有需求明细的抵扣关系，则将已完成的入库单数量变更为当前需求单数量 并将需求明细状态置为已完成
+            this.storeProdDemandDetailMapper.updateById(demandDetailList);
             List<StoreProductDemandDetail> listAfterUpdate = this.storeProdDemandDetailMapper.selectList(new LambdaQueryWrapper<StoreProductDemandDetail>()
                     .in(StoreProductDemandDetail::getStoreProdDemandId, demandDetailList.stream().map(StoreProductDemandDetail::getStoreProdDemandId).collect(Collectors.toList()))
                     .eq(StoreProductDemandDetail::getDelFlag, Constants.UNDELETED));
@@ -569,6 +584,47 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
             }
             return demandDetailList.size();
         }
+    }
+
+    /**
+     * 全部完成
+     *
+     * @param finishAllDTO 全部完成
+     * @return Integer
+     */
+    @Override
+    @Transactional
+    public Integer finishAll(StoreProdDemandFinishAllDTO finishAllDTO) {
+        List<StoreProductDemandDetail> demandDetailList = this.storeProdDemandDetailMapper.selectList(new LambdaQueryWrapper<StoreProductDemandDetail>()
+                .eq(StoreProductDemandDetail::getDelFlag, Constants.UNDELETED).eq(StoreProductDemandDetail::getStoreId, finishAllDTO.getStoreId())
+                .in(StoreProductDemandDetail::getId, finishAllDTO.getStoreProdDemandDetailIdList()));
+        if (CollectionUtils.isEmpty(demandDetailList)) {
+            throw new ServiceException("没有找到任何需求单!", HttpStatus.ERROR);
+        }
+        // 调整状态为已完成
+        demandDetailList.forEach(demandDetail -> demandDetail.setDetailStatus(DemandStatus.PRODUCTION_COMPLETE.getValue()));
+        int count = this.storeProdDemandDetailMapper.updateById(demandDetailList).size();
+        // 查询需求单所有的明细列表，判断状态是否都已完成
+        List<StoreProductDemandDetail> allDemandDetailList = this.storeProdDemandDetailMapper.selectList(new LambdaQueryWrapper<StoreProductDemandDetail>()
+                .eq(StoreProductDemandDetail::getDelFlag, Constants.UNDELETED).eq(StoreProductDemandDetail::getStoreId, finishAllDTO.getStoreId())
+                .in(StoreProductDemandDetail::getStoreProdDemandId, finishAllDTO.getStoreProdDemandIdList()));
+        List<Long> finishDemandIdList = new ArrayList<>();
+        // 判断有哪些是都已完成的
+        allDemandDetailList.stream().collect(Collectors.groupingBy(StoreProductDemandDetail::getStoreProdDemandId))
+                .forEach((demandId, detailList) -> {
+                    // 所有明细均已完成
+                    if (detailList.stream().allMatch(x -> Objects.equals(x.getDetailStatus(), DemandStatus.PRODUCTION_COMPLETE.getValue()))) {
+                        finishDemandIdList.add(demandId);
+                    }
+                });
+        if (CollectionUtils.isEmpty(finishDemandIdList)) {
+            return count;
+        }
+        List<StoreProductDemand> demandList = this.storeProdDemandMapper.selectList(new LambdaQueryWrapper<StoreProductDemand>()
+                .in(StoreProductDemand::getId, finishDemandIdList).eq(StoreProductDemand::getDelFlag, Constants.UNDELETED));
+        demandList.forEach(demand -> demand.setDemandStatus(DemandStatus.PRODUCTION_COMPLETE.getValue()));
+        this.storeProdDemandMapper.updateById(demandList);
+        return count;
     }
 
 

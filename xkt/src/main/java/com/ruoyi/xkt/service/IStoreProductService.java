@@ -48,7 +48,7 @@ public interface IStoreProductService {
      * @param storeProdDTO 档口商品
      * @return 结果
      */
-    int insertStoreProduct(StoreProdDTO storeProdDTO) throws IOException;
+    int create(StoreProdDTO storeProdDTO) throws IOException;
 
     /**
      * 修改档口商品
@@ -56,7 +56,7 @@ public interface IStoreProductService {
      * @param storeProdDTO 档口商品
      * @return 结果
      */
-    int updateStoreProduct(Long storeProdId, StoreProdDTO storeProdDTO) throws IOException;
+    int update(Long storeProdId, StoreProdDTO storeProdDTO) throws IOException;
 
     /**
      * 更新档口商品状态
@@ -158,4 +158,5 @@ public interface IStoreProductService {
      * @return List<StoreProdFuzzyLatest20ResDTO>
      */
     List<StoreProdFuzzyLatest30ResDTO> fuzzyQueryLatest30List(Long storeId, String prodArtNum);
+
 }

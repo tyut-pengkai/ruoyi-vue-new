@@ -19,7 +19,6 @@ import java.util.List;
 @Repository
 public interface StoreProductColorPriceMapper extends BaseMapper<StoreProductColorPrice> {
 
-    void updateDelFlagByStoreProdId(Long storeProdId);
 
     List<StoreProdColorPriceSimpleDTO> selectListByStoreProdId(Long storeProdId);
 

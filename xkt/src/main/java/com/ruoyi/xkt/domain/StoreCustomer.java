@@ -19,6 +19,7 @@ import java.math.BigDecimal;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
+@Accessors(chain = true)
 public class StoreCustomer extends XktBaseEntity {
     private static final long serialVersionUID = 1L;
 

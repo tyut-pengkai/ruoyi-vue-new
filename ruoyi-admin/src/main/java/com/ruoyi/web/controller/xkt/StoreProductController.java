@@ -101,16 +101,17 @@ public class StoreProductController extends XktBaseController {
     @ApiOperation(value = "新增档口商品", httpMethod = "POST", response = R.class)
     @PostMapping
     public R<Integer> create(@Validated @RequestBody StoreProdVO storeProdVO) throws IOException {
-        return R.ok(storeProdService.insertStoreProduct(BeanUtil.toBean(storeProdVO, StoreProdDTO.class)));
+        return R.ok(storeProdService.create(BeanUtil.toBean(storeProdVO, StoreProdDTO.class)));
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "修改档口商品", httpMethod = "PUT", response = R.class)
     @Log(title = "修改档口商品", businessType = BusinessType.UPDATE)
     @PutMapping("/{storeProdId}")
-    public R<Integer> edit(@PathVariable Long storeProdId, @Validated @RequestBody StoreProdVO storeProdVO) throws IOException {
-        return R.ok(storeProdService.updateStoreProduct(storeProdId, BeanUtil.toBean(storeProdVO, StoreProdDTO.class)));
+    public R<Integer> update(@PathVariable Long storeProdId, @Validated @RequestBody StoreProdVO storeProdVO) throws IOException {
+        return R.ok(storeProdService.update(storeProdId, BeanUtil.toBean(storeProdVO, StoreProdDTO.class)));
     }
+
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @Log(title = "修改档口商品状态", businessType = BusinessType.UPDATE)

@@ -2,6 +2,7 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProductDemand;
+import com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandStatusCountResDTO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -31,4 +32,11 @@ public interface StoreProductDemandMapper extends BaseMapper<StoreProductDemand>
      */
     void deleteDemandList(@Param("deleteDemandIdList") List<Long> deleteDemandIdList);
 
+    /**
+     * 查询各状态数量
+     *
+     * @param storeId 档口ID
+     * @return StoreProdDemandStatusCountResDTO
+     */
+    StoreProdDemandStatusCountResDTO getStatusNum(@Param("storeId") Long storeId);
 }
