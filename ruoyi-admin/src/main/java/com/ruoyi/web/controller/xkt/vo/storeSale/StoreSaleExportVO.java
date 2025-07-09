@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.xkt.vo.storeSale;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -25,7 +26,9 @@ public class StoreSaleExportVO {
     @ApiModelProperty(value = "storeSaleIdList")
     private List<Long> storeSaleIdList;
     @ApiModelProperty(value = "导出开始时间")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date voucherDateStart;
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     @ApiModelProperty(value = "导出结束时间")
     private Date voucherDateEnd;
 

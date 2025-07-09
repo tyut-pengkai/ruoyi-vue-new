@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -217,6 +218,16 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
             // 如果是全量导出，则开始时间 和 结束时间 不能为空
             if (ObjectUtils.isEmpty(exportDTO.getVoucherDateStart()) && ObjectUtils.isEmpty(exportDTO.getVoucherDateEnd())) {
                 throw new ServiceException("全量导出时，开始时间和结束时间不能为空!", HttpStatus.ERROR);
+            }
+            // 开始时间和结束时间，相间隔不能超过6个月
+            LocalDate start = exportDTO.getVoucherDateStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            LocalDate end = exportDTO.getVoucherDateEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            // 计算两个日期之间的年、月、日差值
+            Period period = Period.between(start, end);
+            // 如果总月数超过6个月，则返回 true
+            int totalMonths = period.getYears() * 12 + period.getMonths();
+            if (Math.abs(totalMonths) > 6) {
+                throw new ServiceException("导出时间间隔不能超过6个月!", HttpStatus.ERROR);
             }
             return this.storeSaleMapper.selectExportListVoucherDateBetween(exportDTO.getVoucherDateStart(), exportDTO.getVoucherDateEnd());
         }
