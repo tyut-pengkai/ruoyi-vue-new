@@ -6,6 +6,8 @@ import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPricePageDTO;
 import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceResDTO;
 import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceSimpleDTO;
 import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdMinPriceDTO;
+import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockAndDiscountDTO;
+import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockAndDiscountResDTO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -46,4 +48,11 @@ public interface StoreProductColorPriceMapper extends BaseMapper<StoreProductCol
      * @return  List<StoreProdColorPriceResDTO>
      */
     List<StoreProdColorPriceResDTO> selectPricePage(StoreProdColorPricePageDTO pageDTO);
+
+    /**
+     * 销售出库，输入货号，查询颜色价格等信息
+     * @param dto 入参
+     * @return StoreProdStockAndDiscountResDTO
+     */
+    StoreProdStockAndDiscountResDTO selectStockAndCusDiscount(StoreProdStockAndDiscountDTO dto);
 }

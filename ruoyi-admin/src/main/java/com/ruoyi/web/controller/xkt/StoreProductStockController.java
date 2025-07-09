@@ -88,8 +88,8 @@ public class StoreProductStockController extends XktBaseController {
     @ApiOperation(value = "销售出库，输入货号，查询客户优惠信息及当前货号颜色的库存", httpMethod = "POST", response = R.class)
     @PostMapping(value = "/stock-cus-discount")
     public R<StoreProdStockAndDiscountResVO> getStockAndCusDiscount(@Validated @RequestBody StoreProdStockAndDiscountVO stockAndDiscountVO) {
-        return R.ok(BeanUtil.toBean(storeProdStockService.getStockAndCusDiscount(BeanUtil
-                .toBean(stockAndDiscountVO, StoreProdStockAndDiscountDTO.class)), StoreProdStockAndDiscountResVO.class));
+        return R.ok(BeanUtil.toBean(storeProdStockService.getStockAndCusDiscount(BeanUtil.toBean(stockAndDiscountVO,
+                StoreProdStockAndDiscountDTO.class)), StoreProdStockAndDiscountResVO.class));
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")

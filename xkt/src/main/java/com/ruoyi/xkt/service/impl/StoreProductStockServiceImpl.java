@@ -9,11 +9,13 @@ import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
-import com.ruoyi.xkt.domain.*;
+import com.ruoyi.xkt.domain.StoreProductColorSize;
+import com.ruoyi.xkt.domain.StoreProductFile;
+import com.ruoyi.xkt.domain.StoreProductStock;
+import com.ruoyi.xkt.domain.SysFile;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
 import com.ruoyi.xkt.dto.storeProductStock.*;
 import com.ruoyi.xkt.enums.FileType;
-import com.ruoyi.xkt.enums.ProductSizeStatus;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IStoreProductStockService;
 import lombok.RequiredArgsConstructor;
@@ -101,37 +103,22 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
         if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(dto.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
+        // 商品颜色等基本信息
+        StoreProdStockAndDiscountResDTO basicInfoDTO = ObjectUtils.defaultIfNull(this.prodColorPriceMapper.selectStockAndCusDiscount(dto),
+                new StoreProdStockAndDiscountResDTO());
+        // 档口商品颜色 的 库存
         StoreProductStock stock = this.storeProdStockMapper.selectOne(new LambdaQueryWrapper<StoreProductStock>()
                 .eq(StoreProductStock::getStoreId, dto.getStoreId()).eq(StoreProductStock::getStoreProdColorId, dto.getStoreProdColorId())
                 .eq(StoreProductStock::getDelFlag, Constants.UNDELETED));
-        if (ObjectUtils.isEmpty(stock)) {
-            return new StoreProdStockAndDiscountResDTO();
-        }
-        // 商品
-        StoreProduct storeProd = Optional.ofNullable(this.storeProdMapper.selectOne(new LambdaQueryWrapper<StoreProduct>()
-                        .eq(StoreProduct::getId, stock.getStoreProdId()).eq(StoreProduct::getDelFlag, Constants.UNDELETED)))
-                .orElseThrow(() -> new ServiceException("商品不存在或无效!", HttpStatus.ERROR));
-        // 查询当前商品的售价
-        StoreProductColorPrice prodColorPrice = this.prodColorPriceMapper.selectOne(new LambdaQueryWrapper<StoreProductColorPrice>()
-                .eq(StoreProductColorPrice::getStoreProdId, stock.getStoreProdId()).eq(StoreProductColorPrice::getStoreColorId, stock.getStoreColorId())
-                .eq(StoreProductColorPrice::getDelFlag, Constants.UNDELETED));
-        // 查询当前客户在该商品的优惠信息
-        StoreCustomerProductDiscount storeCusProdDiscount = this.storeCusProdDiscMapper.selectOne(new LambdaQueryWrapper<StoreCustomerProductDiscount>()
-                .eq(StoreCustomerProductDiscount::getStoreCusId, dto.getStoreCusId()).eq(StoreCustomerProductDiscount::getStoreProdColorId, dto.getStoreProdColorId())
-                .eq(StoreCustomerProductDiscount::getStoreId, dto.getStoreId()).eq(StoreCustomerProductDiscount::getDelFlag, Constants.UNDELETED));
         // 标准尺码
         List<StoreProductColorSize> prodColorSizeList = this.prodColorSizeMapper.selectList(new LambdaQueryWrapper<StoreProductColorSize>()
-                .eq(StoreProductColorSize::getStoreProdId, stock.getStoreProdId()).eq(StoreProductColorSize::getStoreColorId, stock.getStoreColorId())
-                .eq(StoreProductColorSize::getDelFlag, Constants.UNDELETED).eq(StoreProductColorSize::getStandard, ProductSizeStatus.STANDARD.getValue()));
-
-        // TODO 还要返回sns条码数据
-        // TODO 还要返回sns条码数据
-
-        return BeanUtil.toBean(stock, StoreProdStockAndDiscountResDTO.class).setStoreProdStockId(stock.getId()).setStoreCusId(dto.getStoreCusId())
-                .setStoreCusName(storeCusProdDiscount.getStoreCusName()).setPrice(prodColorPrice.getPrice()).setOverPrice(storeProd.getOverPrice())
-                .setDiscount(ObjectUtils.defaultIfNull(storeCusProdDiscount.getDiscount(), 0))
-                .setStandardSizeList(prodColorSizeList.stream().map(StoreProductColorSize::getSize).sorted(Comparator.comparing(Function.identity())).collect(Collectors.toList()));
+                .eq(StoreProductColorSize::getStoreProdId, basicInfoDTO.getStoreProdId()).eq(StoreProductColorSize::getStoreColorId, basicInfoDTO.getStoreColorId())
+                .eq(StoreProductColorSize::getDelFlag, Constants.UNDELETED));
+        List<StoreProdStockAndDiscountResDTO.SPSADSizeDTO> sizeStockList = prodColorSizeList.stream().map(size -> new StoreProdStockAndDiscountResDTO.SPSADSizeDTO()
+                .setSize(size.getSize()).setStock(this.getSizeStock(size.getSize(), stock))).collect(Collectors.toList());
+        return basicInfoDTO.setStoreCusId(dto.getStoreCusId()).setStoreId(dto.getStoreId()).setSizeStockList(sizeStockList);
     }
+
 
     /**
      * 库存盘点
@@ -466,6 +453,60 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
             stock.setSize43(adjustDTO.getSize43() * adjustSign + ObjectUtils.defaultIfNull(stock.getSize43(), 0));
         }
         return stock;
+    }
+
+    /**
+     * 获取商品某尺寸的库存
+     * @param size 尺寸
+     * @param stock 库存
+     * @return 库存
+     */
+    private Integer getSizeStock(Integer size, StoreProductStock stock) {
+        if (ObjectUtils.isEmpty(stock)) {
+            return null;
+        }
+        if (size == 30) {
+            return stock.getSize30();
+        } else if (size == 31) {
+            return stock.getSize31();
+        }
+        else if (size == 32) {
+            return stock.getSize32();
+        }
+        else if (size == 33) {
+            return stock.getSize33();
+        }
+        else if (size == 34) {
+            return stock.getSize34();
+        }
+        else if (size == 35) {
+            return stock.getSize35();
+        }
+        else if (size == 36) {
+            return stock.getSize36();
+        }
+        else if (size == 37) {
+            return stock.getSize37();
+        }
+        else if (size == 38) {
+            return stock.getSize38();
+        }
+        else if (size == 39) {
+            return stock.getSize39();
+        }
+        else if (size == 40) {
+            return stock.getSize40();
+        }
+        else if (size == 41) {
+            return stock.getSize41();
+        }
+        else if (size == 42) {
+            return stock.getSize42();
+        }
+        else if (size == 43) {
+            return stock.getSize43();
+        }
+        return null;
     }
 
 

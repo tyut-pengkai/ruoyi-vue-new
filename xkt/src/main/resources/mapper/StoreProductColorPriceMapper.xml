@@ -83,4 +83,27 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             spcp.store_color_id
     </select>
 
+    <select id="selectStockAndCusDiscount" resultType="com.ruoyi.xkt.dto.storeProductStock.StoreProdStockAndDiscountResDTO">
+        SELECT DISTINCT
+            spcp.store_color_id,
+            spcp.price,
+            spc.color_name,
+            spc.id AS storeProdColorId,
+            spcp.store_prod_id,
+            sp.prod_art_num,
+            sp.over_price,
+            scpd.discount,
+            ( SELECT sc.cus_name FROM store_customer sc WHERE sc.id = #{storeCusId} ) AS storeCusName
+        FROM
+            store_product_color_price spcp
+                LEFT JOIN store_product sp ON spcp.store_prod_id = sp.id
+                LEFT JOIN store_product_color spc ON spcp.store_prod_id = spc.store_prod_id
+                AND spc.store_color_id = spcp.store_color_id AND spc.del_flag = 0
+                LEFT JOIN store_customer_product_discount scpd ON scpd.store_prod_color_id = spc.id
+                AND scpd.del_flag = 0
+        WHERE
+            spcp.del_flag = 0
+          AND spc.id = #{storeProdColorId}
+    </select>
+
 </mapper>
