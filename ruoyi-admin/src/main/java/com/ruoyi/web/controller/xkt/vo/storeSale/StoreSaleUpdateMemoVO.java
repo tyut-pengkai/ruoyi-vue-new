@@ -7,6 +7,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * @author liujiang
@@ -23,6 +24,7 @@ public class StoreSaleUpdateMemoVO {
     private Long storeSaleId;
     @NotBlank(message = "备注不能为空!")
     @ApiModelProperty(value = "备注")
+    @Size(min = 0, max = 100, message = "备注不能超过100字!")
     private String remark;
 
 }

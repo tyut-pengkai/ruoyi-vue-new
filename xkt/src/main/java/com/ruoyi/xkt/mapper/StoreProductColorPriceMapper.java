@@ -2,6 +2,7 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProductColorPrice;
+import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPricePageDTO;
 import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceResDTO;
 import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceSimpleDTO;
 import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdMinPriceDTO;
@@ -39,4 +40,10 @@ public interface StoreProductColorPriceMapper extends BaseMapper<StoreProductCol
      */
     List<StoreProdMinPriceDTO> selectStoreProdMinPriceList(@Param("storeProdIdList") List<String> storeProdIdList);
 
+    /**
+     * 获取档口颜色价格分页
+     * @param pageDTO 入参
+     * @return  List<StoreProdColorPriceResDTO>
+     */
+    List<StoreProdColorPriceResDTO> selectPricePage(StoreProdColorPricePageDTO pageDTO);
 }

@@ -3,6 +3,7 @@ package com.ruoyi.xkt.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProductColorSize;
 import com.ruoyi.xkt.dto.storeProdColorSize.StoreProdColorSizeDTO;
+import com.ruoyi.xkt.dto.storeProdColorSize.StoreProdSizeDTO;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -24,6 +25,6 @@ public interface StoreProductColorSizeMapper extends BaseMapper<StoreProductColo
      * @param storeProdId 档口商品ID
      * @return List<StoreProdColorSizeDTO>
      */
-    List<StoreProdColorSizeDTO> selectListByStoreProdId(Long storeProdId);
+    List<StoreProdSizeDTO> selectListByStoreProdId(Long storeProdId);
 
 }

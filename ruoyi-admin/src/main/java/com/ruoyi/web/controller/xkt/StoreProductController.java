@@ -112,7 +112,6 @@ public class StoreProductController extends XktBaseController {
         return R.ok(storeProdService.update(storeProdId, BeanUtil.toBean(storeProdVO, StoreProdDTO.class)));
     }
 
-
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @Log(title = "修改档口商品状态", businessType = BusinessType.UPDATE)
     @ApiOperation(value = "修改档口商品状态", httpMethod = "PUT", response = R.class)

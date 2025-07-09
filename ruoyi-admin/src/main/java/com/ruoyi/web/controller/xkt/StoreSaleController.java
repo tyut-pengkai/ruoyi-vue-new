@@ -71,10 +71,10 @@ public class StoreSaleController extends XktBaseController {
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
-    @ApiOperation(value = "查询档口销售出库详情", httpMethod = "GET", response = R.class)
+    @ApiOperation(value = "查询档口销售出库明细", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{storeSaleId}")
-    public R<StoreSaleVO> getInfo(@PathVariable("storeSaleId") Long storeSaleId) {
-        return R.ok(BeanUtil.toBean(storeSaleService.selectStoreSaleByStoreSaleId(storeSaleId), StoreSaleVO.class));
+    public R<StoreSaleResVO> getInfo(@PathVariable("storeSaleId") Long storeSaleId) {
+        return R.ok(BeanUtil.toBean(storeSaleService.selectStoreSaleByStoreSaleId(storeSaleId), StoreSaleResVO.class));
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
@@ -104,8 +104,8 @@ public class StoreSaleController extends XktBaseController {
     @Log(title = "修改备注", businessType = BusinessType.UPDATE)
     @ApiOperation(value = "修改备注", httpMethod = "PUT", response = R.class)
     @PutMapping("/memo")
-    public R<Integer> updateMemo(@Validated @RequestBody StoreSaleUpdateMemoVO updateMemoVO) {
-        return R.ok(storeSaleService.updateMemo(BeanUtil.toBean(updateMemoVO, StoreSaleUpdateMemoDTO.class)));
+    public R<Integer> updateRemark(@Validated @RequestBody StoreSaleUpdateMemoVO updateMemoVO) {
+        return R.ok(storeSaleService.updateRemark(BeanUtil.toBean(updateMemoVO, StoreSaleUpdateMemoDTO.class)));
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")

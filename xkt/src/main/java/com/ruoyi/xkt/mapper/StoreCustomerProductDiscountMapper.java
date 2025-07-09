@@ -15,6 +15,12 @@ import java.util.List;
  */
 public interface StoreCustomerProductDiscountMapper extends BaseMapper<StoreCustomerProductDiscount> {
 
+    /**
+     * 档口客户优惠分页
+     *
+     * @param pageDTO 分页入参
+     * @return List<StoreCusProdDiscPageResDTO>
+     */
     List<StoreCusProdDiscPageResDTO> selectDiscPage(StoreCusProdDiscPageDTO pageDTO);
 
 }

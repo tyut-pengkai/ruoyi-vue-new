@@ -20,7 +20,7 @@ public interface IStoreSaleService {
      * @param storeSaleId 档口销售出库主键
      * @return 档口销售出库
      */
-    public StoreSaleDTO selectStoreSaleByStoreSaleId(Long storeSaleId);
+    StoreSaleResDTO selectStoreSaleByStoreSaleId(Long storeSaleId);
 
     /**
      * 新增档口销售出库
@@ -28,7 +28,7 @@ public interface IStoreSaleService {
      * @param storeSaleDTO 档口销售出库
      * @return 结果
      */
-    public int insertStoreSale(StoreSaleDTO storeSaleDTO);
+    int insertStoreSale(StoreSaleDTO storeSaleDTO);
 
     /**
      * 修改档口销售出库
@@ -36,7 +36,7 @@ public interface IStoreSaleService {
      * @param storeSaleDTO 档口销售出库
      * @return 结果
      */
-    public int updateStoreSale(StoreSaleDTO storeSaleDTO);
+    int updateStoreSale(StoreSaleDTO storeSaleDTO);
 
     /**
      * 删除档口销售出库信息
@@ -44,7 +44,7 @@ public interface IStoreSaleService {
      * @param storeSaleId 档口销售出库主键
      * @return 结果
      */
-    public int deleteStoreSaleByStoreSaleId(Long storeSaleId);
+    int deleteStoreSaleByStoreSaleId(Long storeSaleId);
 
     /**
      * 获取当前档口客户的销售业绩
@@ -89,7 +89,7 @@ public interface IStoreSaleService {
      * @param updateMemoDTO 入参
      * @return Integer
      */
-    Integer updateMemo(StoreSaleUpdateMemoDTO updateMemoDTO);
+    Integer updateRemark(StoreSaleUpdateMemoDTO updateMemoDTO);
 
     /**
      * 导出销售出库列表

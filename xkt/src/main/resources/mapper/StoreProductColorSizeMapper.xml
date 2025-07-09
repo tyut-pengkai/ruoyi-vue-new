@@ -8,16 +8,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         UPDATE store_product_color_size SET del_flag = 2 WHERE store_prod_id = #{storeProdId}
     </update>
 
-    <select id="selectListByStoreProdId" parameterType="Long" resultType="com.ruoyi.xkt.dto.storeProdColorSize.StoreProdColorSizeDTO">
-        SELECT
-            id AS storeProdColorSizeId,
-            store_color_id,
-            size,
-            standard
+    <select id="selectListByStoreProdId" parameterType="Long" resultType="com.ruoyi.xkt.dto.storeProdColorSize.StoreProdSizeDTO">
+        SELECT DISTINCT
+            spcs.size,
+            spcs.standard
         FROM
-            store_product_color_size
+            store_product_color_size spcs
         WHERE
-            del_flag = 0 AND store_prod_id = #{storeProdId}
+            spcs.del_flag = 0
+          AND spcs.store_prod_id = #{storeProdId}
+        ORDER BY
+            spcs.size
+
     </select>
 
 </mapper>

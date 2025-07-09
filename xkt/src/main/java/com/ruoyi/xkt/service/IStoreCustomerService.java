@@ -1,10 +1,7 @@
 package com.ruoyi.xkt.service;
 
 import com.ruoyi.common.core.page.Page;
-import com.ruoyi.xkt.dto.storeCustomer.StoreCusDTO;
-import com.ruoyi.xkt.dto.storeCustomer.StoreCusFuzzyResDTO;
-import com.ruoyi.xkt.dto.storeCustomer.StoreCusPageDTO;
-import com.ruoyi.xkt.dto.storeCustomer.StoreCusPageResDTO;
+import com.ruoyi.xkt.dto.storeCustomer.*;
 
 import java.util.List;
 
@@ -63,4 +60,11 @@ public interface IStoreCustomerService {
      */
     List<StoreCusFuzzyResDTO> fuzzyQueryList(Long storeId, String cusName);
 
+    /**
+     * 更改是否大小码加价
+     *
+     * @param addOverPriceDTO 入参
+     * @return Integer
+     */
+    Integer updateAddOverPrice(StoreCusAddOverPriceDTO addOverPriceDTO);
 }

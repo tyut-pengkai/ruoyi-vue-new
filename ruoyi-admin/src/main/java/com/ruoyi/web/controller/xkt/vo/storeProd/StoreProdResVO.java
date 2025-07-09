@@ -61,7 +61,7 @@ public class StoreProdResVO {
     @ApiModelProperty(value = "档口颜色价格列表")
     private List<StoreProdColorPriceVO> priceList;
     @ApiModelProperty(value = "档口商品尺码列表")
-    private List<StoreProdColorSizeVO> sizeList;
+    private List<StoreProdSizeVO> sizeList;
     @ApiModelProperty(value = "档口服务承诺")
     private StoreProdSvcVO svc;
     @ApiModelProperty(value = "详情内容")
@@ -73,12 +73,7 @@ public class StoreProdResVO {
     @AllArgsConstructor
     @NoArgsConstructor
     @Valid
-    public static class StoreProdColorSizeVO {
-        @ApiModelProperty(value = "档口颜色ID")
-        private Long storeColorId;
-        @NotBlank(message = "颜色名称不能为空!")
-        @ApiModelProperty(value = "颜色名称")
-        private String colorName;
+    public static class StoreProdSizeVO {
         @ApiModelProperty(value = "商品尺码", required = true)
         @NotNull(message = "档口商品定价不能为空!")
         private Integer size;

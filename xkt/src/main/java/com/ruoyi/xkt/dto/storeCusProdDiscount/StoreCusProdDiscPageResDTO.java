@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -20,6 +21,8 @@ public class StoreCusProdDiscPageResDTO {
     private Long storeCusProdDiscId;
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
+    @ApiModelProperty(value = "货号")
+    private String prodArtNum;
     @ApiModelProperty(value = "档口商品ID")
     private Long storeProdId;
     @ApiModelProperty(value = "档口客户ID")
@@ -28,6 +31,10 @@ public class StoreCusProdDiscPageResDTO {
     private String storeCusName;
     @ApiModelProperty(value = "档口商品颜色ID")
     private Long storeProdColorId;
+    @ApiModelProperty(value = "颜色")
+    private String colorName;
+    @ApiModelProperty(value = "价格")
+    private BigDecimal price;
     @ApiModelProperty(value = "优惠金额")
     private Integer discount;
     @ApiModelProperty("更新时间")

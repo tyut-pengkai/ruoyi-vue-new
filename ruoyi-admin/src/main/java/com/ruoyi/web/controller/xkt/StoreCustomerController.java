@@ -6,9 +6,11 @@ import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.web.controller.xkt.vo.storeCustomer.StoreCusAddOverPriceVO;
 import com.ruoyi.web.controller.xkt.vo.storeCustomer.StoreCusFuzzyResVO;
 import com.ruoyi.web.controller.xkt.vo.storeCustomer.StoreCusPageVO;
 import com.ruoyi.web.controller.xkt.vo.storeCustomer.StoreCusVO;
+import com.ruoyi.xkt.dto.storeCustomer.StoreCusAddOverPriceDTO;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusDTO;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusPageDTO;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusPageResDTO;
@@ -44,6 +46,13 @@ public class StoreCustomerController extends XktBaseController {
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
+    @ApiOperation(value = "查询档口客户列表", httpMethod = "POST", response = R.class)
+    @PostMapping("/page")
+    public R<Page<StoreCusPageResDTO>> selectPage(@Validated @RequestBody StoreCusPageVO pageVO) {
+        return R.ok(storeCusService.selectPage(BeanUtil.toBean(pageVO, StoreCusPageDTO.class)));
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "新增档口客户", httpMethod = "POST", response = R.class)
     @Log(title = "新增档口客户", businessType = BusinessType.INSERT)
     @PostMapping
@@ -75,10 +84,12 @@ public class StoreCustomerController extends XktBaseController {
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
-    @ApiOperation(value = "查询档口客户列表", httpMethod = "POST", response = R.class)
-    @PostMapping("/page")
-    public R<Page<StoreCusPageResDTO>> selectPage(@Validated @RequestBody StoreCusPageVO pageVO) {
-        return R.ok(storeCusService.selectPage(BeanUtil.toBean(pageVO, StoreCusPageDTO.class)));
+    @Log(title = "修改大小码加价", businessType = BusinessType.UPDATE)
+    @ApiOperation(value = "修改大小码加价", httpMethod = "PUT", response = R.class)
+    @PutMapping("/add-over-price")
+    public R<Integer> updateAddOverPrice(@Validated @RequestBody StoreCusAddOverPriceVO addOverPriceVO) {
+        return R.ok(storeCusService.updateAddOverPrice(BeanUtil.toBean(addOverPriceVO, StoreCusAddOverPriceDTO.class)));
     }
+
 
 }

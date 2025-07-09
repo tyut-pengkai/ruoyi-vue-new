@@ -74,7 +74,7 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
                 .orElseThrow(() -> new ServiceException("档口客户不存在!", HttpStatus.ERROR));
         // 当前时间
         Date nowDate = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
-        // 往前推60天
+        // 往前推多少天
         Date pastDate = Date.from(LocalDate.now().minusDays(days).atStartOfDay(ZoneId.systemDefault()).toInstant());
         // 查询当前档口客户在这段时间内的销售业绩情况
         List<StoreSale> saleList = this.storeSaleMapper.selectList(new LambdaQueryWrapper<StoreSale>()
@@ -184,7 +184,7 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
      */
     @Override
     @Transactional
-    public Integer updateMemo(StoreSaleUpdateMemoDTO updateMemoDTO) {
+    public Integer updateRemark(StoreSaleUpdateMemoDTO updateMemoDTO) {
         StoreSale storeSale = Optional.ofNullable(this.storeSaleMapper.selectOne(new LambdaQueryWrapper<StoreSale>()
                         .eq(StoreSale::getId, updateMemoDTO.getStoreSaleId()).eq(StoreSale::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("没有找到对应的销售出库单!", HttpStatus.ERROR));
@@ -346,7 +346,7 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
      */
     @Override
     @Transactional(readOnly = true)
-    public StoreSaleDTO selectStoreSaleByStoreSaleId(Long storeSaleId) {
+    public StoreSaleResDTO selectStoreSaleByStoreSaleId(Long storeSaleId) {
         StoreSale storeSale = Optional.ofNullable(this.storeSaleMapper.selectOne(new LambdaQueryWrapper<StoreSale>()
                         .eq(StoreSale::getId, storeSaleId).eq(StoreSale::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口销售出库订单不存在!", HttpStatus.ERROR));
@@ -354,11 +354,11 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
         if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(storeSale.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
-        StoreSaleDTO storeSaleDTO = BeanUtil.toBean(storeSale, StoreSaleDTO.class);
+        StoreSaleResDTO storeSaleDTO = BeanUtil.toBean(storeSale, StoreSaleResDTO.class);
         // 查询销售出库明细
         List<StoreSaleDetail> saleDetailList = this.storeSaleDetailMapper.selectList(new LambdaQueryWrapper<StoreSaleDetail>()
                 .eq(StoreSaleDetail::getStoreSaleId, storeSaleId).eq(StoreSaleDetail::getDelFlag, Constants.UNDELETED));
-        storeSaleDTO.setDetailList(saleDetailList.stream().map(x -> BeanUtil.toBean(x, StoreSaleDTO.SaleDetailVO.class)).collect(Collectors.toList()));
+        storeSaleDTO.setDetailList(saleDetailList.stream().map(x -> BeanUtil.toBean(x, StoreSaleResDTO.SSDetailDTO.class)).collect(Collectors.toList()));
         return storeSaleDTO;
     }
 

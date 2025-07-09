@@ -10,10 +10,7 @@ import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.StoreCustomer;
-import com.ruoyi.xkt.dto.storeCustomer.StoreCusDTO;
-import com.ruoyi.xkt.dto.storeCustomer.StoreCusFuzzyResDTO;
-import com.ruoyi.xkt.dto.storeCustomer.StoreCusPageDTO;
-import com.ruoyi.xkt.dto.storeCustomer.StoreCusPageResDTO;
+import com.ruoyi.xkt.dto.storeCustomer.*;
 import com.ruoyi.xkt.mapper.StoreCustomerMapper;
 import com.ruoyi.xkt.service.IStoreCustomerService;
 import lombok.RequiredArgsConstructor;
@@ -57,6 +54,23 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
         List<StoreCustomer> storeCusList = this.storeCusMapper.selectList(queryWrapper);
         return CollectionUtils.isEmpty(storeCusList) ? new ArrayList<>() : storeCusList.stream()
                 .map(x -> BeanUtil.toBean(x, StoreCusFuzzyResDTO.class).setStoreCusId(x.getId())).collect(Collectors.toList());
+    }
+
+    /**
+     * 更改是否大小码加价
+     *
+     * @param addOverPriceDTO 入参
+     * @return Integer
+     */
+    @Override
+    @Transactional
+    public Integer updateAddOverPrice(StoreCusAddOverPriceDTO addOverPriceDTO) {
+        StoreCustomer storeCus = Optional.ofNullable(this.storeCusMapper.selectOne(new LambdaQueryWrapper<StoreCustomer>()
+                        .eq(StoreCustomer::getStoreId, addOverPriceDTO.getStoreId()).eq(StoreCustomer::getId, addOverPriceDTO.getStoreCusId())
+                        .eq(StoreCustomer::getDelFlag, Constants.UNDELETED)))
+                .orElseThrow(() -> new ServiceException("档口客户不存在!", HttpStatus.ERROR));
+        storeCus.setAddOverPrice(addOverPriceDTO.getAddOverPrice());
+        return this.storeCusMapper.updateById(storeCus);
     }
 
     @Override

@@ -17,7 +17,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             spdd.del_flag = 0 AND spdd.store_id = #{storeId}
             <if test="prodArtNum != null  and prodArtNum != ''"> and spdd.prod_art_num = #{prodArtNum}</if>
             <if test="storeFactoryId != null "> and sf.id = #{storeFactoryId}</if>
-            <if test="remark != null  and remark != ''"> and menu_name like concat('%', #{menuName}, '%')</if>
+            <if test="remark != null  and remark != ''"> and sf.remark like concat('%', #{remark}, '%')</if>
             <if test="emergency != null "> and spdd.emergency = #{emergency}</if>
             <if test="demandStatus != null "> and spd.demand_status = #{demandStatus}</if>
         ORDER BY

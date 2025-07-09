@@ -63,20 +63,20 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
         if (ObjectUtils.isNotEmpty(storeCusList) && storeCusList.size() > 1) {
             throw new ServiceException("客户名称重复，请修改客户名称!", HttpStatus.ERROR);
         }
+        // 若存在，则取第一个；若不存在，则新增
         StoreCustomer storeCus = CollectionUtils.isNotEmpty(storeCusList) ? storeCusList.get(0) : this.createStoreCustomer(cusProdDisDTO);
-        this.storeCusMapper.updateById(storeCus);
         // 获取当前档口客户已有的优惠
-        List<StoreCustomerProductDiscount> cusProdDisList = Optional.ofNullable(cusProdDiscMapper.selectList(new LambdaQueryWrapper<StoreCustomerProductDiscount>()
+        List<StoreCustomerProductDiscount> cusProdDiscList = Optional.ofNullable(cusProdDiscMapper.selectList(new LambdaQueryWrapper<StoreCustomerProductDiscount>()
                 .eq(StoreCustomerProductDiscount::getStoreCusName, cusProdDisDTO.getStoreCusName()).eq(StoreCustomerProductDiscount::getDelFlag, Constants.UNDELETED)
                 .eq(StoreCustomerProductDiscount::getStoreId, cusProdDisDTO.getStoreId()))).orElse(new ArrayList<>());
         // 已存在优惠但优惠额度低于当前优惠，则更新该部分优惠
-        List<StoreCustomerProductDiscount> updateList = cusProdDisList.stream()
+        List<StoreCustomerProductDiscount> updateList = cusProdDiscList.stream()
                 // 找到所有优惠低于当前优惠额度的列表
                 .filter(x -> cusProdDisDTO.getAllProductDiscount().compareTo(ObjectUtils.defaultIfNull(x.getDiscount(), 0)) > 0)
                 // 更新最新的优惠
                 .peek(x -> x.setDiscount(cusProdDisDTO.getAllProductDiscount())).collect(Collectors.toList());
         // 已有优惠的id
-        List<Long> existDiscountProdColorIdList = cusProdDisList.stream().map(StoreCustomerProductDiscount::getStoreProdColorId).collect(Collectors.toList());
+        List<Long> existDiscountProdColorIdList = cusProdDiscList.stream().map(StoreCustomerProductDiscount::getStoreProdColorId).collect(Collectors.toList());
         // 档口所有的商品
         List<StoreProductColor> storeProdColorList = this.storeProdColorMapper.selectList(new LambdaQueryWrapper<StoreProductColor>()
                 .eq(StoreProductColor::getStoreId, cusProdDisDTO.getStoreId()).eq(StoreProductColor::getDelFlag, Constants.UNDELETED));

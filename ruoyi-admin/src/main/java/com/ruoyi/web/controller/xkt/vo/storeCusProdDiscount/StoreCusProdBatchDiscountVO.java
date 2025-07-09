@@ -21,10 +21,10 @@ import java.util.List;
 public class StoreCusProdBatchDiscountVO {
 
     @NotNull(message = "档口ID不能为空!")
-    @ApiModelProperty(value = "档口ID")
+    @ApiModelProperty(value = "档口ID", required = true)
     private Long storeId;
     @NotNull(message = "业务类型不能为空!")
-    @ApiModelProperty(value = "业务类型：true:新增客户定价   false:批量减价、批量优惠")
+    @ApiModelProperty(value = "业务类型：true:新增客户定价   false:批量减价、批量优惠", required = true)
     private Boolean isInsert;
     @NotNull(message = "优惠列表不能为空!")
     @Valid
@@ -34,10 +34,10 @@ public class StoreCusProdBatchDiscountVO {
     @Data
     public static class DiscountItemVO {
         @NotNull(message = "档口商品ID不能为空!")
-        @ApiModelProperty(value = "档口商品ID")
+        @ApiModelProperty(value = "档口商品ID", required = true)
         private Long storeProdId;
         @NotNull(message = "档口商品颜色ID不能为空!")
-        @ApiModelProperty(value = "档口商品颜色ID")
+        @ApiModelProperty(value = "档口商品颜色ID", required = true)
         private Long storeProdColorId;
         @NotNull(message = "优惠金额不能为空!")
         @ApiModelProperty(value = "优惠金额", required = true)
