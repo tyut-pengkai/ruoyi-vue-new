@@ -66,6 +66,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where order_id = #{orderId}
     </select>
 
+    <select id="selectPaymentOrderByPaymentId" parameterType="String" resultMap="PaymentOrderResult">
+        <include refid="selectPaymentOrderVo"/>
+        where payment_id = #{paymentId}
+    </select>
+
     <insert id="insertPaymentOrder" parameterType="PaymentOrder" useGeneratedKeys="true" keyProperty="orderId">
         insert into payment_order
         <trim prefix="(" suffix=")" suffixOverrides=",">

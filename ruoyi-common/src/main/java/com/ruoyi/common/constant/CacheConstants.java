@@ -51,4 +51,9 @@ public class CacheConstants
      * 登录账户密码错误次数 redis key
      */
     public static final String PWD_ERR_CNT_KEY = "pwd_err_cnt:";
+
+    /**
+     * PayPal Webhook 事件 redis key
+     */
+    public static final String PAYPAL_WEBHOOK_EVENT_KEY = "paypal_webhook_event:";
 }

@@ -5,6 +5,8 @@ import java.util.Map;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.payment.domain.PaymentPackage;
 import com.ruoyi.payment.mapper.PaymentPackageMapper;
+
+import org.hibernate.validator.internal.util.logging.Log_.logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -229,6 +231,8 @@ public class PaymentOrderServiceImpl implements IPaymentOrderService
         }
         if (!"0".equals(updateOrder.getStatus())) {
             // 订单状态不为"待支付"，可能已处理，直接返回成功，防止重复处理
+            // log.info("订单状态为{}，可能已处理，直接返回成功，防止重复处理",updateOrder.getStatus());
+            System.out.println("订单状态为" + updateOrder.getStatus() + "，可能已处理，直接返回成功，防止重复处理");
             return updateOrder;
         }
 
@@ -307,5 +311,17 @@ public class PaymentOrderServiceImpl implements IPaymentOrderService
     public PaymentOrder getOrderByOrderNo(String orderNo)
     {
         return paymentOrderMapper.selectPaymentOrderByOrderNo(orderNo);
+    }
+
+    /**
+     * 根据PayPal支付ID查询支付订单
+     * 
+     * @param paymentId PayPal支付ID
+     * @return 支付订单信息
+     */
+    @Override
+    public PaymentOrder selectPaymentOrderByPaymentId(String paymentId)
+    {
+        return paymentOrderMapper.selectPaymentOrderByPaymentId(paymentId);
     }
 }

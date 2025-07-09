@@ -2,6 +2,12 @@
   <div class="login">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
       <h3 class="title">{{title}}</h3>
+
+      <el-tabs v-model="activeTab" @tab-click="handleTabClick" class="login-tabs"  v-show="false">
+        <el-tab-pane label="密码登录" name="password"></el-tab-pane>
+        <el-tab-pane label="邮箱登录" name="email"></el-tab-pane>
+      </el-tabs>
+
       <el-form-item prop="username">
         <el-input
           v-model="loginForm.username"
@@ -52,18 +58,20 @@
           <span v-if="!loading">登录</span>
           <span v-else>登录中...</span>
         </el-button>
-        <div class="divider" v-if="register">
+        <div class="divider" >
           <span>或</span>
         </div>
         <el-button
-          v-if="register"
           size="medium"
           type="primary"
           style="width:100%;"
-          @click="$router.push('/register')"
+          @click="$router.push('/emailLogin')"
         >
-          注册
+          邮箱验证码登录
         </el-button>
+        <div style="width: 100%; display: flex; justify-content: space-around; margin-top: 10px;">
+          <router-link v-if="register" class="link-type" :to="'/register'" >还没有账号? 立即注册</router-link>
+        </div>
       </el-form-item>
     </el-form>
     <!--  底部  -->
@@ -83,6 +91,7 @@ export default {
   data() {
     return {
       title: process.env.VUE_APP_TITLE,
+      activeTab: 'password',
       codeUrl: "",
       loginForm: {
         username: "admin",
@@ -142,6 +151,11 @@ export default {
     this.getCookie()
   },
   methods: {
+    handleTabClick(tab) {
+      if (tab.name === 'email') {
+        this.$router.push('/emailLogin')
+      }
+    },
     getCode() {
       getCodeImg().then(res => {
         this.captchaEnabled = res.captchaEnabled === undefined ? true : res.captchaEnabled
@@ -223,6 +237,10 @@ export default {
   }
 }
 
+.login-tabs .el-tabs__nav-wrap::after {
+  background-color: transparent !important;
+}
+
 .form-actions {
   display: flex;
   justify-content: space-between;
@@ -242,7 +260,7 @@ export default {
 .divider {
   position: relative;
   text-align: center;
-  margin: 20px 0;
+  margin: 10px 0;
   &:before,
   &:after {
     content: '';

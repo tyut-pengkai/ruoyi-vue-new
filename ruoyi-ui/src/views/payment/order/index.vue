@@ -173,8 +173,9 @@
           <span>{{ parseTime(scope.row.payTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="支付渠道" align="center" prop="paymentChannel" />
-      <el-table-column label="第三方交易号" align="center" prop="thirdPartyNo" />
+      <el-table-column label="支付方式" align="center" prop="paymentMethod" />
+      <el-table-column label="支付交易号" align="center" prop="paymentId" />
+      <el-table-column label="支付账号" align="center" prop="payerId" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="180" fixed="right">
         <template slot-scope="scope">
           <el-button
@@ -182,7 +183,7 @@
             size="mini"
             type="text"
             icon="el-icon-check"
-            @click="handleMockPay(scope.row)"
+            @click="handlePay(scope.row)"
           >去支付</el-button>
           <el-button
             v-if="scope.row.status == '0'"
@@ -260,18 +261,18 @@
             >{{dict.label}}</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="支付渠道" prop="paymentChannel">
-          <el-input v-model="form.paymentChannel" placeholder="请输入支付渠道" />
+        <el-form-item label="支付方式" prop="paymentMethod">
+          <el-input v-model="form.paymentMethod" placeholder="请输入支付方式" />
         </el-form-item>
-        <el-form-item label="第三方交易号" prop="thirdPartyNo">
-          <el-input v-model="form.thirdPartyNo" placeholder="请输入第三方交易号" />
+        <el-form-item label="支付交易号" prop="paymentId">
+          <el-input v-model="form.paymentId" placeholder="请输入支付交易号" />
         </el-form-item>
-        <el-form-item label="支付成功时间" prop="payTime">
+        <el-form-item label="支付时间" prop="payTime">
           <el-date-picker clearable
             v-model="form.payTime"
             type="date"
             value-format="yyyy-MM-dd"
-            placeholder="请选择支付成功时间">
+            placeholder="请选择支付时间">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
@@ -441,6 +442,14 @@ export default {
           this.$message.success("模拟支付成功");
         }).catch(() => {});
     },
+    handlePay(row) {
+      // 创建订单成功后直接跳转到支付页面
+      this.$router.push({
+        path: '/payment/pay',
+        query: { orderNo: row.orderNo }
+      });
+    },
+ 
     handleCancel(row) {
       this.$confirm('是否确认取消订单号为"' + row.orderNo + '"的数据项？', "确认", {
           confirmButtonText: "确定",

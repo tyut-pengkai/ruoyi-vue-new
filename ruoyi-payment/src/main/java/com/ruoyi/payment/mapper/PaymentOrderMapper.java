@@ -74,4 +74,12 @@ public interface PaymentOrderMapper
      * @return 支付订单
      */
     public PaymentOrder selectPaymentOrderByToken(String token);
+
+    /**
+     * 根据PayPal支付ID查询支付订单
+     * 
+     * @param paymentId PayPal支付ID
+     * @return 支付订单信息
+     */
+    public PaymentOrder selectPaymentOrderByPaymentId(String paymentId);
 }

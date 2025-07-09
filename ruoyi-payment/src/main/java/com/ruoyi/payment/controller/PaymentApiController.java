@@ -3,20 +3,15 @@ package com.ruoyi.payment.controller;
 import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
-import com.ruoyi.payment.domain.PaymentOrder;
-import com.ruoyi.payment.domain.dto.CreateOrderRequest;
-import com.ruoyi.payment.model.PaymentResult;
 import com.ruoyi.payment.model.PaymentResponse;
-import com.ruoyi.payment.service.IPaymentOrderService;
+import com.ruoyi.payment.model.PaymentResult;
 import com.ruoyi.payment.service.PaymentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
-import java.util.HashMap;
+
 import java.util.Map;
 
 /**
@@ -27,8 +22,6 @@ import java.util.Map;
 public class PaymentApiController extends BaseController {
     private static final Logger log = LoggerFactory.getLogger(PaymentApiController.class);
     
-    @Autowired
-    private IPaymentOrderService orderService;
     
     @Autowired
     private PaymentService paymentService;
@@ -38,11 +31,11 @@ public class PaymentApiController extends BaseController {
     /**
      * 处理买家授权支付成功后回调
      */
-     @GetMapping("/callback/success/paypal")
-     public AjaxResult handleCallbackSuccess(@RequestParam Map<String, String> params) {
+     @GetMapping("/callback/success/{paymentMethod}")
+     public AjaxResult handleCallbackSuccess(@PathVariable("paymentMethod") String paymentMethod,@RequestParam Map<String, String> params) {
          try {
              // 处理回调
-             PaymentResponse response = paymentService.handleCallbackSuccess("paypal",params);
+             PaymentResponse response = paymentService.handleCallbackSuccess(paymentMethod,params);
              
              if (response.isSuccess()) {
                  return AjaxResult.success("支付成功", response.getData());
@@ -78,22 +71,22 @@ public class PaymentApiController extends BaseController {
     /**
      * 查询支付状态
      */
-    // @GetMapping("/status/{orderNo}")
-    // public AjaxResult getPaymentStatus(@PathVariable("orderNo") String orderNo) {
-    //     try {
-    //         // 查询支付状态
-    //         PaymentResponse response = paymentService.getPaymentStatus(orderNo);
-    //         
-    //         if (response.isSuccess()) {
-    //             return AjaxResult.success("查询支付状态成功", response.getData());
-    //         } else {
-    //             return AjaxResult.error(response.getMessage());
-    //         }
-    //     } catch (Exception e) {
-    //         log.error("查询支付状态失败", e);
-    //         return AjaxResult.error("查询支付状态失败: " + e.getMessage());
-    //     }
-    // }
+     @GetMapping("/status/{paymentId}/{paymentMethod}")
+     public AjaxResult getPaymentStatus(@PathVariable("paymentId") String paymentId,@PathVariable("paymentMethod") String paymentMethod) {
+         try {
+             // 查询支付状态
+             PaymentResult response = paymentService.getPaymentStatus(paymentId,paymentMethod);
+             
+             if (response.isSuccess()) {
+                 return AjaxResult.success("查询支付状态成功", response.getData());
+             } else {
+                 return AjaxResult.error(response.getErrorMsg());
+             }
+         } catch (Exception e) {
+             log.error("查询支付状态失败", e);
+             return AjaxResult.error("查询支付状态失败: " + e.getMessage());
+         }
+     }
     
     /**
      * 创建支付订单并处理支付

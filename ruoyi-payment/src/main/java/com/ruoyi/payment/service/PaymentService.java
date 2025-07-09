@@ -74,22 +74,16 @@ public class PaymentService {
     /**
      * 查询支付状态
      * 
-     * @param orderId 订单ID
+     * @param paymentId 第三方支付平台订单ID
      * @return 支付结果
      */
-    public PaymentResult queryPaymentStatus(Long orderId) {
+    public PaymentResult getPaymentStatus(String paymentId,String paymentMethod) {
         try {
-            // 查询订单
-            PaymentOrder order = orderMapper.selectPaymentOrderByOrderId(orderId);
-            if (order == null) {
-                return PaymentResult.fail("ORDER_NOT_FOUND", "订单不存在");
-            }
-            
             // 根据支付方式获取对应的策略
-            PaymentStrategy strategy = paymentStrategyFactory.getStrategy(order.getPaymentChannel());
+            PaymentStrategy strategy = paymentStrategyFactory.getStrategy(paymentMethod);
             
             // 调用策略查询支付状态
-            return strategy.queryPaymentStatus(orderId.toString());
+            return strategy.getPaymentStatus(paymentId);
         } catch (Exception e) {
             log.error("查询支付状态异常", e);
             return PaymentResult.fail("QUERY_ERROR", "查询支付状态异常: " + e.getMessage());

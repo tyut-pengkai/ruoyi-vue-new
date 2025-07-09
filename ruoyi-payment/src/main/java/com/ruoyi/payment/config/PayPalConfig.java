@@ -1,7 +1,9 @@
 package com.ruoyi.payment.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * PayPal配置类
@@ -39,6 +41,11 @@ public class PayPalConfig {
      * 通知URL
      */
     private String notifyUrl;
+    
+    /**
+     * Webhook ID
+     */
+    private String webhookId;
     
     public String getClientId() {
         return clientId;
@@ -86,5 +93,18 @@ public class PayPalConfig {
     
     public void setNotifyUrl(String notifyUrl) {
         this.notifyUrl = notifyUrl;
+    }
+
+    public String getWebhookId() {
+        return webhookId;
+    }
+
+    public void setWebhookId(String webhookId) {
+        this.webhookId = webhookId;
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 } 

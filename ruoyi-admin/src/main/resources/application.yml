@@ -186,10 +186,12 @@ payment:
     clientSecret: EGr5sZ1WStODPGK4Rx1SMGrrhJEAZJulfKwQm3JQFgbFCF8tvlkC-SJNderMMqjbHd0RzUO_bRV7Dzet
     # 沙箱环境
     sandbox: true
+    # webhookId 沙箱环境
+    webhookId: 8G387005CA748220D
     # 成功回调地址
     # successUrl: http://localhost:8081/payment/api/callback/success/paypal
     successUrl: http://localhost:81/payment/pay/success
     # 取消回调地址
     cancelUrl: http://localhost:81/payment/pay/cancel
     # 通知回调地址
-    notifyUrl: http://localhost:81/payment/paypal/notify
+    notifyUrl: http://localhost:80/payment/paypal/notify

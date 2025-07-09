@@ -38,10 +38,9 @@
         <div style="padding-top: 10px;">
             <span style="font-size: 12px; color: #999;">提示：未注册的邮箱将自动创建账户并登录</span>
         </div>
-        <div style="float: right;" v-if="register">
-          <router-link class="link-type" :to="'/register'">立即注册</router-link>
-          <span style="margin: 0 10px;">|</span>
-          <router-link class="link-type" :to="'/login'">账号密码登录</router-link>
+        <div style="width: 100%; display: flex; justify-content: space-between; margin-top: 10px;">
+          <router-link class="link-type" :to="'/login'">密码登录</router-link>
+          <router-link v-if="register" class="link-type" :to="'/register'">还没有账号? 立即注册</router-link>
         </div>
       </el-form-item>
     </el-form>

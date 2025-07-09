@@ -45,13 +45,7 @@ public interface PaymentStrategy {
      * @return 处理结果
      */
     PaymentResponse handleCallbackCancel(Map<String, String> params) ;
-    /**
-     * 查询支付状态
-     * 
-     * @param orderId 订单ID
-     * @return 查询结果
-     */
-    PaymentResult queryPaymentStatus(String orderId);
+    
     
     /**
      * 完成支付
@@ -78,10 +72,26 @@ public interface PaymentStrategy {
     PaymentResult executePayment(Map<String, Object> params);
     
     /**
+     * 查询支付状态
+     * 
+     * @param orderId 订单ID
+     * @return 查询结果
+     */
+    PaymentResult queryPaymentStatus(String orderId);
+
+    /**
      * 获取支付状态
      * 
      * @param params 查询参数
      * @return 支付结果
      */
     PaymentResult getPaymentStatus(Map<String, Object> params);
+
+    /**
+     * 获取支付状态
+     * 
+     * @param paymentId 支付ID
+     * @return 支付结果
+     */
+    PaymentResult getPaymentStatus(String paymentId);
 } 

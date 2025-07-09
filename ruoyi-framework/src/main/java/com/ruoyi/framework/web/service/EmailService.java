@@ -50,9 +50,9 @@ public class EmailService
         String verifyKey = CacheConstants.EMAIL_CODE_KEY + email;
         redisCache.setCacheObject(verifyKey, emailCode, 5, TimeUnit.MINUTES);
 
-        // 异步发送邮件
-        AsyncManager.me().execute(AsyncFactory.sendEmail(email, "注册验证码", 
-            "您的注册验证码是：" + emailCode + "，有效期5分钟，请勿泄露给他人。"));
+        // 异步发送邮件 您的AiWei验证码是：xxxx，有效期5分钟，请勿泄露给他人。
+        AsyncManager.me().execute(AsyncFactory.sendEmail(email, "Your AiWei verification code", 
+            "Your AiWei verification code is : " + emailCode + ", Valid for 5 minutes, please do not disclose to others."));
 
         log.info("发送邮箱验证码到：{}，验证码：{}", email, emailCode);
         return true;
@@ -113,10 +113,10 @@ public class EmailService
         String verifyKey = CacheConstants.PASSWORD_RESET_CODE_KEY + email;
         redisCache.setCacheObject(verifyKey, emailCode, 5, TimeUnit.MINUTES);
 
-        // 异步发送邮件
-        AsyncManager.me().execute(AsyncFactory.sendEmail(email, "密码重置验证码",
-                "您的密码重置验证码是：" + emailCode + "，有效期5分钟，请勿泄露给他人。"));
-
+        // 异步发送邮件 您的aiwei密码重置验证码是：xxxx，有效期5分钟，请勿泄露给他人。
+        AsyncManager.me().execute(AsyncFactory.sendEmail(email, "Your AiWei password reset verification code",
+                "Your AiWei password reset verification code is: " + emailCode + ",Valid for 5 minutes, please do not disclose to others."));
+  
         log.info("发送密码重置验证码到：{}，验证码：{}", email, emailCode);
         return true;
     }

@@ -28,9 +28,9 @@ export function processPayment(data) {
 }
 
 // 查询支付状态
-export function getPaymentStatus(orderNo) {
+export function getPaymentStatus(paymentId,paymentMethod) {
   return request({
-    url: '/payment/api/status/' + orderNo,
+    url: `/payment/api/status/${paymentId}/${paymentMethod}`,
     method: 'get'
   })
 }
