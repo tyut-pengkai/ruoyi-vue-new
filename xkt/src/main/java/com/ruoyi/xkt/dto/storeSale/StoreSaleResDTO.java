@@ -1,10 +1,12 @@
 package com.ruoyi.xkt.dto.storeSale;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,6 +22,8 @@ public class StoreSaleResDTO {
     private Boolean refund;
     @ApiModelProperty(value = "storeSaleId")
     private Long storeSaleId;
+    @ApiModelProperty(value = "单据编号")
+    private String code;
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
     @ApiModelProperty(value = "档口客户ID")
@@ -30,12 +34,19 @@ public class StoreSaleResDTO {
     private Integer saleType;
     @ApiModelProperty(value = "支付方式（1支付宝、2微信、3现金、4欠款）")
     private Integer payWay;
-    @ApiModelProperty(value = "结款状态（已结清、欠款） SETTLED、DEBT")
+    @ApiModelProperty(value = "结款状态（1 已结清、2 欠款）")
     private Integer paymentStatus;
     @ApiModelProperty(value = "抹零金额")
     private BigDecimal roundOff;
-    @ApiModelProperty(value = "备注")
-    private String remark;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @ApiModelProperty(value = "销售时间")
+    private Date createTime;
+    @ApiModelProperty(value = "销售数量")
+    private Integer saleQuantity;
+    @ApiModelProperty(value = "退货数量")
+    private Integer refundQuantity;
+    @ApiModelProperty(value = "销售金额")
+    private BigDecimal amount;
     @ApiModelProperty(value = "销售详情列表")
     private List<SSDetailDTO> detailList;
 
@@ -45,6 +56,8 @@ public class StoreSaleResDTO {
         private Long storeProdId;
         @ApiModelProperty(value = "档口商品颜色尺码ID")
         private Long storeProdColorId;
+        @ApiModelProperty(value = "销售类型（销售 1、退货 2）")
+        private Integer saleType;
         @ApiModelProperty(value = "颜色")
         private String colorName;
         @ApiModelProperty(value = "尺码")

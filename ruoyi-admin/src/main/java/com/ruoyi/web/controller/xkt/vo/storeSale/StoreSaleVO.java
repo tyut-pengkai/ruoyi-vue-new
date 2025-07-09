@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.xkt.vo.storeSale;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -15,6 +16,7 @@ import java.util.List;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
+@ApiModel(value = "新增或编辑销售出库")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreSaleVO {
@@ -39,7 +41,7 @@ public class StoreSaleVO {
     @NotNull(message = "支付方式不能为空!")
     @ApiModelProperty(value = "支付方式（1支付宝、2微信、3现金、4欠款）", required = true)
     private Integer payWay;
-    @ApiModelProperty(value = "结款状态（已结清、欠款） SETTLED、DEBT")
+    @ApiModelProperty(value = "结款状态 1 已结清 2 欠款")
     private Integer paymentStatus;
     @ApiModelProperty(value = "抹零金额")
     private BigDecimal roundOff;
@@ -62,6 +64,9 @@ public class StoreSaleVO {
         private String colorName;
         @ApiModelProperty(value = "尺码")
         private Integer size;
+        @ApiModelProperty(value = "销售类型（销售 1、退货 2）", required = true)
+        @NotNull(message = "销售类型不能为空!")
+        private Integer saleType;
         @ApiModelProperty(value = "商品货号", required = true)
         @NotBlank(message = "商品货号不能为空!")
         private String prodArtNum;

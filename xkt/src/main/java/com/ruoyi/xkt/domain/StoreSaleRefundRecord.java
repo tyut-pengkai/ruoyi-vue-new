@@ -51,10 +51,10 @@ public class StoreSaleRefundRecord extends XktBaseEntity {
      */
     private String storeCusName;
     /**
-     * 销售类型（普通销售、销售退货、普通销售/销售退货）GENERAL_SALE SALE_REFUND SALE_AND_REFUND
+     * 销售类型（1 销售、2 退货、3 销售/退货）
      */
     @Excel(name = "销售类型")
-    private String saleType;
+    private Integer saleType;
     /**
      * 单据编号
      */
@@ -77,14 +77,13 @@ public class StoreSaleRefundRecord extends XktBaseEntity {
     @Excel(name = "总金额")
     private BigDecimal amount;
     /**
-     * 支付方式（支付宝、微信、现金、欠款）
+     * 支付方式（1 支付宝、 2 微信、 3 现金、4 欠款）
      */
-    @Excel(name = "支付方式", readConverterExp = "支=付宝、微信、现金、欠款")
-    private String payWay;
+    private Integer payWay;
     /**
-     * 结款状态（已结清、欠款） SETTLED、DEBT
+     * 结款状态（1已结清、2欠款）
      */
-    private String paymentStatus;
+    private Integer paymentStatus;
     /**
      * 操作人ID
      */

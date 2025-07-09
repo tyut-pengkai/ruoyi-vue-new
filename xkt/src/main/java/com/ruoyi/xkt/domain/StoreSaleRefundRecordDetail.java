@@ -56,10 +56,10 @@ public class StoreSaleRefundRecordDetail extends XktBaseEntity {
      */
     private Integer size;
     /**
-     * 销售类型（普通销售、销售退货）
+     * 销售类型（1 销售、2 退货）
      */
-    @Excel(name = "销售类型", readConverterExp = "普=通销售、销售退货")
-    private String saleType;
+    @Excel(name = "销售类型")
+    private Integer saleType;
     /**
      * 商品货号
      */

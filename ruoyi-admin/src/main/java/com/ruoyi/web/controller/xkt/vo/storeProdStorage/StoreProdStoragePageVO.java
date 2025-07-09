@@ -2,6 +2,7 @@ package com.ruoyi.web.controller.xkt.vo.storeProdStorage;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.web.controller.xkt.vo.BasePageVO;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,6 +15,7 @@ import java.util.Date;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
+@ApiModel(value = "入库单列表查询入参")
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class StoreProdStoragePageVO extends BasePageVO {

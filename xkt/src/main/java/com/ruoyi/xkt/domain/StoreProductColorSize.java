@@ -11,6 +11,8 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * 档口商品颜色的尺码对象 store_product_color_size
+ * 条码规则 5位档口ID + 8位 store_product_color_size.id + 8位 nextBarcode
+ *        eg: 100010000000100000001
  *
  * @author ruoyi
  * @date 2025-03-26
@@ -26,31 +28,30 @@ public class StoreProductColorSize extends XktBaseEntity {
      */
     @TableId
     private Long id;
-
     /**
      * 档口颜色ID
      */
     @Excel(name = "档口颜色ID")
     private Long storeColorId;
-
     /**
      * 档口商品ID
      */
     @Excel(name = "档口商品ID")
     private Long storeProdId;
-
     /**
      * 商品尺码
      */
     @Excel(name = "商品尺码")
     private Integer size;
-
     /**
      * 档口商品颜色尺码的前缀
      */
     @Excel(name = "档口商品颜色尺码的前缀")
     private String barcodePrefix;
-
+    /**
+     * 下一个编号
+     */
+    private Integer nextBarcode;
     /**
      * 是否是标准尺码（0不是 1是）
      */

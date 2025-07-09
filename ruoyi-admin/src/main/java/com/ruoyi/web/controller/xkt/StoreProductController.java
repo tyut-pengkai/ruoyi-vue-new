@@ -77,7 +77,6 @@ public class StoreProductController extends XktBaseController {
         return R.ok(BeanUtil.toBean(storeProdService.selectStoreProductByStoreProdId(storeProdId), StoreProdResVO.class));
     }
 
-
     @ApiOperation(value = "PC获取档口商品详细信息", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/pc/detail/{storeProdId}")
     public R<StoreProdPCResVO> getPCInfo(@PathVariable("storeProdId") Long storeProdId) {

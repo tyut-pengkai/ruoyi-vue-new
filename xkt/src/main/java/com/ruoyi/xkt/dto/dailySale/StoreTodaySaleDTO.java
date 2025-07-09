@@ -31,5 +31,7 @@ public class StoreTodaySaleDTO {
     private BigDecimal refundAmount;
     @ApiModelProperty(value = "总金额")
     private BigDecimal amount;
+    @ApiModelProperty(value = "总数量")
+    private Integer quantity;
 
 }

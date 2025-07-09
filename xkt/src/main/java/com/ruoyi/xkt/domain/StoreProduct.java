@@ -70,7 +70,7 @@ public class StoreProduct extends XktBaseEntity {
      * 生产价格
      */
     @Excel(name = "生产价格")
-    private Integer producePrice;
+    private BigDecimal producePrice;
 
     /**
      * 大小码加价

@@ -18,6 +18,11 @@ import java.util.List;
  */
 public interface StoreSaleMapper extends BaseMapper<StoreSale> {
 
+    /**
+     * 分页
+     * @param pageDTO 入参
+     * @return
+     */
     List<StoreSalePageResDTO> selectPage(StoreSalePageDTO pageDTO);
 
     /**

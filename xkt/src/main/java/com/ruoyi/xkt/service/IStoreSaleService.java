@@ -20,7 +20,7 @@ public interface IStoreSaleService {
      * @param storeSaleId 档口销售出库主键
      * @return 档口销售出库
      */
-    StoreSaleResDTO selectStoreSaleByStoreSaleId(Long storeSaleId);
+    StoreSaleResDTO selectByStoreSaleId(Long storeSaleId);
 
     /**
      * 新增档口销售出库

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -47,6 +48,8 @@ public class StoreSaleDTO {
         private Long storeProdColorId;
         @ApiModelProperty(value = "颜色")
         private String colorName;
+        @ApiModelProperty(value = "销售类型（销售 1、退货 2）")
+        private Integer saleType;
         @ApiModelProperty(value = "尺码")
         private Integer size;
         @ApiModelProperty(value = "商品货号")

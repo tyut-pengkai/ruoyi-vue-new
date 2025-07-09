@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.xkt.vo.storeProdStorage;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -17,6 +18,7 @@ import java.util.List;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
+@ApiModel(value = "新增商品入库")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreProdStorageVO {

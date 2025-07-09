@@ -84,12 +84,11 @@ public class StoreSale extends XktBaseEntity {
      */
     private BigDecimal roundOff;
     /**
-     * 支付方式（支付宝、微信、现金、欠款）
+     * 支付方式（1 支付宝、 2 微信、 3 现金、4 欠款）
      */
-    @Excel(name = "支付方式", readConverterExp = "支=付宝、微信、现金、欠款")
     private Integer payWay;
     /**
-     * 结款状态（已结清、欠款） SETTLED、DEBT
+     * 结款状态（1已结清、2欠款）
      */
     private Integer paymentStatus;
     /**

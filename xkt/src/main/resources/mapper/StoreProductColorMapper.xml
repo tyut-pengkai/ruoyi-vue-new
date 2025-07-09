@@ -65,6 +65,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             spc.store_color_id AS storeColorId,
             sp.prod_art_num AS prodArtNum,
             spc.color_name AS colorName,
+            sp.produce_price AS producePrice,
             spc.order_num AS orderNum
         FROM
             store_product_color spc

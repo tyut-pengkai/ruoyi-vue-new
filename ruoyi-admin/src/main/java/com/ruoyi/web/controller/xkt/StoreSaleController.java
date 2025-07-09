@@ -39,6 +39,12 @@ public class StoreSaleController extends XktBaseController {
 
     final IStoreSaleService storeSaleService;
 
+
+    // TODO 提醒杰、销售明细 增加 支付方式显示
+    // TODO 提醒杰、销售明细 增加 支付方式显示
+    // TODO 提醒杰、销售明细 增加 支付方式显示
+
+
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "根据当前客户查询最近的销售业绩，以及欠款金额", httpMethod = "GET", response = R.class)
     @GetMapping("/cus-overall")
@@ -63,7 +69,7 @@ public class StoreSaleController extends XktBaseController {
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
-    @Log(title = "修改档口销售出库", businessType = BusinessType.UPDATE)
+    @Log(title = "返单后，更新档口销售出库", businessType = BusinessType.UPDATE)
     @ApiOperation(value = "返单后，更新档口销售出库", httpMethod = "PUT", response = R.class)
     @PutMapping
     public R<Integer> edit(@Validated @RequestBody StoreSaleVO storeSaleVO) {
@@ -74,7 +80,7 @@ public class StoreSaleController extends XktBaseController {
     @ApiOperation(value = "查询档口销售出库明细", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{storeSaleId}")
     public R<StoreSaleResVO> getInfo(@PathVariable("storeSaleId") Long storeSaleId) {
-        return R.ok(BeanUtil.toBean(storeSaleService.selectStoreSaleByStoreSaleId(storeSaleId), StoreSaleResVO.class));
+        return R.ok(BeanUtil.toBean(storeSaleService.selectByStoreSaleId(storeSaleId), StoreSaleResVO.class));
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
@@ -93,7 +99,7 @@ public class StoreSaleController extends XktBaseController {
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
-    @ApiOperation(value = "删除档口销售出库", httpMethod = "PUT", response = R.class)
+    @ApiOperation(value = "删除档口销售出库", httpMethod = "DELETE", response = R.class)
     @Log(title = "删除档口销售出库", businessType = BusinessType.DELETE)
     @DeleteMapping("/{storeSaleId}")
     public R<Integer> remove(@PathVariable Long storeSaleId) {
