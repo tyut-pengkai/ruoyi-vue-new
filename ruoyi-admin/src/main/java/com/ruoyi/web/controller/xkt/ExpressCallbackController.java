@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.w3c.dom.Document;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -72,7 +73,8 @@ public class ExpressCallbackController extends XktBaseController {
 
     @ApiOperation("圆通-轨迹推送")
     @RequestMapping(value = "yto/track")
-    public String ytoTrack(YtoTrackObj.Request request) {
+    public String ytoTrack(HttpServletRequest servletRequest) {
+        YtoTrackObj.Request request = new YtoTrackObj.Request(servletRequest);
         if (StrUtil.isNotBlank(request.getLogistics_interface()) &&
                 //验签
                 YtoSignUtil.verify(request.getData_digest(), request.getLogistics_interface(), ytoAppSecret2)) {
@@ -80,7 +82,9 @@ public class ExpressCallbackController extends XktBaseController {
             Document dom = XmlUtil.parseXml(request.getLogistics_interface());
             YtoTrackObj.Info obj = XmlUtil.xmlToBean(dom, YtoTrackObj.class).getUpdateInfo();
             StoreOrderExpressTrackAddDTO trackAddDTO = trans2OrderTrack(obj);
-            storeOrderService.addTrack(trackAddDTO);
+            if (trackAddDTO.getExpressWaybillNo() != null) {
+                storeOrderService.addTrack(trackAddDTO);
+            }
             return YtoTrackObj.Response.builder()
                     .success(true)
                     .logisticProviderID(obj.getLogisticProviderID())
@@ -104,7 +108,9 @@ public class ExpressCallbackController extends XktBaseController {
             logger.info("中通-轨迹推送数据处理: {}", request);
             ZtoTrackObj.Info obj = JSONUtil.toBean(request.getData(), ZtoTrackObj.Info.class);
             StoreOrderExpressTrackAddDTO trackAddDTO = trans2OrderTrack(obj);
-            storeOrderService.addTrack(trackAddDTO);
+            if (trackAddDTO.getExpressWaybillNo() != null) {
+                storeOrderService.addTrack(trackAddDTO);
+            }
             return ZtoTrackObj.Response.builder()
                     .status(true)
                     .build()

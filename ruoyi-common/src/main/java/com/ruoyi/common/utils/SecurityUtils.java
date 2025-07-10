@@ -164,7 +164,7 @@ public class SecurityUtils {
                 username = Optional.ofNullable(user).map(LoginUser::getUsername).orElse(null);
             }
         } catch (Exception e) {
-            log.error("获取用户账户异常", e);
+            log.warn("获取用户账户失败");
         }
         return username;
     }
@@ -183,7 +183,7 @@ public class SecurityUtils {
                 userId = Optional.ofNullable(user).map(LoginUser::getUserId).orElse(null);
             }
         } catch (Exception e) {
-            log.error("获取用ID户异常", e);
+            log.warn("获取用户ID失败");
         }
         return userId;
     }
