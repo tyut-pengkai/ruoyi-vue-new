@@ -39,12 +39,6 @@ public class StoreSaleController extends XktBaseController {
 
     final IStoreSaleService storeSaleService;
 
-
-    // TODO 提醒杰、销售明细 增加 支付方式显示
-    // TODO 提醒杰、销售明细 增加 支付方式显示
-    // TODO 提醒杰、销售明细 增加 支付方式显示
-
-
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "根据当前客户查询最近的销售业绩，以及欠款金额", httpMethod = "GET", response = R.class)
     @GetMapping("/cus-overall")

@@ -55,6 +55,7 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
     final StoreSaleRefundRecordMapper refundRecordMapper;
     final StoreSaleRefundRecordDetailMapper refundRecordDetailMapper;
     final IStoreProductStockService storeProdStockService;
+    final StoreProductMapper storeProdMapper;
 
     /**
      * 获取当前档口客户的销售业绩
@@ -268,8 +269,8 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
         int count = storeSaleMapper.insert(storeSale);
         // 处理订单明细
         List<StoreSaleDetail> saleDetailList = storeSaleDTO.getDetailList().stream().map(x -> {
-            StoreSaleDetail saleDetail = BeanUtil.toBean(x, StoreSaleDetail.class).setStoreSaleId(storeSale.getId())
-                    .setStoreId(storeSale.getStoreId()).setVoucherDate(voucherDate);
+            StoreSaleDetail saleDetail = BeanUtil.toBean(x, StoreSaleDetail.class).setStoreSaleId(storeSale.getId()).setStoreId(storeSale.getStoreId())
+                    .setVoucherDate(voucherDate).setStoreCusId(storeSale.getStoreCusId()).setStoreCusName(storeSale.getStoreCusName());
             saleDetail.setCreateBy(loginUser.getUsername());
             return saleDetail;
         }).collect(Collectors.toList());
@@ -311,12 +312,12 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
         // 若为返单，则将之前数据记录到返单记录表中
         if (Objects.equals(storeSaleDTO.getRefund(), Boolean.TRUE)) {
             // 订单记录到StoreSaleRefundRecord
-            StoreSaleRefundRecord refundRecord = BeanUtil.toBean(storeSale, StoreSaleRefundRecord.class).setStoreSaleId(storeSale.getId())
-                    .setOperatorId(loginUser.getUserId()).setOperatorName(loginUser.getUsername());
+            StoreSaleRefundRecord refundRecord = BeanUtil.toBean(storeSale, StoreSaleRefundRecord.class).setId(null)
+                    .setStoreSaleId(storeSale.getId()).setOperatorId(loginUser.getUserId()).setOperatorName(loginUser.getUsername());
             this.refundRecordMapper.insert(refundRecord);
             // 明细记录到StoreSaleRefundRecordDetail
             List<StoreSaleRefundRecordDetail> refundDetailRecordList = saleDetailList.stream().map(x -> BeanUtil.toBean(x, StoreSaleRefundRecordDetail.class)
-                    .setStoreSaleRefundRecordId(refundRecord.getId())).collect(Collectors.toList());
+                    .setId(null).setStoreSaleRefundRecordId(refundRecord.getId())).collect(Collectors.toList());
             this.refundRecordDetailMapper.insert(refundDetailRecordList);
         }
         // 更新档口销售数据
@@ -337,7 +338,8 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
         this.storeSaleDetailMapper.updateById(saleDetailList.stream().peek(x -> x.setDelFlag(Constants.DELETED)).collect(Collectors.toList()));
         // 再新增档口销售出库明细数据
         List<StoreSaleDetail> detailList = storeSaleDTO.getDetailList().stream().map(x -> BeanUtil.toBean(x, StoreSaleDetail.class)
-                        .setStoreSaleId(storeSale.getId()).setStoreId(storeSale.getStoreId()).setVoucherDate(voucherDate))
+                        .setStoreSaleId(storeSale.getId()).setStoreId(storeSale.getStoreId()).setStoreCusId(storeSale.getStoreCusId())
+                        .setStoreCusName(storeSale.getStoreCusName()).setVoucherDate(voucherDate))
                 .collect(Collectors.toList());
         this.storeSaleDetailMapper.insert(detailList);
         // 汇总编辑的存货总数量
@@ -374,7 +376,11 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
         // 查询销售出库明细
         List<StoreSaleDetail> saleDetailList = this.storeSaleDetailMapper.selectList(new LambdaQueryWrapper<StoreSaleDetail>()
                 .eq(StoreSaleDetail::getStoreSaleId, storeSaleId).eq(StoreSaleDetail::getDelFlag, Constants.UNDELETED));
-        storeSaleDTO.setDetailList(saleDetailList.stream().map(x -> BeanUtil.toBean(x, StoreSaleResDTO.SSDetailDTO.class)).collect(Collectors.toList()));
+        List<StoreProduct> storeProdList = this.storeProdMapper.selectByIds(saleDetailList.stream().map(StoreSaleDetail::getStoreProdId).collect(Collectors.toList()));
+        Map<Long, StoreProduct> storeProdMap = storeProdList.stream().collect(Collectors.toMap(StoreProduct::getId, x -> x));
+        storeSaleDTO.setDetailList(saleDetailList.stream().map(x -> BeanUtil.toBean(x, StoreSaleResDTO.SSDetailDTO.class)
+                        .setAddOverPrice(ObjectUtils.isNotEmpty(storeProdMap.get(x.getStoreProdId())) ? storeProdMap.get(x.getStoreProdId()).getOverPrice() : 0))
+                .collect(Collectors.toList()));
         return storeSaleDTO;
     }
 

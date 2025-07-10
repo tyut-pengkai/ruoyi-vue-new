@@ -71,7 +71,7 @@ public class StoreSaleVO {
         @NotBlank(message = "商品货号不能为空!")
         private String prodArtNum;
         @ApiModelProperty(value = "销售条码")
-        private String sns;
+        private String sn;
         @NotNull(message = "销售单价不能为空!")
         @ApiModelProperty(value = "销售单价", required = true)
         private BigDecimal price;

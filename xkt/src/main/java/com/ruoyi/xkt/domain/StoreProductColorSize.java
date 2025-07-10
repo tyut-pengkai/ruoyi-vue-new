@@ -44,35 +44,22 @@ public class StoreProductColorSize extends XktBaseEntity {
     @Excel(name = "商品尺码")
     private Integer size;
     /**
-     * 档口商品颜色尺码的前缀
+     * 档口商品颜色尺码的前缀 1000100000001 xxxx
      */
     @Excel(name = "档口商品颜色尺码的前缀")
-    private String barcodePrefix;
+    private String snPrefix;
+    /**
+     * 其它系统商品颜色尺码前缀  4260003836 xxx
+     */
+    private String otherSnPrefix;
     /**
      * 下一个编号
      */
-    private Integer nextBarcode;
+    private Integer nextSn;
     /**
      * 是否是标准尺码（0不是 1是）
      */
     @Excel(name = "是否是标准尺码", readConverterExp = "0=不是,1=是")
     private Integer standard;
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("id", getId())
-                .append("storeColorId", getStoreColorId())
-                .append("storeProdId", getStoreProdId())
-                .append("size", getSize())
-                .append("barcodePrefix", getBarcodePrefix())
-                .append("standard", getStandard())
-                .append("version", getVersion())
-                .append("delFlag", getDelFlag())
-                .append("createBy", getCreateBy())
-                .append("createTime", getCreateTime())
-                .append("updateBy", getUpdateBy())
-                .append("updateTime", getUpdateTime())
-                .toString();
-    }
 }

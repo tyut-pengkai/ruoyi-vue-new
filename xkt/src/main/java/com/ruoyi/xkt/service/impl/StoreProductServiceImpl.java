@@ -473,6 +473,9 @@ public class StoreProductServiceImpl implements IStoreProductService {
         this.storeProdColorPriceMapper.insert(prodColorPriceList);
         this.storeProdColorSizeMapper.insert(prodColorSizeList);
         this.storeProdColorMapper.insert(prodColorList);
+        // 设置档口商品价格尺码的barcode_prefix
+        prodColorSizeList.forEach(x -> x.setSnPrefix(storeId + String.format("%08d", x.getId())));
+        this.storeProdColorSizeMapper.updateById(prodColorSizeList);
         // 设置了档口商品全部优惠的客户，新增商品优惠
         this.createStoreCusDiscount(prodColorList, storeProdId);
     }

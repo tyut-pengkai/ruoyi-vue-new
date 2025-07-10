@@ -618,3 +618,42 @@ INSERT INTO `sys_product_category` VALUES (48, '一字拖', 8, 4, '0', 'https://
 INSERT INTO `sys_product_category` VALUES (49, '其他拖鞋', 8, 5, '0', 'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013', '', 0, '0', '', '2025-04-15 19:57:12', '', '2025-04-15 19:57:12');
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+-- ----------------------------
+-- Table structure for store
+-- ----------------------------
+DROP TABLE IF EXISTS `store`;
+CREATE TABLE `store`  (
+  `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '档口ID',
+  `user_id` bigint UNSIGNED NOT NULL COMMENT '档口负责人ID',
+  `store_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '档口名称',
+  `store_weight` int NULL DEFAULT NULL COMMENT '权重',
+  `store_logo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '档口logo',
+  `brand_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '品牌名称',
+  `contact_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '联系人',
+  `contact_phone` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '联系电话',
+  `contact_back_phone` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备选联系电话',
+  `wechat_account` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '微信账号',
+  `qq_account` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT 'QQ账号',
+  `alipay_account` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '支付宝账号',
+  `operate_years` int UNSIGNED NULL DEFAULT NULL COMMENT '经营年限',
+  `store_address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '档口地址',
+  `fac_address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '工厂地址',
+  `prod_scale` tinyint UNSIGNED NULL DEFAULT NULL COMMENT '生产规模',
+  `integrity_gold` decimal(10, 2) NULL DEFAULT NULL COMMENT '保证金',
+  `remark` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注',
+  `trial_end_time` date NULL DEFAULT NULL COMMENT '试用截止时间',
+  `storage_usage` decimal(10, 3) NULL DEFAULT NULL COMMENT '已使用文件大小',
+  `template_num` int UNSIGNED NULL DEFAULT NULL COMMENT '档口模板ID',
+  `store_status` tinyint UNSIGNED NULL DEFAULT NULL COMMENT '档口状态',
+  `reject_reason` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '拒绝理由',
+  `version` bigint UNSIGNED NOT NULL COMMENT '版本号',
+  `del_flag` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '删除标志（0代表存在 2代表删除）',
+  `create_by` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '创建者',
+  `create_time` datetime NULL DEFAULT NULL COMMENT '创建时间',
+  `update_by` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '更新者',
+  `update_time` datetime NULL DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 10001 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '档口' ROW_FORMAT = Dynamic;
+
+SET FOREIGN_KEY_CHECKS = 1;

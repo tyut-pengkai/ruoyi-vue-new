@@ -55,7 +55,7 @@ public class StoreSaleDTO {
         @ApiModelProperty(value = "商品货号")
         private String prodArtNum;
         @ApiModelProperty(value = "销售条码")
-        private String sns;
+        private String sn;
         @ApiModelProperty(value = "销售单价")
         private BigDecimal price;
         @ApiModelProperty(value = "给客户优惠后单价")

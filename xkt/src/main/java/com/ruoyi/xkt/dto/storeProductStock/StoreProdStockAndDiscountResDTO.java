@@ -47,6 +47,8 @@ public class StoreProdStockAndDiscountResDTO {
     public static class SPSADSizeDTO {
         @ApiModelProperty(value = "尺码")
         private Integer size;
+        @ApiModelProperty(value = "是否是标准尺码")
+        private Integer standard;
         @ApiModelProperty(value = "库存")
         private Integer stock;
     }

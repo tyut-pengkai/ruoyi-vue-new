@@ -19,6 +19,71 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
           AND spcs.store_prod_id = #{storeProdId}
         ORDER BY
             spcs.size
+    </select>
+
+    <select id="selectSn" resultType="com.ruoyi.xkt.dto.storeProdColorSize.StoreSaleSnResDTO">
+        SELECT
+            spcs.store_prod_id,
+            spc.id AS storeProdColorId,
+            spc.color_name,
+            spcs.size,
+            sp.prod_art_num,
+            spcp.price,
+            ( SELECT discount FROM store_customer_product_discount WHERE store_cus_id = #{storeCusId} AND store_prod_color_id = spc.id AND del_flag = 0 ) AS discount
+        FROM
+            store_product_color_size spcs
+                LEFT JOIN store_product_color_price spcp ON spcs.store_prod_id = spcp.store_prod_id AND spcs.store_color_id = spcp.store_color_id AND spcp.del_flag = 0
+                LEFT JOIN store_product sp ON spcs.store_prod_id = sp.id
+                LEFT JOIN store_product_color spc ON spcs.store_color_id = spc.store_color_id AND spcs.store_prod_id = spc.store_prod_id AND spc.del_flag = 0
+        WHERE
+            spcs.del_flag = 0
+            AND spcs.sn_prefix = #{snPrefix}
+            AND sp.store_id = #{storeId}
+    </select>
+
+    <select id="selectOtherSn" resultType="com.ruoyi.xkt.dto.storeProdColorSize.StoreSaleSnResDTO">
+        SELECT
+            spcs.store_prod_id,
+            spc.id AS storeProdColorId,
+            spc.color_name,
+            spcs.size,
+            sp.prod_art_num,
+            spcp.price,
+            ( SELECT discount FROM store_customer_product_discount WHERE store_cus_id = #{storeCusId} AND store_prod_color_id = spc.id AND del_flag = 0 ) AS discount
+        FROM
+            store_product_color_size spcs
+                LEFT JOIN store_product_color_price spcp ON spcs.store_prod_id = spcp.store_prod_id AND spcs.store_color_id = spcp.store_color_id AND spcp.del_flag = 0
+                LEFT JOIN store_product sp ON spcs.store_prod_id = sp.id
+                LEFT JOIN store_product_color spc ON spcs.store_color_id = spc.store_color_id AND spcs.store_prod_id = spc.store_prod_id AND spc.del_flag = 0
+        WHERE
+            spcs.del_flag = 0
+          AND spcs.other_sn_prefix = #{snPrefix}
+          AND sp.store_id = #{storeId}
+    </select>
+
+    <select id="selectSnList">
+        SELECT
+            spcs.store_prod_id,
+            spc.id AS storeProdColorId,
+            spc.color_name,
+            spcs.size,
+            sp.prod_art_num,
+            spcp.price,
+            spcs.sn_prefix,
+            ( SELECT discount FROM store_customer_product_discount WHERE store_cus_id = #{storeCusId} AND store_prod_color_id = spc.id AND del_flag = 0 ) AS discount
+        FROM
+            store_product_color_size spcs
+                LEFT JOIN store_product_color_price spcp ON spcs.store_prod_id = spcp.store_prod_id AND spcs.store_color_id = spcp.store_color_id AND spcp.del_flag = 0
+                LEFT JOIN store_product sp ON spcs.store_prod_id = sp.id
+                LEFT JOIN store_product_color spc ON spcs.store_color_id = spc.store_color_id AND spcs.store_prod_id = spc.store_prod_id AND spc.del_flag = 0
+        WHERE
+            spcs.del_flag = 0
+            AND sp.store_id = #{storeId}
+            AND spcs.sn_prefix IN
+            <foreach item="item" index="index" collection="snList" separator="," open="(" close=")" >
+                #{item}
+            </foreach>
+
 
     </select>
 

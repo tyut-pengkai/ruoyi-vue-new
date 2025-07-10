@@ -115,7 +115,7 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
                 .eq(StoreProductColorSize::getStoreProdId, basicInfoDTO.getStoreProdId()).eq(StoreProductColorSize::getStoreColorId, basicInfoDTO.getStoreColorId())
                 .eq(StoreProductColorSize::getDelFlag, Constants.UNDELETED));
         List<StoreProdStockAndDiscountResDTO.SPSADSizeDTO> sizeStockList = prodColorSizeList.stream().map(size -> new StoreProdStockAndDiscountResDTO.SPSADSizeDTO()
-                .setSize(size.getSize()).setStock(this.getSizeStock(size.getSize(), stock))).collect(Collectors.toList());
+                .setSize(size.getSize()).setStandard(size.getStandard()).setStock(this.getSizeStock(size.getSize(), stock))).collect(Collectors.toList());
         return basicInfoDTO.setStoreCusId(dto.getStoreCusId()).setStoreId(dto.getStoreId()).setSizeStockList(sizeStockList);
     }
 
