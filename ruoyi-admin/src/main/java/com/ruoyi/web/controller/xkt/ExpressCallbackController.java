@@ -82,7 +82,9 @@ public class ExpressCallbackController extends XktBaseController {
             Document dom = XmlUtil.parseXml(request.getLogistics_interface());
             YtoTrackObj.Info obj = XmlUtil.xmlToBean(dom, YtoTrackObj.class).getUpdateInfo();
             StoreOrderExpressTrackAddDTO trackAddDTO = trans2OrderTrack(obj);
-            storeOrderService.addTrack(trackAddDTO);
+            if (trackAddDTO.getExpressWaybillNo() != null) {
+                storeOrderService.addTrack(trackAddDTO);
+            }
             return YtoTrackObj.Response.builder()
                     .success(true)
                     .logisticProviderID(obj.getLogisticProviderID())
@@ -106,7 +108,9 @@ public class ExpressCallbackController extends XktBaseController {
             logger.info("中通-轨迹推送数据处理: {}", request);
             ZtoTrackObj.Info obj = JSONUtil.toBean(request.getData(), ZtoTrackObj.Info.class);
             StoreOrderExpressTrackAddDTO trackAddDTO = trans2OrderTrack(obj);
-            storeOrderService.addTrack(trackAddDTO);
+            if (trackAddDTO.getExpressWaybillNo() != null) {
+                storeOrderService.addTrack(trackAddDTO);
+            }
             return ZtoTrackObj.Response.builder()
                     .status(true)
                     .build()
