@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.w3c.dom.Document;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -72,7 +73,8 @@ public class ExpressCallbackController extends XktBaseController {
 
     @ApiOperation("圆通-轨迹推送")
     @RequestMapping(value = "yto/track")
-    public String ytoTrack(YtoTrackObj.Request request) {
+    public String ytoTrack(HttpServletRequest servletRequest) {
+        YtoTrackObj.Request request = new YtoTrackObj.Request(servletRequest);
         if (StrUtil.isNotBlank(request.getLogistics_interface()) &&
                 //验签
                 YtoSignUtil.verify(request.getData_digest(), request.getLogistics_interface(), ytoAppSecret2)) {

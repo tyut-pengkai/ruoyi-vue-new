@@ -1161,13 +1161,10 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             }
             refundOrderDetails.add(orderDetail);
         }
+        Assert.notEmpty(refundOrderDetails, "无可退款商品");
 
         EOrderStatus orderStatus = EOrderStatus.AFTER_SALE_COMPLETED;
         for (StoreOrderDetail orderDetail : orderDetails) {
-            if (EOrderStatus.PLATFORM_INTERVENED.getValue().equals(orderDetail.getDetailStatus())) {
-                orderStatus = EOrderStatus.PLATFORM_INTERVENED;
-                break;
-            }
             if (EOrderStatus.AFTER_SALE_REJECTED.getValue().equals(orderDetail.getDetailStatus())) {
                 orderStatus = EOrderStatus.AFTER_SALE_REJECTED;
                 break;

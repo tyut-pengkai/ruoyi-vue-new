@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 
 /**
@@ -143,6 +144,8 @@ public class YtoTrackObj {
     }
 
     @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class Request {
         /**
          * 消息内容
@@ -160,5 +163,12 @@ public class YtoTrackObj {
          * 订单类型（online:在线下单，offline:线下下单）
          */
         private String type;
+
+        public Request(HttpServletRequest servletRequest) {
+            this(servletRequest.getParameter("logistics_interface"),
+                    servletRequest.getParameter("data_digest"),
+                    servletRequest.getParameter("clientId"),
+                    servletRequest.getParameter("type"));
+        }
     }
 }
