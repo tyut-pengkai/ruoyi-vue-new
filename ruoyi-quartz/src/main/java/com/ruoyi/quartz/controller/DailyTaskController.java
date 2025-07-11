@@ -120,6 +120,18 @@ public class DailyTaskController extends BaseController {
         return R.ok();
     }
 
+    @PostMapping("/redis/store-memeber")
+    public R saveStoreMemberToRedis(SysJob sysJob) {
+        task.saveStoreMemberToRedis();
+        return R.ok();
+    }
+
+    @PostMapping("/daily-prod-top-sale")
+    public R dailyProdTopSale(SysJob sysJob) {
+        task.dailyProdTopSale();
+        return R.ok();
+    }
+
 
 
 

@@ -19,6 +19,7 @@ import com.ruoyi.web.controller.xkt.vo.advertRound.pc.newProd.*;
 import com.ruoyi.web.controller.xkt.vo.advertRound.pc.store.PCStoreMidBannerVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.pc.store.PCStoreTopBannerVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.picSearch.PicSearchAdvertVO;
+import com.ruoyi.web.controller.xkt.vo.website.AppStrengthSearchVO;
 import com.ruoyi.web.controller.xkt.vo.website.IndexSearchVO;
 import com.ruoyi.web.controller.xkt.vo.website.StoreSearchVO;
 import com.ruoyi.xkt.dto.BasePageDTO;
@@ -35,6 +36,7 @@ import com.ruoyi.xkt.dto.advertRound.pc.PCSearchDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.index.PCIndexRecommendDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.newProd.PCNewRecommendDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.store.PCStoreRecommendDTO;
+import com.ruoyi.xkt.dto.website.AppStrengthSearchDTO;
 import com.ruoyi.xkt.dto.website.IndexSearchDTO;
 import com.ruoyi.xkt.dto.website.StoreSearchDTO;
 import com.ruoyi.xkt.service.IWebsiteAPPService;
@@ -269,8 +271,8 @@ public class WebsiteController extends XktBaseController {
 
     @ApiOperation(value = "APP 实力质造专题页 档口列表", notes = "只需要传分页参数即可", httpMethod = "POST", response = R.class)
     @PostMapping("/app/strength/store")
-    public R<Page<APPStrengthStoreDTO>> getAppStrengthStorePage(@Validated @RequestBody IndexSearchVO searchVO) {
-        return R.ok(websiteAPPService. getAppStrengthStorePage(BeanUtil.toBean(searchVO, IndexSearchDTO.class)));
+    public R<Page<APPStrengthStoreDTO>> getAppStrengthStorePage(@Validated @RequestBody AppStrengthSearchVO searchVO) {
+        return R.ok(websiteAPPService. getAppStrengthStorePage(BeanUtil.toBean(searchVO, AppStrengthSearchDTO.class)));
     }
 
     @ApiOperation(value = "APP 商品榜 销量列表", httpMethod = "GET", response = R.class)

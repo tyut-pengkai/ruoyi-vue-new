@@ -91,7 +91,6 @@ public class XktTask {
     final StoreProductMapper storeProdMapper;
     final DailyProdTagMapper dailyProdTagMapper;
     final StoreProductCategoryAttributeMapper cateAttrMapper;
-    final StoreProductStatisticsMapper prodStatMapper;
     final EsClientWrapper esClientWrapper;
     final AdvertMapper advertMapper;
     final AdvertRoundMapper advertRoundMapper;
@@ -509,7 +508,7 @@ public class XktTask {
             return;
         }
         // 获取 商品销售、商品浏览量、商品收藏量、商品下载量
-        List<StoreProductStatistics> statisticsList = this.prodStatMapper.selectList(new LambdaQueryWrapper<StoreProductStatistics>()
+        List<StoreProductStatistics> statisticsList = this.storeProdStatMapper.selectList(new LambdaQueryWrapper<StoreProductStatistics>()
                 .eq(StoreProductStatistics::getDelFlag, Constants.UNDELETED));
         // 商品浏览量、下载量
         Map<Long, StoreProductStatistics> prodStatMap = statisticsList.stream().collect(Collectors.toMap(StoreProductStatistics::getStoreProdId, Function.identity()));
@@ -729,9 +728,21 @@ public class XktTask {
     }
 
     /**
+     * 将档口会员存到redis中
+     */
+    public void saveStoreMemberToRedis() {
+        List<StoreMember> memberList = this.storeMemberMapper.selectList(new LambdaQueryWrapper<StoreMember>()
+                .eq(StoreMember::getDelFlag, Constants.UNDELETED));
+        if (CollectionUtils.isEmpty(memberList)) {
+            return;
+        }
+        memberList.forEach(x -> redisCache.setCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId(), x));
+    }
+
+    /**
      * 凌晨2:50 更新APP商品销量榜、分类商品销量榜
      */
-    public void dailyProdSale() {
+    public void dailyProdTopSale() {
         final Date oneMonthAgo = java.sql.Date.valueOf(LocalDate.now().minusMonths(1));
         final Date now = java.sql.Date.valueOf(LocalDate.now());
         // 销量前100的ID列表，直接放到redis中

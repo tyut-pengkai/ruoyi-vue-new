@@ -10,6 +10,7 @@ import com.ruoyi.xkt.dto.advertRound.app.prod.APPProdSaleDTO;
 import com.ruoyi.xkt.dto.advertRound.app.strength.APPStrengthProdDTO;
 import com.ruoyi.xkt.dto.advertRound.app.strength.APPStrengthStoreDTO;
 import com.ruoyi.xkt.dto.es.ESProductDTO;
+import com.ruoyi.xkt.dto.website.AppStrengthSearchDTO;
 import com.ruoyi.xkt.dto.website.IndexSearchDTO;
 
 import java.io.IOException;
@@ -111,7 +112,7 @@ public interface IWebsiteAPPService {
      * @param searchDTO 搜索入参
      * @return Page<APPStrengthStoreDTO>
      */
-    Page<APPStrengthStoreDTO> getAppStrengthStorePage(IndexSearchDTO searchDTO);
+    Page<APPStrengthStoreDTO> getAppStrengthStorePage(AppStrengthSearchDTO searchDTO);
 
     /**
      * APP 商品榜 销量前100 商品列表

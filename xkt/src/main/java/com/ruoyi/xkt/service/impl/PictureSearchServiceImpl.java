@@ -11,6 +11,7 @@ import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.xkt.domain.PictureSearch;
+import com.ruoyi.xkt.domain.StoreMember;
 import com.ruoyi.xkt.domain.SysFile;
 import com.ruoyi.xkt.dto.advertRound.picSearch.PicSearchAdvertDTO;
 import com.ruoyi.xkt.dto.picture.ProductImgSearchCountDTO;
@@ -113,7 +114,13 @@ public class PictureSearchServiceImpl implements IPictureSearchService {
             return picSearchHotList;
         }
         // 重新缓存数据到redis
-        return this.cacheImgSearchTopProduct();
+        picSearchHotList = this.cacheImgSearchTopProduct();
+        picSearchHotList.forEach(x -> {
+            // 查询档口会员等级
+            StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId());
+            x.setMemberLevel(ObjectUtils.isNotEmpty(member) ? member.getLevel() : null);
+        });
+        return picSearchHotList;
     }
 
 
@@ -133,7 +140,8 @@ public class PictureSearchServiceImpl implements IPictureSearchService {
         storeProdViewAttrList = storeProdViewAttrList.stream().map(x -> {
                     //根据主图搜索同类商品
                     List<ProductMatchDTO> pmList = pictureService.searchProductByPicKey(x.getMainPicUrl(), 1000);
-                    return x.setSameProdCount(pmList.size()).setImgSearchCount(ObjectUtils.defaultIfNull(searchCountMap.get(x.getStoreProdId()), 0));
+                    return x.setTags(StrUtil.split(x.getTagStr(), ",")).setSameProdCount(pmList.size())
+                            .setImgSearchCount(ObjectUtils.defaultIfNull(searchCountMap.get(x.getStoreProdId()), 0));
                 })
                 .sorted(Comparator.comparing(StoreProdViewDTO::getImgSearchCount).reversed())
                 .limit(100)

@@ -27,14 +27,14 @@ public class APPProdCateTop3DTO {
     @Data
     @Accessors(chain = true)
     public static class APPPCTProdDTO {
-        @ApiModelProperty(value = "1推广图")
-        private Integer displayType;
+        @ApiModelProperty(value = "主图")
+        private String mainPicUrl;
         @ApiModelProperty(value = "排序")
         private Integer orderNum;
         @ApiModelProperty(value = "档口ID")
         private Long storeId;
-        @ApiModelProperty(value = "推广图路径")
-        private String fileUrl;
+        @ApiModelProperty(value = "商品货号")
+        private String prodArtNum;
     }
 
 }

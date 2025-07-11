@@ -12,10 +12,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -41,8 +38,8 @@ public class PictureSearchController extends XktBaseController {
                 .searchProductByPic(BeanUtil.toBean(searchVO, SearchRequestDTO.class).setNum(20)), StoreProdViewVO.class));
     }
 
-    @ApiOperation(value = "图搜热款列表", httpMethod = "POST", response = R.class)
-    @PostMapping("/hot")
+    @ApiOperation(value = "图搜热款列表", httpMethod = "GET", response = R.class)
+    @GetMapping("/hot")
     public R<List<StoreProdViewVO>> searchHotList() {
         return R.ok(BeanUtil.copyToList(picSearchService.listImgSearchTopProduct(), StoreProdViewVO.class));
     }

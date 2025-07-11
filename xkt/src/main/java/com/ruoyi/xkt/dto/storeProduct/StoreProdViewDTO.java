@@ -16,6 +16,8 @@ import java.util.List;
 @Accessors(chain = true)
 public class StoreProdViewDTO {
 
+    @ApiModelProperty(value = "档口会员级别")
+    private Integer memberLevel;
     @ApiModelProperty(value = "搜索次数")
     private Integer imgSearchCount;
     @ApiModelProperty(value = "同款商品数量")
@@ -38,7 +40,5 @@ public class StoreProdViewDTO {
     private Long storeId;
     @ApiModelProperty(value = "档口名称")
     private String storeName;
-//    @ApiModelProperty(value = "档口标签列表")
-//    private List<String> storeTagList;
 
 }

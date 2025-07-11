@@ -33,6 +33,7 @@ import com.ruoyi.xkt.dto.es.ESProductDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdPriceAndMainPicAndTagDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdPriceAndMainPicDTO;
 import com.ruoyi.xkt.dto.useSearchHistory.UserSearchHistoryDTO;
+import com.ruoyi.xkt.dto.website.AppStrengthSearchDTO;
 import com.ruoyi.xkt.dto.website.IndexSearchDTO;
 import com.ruoyi.xkt.enums.AdBiddingStatus;
 import com.ruoyi.xkt.enums.AdDisplayType;
@@ -327,13 +328,22 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         if (CollectionUtils.isEmpty(keyList)) {
             return Page.empty(searchDTO.getPageSize(), searchDTO.getPageNum());
         }
+        List<String> storeIdList = keyList.stream().map(key -> {
+            StoreMember member = this.redisCache.getCacheObject(key);
+            return member.getStoreId().toString();
+        }).collect(Collectors.toList());
         // 设置档口
-        searchDTO.setStoreIdList(new ArrayList<>(keyList));
+        searchDTO.setStoreIdList(storeIdList);
         Page<ESProductDTO> page = this.search(searchDTO);
         if (CollectionUtils.isEmpty(page.getList())) {
             return Page.empty(searchDTO.getPageSize(), searchDTO.getPageNum());
         }
         List<APPStrengthProdDTO> list = BeanUtil.copyToList(page.getList(), APPStrengthProdDTO.class);
+        // 设置档口会员等级
+        list.forEach(x -> {
+            StoreMember storeMember = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId());
+            x.setMemberLevel(ObjectUtils.isNotEmpty(storeMember) ? storeMember.getLevel() : null);
+        });
         return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), list);
     }
 
@@ -345,15 +355,19 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Page<APPStrengthStoreDTO> getAppStrengthStorePage(IndexSearchDTO searchDTO) {
+    public Page<APPStrengthStoreDTO> getAppStrengthStorePage(AppStrengthSearchDTO searchDTO) {
         // 获取有哪些会员档口
         Collection<String> keyList = this.redisCache.scanKeys(CacheConstants.STORE_MEMBER + "*");
         if (CollectionUtils.isEmpty(keyList)) {
             return Page.empty(searchDTO.getPageSize(), searchDTO.getPageNum());
         }
+        List<Long> storeIdList = keyList.stream().map(key -> {
+            StoreMember member = this.redisCache.getCacheObject(key);
+            return member.getStoreId();
+        }).collect(Collectors.toList());
         PageHelper.startPage(searchDTO.getPageNum(), searchDTO.getPageSize());
         List<Store> storeList = this.storeMapper.selectList(new LambdaQueryWrapper<Store>()
-                .eq(Store::getDelFlag, Constants.UNDELETED).in(Store::getId, new ArrayList<>(keyList))
+                .eq(Store::getDelFlag, Constants.UNDELETED).in(Store::getId, storeIdList)
                 .orderByDesc(Store::getStoreWeight));
         if (CollectionUtils.isEmpty(storeList)) {
             return Page.empty(searchDTO.getPageSize(), searchDTO.getPageNum());
@@ -368,6 +382,11 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         List<APPStrengthStoreDTO> list = storeList.stream().map(store -> BeanUtil.toBean(store, APPStrengthStoreDTO.class)
                         .setFocus(focusStoreIdMap.containsKey(store.getId())))
                 .collect(Collectors.toList());
+        // 设置档口会员等级
+        list.forEach(x -> {
+            StoreMember storeMember = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId());
+            x.setMemberLevel(ObjectUtils.isNotEmpty(storeMember) ? storeMember.getLevel() : null);
+        });
         return Page.convert(new PageInfo<>(list));
     }
 
@@ -380,11 +399,11 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
     @Transactional(readOnly = true)
     public List<APPProdSaleDTO> getAppProdSaleTop100List() throws IOException {
         // 从redis中获取销量前100的商品
-        List<DailyStoreProdSaleDTO> top100ProdList = redisCache.getCacheObject(CacheConstants.TOP_50_SALE_PROD);
-        if (CollectionUtils.isEmpty(top100ProdList)) {
+        List<DailyStoreProdSaleDTO> top50ProdList = redisCache.getCacheObject(CacheConstants.TOP_50_SALE_PROD);
+        if (CollectionUtils.isEmpty(top50ProdList)) {
             return Collections.emptyList();
         }
-        List<String> prodIdList = top100ProdList.stream().map(DailyStoreProdSaleDTO::getStoreProdId).map(String::valueOf).collect(Collectors.toList());
+        List<String> prodIdList = top50ProdList.stream().map(DailyStoreProdSaleDTO::getStoreProdId).map(String::valueOf).collect(Collectors.toList());
         // 构建入参
         IndexSearchDTO searchDTO = new IndexSearchDTO();
         searchDTO.setProdIdList(prodIdList);
@@ -400,14 +419,17 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                 .eq(UserFavorites::getDelFlag, Constants.UNDELETED).in(UserFavorites::getStoreProdId, prodIdList)
                 .eq(UserFavorites::getUserId, userId)).stream().collect(Collectors
                 .toMap(x -> x.getStoreProdId().toString(), Function.identity()));
-        return top100ProdList.stream()
+        return top50ProdList.stream()
                 .filter(x -> ObjectUtils.isNotEmpty(esProdMap.get(x.getStoreProdId().toString())))
-                .map(x -> BeanUtil.toBean(esProdMap.get(x.getStoreProdId().toString()), APPProdSaleDTO.class)
-                        // 是否为档口会员
-                        .setMemberLevel(redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId()))
-                        // 是否收藏商品
-                        .setCollectProd(ObjectUtils.isNotEmpty(collectMap.get(x.getStoreProdId().toString()))
-                                ? Boolean.TRUE : Boolean.FALSE))
+                .map(x -> {
+                    StoreMember storeMember = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId());
+                    return BeanUtil.toBean(esProdMap.get(x.getStoreProdId().toString()), APPProdSaleDTO.class)
+                            // 是否为档口会员
+                            .setMemberLevel(ObjectUtils.isNotEmpty(storeMember) ? storeMember.getLevel() : null)
+                            // 是否收藏商品
+                            .setCollectProd(ObjectUtils.isNotEmpty(collectMap.get(x.getStoreProdId().toString()))
+                                    ? Boolean.TRUE : Boolean.FALSE);
+                })
                 .collect(Collectors.toList());
     }
 
@@ -419,22 +441,22 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
     @Override
     @Transactional(readOnly = true)
     public List<APPProdCateTop3DTO> getAppCateProdSaleTop3List() throws IOException {
-        List<DailyStoreProdSaleDTO> cateSaleTop100ProdList = redisCache.getCacheObject(CacheConstants.CATE_TOP_50_SALE_PROD);
-        if (CollectionUtils.isEmpty(cateSaleTop100ProdList)) {
+        List<DailyStoreProdSaleDTO> cateSaleTop50ProdList = redisCache.getCacheObject(CacheConstants.CATE_TOP_50_SALE_PROD);
+        if (CollectionUtils.isEmpty(cateSaleTop50ProdList)) {
             return new ArrayList<>();
         }
         // 商品分类ID 和 分类名称的map
-        Map<Long, String> prodCateNameMap = cateSaleTop100ProdList.stream().collect(Collectors
-                .toMap(DailyStoreProdSaleDTO::getProdCateId, DailyStoreProdSaleDTO::getProdCateName));
+        Map<Long, String> prodCateNameMap = cateSaleTop50ProdList.stream().collect(Collectors
+                .toMap(DailyStoreProdSaleDTO::getProdCateId, DailyStoreProdSaleDTO::getProdCateName, (s1, s2) -> s2));
         // 每一个分类ID与分类销量前3 的商品ID列表
         Map<Long, List<String>> cateProdIdMap = new HashMap<>();
         // 所有的商品销量榜
         List<String> prodIdList = new ArrayList<>();
-        cateSaleTop100ProdList.stream().collect(Collectors.groupingBy(DailyStoreProdSaleDTO::getProdCateId))
+        cateSaleTop50ProdList.stream().collect(Collectors.groupingBy(DailyStoreProdSaleDTO::getProdCateId))
                 .forEach((prodCateId, list) -> {
                     // 每一个分类销量前3 的 id 列表
                     List<String> top3ProdIdList = list.stream().sorted(Comparator.comparing(DailyStoreProdSaleDTO::getCount).reversed())
-                            .limit(3).map(String::valueOf).collect(Collectors.toList());
+                            .limit(3).map(DailyStoreProdSaleDTO::getStoreProdId).map(String::valueOf).collect(Collectors.toList());
                     prodIdList.addAll(top3ProdIdList);
                     cateProdIdMap.put(prodCateId, top3ProdIdList);
                 });
@@ -448,17 +470,28 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         // ES 中存的 商品信息
         Map<String, ESProductDTO> esProdMap = page.getList().stream().collect(Collectors.toMap(ESProductDTO::getStoreProdId, Function.identity()));
         // 商品分类销量map
-        Map<Long, Integer> cateCountMap = cateSaleTop100ProdList.stream().collect(Collectors
+        Map<Long, Integer> cateCountMap = cateSaleTop50ProdList.stream().collect(Collectors
                 .groupingBy(DailyStoreProdSaleDTO::getProdCateId, Collectors.summingInt(DailyStoreProdSaleDTO::getCount)));
         // 按照cateCountMap 的 value 倒序排，并且只取key 的集合
         List<Long> cateIdList = cateCountMap.entrySet().stream().sorted(Map.Entry.<Long, Integer>comparingByValue().reversed())
                 .map(Map.Entry::getKey).collect(Collectors.toList());
         // 每一个分类前3的列表
-        return cateIdList.stream().map(prodCateId -> new APPProdCateTop3DTO()
-                        .setProdCateId(prodCateId).setProdCateName(prodCateNameMap.get(prodCateId))
-                        .setProdList(CollectionUtils.isEmpty(cateProdIdMap.get(prodCateId)) ? new ArrayList<>()
-                                : BeanUtil.copyToList(cateProdIdMap.get(prodCateId).stream()
-                                .map(esProdMap::get).collect(Collectors.toList()), APPProdCateTop3DTO.APPPCTProdDTO.class)))
+        return cateIdList.stream().map(prodCateId -> {
+                    APPProdCateTop3DTO cateTop3DTO = new APPProdCateTop3DTO().setProdCateId(prodCateId).setProdCateName(prodCateNameMap.get(prodCateId));
+                    List<String> top3ProdIdList = cateProdIdMap.get(prodCateId);
+                    if (CollectionUtils.isEmpty(top3ProdIdList)) {
+                        return cateTop3DTO;
+                    }
+                    List<APPProdCateTop3DTO.APPPCTProdDTO> tempList = new ArrayList<>();
+                    for (int i = 0; i < top3ProdIdList.size(); i++) {
+                        ESProductDTO esProd = esProdMap.get(top3ProdIdList.get(i));
+                        if (ObjectUtils.isEmpty(esProd)) {
+                            continue;
+                        }
+                        tempList.add(BeanUtil.toBean(esProd, APPProdCateTop3DTO.APPPCTProdDTO.class).setOrderNum(i + 1));
+                    }
+                    return cateTop3DTO.setProdList(tempList);
+                })
                 .collect(Collectors.toList());
     }
 

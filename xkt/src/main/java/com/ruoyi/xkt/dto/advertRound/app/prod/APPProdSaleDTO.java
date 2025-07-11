@@ -14,7 +14,6 @@ import java.util.List;
  */
 @Data
 @Accessors(chain = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class APPProdSaleDTO {
 
     @ApiModelProperty(value = "会员等级")
