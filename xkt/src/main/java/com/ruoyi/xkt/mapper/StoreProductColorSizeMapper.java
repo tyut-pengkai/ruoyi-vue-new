@@ -3,8 +3,9 @@ package com.ruoyi.xkt.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProductColorSize;
 import com.ruoyi.xkt.dto.storeProdColorSize.StoreProdSizeDTO;
-import com.ruoyi.xkt.dto.storeProdColorSize.StoreProdSnResDTO;
 import com.ruoyi.xkt.dto.storeProdColorSize.StoreSaleSnResDTO;
+import com.ruoyi.xkt.dto.storeProdColorSize.StoreStockTakingSnTempDTO;
+import com.ruoyi.xkt.dto.storeProdColorSize.StoreStorageSnDTO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -55,10 +56,27 @@ public interface StoreProductColorSizeMapper extends BaseMapper<StoreProductColo
     StoreSaleSnResDTO selectOtherSn(@Param("snPrefix") String snPrefix, @Param("storeId") String storeId, @Param("storeCusId") Long storeCusId);
 
     /**
-     * 查询普通商品的条码信息
+     * 获取档口商品入库的条码信息
      *
-     * @param snList 条码列表
-     * @return List<StoreProdSnsResDTO.SPSDetailDTO>
+     * @param storeId           档口ID
+     * @param buJuPrefixSnList  步橘网条码列表
+     * @param otherPrefixSnList 其他系统条码列表
+     * @return
      */
-    List<StoreProdSnResDTO.SPSDetailDTO> selectSnList(@Param("snList") List<String> snList, @Param("storeId") String storeId);
+    List<StoreStorageSnDTO.SSSDetailDTO> selectStorageTotalSnList(@Param("storeId") String storeId,
+                                                                  @Param("buJuPrefixSnList") List<String> buJuPrefixSnList,
+                                                                  @Param("otherPrefixSnList") List<String> otherPrefixSnList);
+
+    /**
+     * 获取档口商品盘点的条码信息
+     *
+     * @param storeId           档口ID
+     * @param buJuPrefixSnList  步橘网条码列表
+     * @param otherPrefixSnList 其他系统条码列表
+     * @return
+     */
+    List<StoreStockTakingSnTempDTO.SSTSTDetailDTO> selectStockSnList(@Param("storeId") String storeId,
+                                                                     @Param("buJuPrefixSnList") List<String> buJuPrefixSnList,
+                                                                     @Param("otherPrefixSnList") List<String> otherPrefixSnList);
 }
+

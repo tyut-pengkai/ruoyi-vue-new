@@ -1,11 +1,10 @@
-package com.ruoyi.web.controller.xkt.vo.storeProdColorSize;
+package com.ruoyi.xkt.dto.storeProdColorSize;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -14,33 +13,30 @@ import java.util.List;
  * @date 2025/3/27 15:12
  */
 @Data
+@Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class StoreSaleSnResVO {
+public class StoreStockTakingSnTempDTO {
 
     @ApiModelProperty(value = "错误列表")
     List<String> failList;
     @ApiModelProperty(value = "成功列表")
-    List<SPSDetailVO> successList;
+    List<SSTSTDetailDTO> successList;
 
     @Data
     @Accessors(chain = true)
-    public static class SPSDetailVO {
-        @ApiModelProperty(value = "档口商品ID")
-        private Long storeProdId;
+    public static class SSTSTDetailDTO {
         @ApiModelProperty(value = "档口商品颜色尺码ID")
         private Long storeProdColorId;
-        @ApiModelProperty(value = "档口颜色ID")
-        private Long storeColorId;
         @ApiModelProperty(value = "颜色")
         private String colorName;
         @ApiModelProperty(value = "商品货号")
         private String prodArtNum;
-        @ApiModelProperty(value = "生产价格")
-        private BigDecimal producePrice;
+        @ApiModelProperty(value = "条码前缀")
+        private String prefixPart;
         @ApiModelProperty(value = "尺码")
         private Integer size;
-        @ApiModelProperty(value = "销售条码")
-        private String sn;
+        @ApiModelProperty(value = "盘点库存")
+        private Long stock;
     }
 
 }

@@ -5,8 +5,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * @author liujiang
@@ -14,21 +14,15 @@ import javax.validation.constraints.NotNull;
  * @date 2025/3/27 15:12
  */
 @Data
-@ApiModel(value = "档口销售条码查询model")
+@ApiModel(value = "入库条码查询model")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class StoreSaleSnVO {
+public class StoreStorageSnVO {
 
     @NotNull(message = "档口ID不能为空!")
     @ApiModelProperty(value = "档口ID", required = true)
     private String storeId;
-    @NotNull(message = "档口客户ID不能为空!")
-    @ApiModelProperty(value = "档口客户ID", required = true)
-    private Long storeCusId;
-    @NotNull(message = "是否退货不能为空!")
-    @ApiModelProperty(value = "是否退货", required = true)
-    private Boolean refund;
-    @NotBlank(message = "条码不能为空!")
-    @ApiModelProperty(value = "条码")
-    private String sn;
+    @NotNull(message = "条码列表不能为空!")
+    @ApiModelProperty(value = "条码列表", required = true)
+    private List<String> snList;
 
 }

@@ -1,9 +1,6 @@
 package com.ruoyi.xkt.service;
 
-import com.ruoyi.xkt.dto.storeProdColorSize.StoreProdSnDTO;
-import com.ruoyi.xkt.dto.storeProdColorSize.StoreProdSnResDTO;
-import com.ruoyi.xkt.dto.storeProdColorSize.StoreSaleSnDTO;
-import com.ruoyi.xkt.dto.storeProdColorSize.StoreSaleSnResDTO;
+import com.ruoyi.xkt.dto.storeProdColorSize.*;
 
 /**
  * 档口商品颜色的尺码Service接口
@@ -16,16 +13,24 @@ public interface IStoreProductColorSizeService {
     /**
      * 查询条码 对应的商品信息
      *
-     * @param barcodeDTO 查询入参
+     * @param snDTO 查询入参
      * @return StoreProdColorSizeBarcodeResDTO
      */
-    StoreSaleSnResDTO storeSaleSn(StoreSaleSnDTO barcodeDTO);
+    StoreSaleSnResDTO storeSaleSn(StoreSaleSnDTO snDTO);
 
     /**
-     * 商品入库、库存盘点查询库存
+     * 商品入库查询库存
      *
-     * @param snsDTO 条码入参
+     * @param snDTO 条码入参
      * @return StoreProdSnsResDTO
      */
-    StoreProdSnResDTO sn(StoreProdSnDTO snsDTO);
+    StoreStorageSnResDTO storageSnList(StoreProdSnDTO snDTO);
+
+    /**
+     * 库存盘点查询库存
+     *
+     * @param snDTO 条码入参
+     * @return StoreStorageSnResDTO
+     */
+    StoreStockTakingSnResDTO stockTakingSnList(StoreStockTakingSnDTO snDTO);
 }
