@@ -2,7 +2,8 @@
   <div class="login">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
       <h3 class="title">{{title}}</h3>
-
+     
+    <!--tab 隐藏了 -->
       <el-tabs v-model="activeTab" @tab-click="handleTabClick" class="login-tabs"  v-show="false">
         <el-tab-pane label="密码登录" name="password"></el-tab-pane>
         <el-tab-pane label="邮箱登录" name="email"></el-tab-pane>
@@ -76,7 +77,7 @@
     </el-form>
     <!--  底部  -->
     <div class="el-login-footer">
-      <span>Copyright © 2025 aivi.vip All Rights Reserved.</span>
+      <span>{{footer}}</span>
     </div>
   </div>
 </template>
@@ -90,7 +91,8 @@ export default {
   name: "Login",
   data() {
     return {
-      title: process.env.VUE_APP_TITLE,
+      title: "登录",
+      footer: process.env.VUE_APP_FOOTER,
       activeTab: 'password',
       codeUrl: "",
       loginForm: {

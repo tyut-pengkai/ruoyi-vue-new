@@ -69,9 +69,10 @@ public class PayPalWebhookController {
 
    /**
      * 处理PayPal Webhook通知
+     *   0.验证 Webhook 签名（防伪造）
      *   1.防重复处理:redis缓存,数据库检查,订单状态判断
-     *   2.验证 Webhook 签名（防伪造）
-     *   3.执行业务逻辑
+     *   2.执行业务逻辑
+     *   3.持久化事件ID
      * 
      * @param request HTTP请求
      * @param payload Webhook通知内容
@@ -80,7 +81,12 @@ public class PayPalWebhookController {
     @PostMapping
     public ResponseEntity<String> handleWebhook(HttpServletRequest request, @RequestBody String payload) {
         log.info("收到PayPal Webhook通知: {}", payload);
-        
+        // 0. 签名验证 ,防伪需最先
+        if (!verificationService.verifyWebhookSignature(request, payload)) {
+            log.warn("Webhook 签名验证失败，请求被拒绝。");
+            return ResponseEntity.status(403).body("Signature verification failed.");
+        }
+
         try {
             JSONObject webhookEvent = JSONUtil.parseObj(payload);
             String eventId = webhookEvent.getStr("id");
@@ -105,14 +111,7 @@ public class PayPalWebhookController {
                 redisCache.setCacheObject(redisKey, "processed", 24, TimeUnit.HOURS);
                 return ResponseEntity.ok("Webhook event already processed.");
             }
-
-            // 3. 签名验证
-            if (!verificationService.verifyWebhookSignature(request, payload)) {
-                log.warn("Webhook 签名验证失败，请求被拒绝。");
-                return ResponseEntity.status(403).body("Signature verification failed.");
-            }
-        
-            // 4. 执行业务逻辑  // todo 需要异步处理,防止阻塞
+            // 3. 执行业务逻辑  // todo 需要异步处理,防止阻塞
             String eventType = webhookEvent.getStr("event_type");
             JSONObject resource = webhookEvent.getJSONObject("resource");
             log.info("PayPal Webhook事件类型: {}", eventType);

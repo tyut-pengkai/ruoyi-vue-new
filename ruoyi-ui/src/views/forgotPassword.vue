@@ -1,7 +1,7 @@
 <template>
   <div class="login">
     <el-form ref="form" :model="form" :rules="rules" class="login-form">
-      <h3 class="title">忘记密码</h3>
+      <h3 class="title">{{title}}</h3>
       
       <!-- Step 1 & 2: Email -->
       <el-form-item prop="email">
@@ -81,7 +81,7 @@
     </el-form>
     <!--  底部  -->
     <div class="el-login-footer">
-      <span>Copyright © 2025 aivi.vip All Rights Reserved.</span>
+      <span>{{footer}}</span>
     </div>
   </div>
 </template>
@@ -91,6 +91,7 @@ import { sendResetPasswordCode, resetPasswordByCode } from "@/api/login";
 
 export default {
   name: "ForgotPassword",
+
   data() {
     const validatePass2 = (rule, value, callback) => {
       if (value === "") {
@@ -102,6 +103,8 @@ export default {
       }
     };
     return {
+      title: "忘记密码",
+      footer: process.env.VUE_APP_FOOTER,
       step: 1, // 1: send code, 2: reset password
       form: {
         email: "",

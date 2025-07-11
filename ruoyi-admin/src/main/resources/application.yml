@@ -188,10 +188,14 @@ payment:
     sandbox: true
     # webhookId 沙箱环境
     webhookId: 8G387005CA748220D
-    # 成功回调地址
-    # successUrl: http://localhost:8081/payment/api/callback/success/paypal
-    successUrl: http://localhost:81/payment/pay/success
-    # 取消回调地址
-    cancelUrl: http://localhost:81/payment/pay/cancel
+    # paypal买家授权后回调地址 需要后端接口地址,因为前端地址不好处理
+    returnUrl: http://localhost:8081/payment/api/callback/success/paypal
+    # paypal买家取消支付后回调地址  可后端可前端,这个是后端接口地址
+    cancelUrl: http://localhost:8081/payment/api/callback/cancel/paypal
     # 通知回调地址
     notifyUrl: http://localhost:80/payment/paypal/notify
+
+  # 成功回调地址 后端重定向前端地址
+  successUrl: /payment/pay/success
+  # 取消回调地址 后端重定向前端地址
+  cancelUrl: http://localhost:81/payment/pay

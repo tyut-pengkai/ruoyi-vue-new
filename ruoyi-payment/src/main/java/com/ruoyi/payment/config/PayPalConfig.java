@@ -30,7 +30,7 @@ public class PayPalConfig {
     /**
      * 支付成功回调URL
      */
-    private String successUrl;
+    private String returnUrl;
     
     /**
      * 支付取消回调URL
@@ -71,12 +71,12 @@ public class PayPalConfig {
         this.sandbox = sandbox;
     }
     
-    public String getSuccessUrl() {
-        return successUrl;
+    public String getReturnUrl() {
+        return returnUrl;
     }
     
-    public void setSuccessUrl(String successUrl) {
-        this.successUrl = successUrl;
+    public void setReturnUrl(String successUrl) {
+        this.returnUrl = successUrl;
     }
     
     public String getCancelUrl() {

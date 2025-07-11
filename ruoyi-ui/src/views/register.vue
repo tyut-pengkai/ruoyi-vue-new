@@ -104,7 +104,7 @@
     </el-form>
     <!--  底部  -->
     <div class="el-register-footer">
-      <span>Copyright © 2025 aivi.vip All Rights Reserved.</span>
+      <span>{{footer}}</span>
     </div>
   </div>
 </template>
@@ -125,7 +125,8 @@ export default {
       }
     }
     return {
-      title: process.env.VUE_APP_TITLE,
+      title: "注 册",
+      footer: process.env.VUE_APP_FOOTER,
       codeUrl: "",
       registerForm: {
         username: "",

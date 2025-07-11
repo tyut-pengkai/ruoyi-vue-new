@@ -6,6 +6,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     
     <resultMap type="DeviceInfo" id="DeviceInfoResult">
         <result property="deviceId"    column="device_id"    />
+        <result property="availProHours" column="avail_pro_hours" />
+        <result property="availFreeHours" column="avail_free_hours" />
         <result property="deviceCode"    column="device_code"    />
         <result property="deviceName"    column="device_name"    />
         <result property="macAddr"    column="mac_addr"    />
@@ -72,10 +74,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
     <select id="selectAllDeviceInfoByUserId" parameterType="Long" resultMap="DeviceInfoResult">
-        <include refid="selectDeviceInfoVo"/>
-        from device_info di
+        SELECT di.*, dh.avail_pro_hours, dh.avail_free_hours
+        FROM device_info di
         JOIN device_user du ON di.device_id = du.device_id
-        where du.user_id = #{userId}
+        LEFT JOIN device_hour dh ON di.device_id = dh.device_id
+        WHERE du.user_id = #{userId}
     </select>
 
     <select id="selectByCodeOrMac" resultMap="DeviceInfoResult">

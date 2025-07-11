@@ -4,6 +4,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
+import java.math.BigDecimal;
 
 /**
  * 设备信息对象 device_info
@@ -17,6 +18,12 @@ public class DeviceInfo extends BaseEntity
 
     /** 设备id */
     private Long deviceId;
+
+    /** 通用时长（小时） */
+    private BigDecimal availProHours;
+
+    /** 赠送时长（小时） */
+    private BigDecimal availFreeHours;
 
     /** 设备编码 */
     @Excel(name = "设备编码")
@@ -67,6 +74,22 @@ public class DeviceInfo extends BaseEntity
     public Long getDeviceId() 
     {
         return deviceId;
+    }
+
+    public BigDecimal getAvailProHours() {
+        return availProHours;
+    }
+
+    public void setAvailProHours(BigDecimal availProHours) {
+        this.availProHours = availProHours;
+    }
+
+    public BigDecimal getAvailFreeHours() {
+        return availFreeHours;
+    }
+
+    public void setAvailFreeHours(BigDecimal availFreeHours) {
+        this.availFreeHours = availFreeHours;
     }
 
     public void setDeviceCode(String deviceCode) 

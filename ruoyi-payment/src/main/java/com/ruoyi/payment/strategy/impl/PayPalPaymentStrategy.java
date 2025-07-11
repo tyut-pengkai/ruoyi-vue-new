@@ -149,7 +149,7 @@ public class PayPalPaymentStrategy implements PaymentStrategy {
             //String payer_id    = captureJson.getJSONObject("payer").getStr("payer_id");
 
             PaymentOrder paymentOrder = null;  
-            // 如果状态是APPROVED，执行capture操作 ,在webhook回调操作,这里不执行
+            // 如果状态是APPROVED，执行capture操作 // todo 异步操作 
             if ("APPROVED".equalsIgnoreCase(status)) {
                  log.info("订单已授权，开始执行capture操作，orderId: {}", payPalOrderId);
                  String captureResult = captureOrder(payPalOrderId);
@@ -163,15 +163,17 @@ public class PayPalPaymentStrategy implements PaymentStrategy {
                  status = captureJson.getStr("status");
                  log.info("Capture完成，最终状态: {}", status);
                  log.info("Capture完成，最终captureJson: {}", captureJson);
-             
-                 
-                // 处理支付成功,更新套餐订单信息:关联paypal订单ID,支付状态,支付方式,支付时间,支付金额等
-                 paymentOrder=orderMapper.selectPaymentOrderByOrderNo(orderNo);
-                 if("0".equals(paymentOrder.getStatus())){//如果订单状态为0待支付,则更新订单状态 订单状态（0=待支付, 1=已完成, 2=已取消, 3=支付失败）
-                    paymentOrder.setPaymentId(payPalOrderId);
-                    paymentOrder.setPaymentMethod("paypal");
-                    paymentOrder.setPayerId(payer_email);
-                    paymentOrderService.processPaymentSuccess(paymentOrder);
+                 // 捕获(扣款)成功,更新订单状态
+                 if("COMPLETED".equalsIgnoreCase(status)){ 
+                    // 处理支付成功,更新套餐订单信息:关联paypal订单ID,支付状态,支付方式,支付时间,支付金额等
+                    paymentOrder=orderMapper.selectPaymentOrderByOrderNo(orderNo);
+                    if(!"1".equals(paymentOrder.getStatus())){//如果订单状态不为1已完成,则更新订单状态 订单状态（0=待支付, 1=已完成, 2=已取消, 3=支付失败）
+                       paymentOrder.setPaymentId(payPalOrderId);
+                       paymentOrder.setPaymentMethod("paypal");
+                       paymentOrder.setPayerId(payer_email);
+                       paymentOrderService.processPaymentSuccess(paymentOrder);
+
+                    }
                  }
             }
 
@@ -186,6 +188,7 @@ public class PayPalPaymentStrategy implements PaymentStrategy {
             resultMap.put("packageName", paymentOrder.getPackageName());
             resultMap.put("amount", paymentOrder.getAmount().toString());
             resultMap.put("currency", paymentOrder.getCurrency());
+            resultMap.put("orderNo", orderNo);
             
             return new PaymentResponse(true, "处理回调成功", resultMap);
         } catch (Exception e) {
@@ -441,20 +444,26 @@ public class PayPalPaymentStrategy implements PaymentStrategy {
         try {
             // 获取PayPal订单ID
             String payPalOrderId = paymentId;
+            String status = "";
             if (StrUtil.isBlank(payPalOrderId)) {
                 return PaymentResult.fail("INVALID_PARAMS", "参数中缺少PayPal订单ID");
             }
-            
-            // 查询PayPal订单状态
-            String result = queryOrder(payPalOrderId);
-            if (StrUtil.isBlank(result)) {
-                return PaymentResult.fail("PAYPAL_STATUS_ERROR", "查询PayPal订单状态失败");
+            PaymentOrder order = orderMapper.selectPaymentOrderByPaymentId(payPalOrderId);
+            if(order==null){
+                return PaymentResult.fail("PAYPAL_ORDER_NOT_FOUND", "未找到订单");
             }
-            
-            // 解析响应
-            JSONObject orderJson = JSONUtil.parseObj(result);
-            String status = orderJson.getStr("status");
-            
+            if(order.getStatus().equals("1")){// 订单已完成,则直接返回
+                status = "COMPLETED";
+            }else{
+                // 查询PayPal订单状态
+                String result = queryOrder(payPalOrderId);
+                if (StrUtil.isBlank(result)) {
+                    return PaymentResult.fail("PAYPAL_STATUS_ERROR", "查询PayPal订单状态失败");
+                }
+                // 解析响应
+                JSONObject orderJson = JSONUtil.parseObj(result);
+                status = orderJson.getStr("status");
+            }         
             // 构建返回数据
             Map<String, Object> resultMap = new HashMap<>();
             resultMap.put("paymentId", payPalOrderId);
@@ -499,7 +508,7 @@ public class PayPalPaymentStrategy implements PaymentStrategy {
             
             // 应用上下文
             Map<String, Object> appContext = new HashMap<>();
-            appContext.put("return_url", payPalConfig.getSuccessUrl());
+            appContext.put("return_url", payPalConfig.getReturnUrl());
             appContext.put("cancel_url", payPalConfig.getCancelUrl());
             appContext.put("user_action", "PAY_NOW");
             requestMap.put("application_context", appContext);

@@ -9,7 +9,7 @@
       <div v-else class="info-list">
         <div class="info-item">
           <span class="label">订单号</span>
-          <span class="value">{{ orderNo }}</span>
+          <span class="value">{{ paymentId }}</span>
         </div>
         <div class="info-item">
           <span class="label">交易状态</span>
@@ -61,6 +61,7 @@ export default {
     return {
       loading: true,
       loadingText: '正在获取订单信息...',
+      paymentId: '',
       orderNo: '',
       token: '',
       status: '',
@@ -78,15 +79,19 @@ export default {
   },
   created() {
     // 从URL参数获取token和PayerID
-    const token = this.$route.query.token;
-    const payerId = this.$route.query.PayerID;
-    
-    if (token && payerId) {
-      this.token = token;
-      this.getOrderInfo(token, payerId);
-    } else {
-      this.$message.error('缺少必要的支付参数');
+    this.paymentId = this.$route.query.paymentId;
+    this.orderNo = this.$route.query.orderNo;
+    this.status = this.$route.query.status;
+    this.account = this.$route.query.payer_email;
+    this.membershipPlan = this.$route.query.packageName;
+    this.amount = this.$route.query.amount;
+    this.currency = this.$route.query.currency;
+    this.paymentMethod = this.$route.query.paymentMethod;
+
+    if(this.status === 'COMPLETED' ){
       this.loading = false;
+    }else{
+      this.startPolling();
     }
   },
   beforeDestroy() {
@@ -94,37 +99,7 @@ export default {
     this.stopPolling();
   },
   methods: {
-    async getOrderInfo(token, payerId) {
-      try {
-        const response = await getPaymentCallback('success', 'paypal', {
-          token: token,
-          PayerID: payerId
-        });
-        
-        if (response.code === 200) {
-          const orderInfo = response.data;
-          this.orderNo = orderInfo.paymentId;
-          this.status = orderInfo.status;
-          this.account = orderInfo.payer_email;
-          this.membershipPlan = orderInfo.packageName;
-          this.amount = orderInfo.amount;
-          this.currency = orderInfo.currency;
-          this.paymentMethod = orderInfo.paymentMethod;
-
-          // 如果状态不是完成，开始轮询
-          if (this.status !== 'COMPLETED') {
-            this.startPolling();
-          }
-        } else {
-          this.$message.error(response.msg || '获取订单信息失败');
-        }
-      } catch (error) {
-        console.error('获取订单信息出错:', error);
-        this.$message.error('获取订单信息失败');
-      } finally {
-        this.loading = false;
-      }
-    },
+    
     // 开始轮询
     startPolling() {
       this.currentPollingCount = 0;
@@ -143,7 +118,7 @@ export default {
         
         // 查询支付状态
         getPaymentStatus(this.token, 'paypal')  // 这个token就是回调返回第三方支付平台(paypal)的订单ID
-        .then(response => {
+        .then(response => {paymentId
           if (response.code === 200) {
             const orderInfo = response.data;
             // 更新订单状态

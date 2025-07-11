@@ -9,9 +9,16 @@ import com.ruoyi.payment.service.PaymentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.web.util.UriComponentsBuilder;
 
 
+import java.net.URI;
 import java.util.Map;
 
 /**
@@ -25,6 +32,12 @@ public class PaymentApiController extends BaseController {
     
     @Autowired
     private PaymentService paymentService;
+
+    @Value("${payment.successUrl}")
+    private String successUrl;
+
+    @Value("${payment.cancelUrl}")
+    private String cancelUrl;
     
   
     
@@ -32,39 +45,55 @@ public class PaymentApiController extends BaseController {
      * 处理买家授权支付成功后回调
      */
      @GetMapping("/callback/success/{paymentMethod}")
-     public AjaxResult handleCallbackSuccess(@PathVariable("paymentMethod") String paymentMethod,@RequestParam Map<String, String> params) {
+     public RedirectView handleCallbackSuccess(@PathVariable("paymentMethod") String paymentMethod,@RequestParam Map<String, String> params) {
          try {
              // 处理回调
              PaymentResponse response = paymentService.handleCallbackSuccess(paymentMethod,params);
-             
+
              if (response.isSuccess()) {
-                 return AjaxResult.success("支付成功", response.getData());
+                 // 支付成功，重定向到成功页面
+                 UriComponentsBuilder urlBuilder = UriComponentsBuilder.fromHttpUrl(successUrl);
+                 if (response.getData() instanceof Map) {
+                     ((Map<String, ?>) response.getData()).forEach((key, value) -> {
+                         if (value != null) {
+                             urlBuilder.queryParam(key, String.valueOf(value));
+                         }
+                     });
+                 }
+                 return new RedirectView(urlBuilder.toUriString());
              } else {
-                 return AjaxResult.error(response.getMessage());
+                 // 支付失败，重定向到取消或失败页面
+                 return new RedirectView(cancelUrl + "?message=" + response.getMessage());
              }
          } catch (Exception e) {
              log.error("处理支付回调失败", e);
-             return AjaxResult.error("处理支付回调失败: " + e.getMessage());
+             // 异常情况，重定向到错误页面
+             return new RedirectView(cancelUrl + "?message=Error processing payment");
          }
      }
-    
+
     /**
      * 处理买家取消支付后回调
      */
     @GetMapping("/callback/cancel/{paymentMethod}")
-    public AjaxResult handleCallbackCancel(@PathVariable("paymentMethod") String paymentMethod,@RequestParam Map<String, String> params) {
+    public RedirectView handleCallbackCancel(@PathVariable("paymentMethod") String paymentMethod,@RequestParam Map<String, String> params) {
         try {
             // 处理回调
             PaymentResponse response = paymentService.handleCallbackCancel(paymentMethod,params);
-            
-            if (response.isSuccess()) {
-                return AjaxResult.success("支付取消", response.getData());
-            } else {
-                return AjaxResult.error(response.getMessage());
+            // 支付取消，重定向到取消页面
+            UriComponentsBuilder urlBuilder = UriComponentsBuilder.fromHttpUrl(cancelUrl);
+            if (response.getData() instanceof Map) {
+                ((Map<String, ?>) response.getData()).forEach((key, value) -> {
+                    if (value != null) {
+                        urlBuilder.queryParam(key, String.valueOf(value));
+                    }
+                });
             }
+            return new RedirectView(urlBuilder.toUriString());
+
         } catch (Exception e) {
             log.error("处理支付回调失败", e);
-            return AjaxResult.error("处理支付回调失败: " + e.getMessage());
+            return new RedirectView(cancelUrl + "?message=Error processing cancellation");
         }
     }
 

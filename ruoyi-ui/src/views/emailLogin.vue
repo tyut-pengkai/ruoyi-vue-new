@@ -46,7 +46,7 @@
     </el-form>
     <!--  底部  -->
     <div class="el-login-footer">
-      <span>Copyright © 2025 aivi.vip All Rights Reserved.</span>
+      <span>{{footer}}</span>
     </div>
   </div>
 </template>
@@ -59,7 +59,8 @@ export default {
   name: "EmailLogin",
   data() {
     return {
-      title: process.env.VUE_APP_TITLE + " - 邮箱验证码登录",
+      title: "邮箱验证码登录",
+      footer: process.env.VUE_APP_FOOTER,
       loginForm: {
         email: '',
         emailCode: ''
