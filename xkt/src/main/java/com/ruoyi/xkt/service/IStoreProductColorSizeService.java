@@ -2,6 +2,8 @@ package com.ruoyi.xkt.service;
 
 import com.ruoyi.xkt.dto.storeProdColorSize.*;
 
+import java.util.List;
+
 /**
  * 档口商品颜色的尺码Service接口
  *
@@ -33,4 +35,13 @@ public interface IStoreProductColorSizeService {
      * @return StoreStorageSnResDTO
      */
     StoreStockTakingSnResDTO stockTakingSnList(StoreStockTakingSnDTO snDTO);
+
+    /**
+     * 打印条码时获取条码
+     *
+     * @param snDTO 条码入参
+     * @return StorePrintSnResDTO
+     */
+    List<StorePrintSnResDTO> getPrintSnList(StorePrintSnDTO snDTO);
+
 }

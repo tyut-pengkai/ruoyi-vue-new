@@ -6,6 +6,7 @@ import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.web.controller.xkt.vo.storeProdColorSize.*;
+import com.ruoyi.xkt.dto.storeProdColorSize.StorePrintSnDTO;
 import com.ruoyi.xkt.dto.storeProdColorSize.StoreProdSnDTO;
 import com.ruoyi.xkt.dto.storeProdColorSize.StoreSaleSnDTO;
 import com.ruoyi.xkt.dto.storeProdColorSize.StoreStockTakingSnDTO;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * 档口商品颜色的尺码Controller
@@ -58,9 +61,12 @@ public class StoreProductColorSizeController extends XktBaseController {
         return R.ok(BeanUtil.toBean(prodColorSizeService.stockTakingSnList(BeanUtil.toBean(snVO, StoreStockTakingSnDTO.class)), StoreStockTakingSnResVO.class));
     }
 
-
-    // TODO 打印条码
-    // TODO 打印条码
-    // TODO 打印条码
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
+    @Log(title = "[打印条码] 获取商品条码", businessType = BusinessType.INSERT)
+    @ApiOperation(value = "[打印条码] 获取商品条码", httpMethod = "POST", response = R.class)
+    @PostMapping("/sn/print")
+    public R<List<StorePrintSnResVO>> getPrintSnList(@Validated @RequestBody StorePrintSnVO snVO) {
+        return R.ok(BeanUtil.copyToList(prodColorSizeService.getPrintSnList(BeanUtil.toBean(snVO, StorePrintSnDTO.class)), StorePrintSnResVO.class));
+    }
 
 }

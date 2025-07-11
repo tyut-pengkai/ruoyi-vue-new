@@ -1,6 +1,12 @@
 package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.constant.HttpStatus;
+import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.xkt.domain.StoreProductColorSize;
 import com.ruoyi.xkt.dto.storeProdColorSize.*;
 import com.ruoyi.xkt.mapper.StoreProductColorSizeMapper;
 import com.ruoyi.xkt.mapper.StoreSaleDetailMapper;
@@ -13,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -45,6 +52,10 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
     @Override
     @Transactional(readOnly = true)
     public StoreSaleSnResDTO storeSaleSn(StoreSaleSnDTO snDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(Long.valueOf(snDTO.getStoreId()))) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         // 非纯数字，则直接返回
         if (!POSITIVE_PATTERN.matcher(snDTO.getSn()).matches()) {
             return new StoreSaleSnResDTO().setSuccess(Boolean.FALSE).setSn(snDTO.getSn());
@@ -74,6 +85,10 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
     @Override
     @Transactional(readOnly = true)
     public StoreStorageSnResDTO storageSnList(StoreProdSnDTO snDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(Long.valueOf(snDTO.getStoreId()))) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         List<String> snList = snDTO.getSnList().stream().filter(s -> POSITIVE_PATTERN.matcher(s).matches()).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(snList)) {
             return new StoreStorageSnResDTO().setFailList(snDTO.getSnList());
@@ -123,6 +138,10 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
     @Override
     @Transactional(readOnly = true)
     public StoreStockTakingSnResDTO stockTakingSnList(StoreStockTakingSnDTO snDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(Long.valueOf(snDTO.getStoreId()))) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
         List<String> snList = snDTO.getSnList().stream().filter(s -> POSITIVE_PATTERN.matcher(s).matches()).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(snList)) {
             return new StoreStockTakingSnResDTO().setFailList(snDTO.getSnList());
@@ -160,6 +179,70 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
             return MapUtils.isEmpty(sizeQuantityMap) ? stock : stock.setStock(sizeQuantityMap.get(stock.getSize()));
         }).collect(Collectors.toList());
         return new StoreStockTakingSnResDTO().setFailList(failList).setSuccessList(successList);
+    }
+
+    /**
+     * 打印条码时获取条码
+     *
+     * @param snDTO 条码入参
+     * @return StorePrintSnResDTO
+     */
+    @Override
+    @Transactional
+    public List<StorePrintSnResDTO> getPrintSnList(StorePrintSnDTO snDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(Long.valueOf(snDTO.getStoreId()))) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
+        // 获取商品颜色尺码基础数据
+        List<Long> storeProdIdList = snDTO.getColorSizeList().stream().map(StorePrintSnDTO.SPColorSizeVO::getStoreProdId).distinct().collect(Collectors.toList());
+        List<Long> storeColorIdList = snDTO.getColorSizeList().stream().map(StorePrintSnDTO.SPColorSizeVO::getStoreColorId).distinct().collect(Collectors.toList());
+        List<StoreProductColorSize> colorSizeList = this.prodColorSizeMapper.selectList(new LambdaQueryWrapper<StoreProductColorSize>()
+                .eq(StoreProductColorSize::getDelFlag, Constants.UNDELETED).in(StoreProductColorSize::getStoreProdId, storeProdIdList)
+                .in(StoreProductColorSize::getStoreColorId, storeColorIdList));
+        if (CollectionUtils.isEmpty(colorSizeList)) {
+            return new ArrayList<>();
+        }
+        // key storeProdId + storeColorId + size, value storeProductColorSize
+        Map<String, StoreProductColorSize> colorSizeMap = colorSizeList.stream().collect(Collectors
+                .toMap(x -> x.getStoreProdId() + ":" + x.getStoreColorId() + ":" + x.getSize(), Function.identity()));
+        // 待更新列表
+        List<StoreProductColorSize> updateList = new ArrayList<>();
+        // 返回给前端的待打印条码列表
+        List<StorePrintSnResDTO> printSnList = new ArrayList<>();
+        for (int i = 0; i < snDTO.getColorSizeList().size(); i++) {
+            final StorePrintSnDTO.SPColorSizeVO colorSizeVO = snDTO.getColorSizeList().get(i);
+            List<StorePrintSnDTO.SPSizeVO> sizeQuantityList = colorSizeVO.getSizeQuantityList();
+            // storeProductColorId 下 所有的条码
+            List<StorePrintSnResDTO.SPSizeSnDTO> sizeSnList = new ArrayList<>();
+            for (int j = 0; j < sizeQuantityList.size(); j++) {
+                final StorePrintSnDTO.SPSizeVO quantityVO = sizeQuantityList.get(j);
+                // 获取系统条码对应信息
+                final String key = colorSizeVO.getStoreProdId() + ":" + colorSizeVO.getStoreColorId() + ":" + quantityVO.getSize();
+                StoreProductColorSize colorSize = colorSizeMap.get(key);
+                if (ObjectUtils.isEmpty(colorSize)) {
+                    continue;
+                }
+                // 待打印的下一个条码
+                Integer nextSn = colorSize.getNextSn();
+                // 当前尺码对应的条码列表
+                List<String> snList = new ArrayList<>();
+                for (int k = 0; k < quantityVO.getQuantity(); k++) {
+                    nextSn += 1;
+                    // 更新下一次打印的条码编号
+                    // 取 colorSize 的 nextSn 字段，不足8位填充为8位
+                    snList.add(colorSize.getSnPrefix() + String.format("%08d", nextSn));
+                }
+                // 更新下一个待打印条码开始值
+                updateList.add( colorSize.setNextSn(nextSn));
+                sizeSnList.add(new StorePrintSnResDTO.SPSizeSnDTO().setSize(quantityVO.getSize()).setSnList(snList));
+            }
+            printSnList.add(new StorePrintSnResDTO().setStoreProdColorId(colorSizeVO.getStoreProdColorId()).setSizeSnList(sizeSnList));
+        }
+        if (CollectionUtils.isNotEmpty(updateList)) {
+            this.prodColorSizeMapper.updateById(updateList);
+        }
+        return printSnList;
     }
 
     /**

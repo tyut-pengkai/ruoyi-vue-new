@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.xkt.vo.storeProdColorSize;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -14,6 +15,7 @@ import java.util.List;
  * @date 2025/3/27 15:12
  */
 @Data
+@ApiModel(value="档口入库扫码返回数据")
 @Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreStorageSnResVO {
