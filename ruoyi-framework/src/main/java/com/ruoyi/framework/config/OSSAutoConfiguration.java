@@ -33,6 +33,7 @@ public class OSSAutoConfiguration {
         configuration.setAccessKeyId(properties.getAccessKeyId());
         configuration.setAccessKeySecret(properties.getAccessKeySecret());
         configuration.setBucketName(properties.getBucketName());
+        configuration.setPublicBucketName(properties.getPublicBucketName());
         configuration.setRegionId(properties.getRegionId());
         configuration.setRoleArn(properties.getRoleArn());
         configuration.setHttps(properties.isHttps());

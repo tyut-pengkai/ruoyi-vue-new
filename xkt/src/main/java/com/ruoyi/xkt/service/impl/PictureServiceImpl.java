@@ -50,9 +50,10 @@ public class PictureServiceImpl implements IPictureService {
 
     @Override
     public PicZipDTO processPicZip(String key) {
+        String bucketName = ossClient.getConfiguration().getBucketName();
         checkProcessAccess(key);
         //下载至系统临时文件夹
-        DownloadResultDTO downloadResult = downloadFile2TempDir(key);
+        DownloadResultDTO downloadResult = downloadFile2TempDir(bucketName, key);
         String tempDirPath = downloadResult.getTempDirPath();
         try {
             String midDirName = "unzip_" + downloadResult.getTempDirName();
@@ -106,10 +107,10 @@ public class PictureServiceImpl implements IPictureService {
             String keyOf450 = StrUtil.replaceLast(key, downloadResult.getFileName(), nameOf450);
             String keyOf750 = StrUtil.replaceLast(key, downloadResult.getFileName(), nameOf750);
             try (InputStream is = new FileInputStream(pathOf450)) {
-                ossClient.upload(keyOf450, is);
+                ossClient.upload(bucketName, keyOf450, is);
             }
             try (InputStream is = new FileInputStream(pathOf750)) {
-                ossClient.upload(keyOf750, is);
+                ossClient.upload(bucketName, keyOf750, is);
             }
             return new PicZipDTO(key, keyOf450, keyOf750);
         } catch (Exception e) {
@@ -124,6 +125,7 @@ public class PictureServiceImpl implements IPictureService {
     @Override
     public ProductPicSyncResultDTO sync2ImgSearchServer(ProductPicSyncDTO productPicSyncDTO) {
         Assert.notNull(productPicSyncDTO);
+        String bucketName = ossClient.getConfiguration().getPublicBucketName();
         String productId = productPicSyncDTO.getStoreProductId().toString();
         //删除商品图片
         boolean allSuccess = imgSearchClient.deleteImg(productId);
@@ -135,7 +137,7 @@ public class PictureServiceImpl implements IPictureService {
             imgAdd.setPicName(FileUtil.getName(picKey));
             imgAdd.setCategoryId(Constants.IMG_SEARCH_CATEGORY_ID);
             try {
-                imgAdd.setPicInputStream(ossClient.getObject(picKey));
+                imgAdd.setPicInputStream(ossClient.getObject(bucketName, picKey));
             } catch (Exception e) {
                 log.error("获取图片流异常: " + picKey, e);
                 allSuccess = false;
@@ -155,6 +157,7 @@ public class PictureServiceImpl implements IPictureService {
     @Override
     public List<ProductMatchDTO> searchProductByPicKey(String picKey, Integer num) {
         Assert.notEmpty(picKey);
+        String bucketName = ossClient.getConfiguration().getPublicBucketName();
         if (num == null || num < 0) {
             //默认返回30条数据
             num = Constants.IMG_SEARCH_DEFAULT_REQUEST_NUM;
@@ -168,7 +171,7 @@ public class PictureServiceImpl implements IPictureService {
             imgSearchReq.setStart(i);
             imgSearchReq.setDistinctProductId(true);
             try {
-                imgSearchReq.setPicInputStream(ossClient.getObject(picKey));
+                imgSearchReq.setPicInputStream(ossClient.getObject(bucketName, picKey));
             } catch (Exception e) {
                 log.error("获取图片流异常: " + picKey, e);
                 return rtnList;
@@ -216,10 +219,11 @@ public class PictureServiceImpl implements IPictureService {
     /**
      * OSS下载文件到系统临时文件夹
      *
+     * @param bucketName
      * @param ossKey
      * @return
      */
-    private DownloadResultDTO downloadFile2TempDir(String ossKey) {
+    private DownloadResultDTO downloadFile2TempDir(String bucketName, String ossKey) {
         Assert.notEmpty("ossKey不能为空");
         try {
             String baseTempDir = ossProperties.getTempDir();
@@ -229,7 +233,7 @@ public class PictureServiceImpl implements IPictureService {
             FileUtil.mkdir(tempDirPath);
             String fileName = FileNameUtil.getName(ossKey);
             String filePath = tempDirPath + fileName;
-            ossClient.download(ossKey, filePath);
+            ossClient.download(bucketName, ossKey, filePath);
             return DownloadResultDTO
                     .builder()
                     .fileName(fileName)

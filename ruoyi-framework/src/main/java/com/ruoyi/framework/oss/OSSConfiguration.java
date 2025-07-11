@@ -12,6 +12,7 @@ public class OSSConfiguration {
     private String accessKeyId;
     private String accessKeySecret;
     private String bucketName;
+    private String publicBucketName;
     private String regionId;
     private String roleArn;
     private boolean https;
@@ -24,6 +25,7 @@ public class OSSConfiguration {
         configuration.setAccessKeyId(this.accessKeyId);
         configuration.setAccessKeySecret(this.getAccessKeySecret());
         configuration.setBucketName(this.bucketName);
+        configuration.setPublicBucketName(this.publicBucketName);
         configuration.setRegionId(this.regionId);
         configuration.setRoleArn(this.roleArn);
         configuration.setHttps(this.https);

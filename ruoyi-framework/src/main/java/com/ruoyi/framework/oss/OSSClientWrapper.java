@@ -70,9 +70,9 @@ public class OSSClientWrapper {
      * @param key         key
      * @param inputStream 文件流
      */
-    public void upload(String key, InputStream inputStream)
+    public void upload(String bucketName, String key, InputStream inputStream)
             throws Exception {
-        upload(key, inputStream, null);
+        upload(bucketName, key, inputStream, null);
     }
 
     /**
@@ -82,20 +82,21 @@ public class OSSClientWrapper {
      * @param inputStream 文件流
      * @param contentType 文件类型
      */
-    public void upload(String key, InputStream inputStream, String contentType)
+    public void upload(String bucketName, String key, InputStream inputStream, String contentType)
             throws Exception {
-        upload(key, inputStream, contentType, null);
+        upload(bucketName, key, inputStream, contentType, null);
     }
 
     /**
      * 文件上传
      *
+     * @param bucketName         bucketName
      * @param key                key
      * @param inputStream        文件流
      * @param contentType        文件类型
      * @param contentDisposition 下载描述信息
      */
-    public void upload(String key, InputStream inputStream, String contentType, String contentDisposition) throws Exception {
+    public void upload(String bucketName, String key, InputStream inputStream, String contentType, String contentDisposition) throws Exception {
         ObjectMetadata objectMeta = new ObjectMetadata();
         objectMeta.setContentLength(inputStream.available());
         // 可以在metadata中标记文件类型
@@ -105,8 +106,8 @@ public class OSSClientWrapper {
         objectMeta.setContentType(contentType);
         // 设置下载名
         objectMeta.setContentDisposition(contentDisposition);
-        client.putObject(configuration.getBucketName(), key, inputStream, objectMeta);
-        if (!client.doesObjectExist(configuration.getBucketName(), key)) {
+        client.putObject(bucketName, key, inputStream, objectMeta);
+        if (!client.doesObjectExist(bucketName, key)) {
             throw new IllegalStateException("文件上传失败");
         }
     }
@@ -117,15 +118,15 @@ public class OSSClientWrapper {
      * @param sourceKey 源KEY
      * @param targetKey 目标KEY
      */
-    public void move(String sourceKey, String targetKey) {
-        if (!client.doesObjectExist(configuration.getBucketName(), sourceKey)) {
+    public void move(String bucketName, String sourceKey, String targetKey) {
+        if (!client.doesObjectExist(bucketName, sourceKey)) {
             throw new IllegalStateException("源文件信息不存在");
         }
-        client.copyObject(configuration.getBucketName(), sourceKey, configuration.getBucketName(), targetKey);
-        if (!client.doesObjectExist(configuration.getBucketName(), targetKey)) {
+        client.copyObject(bucketName, sourceKey, bucketName, targetKey);
+        if (!client.doesObjectExist(bucketName, targetKey)) {
             throw new IllegalStateException("移动文件失败[1]");
         }
-        if (!this.delete(sourceKey)) {
+        if (!this.delete(bucketName, sourceKey)) {
             throw new IllegalStateException("移动文件失败[2]");
         }
     }
@@ -133,25 +134,16 @@ public class OSSClientWrapper {
     /**
      * 根据key，获取访问路径
      *
-     * @param key        key（文件相对路径）
-     * @param expireTime 过期时间，单位毫秒
-     */
-    public URL generateUrl(String key, Long expireTime) throws Exception {
-        return generateUrl(key, expireTime, false);
-    }
-
-    /**
-     * 根据key，获取访问路径
-     *
+     * @param bucketName bucketName
      * @param key        key（文件相对路径）
      * @param expireTime 过期时间，单位毫秒
      * @param down       是否生成直接下载的url
      */
-    public URL generateUrl(String key, Long expireTime, boolean down) throws Exception {
+    public URL generateUrl(String bucketName, String key, Long expireTime, boolean down) throws Exception {
         Assert.notNull(expireTime, "过期时间为空");
         GeneratePresignedUrlRequest request;
         Date expiration = new Date(System.currentTimeMillis() + expireTime);
-        request = new GeneratePresignedUrlRequest(this.configuration.getBucketName(), key);
+        request = new GeneratePresignedUrlRequest(bucketName, key);
         request.setExpiration(expiration);
         request.setMethod(HttpMethod.GET);
         ResponseHeaderOverrides header = new ResponseHeaderOverrides();
@@ -164,12 +156,12 @@ public class OSSClientWrapper {
         return this.client.generatePresignedUrl(request);
     }
 
-    public String generateBase64(String key) {
+    public String generateBase64(String bucketName, String key) {
         if (key == null) {
             return null;
         }
         try {
-            OSSObject ossObject = this.client.getObject(this.configuration.getBucketName(), key);
+            OSSObject ossObject = this.client.getObject(bucketName, key);
             if (ossObject == null) {
                 return null;
             }
@@ -242,17 +234,17 @@ public class OSSClientWrapper {
         return "image/jpeg";
     }
 
-    public InputStream getObject(String key) {
-        OSSObject ossObject = client.getObject(configuration.getBucketName(), key);
+    public InputStream getObject(String bucketName, String key) {
+        OSSObject ossObject = client.getObject(bucketName, key);
         return ossObject.getObjectContent();
     }
 
     /**
      * 下载文件
      */
-    public void download(String key, String filename)
+    public void download(String bucketName, String key, String filename)
             throws OSSException, ClientException {
-        client.getObject(new GetObjectRequest(configuration.getBucketName(), key), new File(filename));
+        client.getObject(new GetObjectRequest(bucketName, key), new File(filename));
     }
 
     /**
@@ -260,11 +252,11 @@ public class OSSClientWrapper {
      *
      * @return 成功删除返回true 不存在返回false
      */
-    public boolean delete(String key) {
+    public boolean delete(String bucketName, String key) {
         //检查是否是有效文件
-        boolean exists = client.doesObjectExist(configuration.getBucketName(), key);
+        boolean exists = client.doesObjectExist(bucketName, key);
         if (exists) {
-            client.deleteObject(configuration.getBucketName(), key);
+            client.deleteObject(bucketName, key);
         }
         return exists;
     }

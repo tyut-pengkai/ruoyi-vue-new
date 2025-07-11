@@ -14,7 +14,7 @@ import java.util.List;
 public interface IPictureService {
 
     /**
-     * 处理图包
+     * 处理图包（私有桶）
      *
      * @param key
      * @return
@@ -22,7 +22,7 @@ public interface IPictureService {
     PicZipDTO processPicZip(String key);
 
     /**
-     * 同步图片到搜图服务器
+     * 同步图片到搜图服务器（公有桶）
      *
      * @param productPicSyncDTO
      * @return
@@ -30,7 +30,7 @@ public interface IPictureService {
     ProductPicSyncResultDTO sync2ImgSearchServer(ProductPicSyncDTO productPicSyncDTO);
 
     /**
-     * 以图搜商品
+     * 以图搜商品（公有桶）
      *
      * @param picKey
      * @param num
