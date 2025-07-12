@@ -131,17 +131,31 @@ public class StoreController extends XktBaseController {
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')")
-    @ApiOperation(value = "获取档口首页 销售额 ", httpMethod = "POST", response = R.class)
-    @PostMapping(value = "/index/sale-revenue")
+    @ApiOperation(value = "获取档口首页 按月销售额 ", httpMethod = "POST", response = R.class)
+    @PostMapping(value = "/index/month/sale")
     public R<List<StoreIndexSaleRevenueResVO>> indexSaleRevenue(@Validated @RequestBody StoreSaleRevenueVO revenueVO) {
         return R.ok(BeanUtil.copyToList(storeService.indexSaleRevenue(BeanUtil.toBean(revenueVO, StoreSaleRevenueDTO.class)), StoreIndexSaleRevenueResVO.class));
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')")
-    @ApiOperation(value = "获取档口首页 今日销售额 ", httpMethod = "GET", response = R.class)
-    @GetMapping(value = "/index/today/sale-revenue/{storeId}")
-    public R<StoreIndexTodaySaleResVO> indexTodaySaleRevenue(@PathVariable Long storeId) {
-        return R.ok(BeanUtil.toBean(storeService.indexTodaySaleRevenue(storeId), StoreIndexTodaySaleResVO.class));
+    @ApiOperation(value = "获取档口首页 今日商品销售额前5 ", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/index/today/prod/sale/top5/{storeId}")
+    public R<StoreIndexTodaySaleTop5ResVO> indexTodayProdSaleRevenueTop5(@PathVariable Long storeId) {
+        return R.ok(BeanUtil.toBean(storeService.indexTodayProdSaleRevenueTop5(storeId), StoreIndexTodaySaleTop5ResVO.class));
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')")
+    @ApiOperation(value = "获取档口首页 今日商品销售额 ", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/index/today/prod/sale/{storeId}")
+    public R<List<StoreIndexTodaySaleResVO>> indexTodayProdSaleRevenue(@PathVariable Long storeId) {
+        return R.ok(BeanUtil.copyToList(storeService.indexTodayProdSaleRevenue(storeId), StoreIndexTodaySaleResVO.class));
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')")
+    @ApiOperation(value = "获取档口首页 今日客户销售额 ", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/index/today/cus/sale/{storeId}")
+    public R<List<StoreIndexTodayCusSaleResVO>> indexTodayCusSaleRevenue(@PathVariable Long storeId) {
+        return R.ok(BeanUtil.copyToList(storeService.indexTodayCusSaleRevenue(storeId), StoreIndexTodayCusSaleResVO.class));
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')")

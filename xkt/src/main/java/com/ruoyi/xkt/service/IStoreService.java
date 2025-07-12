@@ -108,7 +108,7 @@ public interface IStoreService {
      * @param storeId 档口ID
      * @return StoreIndexTodaySaleResDTO
      */
-    StoreIndexTodaySaleResDTO indexTodaySaleRevenue(Long storeId);
+    List<StoreIndexTodaySaleResDTO> indexTodayProdSaleRevenue(Long storeId);
 
     /**
      * 档口商品销售额前10
@@ -157,4 +157,19 @@ public interface IStoreService {
      * @return Integer
      */
     Integer updateStoreWeight(StoreWeightUpdateDTO storeWeightUpdateDTO);
+
+    /**
+     * 获取今日客户销售额
+     *
+     * @param storeId 档口ID
+     * @return StoreIndexTodayCusSaleResDTO
+     */
+    List<StoreIndexTodayCusSaleResDTO> indexTodayCusSaleRevenue(Long storeId);
+
+    /**
+     * 获取今日商品销售额前5
+     * @param storeId 档口ID
+     * @return StoreIndexTodaySaleResDTO
+     */
+    StoreIndexTodaySaleTop5ResDTO indexTodayProdSaleRevenueTop5(Long storeId);
 }

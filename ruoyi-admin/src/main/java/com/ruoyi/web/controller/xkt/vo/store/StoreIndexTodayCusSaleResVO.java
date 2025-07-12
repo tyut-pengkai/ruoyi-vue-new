@@ -4,8 +4,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.math.BigDecimal;
-
 /**
  * @author liujiang
  * @version v1.0
@@ -13,13 +11,15 @@ import java.math.BigDecimal;
  */
 @ApiModel("档口首页今日销售额")
 @Data
-public class StoreIndexTodaySaleResVO {
+public class StoreIndexTodayCusSaleResVO {
 
-    @ApiModelProperty(value = "货号")
-    private String prodArtNum;
+    @ApiModelProperty(value = "档口客户ID")
+    private Long storeCusId;
+    @ApiModelProperty(value = "档口客户名称")
+    private String storeCusName;
     @ApiModelProperty(value = "销售数量")
     private Integer saleNum;
-    @ApiModelProperty(value = "销售金额")
-    private BigDecimal saleAmount;
+    @ApiModelProperty(value = "销售额")
+    private Long saleAmount;
 
 }

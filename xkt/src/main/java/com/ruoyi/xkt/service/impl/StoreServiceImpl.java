@@ -301,19 +301,19 @@ public class StoreServiceImpl implements IStoreService {
     }
 
     /**
-     * 档口首页今日销售额
+     * 获取今日商品销售额前5
      *
      * @param storeId 档口ID
      * @return StoreIndexTodaySaleResDTO
      */
     @Override
     @Transactional(readOnly = true)
-    public StoreIndexTodaySaleResDTO indexTodaySaleRevenue(Long storeId) {
+    public StoreIndexTodaySaleTop5ResDTO indexTodayProdSaleRevenueTop5(Long storeId) {
         List<StoreSaleDetail> detailList = this.saleDetailMapper.selectList(new LambdaQueryWrapper<StoreSaleDetail>()
                 .eq(StoreSaleDetail::getStoreId, storeId).eq(StoreSaleDetail::getDelFlag, Constants.UNDELETED)
                 .eq(StoreSaleDetail::getVoucherDate, java.sql.Date.valueOf(LocalDate.now())));
         if (CollectionUtils.isEmpty(detailList)) {
-            return new StoreIndexTodaySaleResDTO();
+            return new StoreIndexTodaySaleTop5ResDTO();
         }
         List<StoreProduct> storeProdList = storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
                 .in(StoreProduct::getId, detailList.stream().map(StoreSaleDetail::getStoreProdId).collect(Collectors.toList()))
@@ -321,9 +321,9 @@ public class StoreServiceImpl implements IStoreService {
         Map<Long, StoreProduct> storeProdMap = storeProdList.stream().collect(Collectors.toMap(StoreProduct::getId, x -> x));
         Map<Long, BigDecimal> saleMap = detailList.stream().collect(Collectors
                 .groupingBy(StoreSaleDetail::getStoreProdId, CollectorsUtil.summingBigDecimal(StoreSaleDetail::getAmount)));
-        List<StoreIndexTodaySaleResDTO.SITSProdSaleDTO> saleList = new ArrayList<>();
+        List<StoreIndexTodaySaleTop5ResDTO.SITSProdSaleDTO> saleList = new ArrayList<>();
         saleMap.forEach((storeProdId, amount) -> {
-            StoreIndexTodaySaleResDTO.SITSProdSaleDTO saleDTO = new StoreIndexTodaySaleResDTO.SITSProdSaleDTO();
+            StoreIndexTodaySaleTop5ResDTO.SITSProdSaleDTO saleDTO = new StoreIndexTodaySaleTop5ResDTO.SITSProdSaleDTO();
             saleDTO.setProdArtNum(ObjectUtils.isNotEmpty(storeProdMap.get(storeProdId)) ? storeProdMap.get(storeProdId).getProdArtNum() : "")
                     .setSaleAmount(amount);
             saleList.add(saleDTO);
@@ -331,11 +331,66 @@ public class StoreServiceImpl implements IStoreService {
         // 总的金额
         final BigDecimal totalAmount = detailList.stream().map(StoreSaleDetail::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
         // 销售额排名前5的列表
-        List<StoreIndexTodaySaleResDTO.SITSProdSaleDTO> top5List = saleList.stream().sorted(Comparator.comparing(StoreIndexTodaySaleResDTO.SITSProdSaleDTO::getSaleAmount).reversed()).limit(5).collect(Collectors.toList());
+        List<StoreIndexTodaySaleTop5ResDTO.SITSProdSaleDTO> top5List = saleList.stream().sorted(Comparator.comparing(StoreIndexTodaySaleTop5ResDTO.SITSProdSaleDTO::getSaleAmount).reversed()).limit(5).collect(Collectors.toList());
         // 其它款式的销售额
-        final BigDecimal otherAmount = totalAmount.subtract(top5List.stream().map(StoreIndexTodaySaleResDTO.SITSProdSaleDTO::getSaleAmount).reduce(BigDecimal.ZERO, BigDecimal::add));
-        return new StoreIndexTodaySaleResDTO().setStoreId(storeId).setOtherAmount(otherAmount).setSaleList(top5List);
+        final BigDecimal otherAmount = totalAmount.subtract(top5List.stream().map(StoreIndexTodaySaleTop5ResDTO.SITSProdSaleDTO::getSaleAmount).reduce(BigDecimal.ZERO, BigDecimal::add));
+        return new StoreIndexTodaySaleTop5ResDTO().setStoreId(storeId).setOtherAmount(otherAmount).setSaleList(top5List);
     }
+
+    /**
+     * 档口首页今日销售额
+     *
+     * @param storeId 档口ID
+     * @return StoreIndexTodaySaleResDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<StoreIndexTodaySaleResDTO> indexTodayProdSaleRevenue(Long storeId) {
+        List<StoreSaleDetail> detailList = this.saleDetailMapper.selectList(new LambdaQueryWrapper<StoreSaleDetail>()
+                .eq(StoreSaleDetail::getStoreId, storeId).eq(StoreSaleDetail::getDelFlag, Constants.UNDELETED)
+                .eq(StoreSaleDetail::getVoucherDate, java.sql.Date.valueOf(LocalDate.now())));
+        if (CollectionUtils.isEmpty(detailList)) {
+            return new ArrayList<>();
+        }
+        Map<String, List<StoreSaleDetail>> todaySaleMap = detailList.stream().collect(Collectors.groupingBy(StoreSaleDetail::getProdArtNum));
+        List<StoreIndexTodaySaleResDTO> saleList = new ArrayList<>();
+        todaySaleMap.forEach((prodArtNum, list) -> {
+            final Integer saleNum = list.stream().map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
+            final BigDecimal saleAmount = list.stream().map(x -> ObjectUtils.defaultIfNull(x.getAmount(), BigDecimal.ZERO)).reduce(BigDecimal.ZERO, BigDecimal::add);
+            saleList.add(new StoreIndexTodaySaleResDTO().setProdArtNum(prodArtNum).setSaleNum(saleNum).setSaleAmount(saleAmount));
+        });
+        // 按照销售金额倒序排
+        saleList.sort(Comparator.comparing(StoreIndexTodaySaleResDTO::getSaleAmount).reversed());
+        return saleList;
+    }
+
+    /**
+     * 获取今日客户销售额
+     *
+     * @param storeId 档口ID
+     * @return StoreIndexTodayCusSaleResDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<StoreIndexTodayCusSaleResDTO> indexTodayCusSaleRevenue(Long storeId) {
+        List<StoreSaleDetail> detailList = this.saleDetailMapper.selectList(new LambdaQueryWrapper<StoreSaleDetail>()
+                .eq(StoreSaleDetail::getStoreId, storeId).eq(StoreSaleDetail::getDelFlag, Constants.UNDELETED)
+                .eq(StoreSaleDetail::getVoucherDate, java.sql.Date.valueOf(LocalDate.now())));
+        if (CollectionUtils.isEmpty(detailList)) {
+            return new ArrayList<>();
+        }
+        Map<Long, String> storeCusMap = detailList.stream().collect(Collectors.toMap(StoreSaleDetail::getStoreCusId, StoreSaleDetail::getStoreCusName, (s1, s2) -> s2));
+        Map<Long, List<StoreSaleDetail>> cusSaleMap = detailList.stream().collect(Collectors.groupingBy(StoreSaleDetail::getStoreCusId));
+        List<StoreIndexTodayCusSaleResDTO> saleList = new ArrayList<>();
+        cusSaleMap.forEach((storeCusId, list) -> {
+            final Integer saleNum = list.stream().map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
+            final Long saleAmount = list.stream().map(x -> ObjectUtils.defaultIfNull(x.getAmount(), BigDecimal.ZERO)).reduce(BigDecimal.ZERO, BigDecimal::add).longValue();
+            saleList.add(new StoreIndexTodayCusSaleResDTO().setStoreCusId(storeCusId).setSaleNum(saleNum).setSaleAmount(saleAmount)
+                    .setStoreCusName(ObjectUtils.defaultIfNull(storeCusMap.get(storeCusId), "")));
+        });
+        return saleList;
+    }
+
 
     /**
      * 档口商品销售额前10
@@ -422,5 +477,6 @@ public class StoreServiceImpl implements IStoreService {
         store.setStoreWeight(storeWeightUpdateDTO.getStoreWeight());
         return this.storeMapper.updateById(store);
     }
+
 
 }
