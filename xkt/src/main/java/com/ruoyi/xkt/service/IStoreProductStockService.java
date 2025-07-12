@@ -98,4 +98,12 @@ public interface IStoreProductStockService {
      * @return List<StoreProdStockDownloadDTO>
      */
     List<StoreProdStockDownloadDTO> export(StoreProdStockExportDTO exportDTO);
+
+    /**
+     * 查询APP库存列表
+     *
+     * @param pageDTO 入参
+     * @return List<StoreProdStockPageResDTO>
+     */
+    Page<StoreProdStockAppPageResDTO> selectAppPage(StoreProdStockPageDTO pageDTO);
 }

@@ -30,10 +30,6 @@ public class UserAuthenticationController extends XktBaseController {
 
     final IUserAuthenticationService userAuthService;
 
-    // APP 代发联系功能
-    // APP 代发联系功能
-    // APP 代发联系功能
-
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "新增代发 ", httpMethod = "POST", response = R.class)
     @PostMapping()

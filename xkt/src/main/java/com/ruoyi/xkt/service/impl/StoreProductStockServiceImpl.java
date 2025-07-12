@@ -50,6 +50,32 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
     final StoreProductMapper storeProdMapper;
     final StoreProductColorSizeMapper prodColorSizeMapper;
 
+
+    /**
+     * 查询APP库存列表
+     *
+     * @param pageDTO 入参
+     * @return List<StoreProdStockPageResDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page<StoreProdStockAppPageResDTO> selectAppPage(StoreProdStockPageDTO pageDTO) {
+        PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
+        List<StoreProdStockAppPageResDTO> stockList = this.storeProdStockMapper.selectAppStockPage(pageDTO);
+        if (CollectionUtils.isEmpty(stockList)) {
+            return Page.empty(pageDTO.getPageSize(), pageDTO.getPageNum());
+        }
+        // 提取查询结果中的商店产品ID列表
+        List<Long> storeProdIdList = stockList.stream().map(StoreProdStockAppPageResDTO::getStoreProdId).collect(Collectors.toList());
+        // 查找排名第一个商品主图列表
+        List<StoreProdMainPicDTO> mainPicList = this.storeProdFileMapper.selectMainPicByStoreProdIdList(storeProdIdList, FileType.MAIN_PIC.getValue(), 1);
+        Map<Long, String> mainPicMap = CollectionUtils.isEmpty(mainPicList) ? new HashMap<>() : mainPicList.stream()
+                .collect(Collectors.toMap(StoreProdMainPicDTO::getStoreProdId, StoreProdMainPicDTO::getFileUrl));
+        // 为每个产品设置主图URL和标准尺码列表
+        stockList.forEach(x -> x.setMainPicUrl(mainPicMap.get(x.getStoreProdId())));
+        return Page.convert(new PageInfo<>(stockList));
+    }
+
     @Override
     @Transactional(readOnly = true)
     public Page<StoreProdStockPageResDTO> selectPage(StoreProdStockPageDTO pageDTO) {

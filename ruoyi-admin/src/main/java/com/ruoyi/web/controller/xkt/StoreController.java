@@ -38,7 +38,9 @@ public class StoreController extends XktBaseController {
 
 
     // TODO 获取试用期即将到期的档口
+    // TODO 获取试用期即将到期的档口
 
+    // TODO 获取获取正式使用即将到期的档口
     // TODO 获取获取正式使用即将到期的档口
 
 

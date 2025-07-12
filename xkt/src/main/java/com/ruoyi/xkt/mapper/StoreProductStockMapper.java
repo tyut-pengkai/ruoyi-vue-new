@@ -3,6 +3,7 @@ package com.ruoyi.xkt.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProductStock;
 import com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO;
+import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockAppPageResDTO;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockDownloadDTO;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockPageDTO;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockPageResDTO;
@@ -25,6 +26,13 @@ public interface StoreProductStockMapper extends BaseMapper<StoreProductStock> {
      * @return 结果
      */
     List<StoreProdStockPageResDTO> selectStockPage(StoreProdStockPageDTO pageDTO);
+
+    /**
+     * 查询APP库存列表
+     * @param pageDTO 入参
+     * @return List<StoreProdStockPageResDTO>
+     */
+    List<StoreProdStockAppPageResDTO> selectAppStockPage(StoreProdStockPageDTO pageDTO);
 
     /**
      * 筛选库存前10的档口

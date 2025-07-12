@@ -41,7 +41,14 @@ public class StoreProductStockController extends XktBaseController {
 
     final IStoreProductStockService storeProdStockService;
 
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store,seller,agent')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,seller,agent')")
+    @ApiOperation(value = "[APP]查询库存列表", httpMethod = "POST", response = R.class)
+    @PostMapping("/app/page")
+    public R<Page<StoreProdStockAppPageResDTO>> selectAppPage(@Validated @RequestBody StoreProdStockPageVO pageVO) {
+        return R.ok(storeProdStockService.selectAppPage(BeanUtil.toBean(pageVO, StoreProdStockPageDTO.class)));
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "查询档口库存列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<StoreProdStockPageResDTO>> selectPage(@Validated @RequestBody StoreProdStockPageVO pageVO) {
