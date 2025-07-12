@@ -87,7 +87,7 @@ public class LogAspect
         try
         {
             // 获取当前的用户
-            LoginUser loginUser = SecurityUtils.getLoginUser();
+            String loginUsername = SecurityUtils.getUsernameSafe();
 
             // *========数据库日志=========*//
             SysOperLog operLog = new SysOperLog();
@@ -96,10 +96,9 @@ public class LogAspect
             String ip = IpUtils.getIpAddr();
             operLog.setOperIp(ip);
             operLog.setOperUrl(StringUtils.substring(ServletUtils.getRequest().getRequestURI(), 0, 255));
-            if (loginUser != null)
+            if (loginUsername != null)
             {
-                operLog.setOperName(loginUser.getUsername());
-                SysUser currentUser = loginUser.getUser();
+                operLog.setOperName(loginUsername);
             }
 
             if (e != null)

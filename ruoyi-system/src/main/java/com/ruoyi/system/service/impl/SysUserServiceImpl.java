@@ -293,7 +293,7 @@ public class SysUserServiceImpl implements ISysUserService {
                     .eq(SysUser::getDelFlag, Constants.UNDELETED));
             if (user != null) {
                 user.setAvatar(avatar);
-                updateUserBase(user, false);
+                updateUserBase(user, true);
                 return true;
             }
         }

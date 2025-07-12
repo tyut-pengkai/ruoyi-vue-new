@@ -24,8 +24,8 @@ import java.util.Map;
  *
  * @author ruoyi
  */
-@RestController
-@RequestMapping("/rest/v1/sys/user/profile")
+//@RestController
+//@RequestMapping("/rest/v1/sys/user/profile")
 public class SysProfileController extends BaseController {
     @Autowired
     private ISysUserService userService;

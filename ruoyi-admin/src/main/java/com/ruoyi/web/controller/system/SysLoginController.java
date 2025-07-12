@@ -3,6 +3,7 @@ package com.ruoyi.web.controller.system;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.IdUtil;
+import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -10,6 +11,7 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.domain.entity.SysMenu;
 import com.ruoyi.common.core.domain.model.*;
 import com.ruoyi.common.core.redis.RedisCache;
+import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.web.service.SysLoginService;
@@ -137,7 +139,8 @@ public class SysLoginController {
         return R.ok();
     }
 
-    @ApiOperation(value = "修改密码（忘记密码）")
+    @Log(title = "修改密码", businessType = BusinessType.UPDATE)
+    @ApiOperation(value = "修改密码（使用手机验证码修改）")
     @PostMapping("/changePassword")
     public R changePassword(@Validated @RequestBody PasswordChangeVO vo) {
         loginService.validateSmsVerificationCode(vo.getPhoneNumber(), vo.getCode());
@@ -145,6 +148,35 @@ public class SysLoginController {
         userService.resetPassword(user.getUserId(), vo.getNewPassword());
         tokenService.deleteCacheUser(user.getUserId());
         return R.ok();
+    }
+
+    @Log(title = "修改密码", businessType = BusinessType.UPDATE)
+    @ApiOperation(value = "修改密码（使用原密码修改）")
+    @PostMapping("/changePassword2")
+    public R changePassword2(@Validated @RequestBody PasswordChange2VO vo) {
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        String password = loginUser.getPassword();
+        if (!SecurityUtils.matchesPassword(password, vo.getOldPassword())) {
+            return R.fail("修改密码失败，旧密码错误");
+        }
+        if (SecurityUtils.matchesPassword(password, vo.getNewPassword())) {
+            return R.fail("新密码不能与旧密码相同");
+        }
+        userService.resetPassword(loginUser.getUserId(), vo.getNewPassword());
+        tokenService.deleteCacheUser(loginUser.getUserId());
+        return R.ok();
+    }
+
+    @Log(title = "修改头像", businessType = BusinessType.UPDATE)
+    @ApiOperation(value = "修改头像")
+    @PostMapping("/changeAvatar")
+    public R changeAvatar(@Validated @RequestBody AvatarChangeVO vo) {
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        boolean success = userService.updateUserAvatar(loginUser.getUsername(), vo.getAvatar());
+        if (success) {
+            return R.ok();
+        }
+        return R.fail();
     }
 
     /**
