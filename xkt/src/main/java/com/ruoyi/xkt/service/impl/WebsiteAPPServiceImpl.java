@@ -28,6 +28,7 @@ import com.ruoyi.xkt.dto.advertRound.app.prod.APPProdCateTop3DTO;
 import com.ruoyi.xkt.dto.advertRound.app.prod.APPProdSaleDTO;
 import com.ruoyi.xkt.dto.advertRound.app.strength.APPStrengthProdDTO;
 import com.ruoyi.xkt.dto.advertRound.app.strength.APPStrengthStoreDTO;
+import com.ruoyi.xkt.dto.advertRound.app.strength.APPStrengthStoreFileDTO;
 import com.ruoyi.xkt.dto.dailyStoreProd.DailyStoreProdSaleDTO;
 import com.ruoyi.xkt.dto.es.ESProductDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdPriceAndMainPicAndTagDTO;
@@ -372,6 +373,8 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         if (CollectionUtils.isEmpty(storeList)) {
             return Page.empty(searchDTO.getPageSize(), searchDTO.getPageNum());
         }
+        List<APPStrengthStoreFileDTO> storeRandomFileList = this.prodFileMapper.selectRandomStoreFileList(storeIdList);
+        Map<Long, String> storeFileMap = storeRandomFileList.stream().collect(Collectors.toMap(APPStrengthStoreFileDTO::getStoreId, APPStrengthStoreFileDTO::getMainPicUrl));
         // 当前登录人有哪些档口已关注
         Long userId = SecurityUtils.getUserIdSafe();
         Map<Long, Long> focusStoreIdMap = ObjectUtils.isEmpty(userId) ? new HashMap<>()
@@ -380,7 +383,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                         .eq(UserSubscriptions::getDelFlag, Constants.UNDELETED)).stream()
                 .collect(Collectors.toMap(UserSubscriptions::getStoreId, UserSubscriptions::getStoreId));
         List<APPStrengthStoreDTO> list = storeList.stream().map(store -> BeanUtil.toBean(store, APPStrengthStoreDTO.class)
-                        .setFocus(focusStoreIdMap.containsKey(store.getId())))
+                        .setFocus(focusStoreIdMap.containsKey(store.getId())).setMainPicUrl(storeFileMap.get(store.getId())))
                 .collect(Collectors.toList());
         // 设置档口会员等级
         list.forEach(x -> {

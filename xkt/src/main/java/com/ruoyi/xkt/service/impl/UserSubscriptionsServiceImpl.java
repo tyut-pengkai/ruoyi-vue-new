@@ -67,16 +67,19 @@ public class UserSubscriptionsServiceImpl implements IUserSubscriptionsService {
     @Transactional
     public Integer create(UserSubscDTO subscDTO) {
         // 获取当前登录用户
-        LoginUser loginUser = SecurityUtils.getLoginUser();
+        Long userId = SecurityUtils.getUserIdSafe();
+        if (ObjectUtils.isEmpty(userId)) {
+            throw new ServiceException("用户未登录或不存在，请登录后关注档口!", HttpStatus.ERROR);
+        }
         // 判断是否已关注过
         UserSubscriptions exist = this.userSubMapper.selectOne(new LambdaQueryWrapper<UserSubscriptions>()
-                .eq(UserSubscriptions::getUserId, loginUser.getUserId()).eq(UserSubscriptions::getStoreId, subscDTO.getStoreId())
+                .eq(UserSubscriptions::getUserId, userId).eq(UserSubscriptions::getStoreId, subscDTO.getStoreId())
                 .eq(UserSubscriptions::getDelFlag, Constants.UNDELETED));
         if (ObjectUtils.isNotEmpty(exist)) {
             throw new ServiceException("已关注过当前档口!", HttpStatus.ERROR);
         }
         UserSubscriptions userSubscriptions = new UserSubscriptions();
-        userSubscriptions.setUserId(loginUser.getUserId());
+        userSubscriptions.setUserId(userId);
         userSubscriptions.setStoreId(subscDTO.getStoreId());
         int count = this.userSubMapper.insert(userSubscriptions);
         Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
