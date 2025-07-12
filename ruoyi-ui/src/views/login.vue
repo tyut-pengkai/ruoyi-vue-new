@@ -2,12 +2,19 @@
   <div class="login">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
       <h3 class="title">{{title}}</h3>
+     
+    <!--tab 隐藏了 -->
+      <el-tabs v-model="activeTab" @tab-click="handleTabClick" class="login-tabs"  v-show="false">
+        <el-tab-pane label="密码登录" name="password"></el-tab-pane>
+        <el-tab-pane label="邮箱登录" name="email"></el-tab-pane>
+      </el-tabs>
+
       <el-form-item prop="username">
         <el-input
           v-model="loginForm.username"
           type="text"
           auto-complete="off"
-          placeholder="账号"
+          placeholder="用户名或邮箱"
         >
           <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
         </el-input>
@@ -37,7 +44,10 @@
           <img :src="codeUrl" @click="getCode" class="login-code-img"/>
         </div>
       </el-form-item>
-      <el-checkbox v-model="loginForm.rememberMe" style="margin:0px 0px 25px 0px;">记住密码</el-checkbox>
+      <div class="form-actions">
+        <el-checkbox v-model="loginForm.rememberMe">记住密码</el-checkbox>
+        <router-link class="link-type forgot-password" :to="'/forgot-password'" v-if="register">忘记密码?</router-link>
+      </div>
       <el-form-item style="width:100%;">
         <el-button
           :loading="loading"
@@ -46,17 +56,28 @@
           style="width:100%;"
           @click.native.prevent="handleLogin"
         >
-          <span v-if="!loading">登 录</span>
-          <span v-else>登 录 中...</span>
+          <span v-if="!loading">登录</span>
+          <span v-else>登录中...</span>
         </el-button>
-        <div style="float: right;" v-if="register">
-          <router-link class="link-type" :to="'/register'">立即注册</router-link>
+        <div class="divider" >
+          <span>或</span>
+        </div>
+        <el-button
+          size="medium"
+          type="primary"
+          style="width:100%;"
+          @click="$router.push('/emailLogin')"
+        >
+          邮箱验证码登录
+        </el-button>
+        <div style="width: 100%; display: flex; justify-content: space-around; margin-top: 10px;">
+          <router-link v-if="register" class="link-type" :to="'/register'" >还没有账号? 立即注册</router-link>
         </div>
       </el-form-item>
     </el-form>
     <!--  底部  -->
     <div class="el-login-footer">
-      <span>Copyright © 2018-2025 ruoyi.vip All Rights Reserved.</span>
+      <span>{{footer}}</span>
     </div>
   </div>
 </template>
@@ -70,7 +91,9 @@ export default {
   name: "Login",
   data() {
     return {
-      title: process.env.VUE_APP_TITLE,
+      title: "登录",
+      footer: process.env.VUE_APP_FOOTER,
+      activeTab: 'password',
       codeUrl: "",
       loginForm: {
         username: "admin",
@@ -81,18 +104,39 @@ export default {
       },
       loginRules: {
         username: [
-          { required: true, trigger: "blur", message: "请输入您的账号" }
+          { required: true, trigger: "blur", message: "请输入您的用户名或邮箱" },
+          { 
+            validator: (rule, value, callback) => {
+              if (value && !/^[a-zA-Z0-9_@.-]+$/.test(value)) {
+                callback(new Error('用户名或邮箱格式不正确'));
+              } else {
+                callback();
+              }
+            }, 
+            trigger: "blur" 
+          }
         ],
         password: [
           { required: true, trigger: "blur", message: "请输入您的密码" }
         ],
-        code: [{ required: true, trigger: "change", message: "请输入验证码" }]
+        code: [
+          { 
+            validator: (rule, value, callback) => {
+              if (this.captchaEnabled && !value) {
+                callback(new Error('请输入验证码'));
+              } else {
+                callback();
+              }
+            }, 
+            trigger: "change" 
+          }
+        ]
       },
       loading: false,
       // 验证码开关
       captchaEnabled: true,
       // 注册开关
-      register: false,
+      register: true,
       redirect: undefined
     }
   },
@@ -109,6 +153,11 @@ export default {
     this.getCookie()
   },
   methods: {
+    handleTabClick(tab) {
+      if (tab.name === 'email') {
+        this.$router.push('/emailLogin')
+      }
+    },
     getCode() {
       getCodeImg().then(res => {
         this.captchaEnabled = res.captchaEnabled === undefined ? true : res.captchaEnabled
@@ -189,6 +238,54 @@ export default {
     margin-left: 2px;
   }
 }
+
+.login-tabs .el-tabs__nav-wrap::after {
+  background-color: transparent !important;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.forgot-password {
+  color: #409EFF;
+  text-decoration: none;
+  font-size: 14px;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.divider {
+  position: relative;
+  text-align: center;
+  margin: 10px 0;
+  &:before,
+  &:after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 45%;
+    height: 1px;
+    background-color: #dcdfe6;
+  }
+  &:before {
+    left: 0;
+  }
+  &:after {
+    right: 0;
+  }
+  span {
+    background-color: #fff;
+    padding: 0 10px;
+    color: #909399;
+    font-size: 14px;
+  }
+}
+
 .login-tip {
   font-size: 13px;
   text-align: center;

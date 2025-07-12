@@ -99,4 +99,33 @@ public class AsyncFactory
             }
         };
     }
+
+    /**
+     * 发送邮件任务
+     * 
+     * @param to 收件人
+     * @param subject 主题
+     * @param content 内容
+     * @return 任务task
+     */
+    public static TimerTask sendEmail(final String to, final String subject, final String content)
+    {
+        return new TimerTask()
+        {
+            @Override
+            public void run()
+            {
+                try
+                {
+                    // 集成邮件发送服务
+                    SpringUtils.getBean(com.ruoyi.framework.web.service.impl.EmailServiceImpl.class)
+                        .sendEmail(to, subject, content);
+                }
+                catch (Exception e)
+                {
+                    sys_user_logger.error("发送邮件失败：{}", e.getMessage());
+                }
+            }
+        };
+    }
 }

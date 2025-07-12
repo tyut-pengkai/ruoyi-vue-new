@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.agent.mapper.AgentInfoMapper">
+    
+    <resultMap type="AgentInfo" id="AgentInfoResult">
+        <result property="agentId"    column="agent_id"    />
+        <result property="agentName"    column="agent_name"    />
+        <result property="agentDesc"    column="agent_desc"    />
+        <result property="modleName"    column="modle_name"    />
+        <result property="systemPrompt"    column="system_prompt"    />
+        <result property="voice"    column="voice"    />
+        <result property="voiceSpeed"    column="voice_speed"    />
+        <result property="mem"    column="mem"    />
+        <result property="intent"    column="intent"    />
+        <result property="langCode"    column="lang_code"    />
+        <result property="langName"    column="lang_name"    />
+        <result property="sort"    column="sort"    />
+        <result property="belongUserId"    column="belong_user_id"    />
+        <result property="shareType"    column="share_type"    />
+        <result property="status"    column="status"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createTime"    column="created_at"    />
+        <result property="updateTime"    column="updated_at"    />
+    </resultMap>
+
+    <sql id="selectAgentInfoVo">
+        select agent_id, agent_name, agent_desc, modle_name, system_prompt, voice, voice_speed, mem, intent, lang_code, lang_name, sort, belong_user_id, share_type, status, del_flag, created_at, updated_at from agent_info
+    </sql>
+
+    <select id="selectAgentInfoList" parameterType="AgentInfo" resultMap="AgentInfoResult">
+        <include refid="selectAgentInfoVo"/>
+        <where>
+            del_flag = '0'
+            <if test="agentName != null  and agentName != ''"> and agent_name like concat('%', #{agentName}, '%')</if>
+            <if test="agentDesc != null  and agentDesc != ''"> and agent_desc like concat('%', #{agentDesc}, '%')</if>
+            <if test="modleName != null  and modleName != ''"> and modle_name like concat('%', #{modleName}, '%')</if>
+            <if test="systemPrompt != null  and systemPrompt != ''"> and system_prompt like concat('%', #{systemPrompt}, '%')</if>
+            <if test="voice != null  and voice != ''"> and voice = #{voice}</if>
+            <if test="voiceSpeed != null  and voiceSpeed != ''"> and voice_speed = #{voiceSpeed}</if>
+            <if test="mem != null  and mem != ''"> and mem like concat('%', #{mem}, '%')</if>
+            <if test="intent != null  and intent != ''"> and intent like concat('%', #{intent}, '%')</if>
+            <if test="langCode != null  and langCode != ''"> and lang_code = #{langCode}</if>
+            <if test="langName != null  and langName != ''"> and lang_name like concat('%', #{langName}, '%')</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+            <if test="belongUserId != null "> and belong_user_id = #{belongUserId}</if>
+            <if test="shareType != null  and shareType != ''"> and share_type = #{shareType}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="params.currentUserId != null">
+                and (share_type = '0' or belong_user_id = #{params.currentUserId})
+            </if>
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                and date_format(created_at,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                and date_format(created_at,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectAgentInfoByAgentId" parameterType="Long" resultMap="AgentInfoResult">
+        <include refid="selectAgentInfoVo"/>
+        where agent_id = #{agentId}
+    </select>
+
+    <insert id="insertAgentInfo" parameterType="AgentInfo" useGeneratedKeys="true" keyProperty="agentId">
+        insert into agent_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="agentName != null and agentName != ''">agent_name,</if>
+            <if test="agentDesc != null and agentDesc != ''">agent_desc,</if>
+            <if test="modleName != null">modle_name,</if>
+            <if test="systemPrompt != null">system_prompt,</if>
+            <if test="voice != null">voice,</if>
+            <if test="voiceSpeed != null">voice_speed,</if>
+            <if test="mem != null">mem,</if>
+            <if test="intent != null">intent,</if>
+            <if test="langCode != null">lang_code,</if>
+            <if test="langName != null">lang_name,</if>
+            <if test="sort != null">sort,</if>
+            <if test="belongUserId != null">belong_user_id,</if>
+            <if test="shareType != null and shareType != ''">share_type,</if>
+            <if test="status != null">status,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createTime != null">created_at,</if>
+            <if test="updateTime != null">updated_at,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="agentName != null and agentName != ''">#{agentName},</if>
+            <if test="agentDesc != null and agentDesc != ''">#{agentDesc},</if>
+            <if test="modleName != null">#{modleName},</if>
+            <if test="systemPrompt != null">#{systemPrompt},</if>
+            <if test="voice != null">#{voice},</if>
+            <if test="voiceSpeed != null">#{voiceSpeed},</if>
+            <if test="mem != null">#{mem},</if>
+            <if test="intent != null">#{intent},</if>
+            <if test="langCode != null">#{langCode},</if>
+            <if test="langName != null">#{langName},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="belongUserId != null">#{belongUserId},</if>
+            <if test="shareType != null and shareType != ''">#{shareType},</if>
+            <if test="status != null">#{status},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateAgentInfo" parameterType="AgentInfo">
+        update agent_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="agentName != null and agentName != ''">agent_name = #{agentName},</if>
+            <if test="agentDesc != null and agentDesc != ''">agent_desc = #{agentDesc},</if>
+            <if test="modleName != null">modle_name = #{modleName},</if>
+            <if test="systemPrompt != null">system_prompt = #{systemPrompt},</if>
+            <if test="voice != null">voice = #{voice},</if>
+            <if test="voiceSpeed != null">voice_speed = #{voiceSpeed},</if>
+            <if test="mem != null">mem = #{mem},</if>
+            <if test="intent != null">intent = #{intent},</if>
+            <if test="langCode != null">lang_code = #{langCode},</if>
+            <if test="langName != null">lang_name = #{langName},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="belongUserId != null">belong_user_id = #{belongUserId},</if>
+            <if test="shareType != null and shareType != ''">share_type = #{shareType},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createTime != null">created_at = #{createTime},</if>
+            <if test="updateTime != null">updated_at = #{updateTime},</if>
+        </trim>
+        where agent_id = #{agentId}
+    </update>
+
+    <delete id="deleteAgentInfoByAgentId" parameterType="Long">
+        update agent_info set del_flag = '2' where agent_id = #{agentId}
+    </delete>
+
+    <delete id="deleteAgentInfoByAgentIds" parameterType="String">
+        update agent_info set del_flag = '2' where agent_id in
+        <foreach item="agentId" collection="array" open="(" separator="," close=")">
+            #{agentId}
+        </foreach>
+    </delete>
+</mapper>

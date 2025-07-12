@@ -36,12 +36,16 @@ public class SysRegisterService
     @Autowired
     private RedisCache redisCache;
 
+    @Autowired
+    private EmailService emailService;
+
     /**
      * 注册
      */
     public String register(RegisterBody registerBody)
     {
         String msg = "", username = registerBody.getUsername(), password = registerBody.getPassword();
+        String email = registerBody.getEmail();
         SysUser sysUser = new SysUser();
         sysUser.setUserName(username);
 
@@ -60,6 +64,10 @@ public class SysRegisterService
         {
             msg = "用户密码不能为空";
         }
+        else if (StringUtils.isEmpty(email))
+        {
+            msg = "邮箱地址不能为空";
+        }
         else if (username.length() < UserConstants.USERNAME_MIN_LENGTH
                 || username.length() > UserConstants.USERNAME_MAX_LENGTH)
         {
@@ -70,13 +78,26 @@ public class SysRegisterService
         {
             msg = "密码长度必须在5到20个字符之间";
         }
+        else if (!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"))
+        {
+            msg = "邮箱格式不正确";
+        }
         else if (!userService.checkUserNameUnique(sysUser))
         {
             msg = "保存用户'" + username + "'失败，注册账号已存在";
         }
+        else if (!userService.checkEmailUnique(sysUser))
+        {
+            msg = "保存用户'" + username + "'失败，邮箱已存在";
+        }
+        else if (!emailService.validateEmailCode(email, registerBody.getEmailCode()))
+        {
+            msg = "邮箱验证码错误或已过期";
+        }
         else
         {
             sysUser.setNickName(username);
+            sysUser.setEmail(email);
             sysUser.setPwdUpdateDate(DateUtils.getNowDate());
             sysUser.setPassword(SecurityUtils.encryptPassword(password));
             boolean regFlag = userService.registerUser(sysUser);
@@ -114,4 +135,4 @@ public class SysRegisterService
             throw new CaptchaException();
         }
     }
-}
+} 

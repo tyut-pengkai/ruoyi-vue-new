@@ -7,5 +7,33 @@ package com.ruoyi.common.core.domain.model;
  */
 public class RegisterBody extends LoginBody
 {
+    /**
+     * 邮箱
+     */
+    private String email;
 
+    /**
+     * 邮箱验证码
+     */
+    private String emailCode;
+
+    public String getEmail()
+    {
+        return email;
+    }
+
+    public void setEmail(String email)
+    {
+        this.email = email;
+    }
+
+    public String getEmailCode()
+    {
+        return emailCode;
+    }
+
+    public void setEmailCode(String emailCode)
+    {
+        this.emailCode = emailCode;
+    }
 }

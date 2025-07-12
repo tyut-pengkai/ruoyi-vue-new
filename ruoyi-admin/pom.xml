@@ -55,10 +55,35 @@
             <artifactId>ruoyi-quartz</artifactId>
         </dependency>
 
+        <!-- 支付模块-->
+        <dependency>
+            <groupId>com.ruoyi</groupId>
+            <artifactId>ruoyi-payment</artifactId>
+        </dependency>
+
         <!-- 代码生成-->
         <dependency>
             <groupId>com.ruoyi</groupId>
             <artifactId>ruoyi-generator</artifactId>
+        </dependency>
+
+        <!-- 设备管理模块-->
+        <dependency>
+            <groupId>com.ruoyi</groupId>
+            <artifactId>ruoyi-device</artifactId>
+        </dependency>
+        <!-- 智能体管理模块-->
+         
+        <dependency>
+            <groupId>com.ruoyi</groupId>
+            <artifactId>ruoyi-agent</artifactId>
+            
+        </dependency>
+
+        <!-- Spring Mail 邮件发送 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
 
     </dependencies>

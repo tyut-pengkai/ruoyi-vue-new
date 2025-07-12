@@ -3,9 +3,51 @@
     <el-form ref="registerForm" :model="registerForm" :rules="registerRules" class="register-form">
       <h3 class="title">{{title}}</h3>
       <el-form-item prop="username">
-        <el-input v-model="registerForm.username" type="text" auto-complete="off" placeholder="账号">
+        <el-input 
+          v-model="registerForm.username" 
+          type="text" 
+          auto-complete="off" 
+          placeholder="账号"
+          @blur="checkUsername"
+          :class="{ 'is-success': usernameStatus === 'success', 'is-error': usernameStatus === 'error' }"
+        >
           <svg-icon slot="prefix" icon-class="user" class="el-input__icon input-icon" />
+          <i slot="suffix" :class="usernameStatus === 'success' ? 'el-icon-check' : usernameStatus === 'error' ? 'el-icon-close' : ''" :style="{ color: usernameStatus === 'success' ? '#67C23A' : usernameStatus === 'error' ? '#F56C6C' : '' }"></i>
         </el-input>
+      </el-form-item>
+      <el-form-item prop="email">
+        <el-input 
+          v-model="registerForm.email" 
+          type="email" 
+          auto-complete="off" 
+          placeholder="邮箱"
+          @blur="checkEmail"
+          :class="{ 'is-success': emailStatus === 'success', 'is-error': emailStatus === 'error' }"
+        >
+          <svg-icon slot="prefix" icon-class="email" class="el-input__icon input-icon" />
+          <i slot="suffix" :class="emailStatus === 'success' ? 'el-icon-check' : emailStatus === 'error' ? 'el-icon-close' : ''" :style="{ color: emailStatus === 'success' ? '#67C23A' : emailStatus === 'error' ? '#F56C6C' : '' }"></i>
+        </el-input>
+      </el-form-item>
+      <el-form-item prop="emailCode">
+        <el-input
+          v-model="registerForm.emailCode"
+          auto-complete="off"
+          placeholder="邮箱验证码"
+          style="width: 63%"
+        >
+          <svg-icon slot="prefix" icon-class="validCode" class="el-input__icon input-icon" />
+        </el-input>
+        <div class="register-code">
+          <el-button 
+            type="primary" 
+            size="small" 
+            :disabled="emailCodeSending || !registerForm.email || emailStatus !== 'success'"
+            @click="sendEmailCode"
+            style="width: 100%; height: 38px;"
+          >
+            {{ emailCodeSending ? '发送中...' : '发送验证码' }}
+          </el-button>
+        </div>
       </el-form-item>
       <el-form-item prop="password">
         <el-input
@@ -49,6 +91,7 @@
           size="medium"
           type="primary"
           style="width:100%;"
+          :disabled="usernameStatus !== 'success' || emailStatus !== 'success'"
           @click.native.prevent="handleRegister"
         >
           <span v-if="!loading">注 册</span>
@@ -61,13 +104,15 @@
     </el-form>
     <!--  底部  -->
     <div class="el-register-footer">
-      <span>Copyright © 2018-2025 ruoyi.vip All Rights Reserved.</span>
+      <span>{{footer}}</span>
     </div>
   </div>
 </template>
 
 <script>
-import { getCodeImg, register } from "@/api/login"
+import { getCodeImg } from "@/api/login"
+import { sendEmailCode } from "@/api/email"
+import { register, checkUsernameUnique, checkEmailUnique } from "@/api/register"
 
 export default {
   name: "Register",
@@ -80,10 +125,13 @@ export default {
       }
     }
     return {
-      title: process.env.VUE_APP_TITLE,
+      title: "注 册",
+      footer: process.env.VUE_APP_FOOTER,
       codeUrl: "",
       registerForm: {
         username: "",
+        email: "",
+        emailCode: "",
         password: "",
         confirmPassword: "",
         code: "",
@@ -92,7 +140,16 @@ export default {
       registerRules: {
         username: [
           { required: true, trigger: "blur", message: "请输入您的账号" },
-          { min: 2, max: 20, message: '用户账号长度必须介于 2 和 20 之间', trigger: 'blur' }
+          { min: 2, max: 20, message: '用户账号长度必须介于 2 和 20 之间', trigger: 'blur' },
+          { pattern: /^[a-zA-Z0-9_]+$/, message: '用户名只能包含字母、数字和下划线', trigger: 'blur' }
+        ],
+        email: [
+          { required: true, trigger: "blur", message: "请输入您的邮箱" },
+          { type: "email", message: "请输入正确的邮箱地址", trigger: "blur" }
+        ],
+        emailCode: [
+          { required: true, trigger: "blur", message: "请输入邮箱验证码" },
+          { len: 6, message: "验证码为6位数字", trigger: "blur" }
         ],
         password: [
           { required: true, trigger: "blur", message: "请输入您的密码" },
@@ -106,7 +163,10 @@ export default {
         code: [{ required: true, trigger: "change", message: "请输入验证码" }]
       },
       loading: false,
-      captchaEnabled: true
+      emailCodeSending: false,
+      captchaEnabled: true,
+      usernameStatus: '', // success, error, ''
+      emailStatus: '' // success, error, ''
     }
   },
   created() {
@@ -122,9 +182,85 @@ export default {
         }
       })
     },
+    // 校验用户名唯一性
+    checkUsername() {
+      if (!this.registerForm.username) {
+        this.usernameStatus = ''
+        return
+      }
+      
+      // 先进行本地校验
+      if (!/^[a-zA-Z0-9_]+$/.test(this.registerForm.username)) {
+        this.usernameStatus = 'error'
+        return
+      }
+      
+      if (this.registerForm.username.length < 2 || this.registerForm.username.length > 20) {
+        this.usernameStatus = 'error'
+        return
+      }
+      
+      // 调用后端接口校验
+      checkUsernameUnique({ username: this.registerForm.username }).then(res => {
+        this.usernameStatus = 'success'
+      }).catch(() => {
+        this.usernameStatus = 'error'
+      })
+    },
+    // 校验邮箱唯一性
+    checkEmail() {
+      if (!this.registerForm.email) {
+        this.emailStatus = ''
+        return
+      }
+      
+      // 先进行本地校验
+      if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(this.registerForm.email)) {
+        this.emailStatus = 'error'
+        return
+      }
+      
+      // 调用后端接口校验
+      checkEmailUnique({ email: this.registerForm.email }).then(res => {
+        this.emailStatus = 'success'
+      }).catch(() => {
+        this.emailStatus = 'error'
+      })
+    },
+    sendEmailCode() {
+      if (!this.registerForm.email) {
+        this.$message.error("请先输入邮箱地址")
+        return
+      }
+      
+      if (this.emailStatus !== 'success') {
+        this.$message.error("请先校验邮箱地址")
+        return
+      }
+      
+      this.emailCodeSending = true
+      sendEmailCode({ email: this.registerForm.email }).then(res => {
+        this.$message.success("验证码发送成功，请查收邮件")
+      }).catch(() => {
+        this.$message.error("验证码发送失败，请稍后重试")
+      }).finally(() => {
+        this.emailCodeSending = false
+      })
+    },
     handleRegister() {
       this.$refs.registerForm.validate(valid => {
         if (valid) {
+          // 额外校验用户名和邮箱状态
+          if (this.usernameStatus !== 'success') {
+            this.$message.error("请先校验用户名")
+            return
+          }
+          
+          if (this.emailStatus !== 'success') {
+            this.$message.error("请先校验邮箱")
+            return
+          }
+          
           this.loading = true
           register(this.registerForm).then(res => {
             const username = this.registerForm.username

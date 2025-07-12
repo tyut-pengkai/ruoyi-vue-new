@@ -18,6 +18,16 @@ public class CacheConstants
     public static final String CAPTCHA_CODE_KEY = "captcha_codes:";
 
     /**
+     * 邮箱验证码 redis key
+     */
+    public static final String EMAIL_CODE_KEY = "email_codes:";
+
+    /**
+     * 密码重置验证码 redis key
+     */
+    public static final String PASSWORD_RESET_CODE_KEY = "password_reset_codes:";
+
+    /**
      * 参数管理 cache key
      */
     public static final String SYS_CONFIG_KEY = "sys_config:";
@@ -41,4 +51,9 @@ public class CacheConstants
      * 登录账户密码错误次数 redis key
      */
     public static final String PWD_ERR_CNT_KEY = "pwd_err_cnt:";
+
+    /**
+     * PayPal Webhook 事件 redis key
+     */
+    public static final String PAYPAL_WEBHOOK_EVENT_KEY = "paypal_webhook_event:";
 }

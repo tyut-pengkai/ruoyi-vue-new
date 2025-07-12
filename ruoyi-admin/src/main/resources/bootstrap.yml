@@ -1,0 +1,49 @@
+# Spring
+spring:
+  application:
+    name: ruoyi-admin
+  cloud:
+    nacos:
+      config:
+        server-addr: 127.0.0.1:8848
+        file-extension: yml
+        # 命名空间，默认为public
+        namespace: aiwe
+        # 配置组，默认为DEFAULT_GROUP
+        group: DEFAULT_GROUP
+        # 是否自动刷新配置
+        refresh-enabled: true
+        # 配置超时时间
+        timeout: 3000
+        # 配置重试次数
+        retry-time: 10000
+        # 长轮询超时时间
+        long-poll-timeout: 460
+        # 最大重试次数
+        max-retry: 3
+        # 是否启用远程配置
+        enable-remote-sync-config: true
+      discovery:
+        server-addr: 127.0.0.1:8848
+        # 命名空间，默认为public
+        namespace: aiwe
+        # 服务组，默认为DEFAULT_GROUP
+        group: DEFAULT_GROUP
+        # 是否启用服务注册
+        enabled: true
+        # 服务注册IP
+        ip: 127.0.0.1
+        # 服务注册端口
+        port: 8080
+        # 权重
+        weight: 1
+        # 是否启用健康检查
+        heart-beat-enabled: true
+        # 心跳间隔
+        heart-beat-interval: 5000
+        # 心跳超时时间
+        heart-beat-timeout: 15000
+        # IP删除超时时间
+        ip-delete-timeout: 30000
+        # 实例是否为临时实例
+        ephemeral: true 

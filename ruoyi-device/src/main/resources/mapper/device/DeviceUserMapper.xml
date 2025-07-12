@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.device.mapper.DeviceUserMapper">
+    
+    <resultMap type="DeviceUser" id="DeviceUserResult">
+        <result property="userId"    column="user_id"    />
+        <result property="deviceId"    column="device_id"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectDeviceUserVo">
+        select user_id, device_id, create_time, update_time from device_user
+    </sql>
+
+    <select id="selectDeviceUserList" parameterType="DeviceUser" resultMap="DeviceUserResult">
+        <include refid="selectDeviceUserVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+        </where>
+    </select>
+    
+    <select id="selectDeviceUserByDeviceId" parameterType="Long" resultMap="DeviceUserResult">
+        <include refid="selectDeviceUserVo"/>
+        where device_id = #{deviceId}
+    </select>
+
+    <select id="countByUserIdAndDeviceId" resultType="int">
+        select count(1) from device_user where user_id = #{userId} and device_id = #{deviceId}
+    </select>
+
+    <select id="countByDeviceId" resultType="int">
+        select count(1) from device_user where device_id = #{deviceId}
+    </select>
+
+    <!--
+    <insert id="insertDeviceUser" parameterType="DeviceUser">
+        insert into device_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="deviceId != null">device_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="deviceId != null">#{deviceId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+    -->
+
+    <insert id="insertDeviceUser">
+        insert into device_user(user_id, device_id) values(#{userId}, #{deviceId})
+    </insert>
+
+    <update id="updateDeviceUser" parameterType="DeviceUser">
+        update device_user
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where device_id = #{deviceId}
+    </update>
+
+    <delete id="deleteDeviceUserByDeviceId" parameterType="Long">
+        delete from device_user where device_id = #{deviceId}
+    </delete>
+
+    <delete id="deleteDeviceUserByDeviceIds" parameterType="String">
+        delete from device_user where device_id in 
+        <foreach item="deviceId" collection="array" open="(" separator="," close=")">
+            #{deviceId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteByUserIdAndDeviceId">
+        delete from device_user where user_id = #{userId} and device_id = #{deviceId}
+    </delete>
+</mapper>

@@ -47,8 +47,18 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/emailLogin',
+    component: () => import('@/views/emailLogin'),
+    hidden: true
+  },
+  {
     path: '/register',
     component: () => import('@/views/register'),
+    hidden: true
+  },
+  {
+    path: '/forgot-password',
+    component: () => import('@/views/forgotPassword'),
     hidden: true
   },
   {
@@ -59,6 +69,27 @@ export const constantRoutes = [
   {
     path: '/401',
     component: () => import('@/views/error/401'),
+    hidden: true
+  },
+  {
+    path: '/payment/pay',
+    component: () => import('@/views/payment/pay/index'),
+    name: 'Pay',
+    meta: { title: '支付', icon: 'money' },
+    hidden: true
+  },
+  {
+    path: '/payment/pay/success',
+    component: () => import('@/views/payment/pay/success'),
+    name: 'PaymentSuccess',
+    meta: { title: '支付确认', icon: 'check' },
+    hidden: true
+  },
+  {
+    path: '/payment/pay/cancel',
+    component: () => import('@/views/payment/pay/cancel'),
+    name: 'PaymentCancel',
+    meta: { title: '支付取消', icon: 'close' },
     hidden: true
   },
   {
@@ -176,8 +207,19 @@ Router.prototype.replace = function push(location) {
   return routerReplace.call(this, location).catch(err => err)
 }
 
-export default new Router({
-  mode: 'history', // 去掉url中的#
+// 创建路由
+export const createRouter = () => new Router({
+  mode: 'history', // 添加这一行，使用history模式
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRoutes
 })
+
+// 重置路由
+export function resetRouter() {
+  const newRouter = createRouter()
+  router.matcher = newRouter.matcher
+}
+
+const router = createRouter()
+
+export default router

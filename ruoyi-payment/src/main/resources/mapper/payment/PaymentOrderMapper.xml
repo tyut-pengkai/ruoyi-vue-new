@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.payment.mapper.PaymentOrderMapper">
+    
+    <resultMap type="PaymentOrder" id="PaymentOrderResult">
+        <result property="orderId"    column="order_id"    />
+        <result property="orderNo"    column="order_no"    />
+        <result property="userId"    column="user_id"    />
+        <result property="userName"    column="user_name"    />
+        <result property="packageId"    column="package_id"    />
+        <result property="packageName"    column="package_name"    />
+        <result property="packageHours"    column="package_hours"    />
+        <result property="packageFreeHours"    column="package_free_hours"    />
+        <result property="amount"    column="amount"    />
+        <result property="currency"    column="currency"    />
+        <result property="status"    column="status"    />
+        <result property="paymentChannel"    column="payment_channel"    />
+        <result property="paymentId"    column="payment_id"    />
+        <result property="paymentToken"    column="payment_token"    />
+        <result property="payerId"    column="payer_id"    />
+        <result property="paymentMethod"    column="payment_method"    />
+        <result property="description"    column="description"    />
+        <result property="payTime"    column="pay_time"    />
+        <result property="deviceId"    column="device_id"    />
+        <result property="deviceName"    column="device_name"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectPaymentOrderVo">
+        select order_id, order_no, user_id, user_name, package_id, package_name, package_hours, package_free_hours, amount, currency, status, payment_channel, payment_id, payment_token, payer_id, payment_method, description, pay_time, device_id, device_name, del_flag, create_by, create_time, update_by, update_time, remark from payment_order
+    </sql>
+
+    <select id="selectPaymentOrderByOrderNo" parameterType="String" resultMap="PaymentOrderResult">
+        <include refid="selectPaymentOrderVo"/>
+        where order_no = #{orderNo}
+    </select>
+
+    <select id="selectPaymentOrderByToken" parameterType="String" resultMap="PaymentOrderResult">
+        <include refid="selectPaymentOrderVo"/>
+        where payment_token = #{token}
+    </select>
+
+    <select id="selectPaymentOrderList" parameterType="PaymentOrder" resultMap="PaymentOrderResult">
+        <include refid="selectPaymentOrderVo"/>
+        <where>  
+            <if test="orderNo != null  and orderNo != ''"> and order_no = #{orderNo}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="userName != null  and userName != ''"> and user_name like concat('%', #{userName}, '%')</if>
+            <if test="packageId != null "> and package_id = #{packageId}</if>
+            <if test="packageName != null  and packageName != ''"> and package_name like concat('%', #{packageName}, '%')</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="deviceId != null "> and device_id = #{deviceId}</if>
+            <if test="deviceName != null  and deviceName != ''"> and device_name like concat('%', #{deviceName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectPaymentOrderByOrderId" parameterType="Long" resultMap="PaymentOrderResult">
+        <include refid="selectPaymentOrderVo"/>
+        where order_id = #{orderId}
+    </select>
+
+    <select id="selectPaymentOrderByPaymentId" parameterType="String" resultMap="PaymentOrderResult">
+        <include refid="selectPaymentOrderVo"/>
+        where payment_id = #{paymentId}
+    </select>
+
+    <insert id="insertPaymentOrder" parameterType="PaymentOrder" useGeneratedKeys="true" keyProperty="orderId">
+        insert into payment_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderNo != null and orderNo != ''">order_no,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="userName != null and userName != ''">user_name,</if>
+            <if test="packageId != null">package_id,</if>
+            <if test="packageName != null and packageName != ''">package_name,</if>
+            <if test="packageHours != null">package_hours,</if>
+            <if test="packageFreeHours != null">package_free_hours,</if>
+            <if test="amount != null">amount,</if>
+            <if test="currency != null and currency != ''">currency,</if>
+            <if test="status != null and status != ''">status,</if>
+            <if test="paymentChannel != null and paymentChannel != ''">payment_channel,</if>
+            <if test="paymentId != null and paymentId != ''">payment_id,</if>
+            <if test="paymentToken != null and paymentToken != ''">payment_token,</if>
+            <if test="payerId != null and payerId != ''">payer_id,</if>
+            <if test="paymentMethod != null and paymentMethod != ''">payment_method,</if>
+            <if test="description != null and description != ''">description,</if>
+            <if test="payTime != null">pay_time,</if>
+            <if test="deviceId != null">device_id,</if>
+            <if test="deviceName != null and deviceName != ''">device_name,</if>
+            <if test="delFlag != null and delFlag != ''">del_flag,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null and updateBy != ''">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null and remark != ''">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderNo != null and orderNo != ''">#{orderNo},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="userName != null and userName != ''">#{userName},</if>
+            <if test="packageId != null">#{packageId},</if>
+            <if test="packageName != null and packageName != ''">#{packageName},</if>
+            <if test="packageHours != null">#{packageHours},</if>
+            <if test="packageFreeHours != null">#{packageFreeHours},</if>
+            <if test="amount != null">#{amount},</if>
+            <if test="currency != null and currency != ''">#{currency},</if>
+            <if test="status != null and status != ''">#{status},</if>
+            <if test="paymentChannel != null and paymentChannel != ''">#{paymentChannel},</if>
+            <if test="paymentId != null and paymentId != ''">#{paymentId},</if>
+            <if test="paymentToken != null and paymentToken != ''">#{paymentToken},</if>
+            <if test="payerId != null and payerId != ''">#{payerId},</if>
+            <if test="paymentMethod != null and paymentMethod != ''">#{paymentMethod},</if>
+            <if test="description != null and description != ''">#{description},</if>
+            <if test="payTime != null">#{payTime},</if>
+            <if test="deviceId != null">#{deviceId},</if>
+            <if test="deviceName != null and deviceName != ''">#{deviceName},</if>
+            <if test="delFlag != null and delFlag != ''">#{delFlag},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null and updateBy != ''">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null and remark != ''">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePaymentOrder" parameterType="PaymentOrder">
+        update payment_order
+        <set>
+            <if test="orderNo != null and orderNo != ''">order_no = #{orderNo},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="userName != null and userName != ''">user_name = #{userName},</if>
+            <if test="packageId != null">package_id = #{packageId},</if>
+            <if test="packageName != null and packageName != ''">package_name = #{packageName},</if>
+            <if test="packageHours != null">package_hours = #{packageHours},</if>
+            <if test="packageFreeHours != null">package_free_hours = #{packageFreeHours},</if>
+            <if test="amount != null">amount = #{amount},</if>
+            <if test="currency != null and currency != ''">currency = #{currency},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="paymentChannel != null and paymentChannel != ''">payment_channel = #{paymentChannel},</if>
+            <if test="paymentId != null and paymentId != ''">payment_id = #{paymentId},</if>
+            <if test="paymentToken != null and paymentToken != ''">payment_token = #{paymentToken},</if>
+            <if test="payerId != null and payerId != ''">payer_id = #{payerId},</if>
+            <if test="paymentMethod != null and paymentMethod != ''">payment_method = #{paymentMethod},</if>
+            <if test="description != null and description != ''">description = #{description},</if>
+            <if test="payTime != null">pay_time = #{payTime},</if>
+            <if test="deviceId != null">device_id = #{deviceId},</if>
+            <if test="deviceName != null and deviceName != ''">device_name = #{deviceName},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </set>
+        where order_id = #{orderId}
+    </update>
+
+    <delete id="deletePaymentOrderByOrderId" parameterType="Long">
+        delete from payment_order where order_id = #{orderId}
+    </delete>
+
+    <delete id="deletePaymentOrderByOrderIds" parameterType="String">
+        delete from payment_order where order_id in 
+        <foreach item="orderId" collection="array" open="(" separator="," close=")">
+            #{orderId}
+        </foreach>
+    </delete>
+</mapper>

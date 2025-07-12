@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.agent.mapper.AgentDeviceMapper">
+    
+    <resultMap type="AgentDevice" id="AgentDeviceResult">
+        <result property="agentId"    column="agent_id"    />
+        <result property="deviceId"    column="device_id"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectAgentDeviceVo">
+        select agent_id, device_id, create_time, update_time from agent_device
+    </sql>
+
+    <select id="selectAgentDeviceList" parameterType="AgentDevice" resultMap="AgentDeviceResult">
+        <include refid="selectAgentDeviceVo"/>
+        <where>  
+            <if test="agentId != null "> and agent_id = #{agentId}</if>
+            <if test="deviceId != null "> and device_id = #{deviceId}</if>
+            <if test="createTime != null "> and create_time = #{createTime}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectAgentDeviceByDeviceId" parameterType="Long" resultMap="AgentDeviceResult">
+        <include refid="selectAgentDeviceVo"/>
+        where device_id = #{deviceId}
+    </select>
+
+    <insert id="insertAgentDevice" parameterType="AgentDevice">
+        insert into agent_device
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="agentId != null">agent_id,</if>
+            <if test="deviceId != null">device_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="agentId != null">#{agentId},</if>
+            <if test="deviceId != null">#{deviceId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateAgentDevice" parameterType="AgentDevice">
+        update agent_device
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="agentId != null">agent_id = #{agentId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where device_id = #{deviceId}
+    </update>
+
+    <delete id="deleteAgentDeviceByDeviceId" parameterType="Long">
+        delete from agent_device where device_id = #{deviceId}
+    </delete>
+
+    <delete id="deleteAgentDeviceByDeviceIds" parameterType="String">
+        delete from agent_device where device_id in 
+        <foreach item="deviceId" collection="array" open="(" separator="," close=")">
+            #{deviceId}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,6 +1,7 @@
 package com.ruoyi.system.service.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Validator;
@@ -15,10 +16,12 @@ import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.common.utils.spring.SpringUtils;
+import com.ruoyi.common.utils.uuid.IdUtils;
 import com.ruoyi.system.domain.SysPost;
 import com.ruoyi.system.domain.SysUserPost;
 import com.ruoyi.system.domain.SysUserRole;
@@ -114,6 +117,25 @@ public class SysUserServiceImpl implements ISysUserService
     public SysUser selectUserByUserName(String userName)
     {
         return userMapper.selectUserByUserName(userName);
+    }
+
+    /**
+     * 通过邮箱查询用户
+     * 
+     * @param email 邮箱
+     * @return 用户对象信息
+     */
+    @Override
+    public SysUser selectUserByEmail(String email)
+    {
+        log.info("通过邮箱查询用户：{}", email);
+        SysUser user = userMapper.selectUserByEmail(email);
+        if (user != null) {
+            log.info("找到用户：{}，邮箱：{}", user.getUserName(), user.getEmail());
+        } else {
+            log.info("未找到邮箱为 {} 的用户", email);
+        }
+        return user;
     }
 
     /**
@@ -278,7 +300,17 @@ public class SysUserServiceImpl implements ISysUserService
     @Override
     public boolean registerUser(SysUser user)
     {
-        return userMapper.insertUser(user) > 0;
+        
+        // boolean flag = userMapper.insertUser(user) > 0;
+        // if (flag) {
+        //     // 注册后自动分配角色ID=3
+        //     Long[] roleIds = new Long[]{3L};
+        //     this.insertUserRole(user.getUserId(), roleIds);
+        // }
+        user.setRoleIds(new Long[]{3L});  //注册后分配角色ID=3
+        boolean flag = insertUser(user) > 0;
+
+        return flag;
     }
 
     /**
@@ -363,7 +395,7 @@ public class SysUserServiceImpl implements ISysUserService
     @Override
     public int resetPwd(SysUser user)
     {
-        return userMapper.updateUser(user);
+        return resetUserPwd(user.getUserId(), user.getPassword());
     }
 
     /**
@@ -376,7 +408,7 @@ public class SysUserServiceImpl implements ISysUserService
     @Override
     public int resetUserPwd(Long userId, String password)
     {
-        return userMapper.resetUserPwd(userId, password);
+        return userMapper.resetUserPwd(userId, SecurityUtils.encryptPassword(password));
     }
 
     /**

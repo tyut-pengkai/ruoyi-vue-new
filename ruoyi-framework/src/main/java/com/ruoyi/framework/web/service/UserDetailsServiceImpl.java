@@ -37,7 +37,29 @@ public class UserDetailsServiceImpl implements UserDetailsService
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException
     {
-        SysUser user = userService.selectUserByUserName(username);
+        log.info("开始查找用户，输入的用户名/邮箱：{}", username);
+        
+        SysUser user = null;
+        
+        // 首先尝试通过用户名查找
+        user = userService.selectUserByUserName(username);
+        if (StringUtils.isNotNull(user)) {
+            log.info("通过用户名找到用户：{}", user.getUserName());
+        } else {
+            log.info("通过用户名未找到用户，尝试通过邮箱查找");
+        }
+        
+        // 如果通过用户名没找到，尝试通过邮箱查找
+        if (StringUtils.isNull(user))
+        {
+            user = userService.selectUserByEmail(username);
+            if (StringUtils.isNotNull(user)) {
+                log.info("通过邮箱找到用户：{}，邮箱：{}", user.getUserName(), user.getEmail());
+            } else {
+                log.info("通过邮箱也未找到用户");
+            }
+        }
+        
         if (StringUtils.isNull(user))
         {
             log.info("登录用户：{} 不存在.", username);
@@ -55,6 +77,7 @@ public class UserDetailsServiceImpl implements UserDetailsService
         }
 
         passwordService.validate(user);
+        log.info("用户验证成功：{}", user.getUserName());
 
         return createLoginUser(user);
     }
