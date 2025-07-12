@@ -1,7 +1,6 @@
 package com.ruoyi.xkt.service;
 
 import com.ruoyi.common.core.page.Page;
-import com.ruoyi.xkt.dto.store.StoreAuditDTO;
 import com.ruoyi.xkt.dto.userAuthentication.*;
 
 /**
@@ -14,8 +13,9 @@ public interface IUserAuthenticationService {
 
     /**
      * 新增代发
+     *
      * @param createDTO 新增代发入参
-     * @return  Integer
+     * @return Integer
      */
     Integer create(UserAuthCreateDTO createDTO);
 
@@ -50,5 +50,13 @@ public interface IUserAuthenticationService {
      * @return Integer
      */
     Integer approve(UserAuthAuditDTO auditDTO);
+
+    /**
+     * APP代发分页
+     *
+     * @param pageDTO 分页入参
+     * @return Page<UserAuthAppPageResDTO>
+     */
+    Page<UserAuthAppPageResDTO> appPage(UserAuthPageDTO pageDTO);
 
 }

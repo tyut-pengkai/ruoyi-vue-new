@@ -2,6 +2,7 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.UserAuthentication;
+import com.ruoyi.xkt.dto.userAuthentication.UserAuthAppPageResDTO;
 import com.ruoyi.xkt.dto.userAuthentication.UserAuthPageDTO;
 import com.ruoyi.xkt.dto.userAuthentication.UserAuthPageResDTO;
 import org.springframework.stereotype.Repository;
@@ -24,4 +25,13 @@ public interface UserAuthenticationMapper extends BaseMapper<UserAuthentication>
      * @return List<UserAuthPageResDTO>
      */
     List<UserAuthPageResDTO> selectUserAuthPage(UserAuthPageDTO pageDTO);
+
+    /**
+     * 筛选APP代发分页
+     *
+     * @param pageDTO 分页入参
+     * @return List<UserAuthAppPageResDTO>
+     */
+    List<UserAuthAppPageResDTO> selectUserAuthAppPage(UserAuthPageDTO pageDTO);
+
 }

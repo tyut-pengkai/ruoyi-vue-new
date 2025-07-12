@@ -51,6 +51,21 @@ public class UserAuthenticationServiceImpl implements IUserAuthenticationService
     }
 
     /**
+     * APP代发分页
+     *
+     * @param pageDTO 分页入参
+     * @return Page<UserAuthAppPageResDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page<UserAuthAppPageResDTO> appPage(UserAuthPageDTO pageDTO) {
+        PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
+        List<UserAuthAppPageResDTO> list = this.userAuthMapper.selectUserAuthAppPage(pageDTO);
+        return Page.convert(new PageInfo<>(list));
+    }
+
+
+    /**
      * 代发分页
      *
      * @param pageDTO 分页查询入参
@@ -124,6 +139,5 @@ public class UserAuthenticationServiceImpl implements IUserAuthenticationService
         }
         return this.userAuthMapper.updateById(userAuth);
     }
-
 
 }

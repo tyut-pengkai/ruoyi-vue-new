@@ -20,7 +20,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             AND sps.store_id = #{storeId}
             <if test="prodArtNum != null  and prodArtNum != ''"> and sps.prod_art_num like concat('%', #{prodArtNum}, '%')</if>
         ORDER BY
-            sps.create_time DESC
+            sps.store_prod_id,
+            sps.store_color_id
     </select>
 
     <select id="selectTop10List" resultType="com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO">

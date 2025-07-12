@@ -25,4 +25,20 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </where>
     </select>
 
+    <select id="selectUserAuthAppPage" resultType="com.ruoyi.xkt.dto.userAuthentication.UserAuthAppPageResDTO">
+        SELECT
+            ua.id AS userAuthId,
+            ua.real_name,
+            u.phonenumber,
+            u.avatar
+        FROM
+            user_authentication ua
+            LEFT JOIN sys_user u ON ua.user_id = u.user_id
+        <where>
+            <if test="realName != null and realName != ''">
+                AND ua.real_name LIKE concat('%', #{realName}, '%')
+            </if>
+        </where>
+    </select>
+
 </mapper>
