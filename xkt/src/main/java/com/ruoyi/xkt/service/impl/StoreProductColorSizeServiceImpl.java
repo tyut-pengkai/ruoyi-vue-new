@@ -99,9 +99,15 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
         Set<String> buJuPrefixSnSet = snList.stream().filter(x -> x.startsWith(snDTO.getStoreId())).map(x -> x.substring(0, buJuEndIndex)).collect(Collectors.toSet());
         // 其它系统条码
         Set<String> otherPrefixSnSet = snList.stream().filter(x -> !x.startsWith(snDTO.getStoreId())).map(x -> x.substring(0, otherSysEndIndex)).collect(Collectors.toSet());
+        List<StoreStorageSnDTO.SSSDetailDTO> existList = new ArrayList<>();
         // 根据条码查询数据库数据
-        List<StoreStorageSnDTO.SSSDetailDTO> existList = this.prodColorSizeMapper
-                .selectStorageTotalSnList(snDTO.getStoreId(), new ArrayList<>(buJuPrefixSnSet), new ArrayList<>(otherPrefixSnSet));
+        if (CollectionUtils.isNotEmpty(buJuPrefixSnSet)) {
+            List<StoreStorageSnDTO.SSSDetailDTO> buJuExistList = this.prodColorSizeMapper.selectStorageBuJuSnList(snDTO.getStoreId(), new ArrayList<>(buJuPrefixSnSet));
+            CollectionUtils.addAll(existList, buJuExistList);
+        } else if (CollectionUtils.isNotEmpty(otherPrefixSnSet)) {
+            List<StoreStorageSnDTO.SSSDetailDTO> otherExistList = this.prodColorSizeMapper.selectStorageOtherSnList(snDTO.getStoreId(), new ArrayList<>(otherPrefixSnSet));
+            CollectionUtils.addAll(existList, otherExistList);
+        }
         // 数据库前缀对应的商品数量
         Map<String, StoreStorageSnDTO.SSSDetailDTO> existMap = existList.stream().collect(Collectors.toMap(StoreStorageSnDTO.SSSDetailDTO::getPrefixPart, x -> x));
         Set<StoreStorageSnResDTO.SSSDetailDTO> successSet = new HashSet<>();
@@ -152,9 +158,15 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
         Set<String> buJuPrefixSnSet = snList.stream().filter(x -> x.startsWith(snDTO.getStoreId())).map(x -> x.substring(0, buJuEndIndex)).collect(Collectors.toSet());
         // 其它系统条码
         Set<String> otherPrefixSnSet = snList.stream().filter(x -> !x.startsWith(snDTO.getStoreId())).map(x -> x.substring(0, otherSysEndIndex)).collect(Collectors.toSet());
+        List<StoreStockTakingSnTempDTO.SSTSTDetailDTO> existList = new ArrayList<>();
         // 查询出的所有条码
-        List<StoreStockTakingSnTempDTO.SSTSTDetailDTO> existList = this.prodColorSizeMapper.selectStockSnList(snDTO.getStoreId(),
-                new ArrayList<>(buJuPrefixSnSet), new ArrayList<>(otherPrefixSnSet));
+        if (CollectionUtils.isNotEmpty(buJuPrefixSnSet)) {
+            List<StoreStockTakingSnTempDTO.SSTSTDetailDTO> buJuExistList = this.prodColorSizeMapper.selectStockBuJuSnList(snDTO.getStoreId(), new ArrayList<>(buJuPrefixSnSet));
+            CollectionUtils.addAll(existList, buJuExistList);
+        } else if (CollectionUtils.isNotEmpty(otherPrefixSnSet)) {
+            List<StoreStockTakingSnTempDTO.SSTSTDetailDTO> otherExistList = this.prodColorSizeMapper.selectStockOtherSnList(snDTO.getStoreId(), new ArrayList<>(otherPrefixSnSet));
+            CollectionUtils.addAll(existList, otherExistList);
+        }
         Map<String, StoreStockTakingSnTempDTO.SSTSTDetailDTO> existMap = existList.stream().collect(Collectors.toMap(StoreStockTakingSnTempDTO.SSTSTDetailDTO::getPrefixPart, x -> x));
         // 唯一的 storeProdColorId + size
         Set<StoreStockTakingSnResDTO.SSTSDetailDTO> stockSet = new HashSet<>();

@@ -56,27 +56,38 @@ public interface StoreProductColorSizeMapper extends BaseMapper<StoreProductColo
     StoreSaleSnResDTO selectOtherSn(@Param("snPrefix") String snPrefix, @Param("storeId") String storeId, @Param("storeCusId") Long storeCusId);
 
     /**
-     * 获取档口商品入库的条码信息
-     *
-     * @param storeId           档口ID
-     * @param buJuPrefixSnList  步橘网条码列表
-     * @param otherPrefixSnList 其他系统条码列表
+     * 获取步橘网入库的条码信息
+     * @param storeId 档口ID
+     * @param buJuPrefixSnList 步橘网条码列表
      * @return
      */
-    List<StoreStorageSnDTO.SSSDetailDTO> selectStorageTotalSnList(@Param("storeId") String storeId,
-                                                                  @Param("buJuPrefixSnList") List<String> buJuPrefixSnList,
-                                                                  @Param("otherPrefixSnList") List<String> otherPrefixSnList);
+    List<StoreStorageSnDTO.SSSDetailDTO> selectStorageBuJuSnList(@Param("storeId") String storeId, @Param("buJuPrefixSnList") List<String> buJuPrefixSnList);
 
     /**
-     * 获取档口商品盘点的条码信息
+     * 获取其它系统入库的条码信息
+     * @param storeId 档口id
+     * @param otherPrefixSnList 步橘网条码列表
+     * @return  List<StoreStorageSnDTO.SSSDetailDTO>
+     */
+    List<StoreStorageSnDTO.SSSDetailDTO> selectStorageOtherSnList(@Param("storeId") String storeId, @Param("otherPrefixSnList") List<String> otherPrefixSnList);
+
+
+    /**
+     * 获取步橘网档口商品盘点的条码信息
      *
      * @param storeId           档口ID
      * @param buJuPrefixSnList  步橘网条码列表
-     * @param otherPrefixSnList 其他系统条码列表
-     * @return
+     * @return List<StoreStockTakingSnTempDTO.SSTSTDetailDTO>
      */
-    List<StoreStockTakingSnTempDTO.SSTSTDetailDTO> selectStockSnList(@Param("storeId") String storeId,
-                                                                     @Param("buJuPrefixSnList") List<String> buJuPrefixSnList,
-                                                                     @Param("otherPrefixSnList") List<String> otherPrefixSnList);
+    List<StoreStockTakingSnTempDTO.SSTSTDetailDTO> selectStockBuJuSnList(@Param("storeId") String storeId, @Param("buJuPrefixSnList") List<String> buJuPrefixSnList);
+
+    /**
+     * 获取其它系统档口商品盘点的条码信息
+     * @param storeId 档口ID
+     * @param otherPrefixSnList 其它系统条码列表
+     * @return List<StoreStockTakingSnTempDTO.SSTSTDetailDTO>
+     */
+    List<StoreStockTakingSnTempDTO.SSTSTDetailDTO> selectStockOtherSnList(@Param("storeId") String storeId, @Param("otherPrefixSnList") List<String> otherPrefixSnList);
+
 }
 

@@ -16,6 +16,12 @@ import java.util.List;
  */
 public interface DailySaleMapper extends BaseMapper<DailySale> {
 
+    /**
+     * 查询指定日期销售数据
+     *
+     * @param voucherDate 凭证日期
+     * @return List<DailySaleDTO>
+     */
     List<DailySaleDTO> selectDailySale(Date voucherDate);
 
     /**
@@ -29,7 +35,8 @@ public interface DailySaleMapper extends BaseMapper<DailySale> {
 
     /**
      * 获取销量前十的档口
-     * @param yesterday 昨天
+     *
+     * @param yesterday   昨天
      * @param oneMonthAgo 昨天往前推1个月
      * @return List<DailyStoreTagDTO>
      */

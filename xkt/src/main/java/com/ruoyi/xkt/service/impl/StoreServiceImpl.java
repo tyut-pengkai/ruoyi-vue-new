@@ -274,13 +274,13 @@ public class StoreServiceImpl implements IStoreService {
         // 总的销售退货金额
         BigDecimal refundAmount = saleList.stream().map(x -> ObjectUtils.defaultIfNull(x.getRefundAmount(), BigDecimal.ZERO)).reduce(BigDecimal.ZERO, BigDecimal::add);
         // 总的累计销量
-        Integer saleNum = saleList.stream().map(DailySale::getSaleNum).reduce(0, Integer::sum);
+        Integer saleNum = saleList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSaleNum(), 0)).reduce(0, Integer::sum);
         // 总的累计退货量
-        Integer refundNum = saleList.stream().map(DailySale::getRefundNum).reduce(0, Integer::sum);
+        Integer refundNum = saleList.stream().map(x -> ObjectUtils.defaultIfNull(x.getRefundNum(), 0)).reduce(0, Integer::sum);
         // 总的累计入库数量
-        Integer storageNum = saleList.stream().map(DailySale::getStorageNum).reduce(0, Integer::sum);
+        Integer storageNum = saleList.stream().map(x -> ObjectUtils.defaultIfNull(x.getStorageNum(), 0)).reduce(0, Integer::sum);
         // 总的累计客户数
-        Integer customerNum = saleList.stream().map(DailySale::getCustomerNum).reduce(0, Integer::sum);
+        Integer customerNum = saleList.stream().map(x -> ObjectUtils.defaultIfNull(x.getCustomerNum(), 0)).reduce(0, Integer::sum);
         return new StoreIndexOverviewResDTO().setSaleAmount(saleAmount).setRefundAmount(refundAmount).setSaleNum(saleNum).setRefundNum(refundNum)
                 .setStorageNum(storageNum).setCustomerNum(customerNum);
     }

@@ -61,7 +61,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
           AND sp.store_id = #{storeId}
     </select>
 
-    <select id="selectStorageTotalSnList">
+    <select id="selectStorageBuJuSnList">
         SELECT
             spcs.store_prod_id,
             spc.id AS storeProdColorId,
@@ -84,9 +84,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                     #{item}
                 </foreach>
             </if>
+    </select>
 
-        UNION ALL
-
+    <select id="selectStorageOtherSnList">
         SELECT
             spcs.store_prod_id,
             spc.id AS storeProdColorId,
@@ -111,7 +111,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             </if>
     </select>
 
-    <select id="selectStockSnList">
+    <select id="selectStockBuJuSnList">
         SELECT
             spc.id AS storeProdColorId,
             spc.color_name,
@@ -130,9 +130,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                     #{item}
                 </foreach>
             </if>
+    </select>
 
-        UNION ALL
-
+    <select id="selectStockOtherSnList">
         SELECT
             spc.id AS storeProdColorId,
             spc.color_name,
@@ -151,7 +151,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                     #{item}
                 </foreach>
             </if>
-
     </select>
 
 </mapper>
