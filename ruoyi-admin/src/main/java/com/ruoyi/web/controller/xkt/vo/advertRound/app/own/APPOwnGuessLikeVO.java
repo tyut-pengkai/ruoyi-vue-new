@@ -18,10 +18,14 @@ import java.util.List;
 @Accessors(chain = true)
 public class APPOwnGuessLikeVO {
 
+    @ApiModelProperty(value = "会员等级")
+    private Integer memberLevel;
     @ApiModelProperty(value = "2商品")
     private Integer displayType;
     @ApiModelProperty(value = "档口商品ID")
     private Long storeProdId;
+    @ApiModelProperty(value = "档口ID")
+    private Long storeId;
     @ApiModelProperty(value = "排序")
     private Integer orderNum;
     @ApiModelProperty(value = "商品货号")

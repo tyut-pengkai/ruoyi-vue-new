@@ -18,6 +18,8 @@ import java.util.List;
 @Accessors(chain = true)
 public class PCDownloadDTO {
 
+    @ApiModelProperty(value = "会员等级")
+    private Integer memberLevel;
     @ApiModelProperty(value = "2 商品")
     private Integer displayType;
     @ApiModelProperty(value = "档口ID")

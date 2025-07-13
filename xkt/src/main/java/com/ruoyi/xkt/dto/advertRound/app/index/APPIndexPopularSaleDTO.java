@@ -18,6 +18,8 @@ import java.util.List;
 @Accessors(chain = true)
 public class APPIndexPopularSaleDTO {
 
+    @ApiModelProperty(value = "会员等级")
+    private Integer memberLevel;
     @ApiModelProperty(value = "档口ID")
     private String storeId;
     @ApiModelProperty(value = "档口名称")

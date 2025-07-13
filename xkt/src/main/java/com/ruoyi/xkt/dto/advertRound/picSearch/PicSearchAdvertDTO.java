@@ -17,6 +17,8 @@ import java.util.List;
 @Accessors(chain = true)
 public class PicSearchAdvertDTO {
 
+    @ApiModelProperty(value = "会员等级")
+    private Integer memberLevel;
     @ApiModelProperty(value = "搜索次数")
     private Long imgSearchCount;
     @ApiModelProperty(value = "同款商品数量")

@@ -16,6 +16,8 @@ import java.util.List;
 @Data
 public class PCIndexMidStyleVO {
 
+    @ApiModelProperty(value = "会员等级")
+    private Integer memberLevel;
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
     @ApiModelProperty(value = "档口名称")

@@ -18,6 +18,8 @@ import java.util.List;
 @Accessors(chain = true)
 public class PCIndexRecommendDTO {
 
+    @ApiModelProperty(value = "会员等级")
+    private Integer memberLevel;
     @ApiModelProperty(value = "父级分类ID")
     private Long parCateId;
     @ApiModelProperty(value = "商品分类ID")

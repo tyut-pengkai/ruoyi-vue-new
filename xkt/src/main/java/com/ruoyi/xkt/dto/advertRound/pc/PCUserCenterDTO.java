@@ -18,6 +18,8 @@ import java.util.List;
 @Accessors(chain = true)
 public class PCUserCenterDTO {
 
+    @ApiModelProperty(value = "会员等级")
+    private Integer memberLevel;
     @ApiModelProperty(value = "分类ID")
     private Long prodCateId;
     @ApiModelProperty(value = "分类名称")

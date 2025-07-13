@@ -32,6 +32,8 @@ public class PCIndexMidSalesDTO {
     @ApiModel(value = "销售榜")
     @Accessors(chain = true)
     public static class PCIMSSaleDTO {
+        @ApiModelProperty(value = "会员等级")
+        private Integer memberLevel;
         @ApiModelProperty(value = "展示类型 1推广图、2商品、3推广图及商品、4店铺名称")
         private Integer displayType;
         @ApiModelProperty(value = "档口ID")

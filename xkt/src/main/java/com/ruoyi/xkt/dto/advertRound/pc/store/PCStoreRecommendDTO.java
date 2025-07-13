@@ -17,12 +17,12 @@ import java.util.List;
 @Accessors(chain = true)
 public class PCStoreRecommendDTO {
 
+    @ApiModelProperty(value = "会员等级")
+    private Integer memberLevel;
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
     @ApiModelProperty(value = "档口名称")
     private String storeName;
-    @ApiModelProperty(value = "会员等级")
-    private Integer memberLevel;
     @ApiModelProperty(value = "档口标签")
     private List<String> tags;
     @ApiModelProperty(value = "是否广告")

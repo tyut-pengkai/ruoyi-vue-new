@@ -20,6 +20,8 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class APPSearchDTO {
 
+    @ApiModelProperty(value = "会员等级")
+    private Integer memberLevel;
     @ApiModelProperty(value = "档口ID")
     private String storeId;
     @ApiModelProperty(value = "档口名称")

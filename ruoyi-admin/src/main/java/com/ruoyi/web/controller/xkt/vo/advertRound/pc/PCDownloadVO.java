@@ -16,6 +16,8 @@ import java.util.List;
 @Data
 public class PCDownloadVO {
 
+    @ApiModelProperty(value = "会员等级")
+    private Integer memberLevel;
     @ApiModelProperty(value = "2 商品")
     private Integer displayType;
     @ApiModelProperty(value = "档口ID")

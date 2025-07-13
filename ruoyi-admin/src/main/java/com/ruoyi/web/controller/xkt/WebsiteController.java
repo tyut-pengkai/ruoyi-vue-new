@@ -6,7 +6,6 @@ import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.core.redis.RedisCache;
-import com.ruoyi.web.controller.xkt.vo.BasePageVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.app.category.APPCateVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.app.index.APPIndexHotSaleRightFixVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.app.index.APPIndexMidBrandVO;
@@ -22,7 +21,6 @@ import com.ruoyi.web.controller.xkt.vo.advertRound.picSearch.PicSearchAdvertVO;
 import com.ruoyi.web.controller.xkt.vo.website.AppStrengthSearchVO;
 import com.ruoyi.web.controller.xkt.vo.website.IndexSearchVO;
 import com.ruoyi.web.controller.xkt.vo.website.StoreSearchVO;
-import com.ruoyi.xkt.dto.BasePageDTO;
 import com.ruoyi.xkt.dto.advertRound.app.index.APPIndexHotSaleDTO;
 import com.ruoyi.xkt.dto.advertRound.app.index.APPIndexNewProdDTO;
 import com.ruoyi.xkt.dto.advertRound.app.index.APPIndexPopularSaleDTO;
@@ -120,6 +118,7 @@ public class WebsiteController extends XktBaseController {
         return R.ok(BeanUtil.toBean(websitePCService.getPcIndexFixedEar(), PCIndexFixedEarVO.class));
     }
 
+    @ApiOperation(value = "PC 搜索框中推荐店铺", httpMethod = "GET", response = R.class)
     @GetMapping("/pc/index/search-underline-store-name")
     public R<List<PCIndexSearchUnderlineStoreNameVO>> getPcIndexSearchUnderlineStoreName() {
         return R.ok(BeanUtil.copyToList(websitePCService.getPcIndexSearchUnderlineStoreName(), PCIndexSearchUnderlineStoreNameVO.class));
@@ -257,7 +256,7 @@ public class WebsiteController extends XktBaseController {
         return R.ok(BeanUtil.copyToList(websiteAPPService.getAppOwnGuessLikeList(), APPOwnGuessLikeVO.class));
     }
 
-    @ApiOperation(value = "热门搜索", httpMethod = "GET", response = R.class)
+    @ApiOperation(value = "系统热搜关键词", httpMethod = "GET", response = R.class)
     @GetMapping("/search-hot")
     public R<List<String>> getSearchHotList() {
         return R.ok(redisCache.getCacheObject(CacheConstants.SEARCH_HOT_KEY));
@@ -272,27 +271,26 @@ public class WebsiteController extends XktBaseController {
     @ApiOperation(value = "APP 实力质造专题页 档口列表", notes = "只需要传分页参数即可", httpMethod = "POST", response = R.class)
     @PostMapping("/app/strength/store")
     public R<Page<APPStrengthStoreDTO>> getAppStrengthStorePage(@Validated @RequestBody AppStrengthSearchVO searchVO) {
-        return R.ok(websiteAPPService. getAppStrengthStorePage(BeanUtil.toBean(searchVO, AppStrengthSearchDTO.class)));
+        return R.ok(websiteAPPService.getAppStrengthStorePage(BeanUtil.toBean(searchVO, AppStrengthSearchDTO.class)));
     }
 
     @ApiOperation(value = "APP 商品榜 销量列表", httpMethod = "GET", response = R.class)
     @GetMapping("/app/prod/sale")
-    public R<List<APPProdSaleDTO>> getAppProdSaleTop100List() throws IOException {
-        return R.ok(websiteAPPService. getAppProdSaleTop100List());
+    public R<List<APPProdSaleDTO>> getAppProdSaleTop50List() throws IOException {
+        return R.ok(websiteAPPService.getAppProdSaleTop50List());
     }
 
     @ApiOperation(value = "APP 商品榜 分类销量列表", httpMethod = "GET", response = R.class)
     @GetMapping("/app/prod/cate")
     public R<List<APPProdCateTop3DTO>> getAppCateProdSaleTop3List() throws IOException {
-        return R.ok(websiteAPPService. getAppCateProdSaleTop3List());
+        return R.ok(websiteAPPService.getAppCateProdSaleTop3List());
     }
 
     @ApiOperation(value = "APP 商品榜 分类销量 次级详情列表", httpMethod = "GET", response = R.class)
     @GetMapping("/app/prod/cate/sub/{prodCateId}")
     public R<List<APPProdCateSubDTO>> getAppCateSubProdSaleList(@PathVariable Long prodCateId) throws IOException {
-        return R.ok(websiteAPPService. getAppCateSubProdSaleList(prodCateId));
+        return R.ok(websiteAPPService.getAppCateSubProdSaleList(prodCateId));
     }
-
 
 
 }

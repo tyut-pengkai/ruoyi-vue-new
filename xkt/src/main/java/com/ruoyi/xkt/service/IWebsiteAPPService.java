@@ -119,7 +119,7 @@ public interface IWebsiteAPPService {
      *
      * @return List<APPStrengthStoreDTO>
      */
-    List<APPProdSaleDTO> getAppProdSaleTop100List() throws IOException;
+    List<APPProdSaleDTO> getAppProdSaleTop50List() throws IOException;
 
     /**
      * APP 商品榜 分类页 销量前3 的列表

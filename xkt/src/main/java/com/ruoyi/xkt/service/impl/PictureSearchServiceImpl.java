@@ -139,14 +139,16 @@ public class PictureSearchServiceImpl implements IPictureSearchService {
                 .map(ProductImgSearchCountDTO::getStoreProductId).distinct().collect(Collectors.toList()));
         storeProdViewAttrList = storeProdViewAttrList.stream().map(x -> {
                     //根据主图搜索同类商品
-                    List<ProductMatchDTO> pmList = pictureService.searchProductByPicKey(x.getMainPicUrl(), 1000);
+                    List<ProductMatchDTO> pmList = pictureService.searchProductByPicKey(x.getMainPicUrl(), 50);
                     return x.setTags(StrUtil.split(x.getTagStr(), ",")).setSameProdCount(pmList.size())
                             .setImgSearchCount(ObjectUtils.defaultIfNull(searchCountMap.get(x.getStoreProdId()), 0));
                 })
                 .sorted(Comparator.comparing(StoreProdViewDTO::getImgSearchCount).reversed())
-                .limit(100)
                 .collect(Collectors.toList());
-        redisCache.setCacheObject(CacheConstants.IMG_SEARCH_PRODUCT_HOT, storeProdViewAttrList);
+        // 所有的图搜热款
+        redisCache.setCacheObject(CacheConstants.IMG_SEARCH_PRODUCT_HOT_TOTAL, storeProdViewAttrList);
+        // 图搜热款前100
+        redisCache.setCacheObject(CacheConstants.IMG_SEARCH_PRODUCT_HOT, storeProdViewAttrList.stream().limit(100).collect(Collectors.toList()));
         return storeProdViewAttrList;
     }
 

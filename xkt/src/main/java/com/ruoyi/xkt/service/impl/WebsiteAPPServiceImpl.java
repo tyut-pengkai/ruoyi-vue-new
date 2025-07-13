@@ -97,6 +97,11 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         // 筛选出真实的数据
         List<APPIndexHotSaleDTO> realDataList = page.getList().stream()
                 .map(esProduct -> BeanUtil.toBean(esProduct, APPIndexHotSaleDTO.class).setAdvert(Boolean.FALSE)).collect(Collectors.toList());
+        realDataList.forEach(x -> {
+            // 查询档口会员等级
+            StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId());
+            x.setMemberLevel(ObjectUtils.isNotEmpty(member) ? member.getLevel() : null);
+        });
         // APP 只有第一页 有数据 其它页暂时没有广告
         if (searchDTO.getPageNum() > 1) {
             return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), realDataList);
@@ -153,6 +158,11 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         // 筛选出真实的数据
         List<APPIndexPopularSaleDTO> realDataList = page.getList().stream()
                 .map(esProduct -> BeanUtil.toBean(esProduct, APPIndexPopularSaleDTO.class).setAdvert(Boolean.FALSE)).collect(Collectors.toList());
+        realDataList.forEach(x -> {
+            // 查询档口会员等级
+            StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId());
+            x.setMemberLevel(ObjectUtils.isNotEmpty(member) ? member.getLevel() : null);
+        });
         // APP 只有第一页 有数据 其它页暂时没有广告
         if (searchDTO.getPageNum() > 1) {
             return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), realDataList);
@@ -209,6 +219,11 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         // 筛选出真实的数据
         List<APPIndexNewProdDTO> realDataList = page.getList().stream()
                 .map(esProduct -> BeanUtil.toBean(esProduct, APPIndexNewProdDTO.class).setAdvert(Boolean.FALSE)).collect(Collectors.toList());
+        realDataList.forEach(x -> {
+            // 查询档口会员等级
+            StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId());
+            x.setMemberLevel(ObjectUtils.isNotEmpty(member) ? member.getLevel() : null);
+        });
         // APP 只有第一页 有数据 其它页暂时没有广告
         if (searchDTO.getPageNum() > 1) {
             return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), realDataList);
@@ -272,6 +287,11 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         // 筛选出真实的数据
         List<APPSearchDTO> realDataList = page.getList().stream()
                 .map(esProduct -> BeanUtil.toBean(esProduct, APPSearchDTO.class).setAdvert(Boolean.FALSE)).collect(Collectors.toList());
+        realDataList.forEach(x -> {
+            // 查询档口会员等级
+            StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId());
+            x.setMemberLevel(ObjectUtils.isNotEmpty(member) ? member.getLevel() : null);
+        });
         // APP 只有第一页 有数据 其它页暂时没有广告
         if (searchDTO.getPageNum() > 1) {
             return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), realDataList);
@@ -400,7 +420,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
      */
     @Override
     @Transactional(readOnly = true)
-    public List<APPProdSaleDTO> getAppProdSaleTop100List() throws IOException {
+    public List<APPProdSaleDTO> getAppProdSaleTop50List() throws IOException {
         // 从redis中获取销量前100的商品
         List<DailyStoreProdSaleDTO> top50ProdList = redisCache.getCacheObject(CacheConstants.TOP_50_SALE_PROD);
         if (CollectionUtils.isEmpty(top50ProdList)) {
@@ -766,7 +786,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                 final Long storeProdId = Long.parseLong(x.getProdIdStr());
                 StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(storeProdId);
                 return new APPOwnGuessLikeDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreProdId(storeProdId)
-                        .setProdTitle(ObjectUtils.isNotEmpty(dto) ? dto.getProdTitle() : "")
+                        .setProdTitle(ObjectUtils.isNotEmpty(dto) ? dto.getProdTitle() : "").setStoreId(x.getStoreId())
                         .setHasVideo(ObjectUtils.isNotEmpty(dto) ? dto.getHasVideo() : Boolean.FALSE)
                         .setTags(ObjectUtils.isNotEmpty(dto) ? dto.getTags() : null)
                         .setPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
@@ -781,7 +801,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                 final Long storeProdId = Long.parseLong(x.getProdIdStr());
                 StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(storeProdId);
                 return new APPOwnGuessLikeDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreProdId(storeProdId)
-                        .setOrderNum(this.positionToNumber(x.getPosition()))
+                        .setOrderNum(this.positionToNumber(x.getPosition())).setStoreId(x.getStoreId())
                         .setProdTitle(ObjectUtils.isNotEmpty(dto) ? dto.getProdTitle() : "")
                         .setHasVideo(ObjectUtils.isNotEmpty(dto) ? dto.getHasVideo() : Boolean.FALSE)
                         .setTags(ObjectUtils.isNotEmpty(dto) ? dto.getTags() : null)
@@ -790,6 +810,11 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                         .setMainPicUrl(ObjectUtils.isNotEmpty(dto) ? dto.getMainPicUrl() : "");
             }).limit(20).collect(Collectors.toList());
         }
+        appOwnGuessLikeList.forEach(x -> {
+            // 查询档口会员等级
+            StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId());
+            x.setMemberLevel(ObjectUtils.isNotEmpty(member) ? member.getLevel() : null);
+        });
         // 放到redis中，有效期1天
         redisCache.setCacheObject(CacheConstants.APP_ADVERT + CacheConstants.APP_OWN_GUESS_LIKE, appOwnGuessLikeList, 1, TimeUnit.DAYS);
         return appOwnGuessLikeList;

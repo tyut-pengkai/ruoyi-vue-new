@@ -17,10 +17,7 @@ import com.ruoyi.common.enums.AdType;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.es.EsClientWrapper;
-import com.ruoyi.xkt.domain.AdvertRound;
-import com.ruoyi.xkt.domain.DailyStoreTag;
-import com.ruoyi.xkt.domain.Store;
-import com.ruoyi.xkt.domain.SysFile;
+import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.advertRound.pc.PCDownloadDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.PCSearchDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.PCUserCenterDTO;
@@ -101,6 +98,11 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         // 筛选出真实的数据
         List<PCIndexRecommendDTO> realDataList = page.getList().stream()
                 .map(esProduct -> BeanUtil.toBean(esProduct, PCIndexRecommendDTO.class).setAdvert(Boolean.FALSE)).collect(Collectors.toList());
+        // 绑定档口会员等级
+        realDataList.forEach(x -> {
+            StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId());
+            x.setMemberLevel(ObjectUtils.isNotEmpty(member) ? member.getLevel() : null);
+        });
         // APP 只有第一页 有数据 其它页暂时没有广告
         if (searchDTO.getPageNum() > 1) {
             return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), realDataList);
@@ -177,6 +179,11 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         // 筛选出真实的数据
         List<PCNewRecommendDTO> realDataList = page.getList().stream()
                 .map(esProduct -> BeanUtil.toBean(esProduct, PCNewRecommendDTO.class).setAdvert(Boolean.FALSE)).collect(Collectors.toList());
+        // 绑定档口会员等级
+        realDataList.forEach(x -> {
+            StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId());
+            x.setMemberLevel(ObjectUtils.isNotEmpty(member) ? member.getLevel() : null);
+        });
         // APP 只有第一页 有数据 其它页暂时没有广告
         if (searchDTO.getPageNum() > 1) {
             return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), realDataList);
@@ -261,6 +268,11 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         // 筛选出真实的数据
         List<PCSearchDTO> realDataList = page.getList().stream()
                 .map(esProduct -> BeanUtil.toBean(esProduct, PCSearchDTO.class).setAdvert(Boolean.FALSE)).collect(Collectors.toList());
+        // 绑定档口会员等级
+        realDataList.forEach(x -> {
+            StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId());
+            x.setMemberLevel(ObjectUtils.isNotEmpty(member) ? member.getLevel() : null);
+        });
         // 暂时没有广告
         return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), realDataList);
     }
@@ -284,6 +296,11 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                 .filter(x -> StringUtils.isEmpty(searchDTO.getStoreName()) || x.getStoreName().contains(searchDTO.getStoreName()))
                 .skip((long) (searchDTO.getPageNum() - 1) * searchDTO.getPageSize())
                 .limit(searchDTO.getPageSize()).collect(Collectors.toList());
+        realDataList.forEach(x -> {
+            // 查询档口会员等级
+            StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId());
+            x.setMemberLevel(ObjectUtils.isNotEmpty(member) ? member.getLevel() : null);
+        });
         final long pages = (long) Math.ceil((double) redisList.size() / searchDTO.getPageSize());
         // APP 只有第一页 有数据 其它页暂时没有广告
         if (searchDTO.getPageNum() > 1) {
@@ -477,8 +494,11 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
             List<PCIndexMidSalesDTO.PCIMSSaleDTO> saleDTOList = new ArrayList<>();
             for (int j = 0; j < cateDetailList.size(); j++) {
                 CateSaleRankDTO dto = cateDetailList.get(j);
+                // 绑定档口会员等级
+                StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + dto.getStoreId());
                 PCIndexMidSalesDTO.PCIMSSaleDTO saleDTO = new PCIndexMidSalesDTO.PCIMSSaleDTO().setDisplayType(AdDisplayType.PRODUCT.getValue())
-                        .setStoreId(dto.getStoreId()).setStoreName(dto.getStoreName()).setStoreProdId(dto.getStoreProdId()).setProdArtNum(dto.getProdArtNum())
+                        .setStoreId(dto.getStoreId()).setStoreName(dto.getStoreName()).setStoreProdId(dto.getStoreProdId())
+                        .setProdArtNum(dto.getProdArtNum()).setMemberLevel(ObjectUtils.isNotEmpty(member) ? member.getLevel() : null)
                         .setStoreProdId(dto.getStoreProdId()).setSaleNum(dto.getSaleNum()).setOrderNum(j + 1)
                         .setPrice(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(dto.getStoreProdId()))
                                 ? prodPriceAndMainPicMap.get(dto.getStoreProdId()).getMinPrice() : null)
@@ -1222,6 +1242,11 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
         // 从正在播放的图搜热款广告或者历史广告中筛选10条
         picSearchList = getPicSearchAdvertList(CollectionUtils.isEmpty(launchingList) ? expiredList : launchingList, viewMap, storeTagMap);
+        picSearchList.forEach(x -> {
+            // 查询档口会员等级
+            StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId());
+            x.setMemberLevel(ObjectUtils.isNotEmpty(member) ? member.getLevel() : null);
+        });
         // 放到redis 中 过期时间1天
         redisCache.setCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PIC_SEARCH, picSearchList, 1, TimeUnit.DAYS);
         return picSearchList;
@@ -1261,6 +1286,16 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
             pcUserCenterList = launchingList.stream().map(x -> this.getPcUserCenterDTO(x, attrMap)
                     .setOrderNum(this.positionToNumber(x.getPosition()))).limit(18).collect(Collectors.toList());
         }
+        pcUserCenterList.forEach(x -> {
+            // 查询档口会员等级
+            StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId());
+            x.setMemberLevel(ObjectUtils.isNotEmpty(member) ? member.getLevel() : null);
+        });
+        pcUserCenterList.forEach(x -> {
+            // 查询档口会员等级
+            StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId());
+            x.setMemberLevel(ObjectUtils.isNotEmpty(member) ? member.getLevel() : null);
+        });
         // 放到redis 中 过期时间1天
         redisCache.setCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_USER_CENTER, pcUserCenterList, 1, TimeUnit.DAYS);
         return pcUserCenterList;
@@ -1300,6 +1335,11 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
             pcDownloadList = launchingList.stream().map(advertRound -> this.getPcDownload(advertRound, attrMap)
                     .setOrderNum(this.positionToNumber(advertRound.getPosition()))).limit(10).collect(Collectors.toList());
         }
+        pcDownloadList.forEach(x -> {
+            // 查询档口会员等级
+            StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId());
+            x.setMemberLevel(ObjectUtils.isNotEmpty(member) ? member.getLevel() : null);
+        });
         // 放到redis 中 过期时间1天
         redisCache.setCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_DOWNLOAD, pcDownloadList, 1, TimeUnit.DAYS);
         return pcDownloadList;
@@ -1474,8 +1514,11 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                                 .setProdArtNum(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getProdArtNum() : "")
                                 .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMainPicUrl() : ""));
                     }
-                    midStyleList.add(new PCIndexMidStyleDTO().setStoreId(storeId).setStoreName(storeMap.get(storeId).getStoreName()).setDisplayType(AdDisplayType.PICTURE.getValue())
-                            .setPicUrl(ObjectUtils.isNotEmpty(fileMap.get(advertRound.getPicId())) ? fileMap.get(advertRound.getPicId()).getFileUrl() : "").setStyleList(styleList));
+                    StoreMember storeMember = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + storeId);
+                    midStyleList.add(new PCIndexMidStyleDTO().setStoreId(storeId).setStoreName(storeMap.get(storeId).getStoreName())
+                            .setDisplayType(AdDisplayType.PICTURE.getValue()).setStyleList(styleList)
+                            .setMemberLevel(ObjectUtils.isNotEmpty(storeMember) ? storeMember.getLevel() : null)
+                            .setPicUrl(ObjectUtils.isNotEmpty(fileMap.get(advertRound.getPicId())) ? fileMap.get(advertRound.getPicId()).getFileUrl() : ""));
                 });
         return midStyleList.stream().limit(limitCount).collect(Collectors.toList());
     }
