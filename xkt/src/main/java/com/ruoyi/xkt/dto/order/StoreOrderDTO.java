@@ -174,6 +174,14 @@ public class StoreOrderDTO {
      */
     private Date updateTime;
     /**
+     * 平台介入原因
+     */
+    private String platformInvolveReason;
+    /**
+     * 平台介入结果
+     */
+    private String platformInvolveResult;
+    /**
      * 版本号
      */
     private Long version;

@@ -446,6 +446,12 @@ public class StoreOrderInfoVO {
         @ApiModelProperty(value = "档口地址")
         private String storeAddress;
 
+        @ApiModelProperty(value = "平台介入原因")
+        private String platformInvolveReason;
+
+        @ApiModelProperty(value = "平台介入结果")
+        private String platformInvolveResult;
+
     }
 
     @ApiModel

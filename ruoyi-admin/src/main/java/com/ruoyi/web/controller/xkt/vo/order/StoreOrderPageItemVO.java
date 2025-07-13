@@ -250,6 +250,12 @@ public class StoreOrderPageItemVO extends StoreOrderDTO {
     @ApiModelProperty(value = "订单明细")
     private List<Detail> orderDetails;
 
+    @ApiModelProperty(value = "平台介入原因")
+    private String platformInvolveReason;
+
+    @ApiModelProperty(value = "平台介入结果")
+    private String platformInvolveResult;
+
     @ApiModel
     @Data
     public static class Detail {

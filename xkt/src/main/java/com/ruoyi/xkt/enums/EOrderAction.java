@@ -22,6 +22,9 @@ public enum EOrderAction {
     REJECT_AFTER_SALE(9, "拒绝售后"),
     CONFIRM_AFTER_SALE(10, "确认售后"),
     REFUND(11, "退款"),
+    APPLY_PLATFORM_INVOLVE(12, "申请平台介入"),
+    COMPLETE_PLATFORM_INVOLVE(13, "平台介入完成"),
+    USER_COMPLETE_AFTER_SALE(14, "用户确认售后完成"),
     ;
 
     private final Integer value;

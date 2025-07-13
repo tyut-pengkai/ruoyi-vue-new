@@ -360,6 +360,11 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
     }
 
     @Override
+    public StoreOrder getById(Long id) {
+        return storeOrderMapper.selectById(id);
+    }
+
+    @Override
     public StoreOrderInfoDTO getInfo(Long storeOrderId) {
         StoreOrder order = storeOrderMapper.selectById(storeOrderId);
         if (order == null) {
@@ -1347,6 +1352,103 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                 .map(StoreOrderDetail::getStoreOrderId)
                 .collect(Collectors.toSet());
         storeOrderIds.forEach(id -> checkOrderStore(id, storeId));
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void applyPlatformInvolve(Long storeOrderId, String platformInvolveReason) {
+        StoreOrder order = getAndBaseCheck(storeOrderId);
+        if (!EOrderStatus.AFTER_SALE_IN_PROGRESS.getValue().equals(order.getOrderStatus())
+                && !EOrderStatus.AFTER_SALE_REJECTED.getValue().equals(order.getOrderStatus())) {
+            throw new ServiceException(CharSequenceUtil.format("订单[{}]状态异常", order.getId()));
+        }
+        order.setOrderStatus(EOrderStatus.PLATFORM_INTERVENED.getValue());
+        order.setPlatformInvolveReason(platformInvolveReason);
+        int orderSuccess = storeOrderMapper.updateById(prepareUpdate(order));
+        if (orderSuccess == 0) {
+            throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
+        }
+        //操作记录
+        addOperationRecords(order.getId(),
+                EOrderAction.APPLY_PLATFORM_INVOLVE,
+                null,
+                EOrderAction.APPLY_PLATFORM_INVOLVE,
+                SecurityUtils.getUserIdSafe(),
+                new Date());
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void completePlatformInvolve(Long storeOrderId, String platformInvolveResult) {
+        StoreOrder order = getAndBaseCheck(storeOrderId);
+        if (!EOrderStatus.PLATFORM_INTERVENED.getValue().equals(order.getOrderStatus())) {
+            throw new ServiceException(CharSequenceUtil.format("订单[{}]状态异常", order.getId()));
+        }
+        List<StoreOrderDetail> incompleteOrderDetails = storeOrderDetailMapper.selectList(Wrappers
+                .lambdaQuery(StoreOrderDetail.class)
+                .eq(StoreOrderDetail::getStoreOrderId, order.getId())
+                //售后未完成明细
+                .ne(StoreOrderDetail::getDetailStatus, EOrderStatus.AFTER_SALE_COMPLETED)
+                .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
+        List<Long> storeOrderDetailIds = new ArrayList<>(incompleteOrderDetails.size());
+        for (StoreOrderDetail storeOrderDetail : incompleteOrderDetails) {
+            storeOrderDetail.setDetailStatus(EOrderStatus.AFTER_SALE_COMPLETED.getValue());
+            int orderDetailSuccess = storeOrderDetailMapper.updateById(prepareUpdate(storeOrderDetail));
+            if (orderDetailSuccess == 0) {
+                throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
+            }
+            storeOrderDetailIds.add(storeOrderDetail.getId());
+        }
+        order.setOrderStatus(EOrderStatus.AFTER_SALE_COMPLETED.getValue());
+        order.setPlatformInvolveResult(platformInvolveResult);
+        int orderSuccess = storeOrderMapper.updateById(prepareUpdate(order));
+        if (orderSuccess == 0) {
+            throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
+        }
+        //操作记录
+        addOperationRecords(order.getId(),
+                EOrderAction.COMPLETE_PLATFORM_INVOLVE,
+                storeOrderDetailIds,
+                EOrderAction.COMPLETE_PLATFORM_INVOLVE,
+                SecurityUtils.getUserIdSafe(),
+                new Date());
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void completeRefundByUser(Long storeOrderId) {
+        StoreOrder order = getAndBaseCheck(storeOrderId);
+        if (!EOrderStatus.AFTER_SALE_IN_PROGRESS.getValue().equals(order.getOrderStatus())
+                && !EOrderStatus.AFTER_SALE_REJECTED.getValue().equals(order.getOrderStatus())) {
+            throw new ServiceException(CharSequenceUtil.format("订单[{}]状态异常", order.getId()));
+        }
+        List<StoreOrderDetail> incompleteOrderDetails = storeOrderDetailMapper.selectList(Wrappers
+                .lambdaQuery(StoreOrderDetail.class)
+                .eq(StoreOrderDetail::getStoreOrderId, order.getId())
+                //售后未完成明细
+                .ne(StoreOrderDetail::getDetailStatus, EOrderStatus.AFTER_SALE_COMPLETED)
+                .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
+        List<Long> storeOrderDetailIds = new ArrayList<>(incompleteOrderDetails.size());
+        for (StoreOrderDetail storeOrderDetail : incompleteOrderDetails) {
+            storeOrderDetail.setDetailStatus(EOrderStatus.AFTER_SALE_COMPLETED.getValue());
+            int orderDetailSuccess = storeOrderDetailMapper.updateById(prepareUpdate(storeOrderDetail));
+            if (orderDetailSuccess == 0) {
+                throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
+            }
+            storeOrderDetailIds.add(storeOrderDetail.getId());
+        }
+        order.setOrderStatus(EOrderStatus.AFTER_SALE_COMPLETED.getValue());
+        int orderSuccess = storeOrderMapper.updateById(prepareUpdate(order));
+        if (orderSuccess == 0) {
+            throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
+        }
+        //操作记录
+        addOperationRecords(order.getId(),
+                EOrderAction.USER_COMPLETE_AFTER_SALE,
+                storeOrderDetailIds,
+                EOrderAction.USER_COMPLETE_AFTER_SALE,
+                SecurityUtils.getUserIdSafe(),
+                new Date());
     }
 
     /**

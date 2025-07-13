@@ -15,6 +15,7 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.notice.fs.FsNotice;
 import com.ruoyi.web.controller.xkt.vo.order.*;
+import com.ruoyi.xkt.domain.StoreOrder;
 import com.ruoyi.xkt.domain.StoreOrderDetail;
 import com.ruoyi.xkt.dto.express.ExpressCancelReqDTO;
 import com.ruoyi.xkt.dto.express.ExpressInterceptReqDTO;
@@ -266,6 +267,42 @@ public class StoreOrderController extends XktBaseController {
             }
         }
         return success(afterSaleApplyResult.getStoreOrderId());
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('seller,store')||@ss.hasSupplierSubRole()")
+    @Log(title = "订单", businessType = BusinessType.OTHER)
+    @ApiOperation("申请平台介入")
+    @PostMapping("platform-involve/apply")
+    public R<Long> applyPlatformInvolve(@Valid @RequestBody PlatformInvolveApplyReqVO vo) {
+        Long orderId = vo.getStoreOrderId();
+        Long userId = SecurityUtils.getUserId();
+        Long storeId = SecurityUtils.getStoreId();
+        StoreOrder order = storeOrderService.getById(orderId);
+        Assert.notNull(order, "订单不存在");
+        if (Objects.equals(order.getStoreId(), storeId)
+                || Objects.equals(order.getOrderUserId(), userId)) {
+            storeOrderService.applyPlatformInvolve(orderId, vo.getPlatformInvolveReason());
+            return R.ok(orderId);
+        }
+        return R.fail("无权限");
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @Log(title = "订单", businessType = BusinessType.OTHER)
+    @ApiOperation("平台介入完成（管理员）")
+    @PostMapping("platform-involve/complete")
+    public R<Long> completePlatformInvolve(@Valid @RequestBody PlatformInvolveCompleteVO vo) {
+        storeOrderService.completePlatformInvolve(vo.getStoreOrderId(), vo.getPlatformInvolveResult());
+        return R.ok(vo.getStoreOrderId());
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('seller')")
+    @Log(title = "订单", businessType = BusinessType.OTHER)
+    @ApiOperation("售后完成（用户）")
+    @PostMapping("refund/complete")
+    public R<Long> completeRefundByUser(@Valid @RequestBody RefundCompleteVO vo) {
+        storeOrderService.completeRefundByUser(vo.getStoreOrderId());
+        return R.ok(vo.getStoreOrderId());
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")

@@ -46,6 +46,14 @@ public interface IStoreOrderService {
     StoreOrder getByOrderNo(String orderNo);
 
     /**
+     * 通过ID获取订单
+     *
+     * @param id
+     * @return
+     */
+    StoreOrder getById(Long id);
+
+    /**
      * 获取订单详情
      *
      * @param storeOrderId
@@ -218,4 +226,27 @@ public interface IStoreOrderService {
      * @param storeId
      */
     void checkOrderStore(Collection<Long> storeOrderDetailIds, Long storeId);
+
+    /**
+     * 申请平台介入
+     *
+     * @param storeOrderId
+     * @param platformInvolveReason
+     */
+    void applyPlatformInvolve(Long storeOrderId, String platformInvolveReason);
+
+    /**
+     * 平台介入完成
+     *
+     * @param storeOrderId
+     * @param platformInvolveResult
+     */
+    void completePlatformInvolve(Long storeOrderId, String platformInvolveResult);
+
+    /**
+     * 售后完成
+     *
+     * @param storeOrderId
+     */
+    void completeRefundByUser(Long storeOrderId);
 }
