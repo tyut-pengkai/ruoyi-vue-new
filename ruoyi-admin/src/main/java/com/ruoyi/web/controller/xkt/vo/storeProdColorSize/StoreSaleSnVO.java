@@ -28,7 +28,7 @@ public class StoreSaleSnVO {
     @ApiModelProperty(value = "是否退货", required = true)
     private Boolean refund;
     @NotBlank(message = "条码不能为空!")
-    @ApiModelProperty(value = "条码")
+    @ApiModelProperty(value = "条码", required = true)
     private String sn;
 
 }

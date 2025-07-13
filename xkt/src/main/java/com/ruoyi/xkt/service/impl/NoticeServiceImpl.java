@@ -14,9 +14,7 @@ import com.ruoyi.system.mapper.SysUserMapper;
 import com.ruoyi.xkt.domain.Notice;
 import com.ruoyi.xkt.domain.UserNotice;
 import com.ruoyi.xkt.dto.notice.*;
-import com.ruoyi.xkt.enums.NoticeOwnerType;
-import com.ruoyi.xkt.enums.NoticeReadType;
-import com.ruoyi.xkt.enums.UserNoticeType;
+import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.INoticeService;
 import lombok.RequiredArgsConstructor;
@@ -27,10 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -59,7 +54,7 @@ public class NoticeServiceImpl implements INoticeService {
     @Transactional
     public Integer create(NoticeCreateDTO createDTO) {
         nullFilter(createDTO.getOwnerType(), createDTO.getStoreId(), createDTO.getPerpetuity(), createDTO.getEffectStart(), createDTO.getEffectEnd());
-        Notice notice = BeanUtil.toBean(createDTO, Notice.class).setUserId(SecurityUtils.getUserId());
+        Notice notice = BeanUtil.toBean(createDTO, Notice.class).setNoticeType(NoticeType.ANNOUNCEMENT.getValue()).setUserId(SecurityUtils.getUserId());
         notice.setCreateBy(SecurityUtils.getUsername());
         int count = this.noticeMapper.insert(notice);
         final Date voucherDate = java.sql.Date.valueOf(LocalDate.now());
@@ -97,6 +92,7 @@ public class NoticeServiceImpl implements INoticeService {
                         .eq(Notice::getId, editDTO.getNoticeId()).eq(Notice::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("公告不存在!", HttpStatus.ERROR));
         BeanUtil.copyProperties(editDTO, notice);
+        notice.setNoticeType(NoticeType.ANNOUNCEMENT.getValue());
         notice.setUpdateBy(SecurityUtils.getUsername());
         return this.noticeMapper.updateById(notice);
     }
@@ -153,7 +149,9 @@ public class NoticeServiceImpl implements INoticeService {
     @Override
     @Transactional(readOnly = true)
     public Page<NoticeResDTO> page(NoticePageDTO pageDTO) {
+        // 查询公告
         LambdaQueryWrapper<Notice> queryWrapper = new LambdaQueryWrapper<Notice>().eq(Notice::getDelFlag, Constants.UNDELETED)
+                .eq(Notice::getNoticeType, NoticeType.ANNOUNCEMENT.getValue())
                 .eq(Notice::getOwnerType, pageDTO.getOwnerType()).orderByDesc(Notice::getCreateTime);
         if (StringUtils.isNotBlank(pageDTO.getNoticeTitle())) {
             queryWrapper.like(Notice::getNoticeTitle, pageDTO.getNoticeTitle());
@@ -196,10 +194,37 @@ public class NoticeServiceImpl implements INoticeService {
      */
     public Integer createSingleNotice(Long userId, String title, Integer noticeType, Integer ownerType, Long storeId, Integer targetNoticeType, String content) {
         Notice notice = new Notice().setNoticeTitle(title).setNoticeType(noticeType).setOwnerType(ownerType)
-                .setStoreId(storeId).setUserId(userId).setPerpetuity(1).setNoticeContent(content);
+                .setStoreId(storeId).setUserId(userId).setPerpetuity(NoticePerpetuityType.PERMANENT.getValue())
+                .setNoticeContent(content);
         this.noticeMapper.insert(notice);
         return this.userNoticeMapper.insert(new UserNotice().setNoticeId(notice.getId()).setUserId(userId).setReadStatus(NoticeReadType.UN_READ.getValue())
                 .setVoucherDate(java.sql.Date.valueOf(LocalDate.now())).setTargetNoticeType(targetNoticeType));
+    }
+
+    /**
+     * 获取最新的10条公告
+     *
+     * @return List<NoticeLatest10ResDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<NoticeLatest10ResDTO> latest10() {
+        List<Notice> noticeList = this.noticeMapper.selectList(new LambdaQueryWrapper<Notice>()
+                .eq(Notice::getNoticeType, NoticeType.ANNOUNCEMENT.getValue()).eq(Notice::getDelFlag, Constants.UNDELETED)
+                .eq(Notice::getOwnerType, NoticeOwnerType.SYSTEM.getValue()).orderByDesc(Notice::getCreateTime));
+        if (CollectionUtils.isEmpty(noticeList)) {
+            return new ArrayList<>();
+        }
+        final Date now = new Date();
+        return noticeList.stream().filter(x -> {
+                    // 存在有效期，则判断是否在有效期内
+                    if (Objects.equals(x.getPerpetuity(), NoticePerpetuityType.TEMPORARY.getValue())) {
+                        return x.getEffectStart().before(now) && x.getEffectEnd().after(now);
+                    }
+                    return Boolean.TRUE;
+                }).limit(10)
+                .map(x -> new NoticeLatest10ResDTO().setId(x.getId()).setNoticeTitle(x.getNoticeTitle()))
+                .collect(Collectors.toList());
     }
 
 

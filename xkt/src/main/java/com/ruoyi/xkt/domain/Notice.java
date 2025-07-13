@@ -55,7 +55,7 @@ public class Notice extends XktBaseEntity {
      */
     private Date effectEnd;
     /**
-     * 是否永久生效
+     * 是否永久生效  1 存在有效期 2 永久有效
      */
     private Integer perpetuity;
 

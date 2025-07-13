@@ -18,7 +18,7 @@ public class APPStrengthStoreDTO {
     @ApiModelProperty(value = "会员等级")
     private Integer memberLevel;
     @ApiModelProperty(value = "档口ID")
-    private String storeId;
+    private Long storeId;
     @ApiModelProperty(value = "档口名称")
     private String storeName;
     @ApiModelProperty(value = "商品第一张主图路径")

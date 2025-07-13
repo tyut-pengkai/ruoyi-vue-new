@@ -15,7 +15,6 @@ import java.util.List;
  */
 @Data
 @Accessors(chain = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreSaleSnResDTO {
 
     @ApiModelProperty(value = "是否成功")
@@ -36,5 +35,17 @@ public class StoreSaleSnResDTO {
     private BigDecimal price;
     @ApiModelProperty(value = "档口客户优惠金额")
     private BigDecimal discount;
+    @ApiModelProperty(value = "大小码加价")
+    private BigDecimal overPrice;
+    @ApiModelProperty(value = "标准尺码")
+    private Integer standard;
+    @ApiModelProperty(value = "[退货扫码时才有]优惠后销售单价")
+    private BigDecimal discountedPrice;
+    @ApiModelProperty(value = "[退货扫码时才有]销售金额")
+    private BigDecimal amount;
+    @ApiModelProperty(value = "[退货扫码时才有]销售数量")
+    private BigDecimal quantity;
+    @ApiModelProperty(value = "[退货扫码时才有]其它优惠")
+    private BigDecimal otherDiscount;
 
 }

@@ -379,11 +379,11 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         Long userId = SecurityUtils.getUserIdSafe();
         Map<Long, Long> focusStoreIdMap = ObjectUtils.isEmpty(userId) ? new HashMap<>()
                 : this.userSubMapper.selectList(new LambdaQueryWrapper<UserSubscriptions>()
-                        .eq(UserSubscriptions::getUserId, userId).in(UserSubscriptions::getStoreId, storeList)
+                        .eq(UserSubscriptions::getUserId, userId).in(UserSubscriptions::getStoreId, storeIdList)
                         .eq(UserSubscriptions::getDelFlag, Constants.UNDELETED)).stream()
                 .collect(Collectors.toMap(UserSubscriptions::getStoreId, UserSubscriptions::getStoreId));
         List<APPStrengthStoreDTO> list = storeList.stream().map(store -> BeanUtil.toBean(store, APPStrengthStoreDTO.class)
-                        .setFocus(focusStoreIdMap.containsKey(store.getId())).setMainPicUrl(storeFileMap.get(store.getId())))
+                        .setStoreId(store.getId()).setFocus(focusStoreIdMap.containsKey(store.getId())).setMainPicUrl(storeFileMap.get(store.getId())))
                 .collect(Collectors.toList());
         // 设置档口会员等级
         list.forEach(x -> {

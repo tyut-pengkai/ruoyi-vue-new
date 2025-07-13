@@ -3,6 +3,8 @@ package com.ruoyi.xkt.service;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.xkt.dto.notice.*;
 
+import java.util.List;
+
 /**
  * 公告 服务层
  *
@@ -64,4 +66,12 @@ public interface INoticeService {
      */
     Integer createSingleNotice(Long userId, String title, Integer noticeType, Integer ownerType,
                                Long storeId, Integer targetNoticeType, String content);
+
+    /**
+     * 获取最新的10条公告
+     *
+     * @return List<NoticeLatest10ResDTO>
+     */
+    List<NoticeLatest10ResDTO> latest10();
+
 }

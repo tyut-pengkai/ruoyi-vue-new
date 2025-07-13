@@ -27,7 +27,7 @@ public class NoticeCreateVO {
     @ApiModelProperty(value = "公告标题", required = true)
     private String noticeTitle;
     @NotNull(message = "公告类型不能为空")
-    @ApiModelProperty(value = "公告类型", required = true)
+    @ApiModelProperty(value = "公告类型 1 通知 2 公告", required = true)
     private Integer noticeType;
     @NotBlank(message = "公告内容不能为空")
     @ApiModelProperty(value = "公告内容", required = true)

@@ -16,6 +16,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * 公告 信息操作处理
  *
@@ -65,5 +67,13 @@ public class NoticeController extends BaseController {
     public R<Page<NoticeResDTO>> page(@Validated @RequestBody NoticePageVO pageVO) {
         return R.ok(noticeService.page(BeanUtil.toBean(pageVO, NoticePageDTO.class)));
     }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
+    @ApiOperation(value = "档口首页获取正在生效的公告列表", httpMethod = "GET", response = R.class)
+    @GetMapping("/list")
+    public R<List<NoticeLatest10ResVO>> latest10() {
+        return R.ok(BeanUtil.copyToList(noticeService.latest10(), NoticeLatest10ResVO.class));
+    }
+
 
 }
