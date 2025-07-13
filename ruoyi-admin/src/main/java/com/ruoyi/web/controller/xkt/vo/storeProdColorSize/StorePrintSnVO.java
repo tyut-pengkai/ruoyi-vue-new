@@ -29,6 +29,7 @@ public class StorePrintSnVO {
     private List<SPColorSizeVO> colorSizeList;
 
     @Data
+    @ApiModel
     @Accessors(chain = true)
     public static class SPColorSizeVO {
         @NotNull(message = "档口商品颜色ID不能为空!")
@@ -47,6 +48,7 @@ public class StorePrintSnVO {
     }
 
     @Data
+    @ApiModel
     @Accessors(chain = true)
     public static class SPSizeVO {
         @NotNull(message = "尺码不能为空!")

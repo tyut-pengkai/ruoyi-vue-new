@@ -16,6 +16,7 @@ import java.util.List;
  * @date 2025-04-14 11:18
  */
 @Data
+@ApiModel
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class StoreOrderPageItemVO extends StoreOrderDTO {

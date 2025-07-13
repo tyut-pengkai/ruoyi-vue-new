@@ -11,7 +11,6 @@ import lombok.Data;
  */
 @ApiModel("PC 新品馆 热卖榜左侧大图")
 @Data
-
 public class PCNewMidHotLeftVO {
 
     @ApiModelProperty(value = "1推广图")

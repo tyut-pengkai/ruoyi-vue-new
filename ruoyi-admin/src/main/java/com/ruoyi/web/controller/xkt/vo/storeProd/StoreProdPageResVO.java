@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.xkt.vo.storeProd;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -13,6 +14,7 @@ import java.util.List;
  * @date 2025/3/27 15:12
  */
 @Data
+@ApiModel
 public class StoreProdPageResVO {
 
     @ApiModelProperty(value = "档口商品主图url")

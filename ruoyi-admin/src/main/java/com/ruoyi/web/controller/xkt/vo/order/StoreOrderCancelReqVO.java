@@ -15,6 +15,6 @@ import javax.validation.constraints.NotNull;
 public class StoreOrderCancelReqVO {
 
     @NotNull(message = "订单ID不能为空")
-    @ApiModelProperty(value = "订单ID")
+    @ApiModelProperty(value = "订单ID", required = true)
     private Long storeOrderId;
 }

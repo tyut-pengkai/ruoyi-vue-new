@@ -53,6 +53,7 @@ public class StoreSaleVO {
     private List<SaleDetailVO> detailList;
 
     @Data
+    @ApiModel
     public static class SaleDetailVO {
         @NotNull(message = "档口商品ID不能为空!")
         @ApiModelProperty(value = "档口商品ID", required = true)

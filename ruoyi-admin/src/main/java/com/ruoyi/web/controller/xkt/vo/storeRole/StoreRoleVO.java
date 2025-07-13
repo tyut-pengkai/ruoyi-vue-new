@@ -25,7 +25,7 @@ public class StoreRoleVO {
     private Long storeId;
     @ApiModelProperty(value = "档口子角色ID，新增为空 编辑必传")
     private Long storeRoleId;
-    @ApiModelProperty(value = "角色名称")
+    @ApiModelProperty(value = "角色名称", required = true)
     @NotBlank(message = "角色名称不能为空!")
     @Size(min = 0, max = 30, message = "角色名称长度不能超过30个字!")
     private String roleName;

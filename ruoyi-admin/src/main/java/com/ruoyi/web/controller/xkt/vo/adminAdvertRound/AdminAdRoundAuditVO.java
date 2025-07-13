@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.xkt.vo.adminAdvertRound;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -11,6 +12,7 @@ import javax.validation.constraints.NotNull;
  * @date 2025/3/27 15:12
  */
 @Data
+@ApiModel
 public class AdminAdRoundAuditVO {
 
     @NotNull(message = "advertRoundId不能为空")

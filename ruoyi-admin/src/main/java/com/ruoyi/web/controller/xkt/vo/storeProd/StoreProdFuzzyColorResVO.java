@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.xkt.vo.storeProd;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +15,7 @@ import java.util.List;
  */
 @Data
 @Builder
+@ApiModel
 @Accessors(chain = true)
 public class StoreProdFuzzyColorResVO {
 
@@ -27,6 +29,7 @@ public class StoreProdFuzzyColorResVO {
     private List<SPFCColorVO> colorList;
 
     @Data
+    @ApiModel
     public static class SPFCColorVO {
         @ApiModelProperty(value = "档口颜色ID")
         private Long storeColorId;

@@ -41,6 +41,7 @@ public class StoreProdPCResVO {
     private List<StoreProdFileVO> fileList;
 
     @Data
+    @ApiModel
     public static class SPPCColorVO {
         @ApiModelProperty(value = "档口商品颜色ID")
         private Long storeProdColorId;
@@ -57,6 +58,7 @@ public class StoreProdPCResVO {
     }
 
     @Data
+    @ApiModel
     public static class SPPCSizeStockVO {
         @ApiModelProperty(value = "档口商品颜色尺码ID")
         private Long storeProdColorSizeId;
@@ -69,6 +71,7 @@ public class StoreProdPCResVO {
     }
 
     @Data
+    @ApiModel
     public static class StoreProdFileVO {
         @ApiModelProperty(value = "文件名称")
         private String fileName;
@@ -83,6 +86,7 @@ public class StoreProdPCResVO {
     }
 
     @Data
+    @ApiModel
     public static class StoreProdCateAttrVO {
         @ApiModelProperty(value = "帮面材质")
         private String upperMaterial;

@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.xkt.vo.storeProductFile;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +11,7 @@ import lombok.Data;
  * @date 2025/3/27 15:12
  */
 @Data
+@ApiModel
 @Builder
 public class StoreProdFilePicSpaceResVO {
 

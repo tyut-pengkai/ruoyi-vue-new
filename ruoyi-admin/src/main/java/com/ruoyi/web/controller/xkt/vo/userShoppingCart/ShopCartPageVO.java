@@ -22,7 +22,7 @@ import java.util.List;
 public class ShopCartPageVO extends BasePageVO {
 
     @NotNull(message = "商品状态不可为空!")
-    @ApiModelProperty(value = "商品状态，在售传：2， 已失效传：4,5")
+    @ApiModelProperty(value = "商品状态，在售传：2， 已失效传：4,5", required = true)
     private List<Integer> statusList;
     @ApiModelProperty(value = "商品货号")
     private String prodArtNum;

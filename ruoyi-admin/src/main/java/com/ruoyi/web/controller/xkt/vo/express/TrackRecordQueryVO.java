@@ -18,6 +18,6 @@ import java.util.List;
 public class TrackRecordQueryVO {
 
     @NotEmpty(message = "物流运单号不能为空")
-    @ApiModelProperty(value = "物流运单号集合")
+    @ApiModelProperty(value = "物流运单号集合", required = true)
     private List<String> expressWaybillNos;
 }

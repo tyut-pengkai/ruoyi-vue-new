@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.xkt.vo.storeCustomer;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
@@ -11,6 +12,7 @@ import lombok.experimental.Accessors;
  * @date 2025/3/27 15:12
  */
 @Data
+@ApiModel
 @Builder
 @Accessors(chain = true)
 public class StoreCusFuzzyResVO {

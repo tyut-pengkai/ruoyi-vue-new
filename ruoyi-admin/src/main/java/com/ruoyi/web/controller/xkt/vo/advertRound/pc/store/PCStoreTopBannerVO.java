@@ -14,7 +14,6 @@ import java.util.List;
  */
 @ApiModel("PC 档口馆 顶部横幅")
 @Data
-
 public class PCStoreTopBannerVO {
 
     @ApiModelProperty(value = "1 推广图")

@@ -28,6 +28,7 @@ public class StoreProdSkuResVO {
     private List<SPColorVO> colorList;
 
     @Data
+    @ApiModel
     public static class SPColorVO {
         @ApiModelProperty(value = "档口商品颜色ID")
         private Long storeProdColorId;
@@ -45,6 +46,7 @@ public class StoreProdSkuResVO {
 
 
     @Data
+    @ApiModel
     public static class SPSizeStockVO {
         @ApiModelProperty(value = "档口商品颜色尺码ID")
         private Long storeProdColorSizeId;

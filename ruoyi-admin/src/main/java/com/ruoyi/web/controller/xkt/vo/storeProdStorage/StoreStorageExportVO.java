@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.xkt.vo.storeProdStorage;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -14,11 +15,12 @@ import java.util.List;
  * @date 2025/3/27 15:12
  */
 @Data
+@ApiModel
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreStorageExportVO {
 
     @NotNull(message = "storeId不能为空!")
-    @ApiModelProperty(value = "storeId")
+    @ApiModelProperty(value = "storeId", required = true)
     private Long storeId;
     @ApiModelProperty(value = "storeProdStorageId")
     private List<Long> storeProdStorageIdList;

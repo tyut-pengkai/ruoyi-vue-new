@@ -19,7 +19,7 @@ import java.util.List;
 public class UserSubscDeleteVO {
 
     @NotNull(message = "档口ID列表不能为空!")
-    @ApiModelProperty(value = "档口ID列表")
+    @ApiModelProperty(value = "档口ID列表", required = true)
     private List<Long> storeIdList;
 
 }

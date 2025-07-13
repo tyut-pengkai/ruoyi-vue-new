@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.xkt.vo.storeProdBarcodeMatch;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -13,6 +14,7 @@ import java.util.List;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
+@ApiModel
 @Data
 public class BarcodeMatchVO {
 
@@ -28,6 +30,7 @@ public class BarcodeMatchVO {
     List<BarcodeMatchColorVO> colorList;
 
     @Data
+    @ApiModel
     public static class BarcodeMatchColorVO {
         @NotNull(message = "颜色ID不能为空")
         @ApiModelProperty(value = "档口颜色ID", required = true)
@@ -39,6 +42,7 @@ public class BarcodeMatchVO {
     }
 
     @Data
+    @ApiModel
     public static class BarcodeMatchSizeVO {
         @NotNull(message = "尺码不能为空")
         @ApiModelProperty(value = "尺码", required = true)

@@ -21,35 +21,36 @@ import java.util.List;
 public class ShopCartVO {
 
     @NotNull(message = "档口ID不能为空!")
-    @ApiModelProperty(value = "档口ID")
+    @ApiModelProperty(value = "档口ID", required = true)
     private Long storeId;
     @NotNull(message = "档口商品ID不能为空!")
-    @ApiModelProperty(value = "档口商品ID")
+    @ApiModelProperty(value = "档口商品ID", required = true)
     private Long storeProdId;
     @NotBlank(message = "商品货号不能为空!")
-    @ApiModelProperty(value = "商品货号")
+    @ApiModelProperty(value = "商品货号", required = true)
     private String prodArtNum;
     @Valid
     @NotNull(message = "进货车明细列表不能为空!")
-    @ApiModelProperty(value = "进货车明细列表")
+    @ApiModelProperty(value = "进货车明细列表", required = true)
     List<SCDetailVO> detailList;
 
     @Data
+    @ApiModel
     public static class SCDetailVO {
         @NotNull(message = "档口商品颜色ID不能为空!")
-        @ApiModelProperty(value = "档口商品颜色ID")
+        @ApiModelProperty(value = "档口商品颜色ID", required = true)
         private Long storeProdColorId;
         @NotNull(message = "尺码不能为空!")
-        @ApiModelProperty(value = "尺码")
+        @ApiModelProperty(value = "尺码", required = true)
         private Integer size;
         @NotNull(message = "档口商品颜色ID不能为空!")
-        @ApiModelProperty(value = "档口商品颜色ID")
+        @ApiModelProperty(value = "档口商品颜色ID", required = true)
         private Long storeColorId;
         @NotBlank(message = "颜色名称不能为空!")
-        @ApiModelProperty(value = "颜色名称")
+        @ApiModelProperty(value = "颜色名称", required = true)
         private String colorName;
         @NotNull(message = "商品数量不能为空!")
-        @ApiModelProperty(value = "商品数量")
+        @ApiModelProperty(value = "商品数量", required = true)
         private Integer quantity;
     }
 

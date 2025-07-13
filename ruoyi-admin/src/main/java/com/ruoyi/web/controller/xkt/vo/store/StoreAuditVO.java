@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.xkt.vo.store;
 
 import com.ruoyi.web.controller.xkt.vo.storeCertificate.StoreCertVO;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -13,6 +14,7 @@ import javax.validation.constraints.NotNull;
  * @date 2025/3/27 15:12
  */
 @Data
+@ApiModel
 @Accessors(chain = true)
 public class StoreAuditVO {
 

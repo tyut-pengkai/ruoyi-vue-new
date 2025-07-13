@@ -11,7 +11,6 @@ import lombok.Data;
  */
 @ApiModel("以图搜款")
 @Data
-
 public class PCStoreMidBannerVO {
 
     @ApiModelProperty(value = "1推广图")

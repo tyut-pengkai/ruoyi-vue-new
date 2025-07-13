@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.xkt.vo.userIndex;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -9,6 +10,7 @@ import lombok.Data;
  * @date 2025/3/27 15:12
  */
 @Data
+@ApiModel
 public class UserOverallResVO {
 
     @ApiModelProperty(value = "图搜热款数量")

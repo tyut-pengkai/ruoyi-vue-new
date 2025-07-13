@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.xkt.vo.storeFactory;
 
 import com.ruoyi.web.controller.xkt.vo.BasePageVO;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,6 +15,7 @@ import javax.validation.constraints.NotNull;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
+@ApiModel
 public class StoreFactoryPageVO extends BasePageVO {
 
     @ApiModelProperty(value = "工厂名称")

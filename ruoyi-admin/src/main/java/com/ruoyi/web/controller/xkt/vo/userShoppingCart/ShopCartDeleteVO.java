@@ -19,7 +19,7 @@ import java.util.List;
 public class ShopCartDeleteVO {
 
     @NotNull(message = "进货车ID列表不可为空!")
-    @ApiModelProperty(value = "进货车ID列表")
+    @ApiModelProperty(value = "进货车ID列表", required = true)
     private List<Long> shoppingCartIdList;
 
 }

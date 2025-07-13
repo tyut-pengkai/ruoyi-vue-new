@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.xkt.vo.storeProd;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -12,6 +13,7 @@ import java.util.List;
  * @date 2025/3/27 15:12
  */
 @Data
+@ApiModel
 public class StoreProdStatusVO {
 
     @NotNull(message = "档口ID不能为空!")

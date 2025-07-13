@@ -11,7 +11,6 @@ import lombok.Data;
  */
 @ApiModel("PC 首页 顶部横向轮播图")
 @Data
-
 public class PCIndexTopLeftBannerVO {
 
     @ApiModelProperty(value = "展示类型 1推广图、2商品、3推广图及商品、4店铺名称")

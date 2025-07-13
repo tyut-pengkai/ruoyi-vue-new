@@ -20,7 +20,7 @@ import java.util.Date;
 public class AdvertRoundRecordPageVO extends BasePageVO {
 
     @NotNull(message = "档口ID不能为空!")
-    @ApiModelProperty(value = "档口ID")
+    @ApiModelProperty(value = "档口ID", required = true)
     private Long storeId;
     @ApiModelProperty(value = "平台ID")
     private Long platformId;

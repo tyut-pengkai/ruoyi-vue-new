@@ -25,6 +25,7 @@ public class StorePrintSnResVO {
     private List<SPSizeSnVO> sizeSnList;
 
     @Data
+    @ApiModel
     @Accessors(chain = true)
     public static class SPSizeSnVO {
         @ApiModelProperty(value = "尺码")

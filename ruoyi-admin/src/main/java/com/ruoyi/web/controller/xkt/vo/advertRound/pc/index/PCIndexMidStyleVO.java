@@ -14,7 +14,6 @@ import java.util.List;
  */
 @ApiModel("PC 首页 风格榜")
 @Data
-
 public class PCIndexMidStyleVO {
 
     @ApiModelProperty(value = "档口ID")

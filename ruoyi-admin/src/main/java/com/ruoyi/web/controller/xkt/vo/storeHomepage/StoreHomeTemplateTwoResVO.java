@@ -27,6 +27,7 @@ public class StoreHomeTemplateTwoResVO {
     List<StoreHomeTemplateItemResVO> newProdList;
 
     @Data
+    @ApiModel
     public static class SHTOTopBannerVO {
         @ApiModelProperty(value = "1.不跳转 为null 2.跳转店铺 为storeId 3.跳转商品 为storeProdId")
         private Long bizId;

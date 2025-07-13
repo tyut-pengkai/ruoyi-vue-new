@@ -20,20 +20,21 @@ import java.util.List;
 public class StoreProdCheckStockVO {
 
     @NotNull(message = "档口商品颜色的库存不能为空")
-    @ApiModelProperty(value = "档口商品颜色的库存")
+    @ApiModelProperty(value = "档口商品颜色的库存", required = true)
     List<SPCSStockVO> checkStockList;
 
     @Data
     @Valid
+    @ApiModel
     public static class SPCSStockVO {
         @NotNull(message = "档口商品颜色ID不能为空")
-        @ApiModelProperty(value = "档口商品颜色ID")
+        @ApiModelProperty(value = "档口商品颜色ID", required = true)
         private Long storeProdColorId;
         @NotNull(message = "盘点库存不能为空")
-        @ApiModelProperty(value = "尺码尺码")
+        @ApiModelProperty(value = "尺码尺码", required = true)
         private Integer size;
         @NotNull(message = "盘点库存不能为空")
-        @ApiModelProperty(value = "盘点库存")
+        @ApiModelProperty(value = "盘点库存", required = true)
         private Integer stock;
     }
 

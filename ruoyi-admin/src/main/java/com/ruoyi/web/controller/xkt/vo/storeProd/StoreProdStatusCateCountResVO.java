@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.xkt.vo.storeProd;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -12,6 +13,7 @@ import java.util.List;
  * @date 2025/3/27 15:12
  */
 @Data
+@ApiModel
 public class StoreProdStatusCateCountResVO {
 
     @ApiModelProperty(value = "商品状态")
@@ -20,6 +22,7 @@ public class StoreProdStatusCateCountResVO {
     List<SPSCCCateCountVO> cateCountList;
 
     @Data
+    @ApiModel
     @Accessors(chain = true)
     public static class SPSCCCateCountVO {
         @ApiModelProperty(value = "商品分类ID")

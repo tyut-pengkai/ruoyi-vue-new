@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.xkt.vo.storeProd;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -12,6 +13,7 @@ import java.util.List;
  * @date 2025/3/27 15:12
  */
 @Data
+@ApiModel
 public class StoreProdViewVO {
 
     @ApiModelProperty(value = "会员等级")
@@ -36,7 +38,5 @@ public class StoreProdViewVO {
     private Long storeId;
     @ApiModelProperty(value = "档口名称")
     private String storeName;
-//    @ApiModelProperty(value = "档口标签列表")
-//    private List<String> storeTagList;
 
 }

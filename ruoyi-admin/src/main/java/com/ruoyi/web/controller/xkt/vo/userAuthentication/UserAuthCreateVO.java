@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.xkt.vo.userAuthentication;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -14,6 +15,7 @@ import java.math.BigDecimal;
  * @date 2025/3/27 15:12
  */
 @Data
+@ApiModel
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserAuthCreateVO {
 
@@ -34,15 +36,16 @@ public class UserAuthCreateVO {
     private UACFileDTO emblemFile;
 
     @Data
+    @ApiModel
     public static class UACFileDTO {
         @NotBlank(message = "文件名称不能为空")
-        @ApiModelProperty(value = "文件名称")
+        @ApiModelProperty(value = "文件名称", required = true)
         private String fileName;
         @NotBlank(message = "文件路径不能为空")
-        @ApiModelProperty(value = "文件路径")
+        @ApiModelProperty(value = "文件路径", required = true)
         private String fileUrl;
         @NotNull(message = "文件大小不能为空")
-        @ApiModelProperty(value = "文件大小")
+        @ApiModelProperty(value = "文件大小", required = true)
         private BigDecimal fileSize;
     }
 

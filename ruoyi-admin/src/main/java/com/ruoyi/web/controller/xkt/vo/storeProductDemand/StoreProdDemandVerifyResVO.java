@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.xkt.vo.storeProductDemand;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -11,6 +12,7 @@ import java.util.List;
  * @date 2025/3/27 15:12
  */
 @Data
+@ApiModel
 public class StoreProdDemandVerifyResVO {
 
     @ApiModelProperty(value = "需求不存在信息列表")

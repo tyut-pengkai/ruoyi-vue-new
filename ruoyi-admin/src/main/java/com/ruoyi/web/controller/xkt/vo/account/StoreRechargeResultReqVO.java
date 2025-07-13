@@ -15,6 +15,6 @@ import javax.validation.constraints.NotEmpty;
 public class StoreRechargeResultReqVO {
 
     @NotEmpty(message = "付款单号不能为空")
-    @ApiModelProperty(value = "付款单号")
+    @ApiModelProperty(value = "付款单号", required = true)
     private String financeBillNo;
 }

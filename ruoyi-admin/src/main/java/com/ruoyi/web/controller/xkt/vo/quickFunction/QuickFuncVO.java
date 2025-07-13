@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.xkt.vo.quickFunction;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
@@ -12,6 +13,7 @@ import java.util.List;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
+@ApiModel
 @Data
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -22,7 +24,7 @@ public class QuickFuncVO {
     @ApiModelProperty(value = "业务ID 根据roleId确定，可能为store_id、user_id", required = true)
     @NotNull(message = "业务ID不能为空!")
     private Long bizId;
-    @ApiModelProperty(value = "角色ID")
+    @ApiModelProperty(value = "角色ID", required = true)
     @NotNull(message = "角色ID不能为空!")
     private Long roleId;
     @ApiModelProperty(value = "档口勾选的快捷功能", required = true)

@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.xkt.vo.userShoppingCart;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -14,6 +15,7 @@ import java.util.List;
  * @date 2025/3/27 15:12
  */
 @Data
+@ApiModel
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ShopCartEditDetailResVO {
 
@@ -31,6 +33,7 @@ public class ShopCartEditDetailResVO {
     List<SCDDetailVO> detailList;
 
     @Data
+    @ApiModel
     @Accessors(chain = true)
     public static class SCDDetailVO {
         @ApiModelProperty(value = "档口商品颜色ID")
@@ -42,6 +45,7 @@ public class ShopCartEditDetailResVO {
     }
 
     @Data
+    @ApiModel
     @Accessors(chain = true)
     public static class StoreProdColorVO {
         @ApiModelProperty(value = "档口商品颜色ID")
@@ -59,6 +63,7 @@ public class ShopCartEditDetailResVO {
     }
 
     @Data
+    @ApiModel
     @Accessors(chain = true)
     public static class StoreProdSizeStockVO {
         @ApiModelProperty(value = "商品尺码")

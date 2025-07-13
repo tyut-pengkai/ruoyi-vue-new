@@ -1,9 +1,9 @@
 package com.ruoyi.web.controller.xkt.vo.storePordColor;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.Valid;
 import java.math.BigDecimal;
 
 /**
@@ -12,6 +12,7 @@ import java.math.BigDecimal;
  * @date 2025/3/27 15:12
  */
 @Data
+@ApiModel
 public class StoreProdColorResVO {
 
     @ApiModelProperty(value = "档口商品当前颜色ID")

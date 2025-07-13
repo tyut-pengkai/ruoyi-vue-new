@@ -17,18 +17,18 @@ public class TransactionPasswordSetVO {
      * 手机号
      */
     @NotEmpty(message = "手机号不能为空")
-    @ApiModelProperty(value = "手机号")
+    @ApiModelProperty(value = "手机号", required = true)
     private String phoneNumber;
     /**
      * 验证码
      */
     @NotEmpty(message = "验证码不能为空")
-    @ApiModelProperty(value = "验证码")
+    @ApiModelProperty(value = "验证码", required = true)
     private String verifyCode;
     /**
      * 交易密码
      */
     @NotEmpty(message = "交易密码不能为空")
-    @ApiModelProperty(value = "交易密码")
+    @ApiModelProperty(value = "交易密码", required = true)
     private String transactionPassword;
 }

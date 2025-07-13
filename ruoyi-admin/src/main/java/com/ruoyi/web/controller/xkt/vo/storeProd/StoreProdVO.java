@@ -3,6 +3,7 @@ package com.ruoyi.web.controller.xkt.vo.storeProd;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ruoyi.web.controller.xkt.vo.storeColor.StoreColorVO;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,6 +23,7 @@ import java.util.List;
  * @date 2025/3/27 15:12
  */
 @Data
+@ApiModel
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreProdVO {
 
@@ -95,6 +97,7 @@ public class StoreProdVO {
 
     @Data
     @Valid
+    @ApiModel
     public static class SPCColorPriceVO {
         @ApiModelProperty(value = "档口商品颜色ID")
         private Long storeColorId;
@@ -112,6 +115,7 @@ public class StoreProdVO {
 
     @Data
     @Valid
+    @ApiModel
     public static class StoreProdFileVO {
         @NotBlank(message = "文件名称不能为空!")
         @ApiModelProperty(value = "文件名称", required = true)
@@ -131,6 +135,7 @@ public class StoreProdVO {
     }
 
     @Data
+    @ApiModel
     public static class StoreProdCateAttrVO {
         @NotBlank(message = "帮面材质不可为空!")
         @ApiModelProperty(value = "帮面材质", required = true)
@@ -183,6 +188,7 @@ public class StoreProdVO {
     @AllArgsConstructor
     @NoArgsConstructor
     @Valid
+    @ApiModel
     public static class SPCSizeVO {
         @ApiModelProperty(value = "商品尺码", required = true)
         @NotNull(message = "档口商品定价不能为空!")
@@ -193,6 +199,7 @@ public class StoreProdVO {
     }
 
     @Data
+    @ApiModel
     public static class StoreProdSvcVO {
         @ApiModelProperty(value = "大小码及定制款可退")
         private String customRefund;
@@ -205,6 +212,7 @@ public class StoreProdVO {
     }
 
     @Data
+    @ApiModel
     public static class StoreProdProcessVO {
         @ApiModelProperty(value = "鞋型")
         private String shoeType;

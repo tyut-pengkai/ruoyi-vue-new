@@ -2,6 +2,7 @@ package com.ruoyi.web.controller.xkt.vo.storeSale;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -15,6 +16,7 @@ import java.util.List;
  * @date 2025/3/27 15:12
  */
 @Data
+@ApiModel
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreSaleResVO {
 
@@ -51,6 +53,7 @@ public class StoreSaleResVO {
     private List<SaleDetailVO> detailList;
 
     @Data
+    @ApiModel
     public static class SaleDetailVO {
         @ApiModelProperty(value = "档口商品ID")
         private Long storeProdId;

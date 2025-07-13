@@ -16,6 +16,6 @@ import java.util.List;
 public class StoreOrderPrintReqVO {
 
     @NotEmpty(message = "订单明细ID不能为空")
-    @ApiModelProperty(value = "订单明细ID")
+    @ApiModelProperty(value = "订单明细ID", required = true)
     private List<Long> storeOrderDetailIds;
 }

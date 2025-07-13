@@ -17,11 +17,11 @@ import java.math.BigDecimal;
 public class WithdrawReqVO {
 
     @NotNull(message = "金额不能为空")
-    @ApiModelProperty(value = "金额")
+    @ApiModelProperty(value = "金额", required = true)
     private BigDecimal amount;
 
     @NotEmpty(message = "支付密码不能为空")
-    @ApiModelProperty(value = "支付密码")
+    @ApiModelProperty(value = "支付密码", required = true)
     private String transactionPassword;
 
 }

@@ -17,19 +17,19 @@ import java.util.List;
 public class StoreOrderShipByStoreReqVO {
 
     @NotNull(message = "订单ID不能为空")
-    @ApiModelProperty(value = "订单ID")
+    @ApiModelProperty(value = "订单ID", required = true)
     private Long storeOrderId;
 
     @NotEmpty(message = "订单明细ID不能为空")
-    @ApiModelProperty(value = "订单明细ID")
+    @ApiModelProperty(value = "订单明细ID", required = true)
     private List<Long> storeOrderDetailIds;
 
     @NotNull(message = "物流ID不能为空")
-    @ApiModelProperty(value = "物流ID")
+    @ApiModelProperty(value = "物流ID", required = true)
     private Long expressId;
 
     @NotEmpty(message = "物流单号不能为空")
-    @ApiModelProperty(value = "物流单号")
+    @ApiModelProperty(value = "物流单号", required = true)
     private String expressWaybillNo;
 
 }

@@ -13,7 +13,6 @@ import java.math.BigDecimal;
  */
 @ApiModel("PC 新品馆 热卖榜右侧商品")
 @Data
-
 public class PCNewMidHotRightVO {
 
     @ApiModelProperty(value = "2商品")

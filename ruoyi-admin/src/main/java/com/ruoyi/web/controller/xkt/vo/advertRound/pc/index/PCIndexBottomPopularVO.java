@@ -14,7 +14,6 @@ import java.util.List;
  */
 @ApiModel("PC 首页 人气榜")
 @Data
-
 public class PCIndexBottomPopularVO {
 
     @ApiModelProperty(value = "左侧列表")

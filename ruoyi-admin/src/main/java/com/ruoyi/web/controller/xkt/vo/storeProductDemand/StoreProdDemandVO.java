@@ -30,6 +30,7 @@ public class StoreProdDemandVO {
     private List<DetailVO> detailList;
 
     @Data
+    @ApiModel
     public static class DetailVO {
         @NotNull(message = "档口商品ID不能为空")
         @ApiModelProperty(value = "档口商品ID", required = true)

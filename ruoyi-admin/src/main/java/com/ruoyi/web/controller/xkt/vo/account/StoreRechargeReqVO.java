@@ -16,14 +16,12 @@ import java.math.BigDecimal;
 public class StoreRechargeReqVO {
 
     @NotNull(message = "充值金额不能为空")
-    @ApiModelProperty(value = "充值金额")
+    @ApiModelProperty(value = "充值金额", required = true)
     private BigDecimal amount;
-
     @NotNull(message = "支付渠道不能为空")
-    @ApiModelProperty(value = "支付渠道[1:支付宝]")
+    @ApiModelProperty(value = "支付渠道[1:支付宝]", required = true)
     private Integer payChannel;
-
     @NotNull(message = "支付来源不能为空")
-    @ApiModelProperty(value = "支付来源[1:电脑网站 2:手机网站]")
+    @ApiModelProperty(value = "支付来源[1:电脑网站 2:手机网站]", required = true)
     private Integer payPage;
 }

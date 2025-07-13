@@ -15,14 +15,14 @@ import javax.validation.constraints.NotEmpty;
 public class UserAddressCreateVO {
 
     @NotEmpty
-    @ApiModelProperty(value = "收件人名称")
+    @ApiModelProperty(value = "收件人名称", required = true)
     private String receiveName;
 
     @NotEmpty
-    @ApiModelProperty(value = "收件人电话")
+    @ApiModelProperty(value = "收件人电话", required = true)
     private String receivePhone;
 
     @NotEmpty
-    @ApiModelProperty(value = "收件人完整地址")
+    @ApiModelProperty(value = "收件人完整地址", required = true)
     private String address;
 }

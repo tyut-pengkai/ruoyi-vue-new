@@ -19,7 +19,7 @@ import java.util.List;
 public class UserFavBatchDeleteVO {
 
     @NotNull(message = "档口商品ID列表不能为空!")
-    @ApiModelProperty("档口商品ID列表")
+    @ApiModelProperty(value = "档口商品ID列表", required = true)
     List<Long> storeProdIdList;
 
 

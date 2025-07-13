@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.xkt.vo.storeMember;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -13,6 +14,7 @@ import java.math.BigDecimal;
  * @date 2025/3/27 15:12
  */
 @Data
+@ApiModel
 @Accessors(chain = true)
 public class StoreMemberCreateVO {
 
@@ -23,7 +25,7 @@ public class StoreMemberCreateVO {
     @ApiModelProperty(value = "支付金额", required = true)
     private BigDecimal payPrice;
     @NotNull(message = "交易密码不能为空!")
-    @ApiModelProperty(value = "交易密码")
+    @ApiModelProperty(value = "交易密码", required = true)
     private String transactionPassword;
 
 }

@@ -20,10 +20,10 @@ import javax.validation.constraints.Size;
 public class StoreSaleUpdateMemoVO {
 
     @NotNull(message = "storeSaleId不能为空!")
-    @ApiModelProperty(value = "storeSaleId")
+    @ApiModelProperty(value = "storeSaleId", required = true)
     private Long storeSaleId;
     @NotBlank(message = "备注不能为空!")
-    @ApiModelProperty(value = "备注")
+    @ApiModelProperty(value = "备注", required = true)
     @Size(min = 0, max = 100, message = "备注不能超过100字!")
     private String remark;
 

@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.xkt.vo.advert;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -16,6 +17,7 @@ import java.util.Date;
  * @date 2025/3/27 15:12
  */
 @Data
+@ApiModel
 @Accessors(chain = true)
 public class AdvertUpdateVO {
 
@@ -72,7 +74,7 @@ public class AdvertUpdateVO {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private Date discountEndTime;
     @NotBlank(message = "截止时间不能为空!")
-    @ApiModelProperty(value = "截止时间")
+    @ApiModelProperty(value = "截止时间", required = true)
     private String deadline;
 
     @Data

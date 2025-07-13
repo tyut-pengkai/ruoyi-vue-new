@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.xkt.vo.userBrowsingHistory;
 
 import com.ruoyi.web.controller.xkt.vo.BasePageVO;
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -11,6 +12,7 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
+@ApiModel
 public class UserBrowHisPageVO extends BasePageVO {
 
 

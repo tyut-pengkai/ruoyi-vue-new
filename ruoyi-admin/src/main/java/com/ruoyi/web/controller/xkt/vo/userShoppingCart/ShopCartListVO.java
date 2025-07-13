@@ -19,7 +19,7 @@ import java.util.List;
 public class ShopCartListVO {
 
     @NotNull(message = "档口商品ID列表不可为空!")
-    @ApiModelProperty(value = "档口商品ID列表")
+    @ApiModelProperty(value = "档口商品ID列表", required = true)
     private List<Long> storeProdIdList;
 
 }

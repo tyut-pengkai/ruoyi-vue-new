@@ -21,7 +21,7 @@ import java.util.List;
 public class StoreSaleExportVO {
 
     @NotNull(message = "storeId不能为空!")
-    @ApiModelProperty(value = "storeId")
+    @ApiModelProperty(value = "storeId", required = true)
     private Long storeId;
     @ApiModelProperty(value = "storeSaleIdList")
     private List<Long> storeSaleIdList;

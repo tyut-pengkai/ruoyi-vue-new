@@ -2,6 +2,7 @@ package com.ruoyi.web.controller.xkt.vo.storeSale;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.web.controller.xkt.vo.BasePageVO;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,6 +17,7 @@ import java.util.Date;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
+@ApiModel
 public class StoreSalePageVO extends BasePageVO {
 
     @NotNull(message = "档口ID不能为空")

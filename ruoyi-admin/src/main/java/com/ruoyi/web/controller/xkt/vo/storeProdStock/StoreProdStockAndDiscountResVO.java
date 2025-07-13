@@ -44,6 +44,7 @@ public class StoreProdStockAndDiscountResVO {
     private List<SPSADSizeVO> sizeStockList;
 
     @Data
+    @ApiModel
     public static class SPSADSizeVO {
         @ApiModelProperty(value = "尺码")
         private Integer size;

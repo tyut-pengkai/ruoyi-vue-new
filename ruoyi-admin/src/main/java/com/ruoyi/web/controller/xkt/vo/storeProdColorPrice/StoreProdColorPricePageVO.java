@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.xkt.vo.storeProdColorPrice;
 
 import com.ruoyi.web.controller.xkt.vo.BasePageVO;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -15,6 +16,7 @@ import java.util.List;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
+@ApiModel
 public class StoreProdColorPricePageVO extends BasePageVO {
 
     @ApiModelProperty(value = "商品货号")

@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.xkt.vo.advertRound.pc.index;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -9,6 +10,7 @@ import lombok.Data;
  * @date 2025/3/27 15:12
  */
 @Data
+@ApiModel
 public class PCIndexSearchRecommendProdVO {
 
     @ApiModelProperty(value = "2 商品")

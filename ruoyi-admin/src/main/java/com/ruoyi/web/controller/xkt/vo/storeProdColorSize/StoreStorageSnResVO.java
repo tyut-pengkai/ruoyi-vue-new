@@ -15,7 +15,7 @@ import java.util.List;
  * @date 2025/3/27 15:12
  */
 @Data
-@ApiModel(value="档口入库扫码返回数据")
+@ApiModel(value = "档口入库扫码返回数据")
 @Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreStorageSnResVO {
@@ -26,6 +26,7 @@ public class StoreStorageSnResVO {
     List<SSSDetailVO> successList;
 
     @Data
+    @ApiModel
     @Accessors(chain = true)
     public static class SSSDetailVO {
         @ApiModelProperty(value = "档口商品颜色尺码ID")
@@ -45,6 +46,7 @@ public class StoreStorageSnResVO {
     }
 
     @Data
+    @ApiModel
     @Accessors(chain = true)
     public static class SSSSizeCountVO {
         @ApiModelProperty(value = "尺码")

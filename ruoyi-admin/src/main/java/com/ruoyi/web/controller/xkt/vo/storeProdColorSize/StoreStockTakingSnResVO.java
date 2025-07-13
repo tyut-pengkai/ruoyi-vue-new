@@ -25,6 +25,7 @@ public class StoreStockTakingSnResVO {
     List<SSTSDetailVO> successList;
 
     @Data
+    @ApiModel
     @Accessors(chain = true)
     public static class SSTSDetailVO {
         @ApiModelProperty(value = "档口商品颜色尺码ID")

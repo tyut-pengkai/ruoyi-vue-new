@@ -12,7 +12,7 @@ import java.util.Date;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("新增公告")
+@ApiModel
 @Data
 @Accessors(chain = true)
 public class NoticeResVO {

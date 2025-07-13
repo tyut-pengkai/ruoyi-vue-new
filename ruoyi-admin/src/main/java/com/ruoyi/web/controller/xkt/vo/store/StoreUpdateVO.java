@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.xkt.vo.store;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -14,6 +15,7 @@ import javax.validation.constraints.Pattern;
  * @date 2025/3/27 15:12
  */
 @Data
+@ApiModel
 @Accessors(chain = true)
 public class StoreUpdateVO {
 

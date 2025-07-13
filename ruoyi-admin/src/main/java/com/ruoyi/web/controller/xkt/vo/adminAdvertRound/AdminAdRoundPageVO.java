@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.xkt.vo.adminAdvertRound;
 
 import com.ruoyi.web.controller.xkt.vo.BasePageVO;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,10 +15,11 @@ import javax.validation.constraints.NotNull;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
+@ApiModel
 public class AdminAdRoundPageVO extends BasePageVO {
 
     @NotNull(message = "投放状态不能为空!")
-    @ApiModelProperty(value = "投放状态 1投放中  2待投放")
+    @ApiModelProperty(value = "投放状态 1投放中  2待投放", required = true)
     private Integer launchStatus;
     @ApiModelProperty(value = "平台ID")
     private Integer platformId;

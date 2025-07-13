@@ -2,14 +2,13 @@ package com.ruoyi.web.controller.xkt.vo.storeProd;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.web.controller.xkt.vo.storeColor.StoreColorVO;
-import com.ruoyi.xkt.dto.storeProdColorSize.StoreProdColorSizeDTO;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -21,6 +20,7 @@ import java.util.List;
  * @date 2025/3/27 15:12
  */
 @Data
+@ApiModel
 public class StoreProdResVO {
 
     @ApiModelProperty(value = "档口商品名称")

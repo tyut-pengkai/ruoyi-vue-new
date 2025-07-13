@@ -15,6 +15,6 @@ import javax.validation.constraints.NotEmpty;
 public class ExpressAddressParseReqVO {
 
     @NotEmpty
-    @ApiModelProperty(value = "地址，包含地址、姓名、电话等")
+    @ApiModelProperty(value = "地址，包含地址、姓名、电话等", required = true)
     private String address;
 }

@@ -25,6 +25,7 @@ public class StoreSaleSnResVO {
     List<SPSDetailVO> successList;
 
     @Data
+    @ApiModel
     @Accessors(chain = true)
     public static class SPSDetailVO {
         @ApiModelProperty(value = "档口商品ID")

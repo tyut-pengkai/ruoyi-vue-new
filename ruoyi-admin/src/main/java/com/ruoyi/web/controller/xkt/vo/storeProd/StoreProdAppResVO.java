@@ -49,6 +49,7 @@ public class StoreProdAppResVO {
     private String detail;
 
     @Data
+    @ApiModel
     public static class StoreProdFileVO {
         @ApiModelProperty(value = "文件名称")
         private String fileName;
@@ -63,6 +64,7 @@ public class StoreProdAppResVO {
     }
 
     @Data
+    @ApiModel
     public static class StoreProdCateAttrVO {
         @ApiModelProperty(value = "帮面材质")
         private String upperMaterial;
@@ -109,6 +111,7 @@ public class StoreProdAppResVO {
     }
 
     @Data
+    @ApiModel
     public static class StoreProdColorPriceVO {
         @ApiModelProperty(value = "档口商品颜色ID")
         private Long storeColorId;
@@ -117,6 +120,7 @@ public class StoreProdAppResVO {
     }
 
     @Data
+    @ApiModel
     public static class StoreProdSvcVO {
         @ApiModelProperty(value = "大小码及定制款可退")
         private String customRefund;
