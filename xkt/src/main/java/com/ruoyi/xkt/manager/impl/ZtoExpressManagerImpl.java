@@ -40,9 +40,11 @@ public class ZtoExpressManagerImpl implements ExpressManager, InitializingBean {
 
     private static final String STRUCTURE_ADDRESS_URI = "zto.innovate.structureNamePhoneAddress";
 
-    public static final String ORDER_PRINT_URI = "zto.open.order.print";
+    private static final String ORDER_PRINT_URI = "zto.open.order.print";
 
-    public static final String TRACK_SUB_URI = "zto.merchant.waybill.track.subsrcibe";
+    private static final String TRACK_SUB_URI = "zto.merchant.waybill.track.subsrcibe";
+
+    private static final String QUERY_ALL_REGION_URI = "zto.sp.findAllForbServiceGateway";
 
     @Value("${zto.appKey:}")
     private String appKey;
@@ -280,6 +282,30 @@ public class ZtoExpressManagerImpl implements ExpressManager, InitializingBean {
             log.error("中通智能解析异常", e);
         }
         throw new ServiceException("中通智能解析失败");
+    }
+
+    /**
+     * 查询所有行政区划
+     *
+     * @return
+     */
+    public List<ZtoRegion> getAllRegion() {
+        ZopPublicRequest request = new ZopPublicRequest();
+        request.addParam("a", "a");
+        request.setUrl(gatewayUrl + QUERY_ALL_REGION_URI);
+        request.setEncryptionType(EncryptionType.MD5);
+        request.setReqTimeout(300000);
+        try {
+            String bodyStr = client.execute(request);
+            JSONObject bodyJson = JSONUtil.parseObj(bodyStr);
+            boolean success = BooleanUtil.isTrue(bodyJson.getBool("status"));
+            if (success) {
+                return bodyJson.getJSONArray("result").toList(ZtoRegion.class);
+            }
+        } catch (Exception e) {
+            log.error("中通获取行政区划异常", e);
+        }
+        throw new ServiceException("中通获取行政区划失败");
     }
 
     private ZtoCreateOrderParam trans2CreateOrderReq(ExpressShipReqDTO expressShipReqDTO) {

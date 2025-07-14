@@ -386,4 +386,20 @@ public class ExpressServiceImpl implements IExpressService {
         config.setUpdateTime(new Date());
         expressFeeConfigMapper.updateById(config);
     }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void clearAndInsertAllRegion(List<ExpressRegion> allRegions) {
+        //清空行政区划
+        expressRegionMapper.delete(Wrappers.emptyWrapper());
+        //插入行政区划
+        for (ExpressRegion region : allRegions) {
+            expressRegionMapper.insert(region);
+        }
+        //清除缓存
+        redisCache.deleteObject(Constants.EXPRESS_REGION_MAP_CACHE_KEY);
+        redisCache.deleteObject(Constants.EXPRESS_REGION_NAME_MAP_CACHE_KEY);
+        redisCache.deleteObject(Constants.EXPRESS_REGION_LIST_CACHE_KEY);
+        redisCache.deleteObject(Constants.EXPRESS_REGION_TREE_CACHE_KEY);
+    }
 }

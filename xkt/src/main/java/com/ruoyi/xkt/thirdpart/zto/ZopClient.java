@@ -36,7 +36,7 @@ public class ZopClient {
             if (request.getTimestamp() != null) {
                 headers.put("x-timestamp", String.valueOf(request.getTimestamp()));
             }
-            return ZtoHttpUtil.post(request.getUrl(), headers, queryString);
+            return ZtoHttpUtil.post(request.getUrl(), headers, queryString, request.getReqTimeout());
         } else {
             Map<String, String> headers = new HashMap<>();
             String strToDigest = jsonBody + properties.getKey();
@@ -45,7 +45,7 @@ public class ZopClient {
             if (request.getTimestamp() != null) {
                 headers.put("x-timestamp", String.valueOf(request.getTimestamp()));
             }
-            return ZtoHttpUtil.postJson(request.getUrl(), headers, jsonBody);
+            return ZtoHttpUtil.postJson(request.getUrl(), headers, jsonBody, request.getReqTimeout());
         }
     }
 

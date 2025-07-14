@@ -13,14 +13,19 @@ public class ZtoHttpUtil {
     private static final int DEFAULT_TIMEOUT = 3000;
 
 
-    public static String post(String interfaceUrl, Map<String, String> headers, String queryString) throws IOException {
+    public static String post(String interfaceUrl, Map<String, String> headers, String queryString, Integer timeout) throws IOException {
         URL url = new URL(interfaceUrl);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("POST");
         con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=utf-8");
         con.setDoOutput(true);
-        con.setConnectTimeout(DEFAULT_TIMEOUT);
-        con.setReadTimeout(DEFAULT_TIMEOUT);
+        if (timeout == null) {
+            con.setConnectTimeout(DEFAULT_TIMEOUT);
+            con.setReadTimeout(DEFAULT_TIMEOUT);
+        } else {
+            con.setConnectTimeout(timeout);
+            con.setReadTimeout(timeout);
+        }
         for (Map.Entry<String, String> e : headers.entrySet()) {
             con.setRequestProperty(e.getKey(), e.getValue());
         }
@@ -57,14 +62,19 @@ public class ZtoHttpUtil {
     }
 
 
-    public static String postJson(String interfaceUrl, Map<String, String> headers, String json) throws IOException {
+    public static String postJson(String interfaceUrl, Map<String, String> headers, String json, Integer timeout) throws IOException {
         URL url = new URL(interfaceUrl);
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("POST");
         con.setRequestProperty("Content-Type", "application/json; charset=utf-8");
         con.setDoOutput(true);
-        con.setConnectTimeout(DEFAULT_TIMEOUT);
-        con.setReadTimeout(DEFAULT_TIMEOUT);
+        if (timeout == null) {
+            con.setConnectTimeout(DEFAULT_TIMEOUT);
+            con.setReadTimeout(DEFAULT_TIMEOUT);
+        } else {
+            con.setConnectTimeout(timeout);
+            con.setReadTimeout(timeout);
+        }
         for (Map.Entry<String, String> e : headers.entrySet()) {
             con.setRequestProperty(e.getKey(), e.getValue());
         }

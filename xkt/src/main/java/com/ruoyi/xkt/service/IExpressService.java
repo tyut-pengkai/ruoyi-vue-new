@@ -181,5 +181,12 @@ public interface IExpressService {
      */
     void modifyExpressFeeConfig(ExpressFeeConfigEditDTO editDTO);
 
+    /**
+     * 清空并重新写入行政区划
+     *
+     * @param allRegions
+     */
+    void clearAndInsertAllRegion(List<ExpressRegion> allRegions);
+
 
 }

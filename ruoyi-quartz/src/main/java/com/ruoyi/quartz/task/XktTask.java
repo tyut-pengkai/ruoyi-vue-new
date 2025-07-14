@@ -6,6 +6,7 @@ import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
@@ -42,8 +43,10 @@ import com.ruoyi.xkt.dto.useSearchHistory.UserSearchHistoryDTO;
 import com.ruoyi.xkt.dto.userBrowsingHistory.UserBrowsingHisDTO;
 import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.manager.PaymentManager;
+import com.ruoyi.xkt.manager.impl.ZtoExpressManagerImpl;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.*;
+import com.ruoyi.xkt.thirdpart.zto.ZtoRegion;
 import io.jsonwebtoken.lang.Assert;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -114,6 +117,8 @@ public class XktTask {
     final UserNoticeMapper userNoticeMapper;
     final UserSubscriptionsMapper userSubMapper;
     final StoreMemberMapper storeMemberMapper;
+    final IExpressService expressService;
+    final ZtoExpressManagerImpl ztoExpressManager;
 
     public void test() throws IOException {
         System.err.println("aaa");
@@ -1534,6 +1539,40 @@ public class XktTask {
         this.userNoticeMapper.insert(userNoticeList);
     }
 
+    /**
+     * 从中通同步行政区划
+     */
+    public void syncRegionFromZto() {
+        log.info("-------------同步行政区划开始-------------");
+        try {
+            Map<Long, ZtoRegion> ztoRegionMap = ztoExpressManager.getAllRegion()
+                    .stream()
+                    .collect(Collectors.toMap(ZtoRegion::getId, Function.identity()));
+            List<ExpressRegion> expressRegions = new ArrayList<>(ztoRegionMap.size());
+            ztoRegionMap.values().forEach(ztoRegion -> {
+                ExpressRegion expressRegion = new ExpressRegion();
+                expressRegion.setId(ztoRegion.getId());
+                expressRegion.setRegionCode(ztoRegion.getNationalCode());
+                expressRegion.setRegionName(ztoRegion.getFullName());
+                if (ztoRegion.getParentId() != null) {
+                    ZtoRegion ztoParentRegion = ztoRegionMap.get(ztoRegion.getParentId());
+                    if (ztoParentRegion != null) {
+                        expressRegion.setParentRegionCode(ztoParentRegion.getNationalCode());
+                        expressRegion.setParentRegionName(ztoParentRegion.getFullName());
+                    }
+                }
+                expressRegion.setRegionLevel(ztoRegion.getLayer());
+                expressRegion.setVersion(0L);
+                expressRegion.setDelFlag(Constants.UNDELETED);
+                expressRegions.add(expressRegion);
+            });
+            expressService.clearAndInsertAllRegion(expressRegions);
+        } catch (Exception e) {
+            log.error("同步行政区划异常", e);
+            fsNotice.sendMsg2DefaultChat("同步行政区划异常", StrUtil.emptyIfNull(e.getMessage()));
+        }
+        log.info("-------------同步行政区划结束-------------");
+    }
 
 }
 

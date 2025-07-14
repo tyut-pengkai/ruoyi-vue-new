@@ -35,6 +35,8 @@ public class ZopPublicRequest {
      */
     private Long timestamp;
 
+    private Integer reqTimeout;
+
     public ZopPublicRequest() {
     }
 
@@ -118,5 +120,13 @@ public class ZopPublicRequest {
 
     public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public Integer getReqTimeout() {
+        return reqTimeout;
+    }
+
+    public void setReqTimeout(Integer reqTimeout) {
+        this.reqTimeout = reqTimeout;
     }
 }
