@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author ruoyi
  */
-@Api(tags = "验证码")
+@Api(tags = "图形验证码")
 @RestController
 @RequestMapping("/rest/v1/captcha")
 public class CaptchaController {

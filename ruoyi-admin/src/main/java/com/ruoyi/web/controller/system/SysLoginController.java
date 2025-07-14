@@ -2,7 +2,9 @@ package com.ruoyi.web.controller.system;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.StrUtil;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
@@ -136,6 +138,28 @@ public class SysLoginController {
         LoginUser webLoginUser = new LoginUser(user);
         String token = loginService.createToken(webLoginUser);
         redisCache.setCacheObject(cacheKey, token, 10, TimeUnit.MINUTES);
+        return R.ok();
+    }
+
+    @ApiOperation(value = "注销登录（退出登录）")
+    @GetMapping("/logout")
+    public R logout() {
+        return R.ok();
+    }
+
+
+    @Log(title = "删除账号", businessType = BusinessType.DELETE)
+    @ApiOperation(value = "注销账号（删除当前登录账号）")
+    @PostMapping("/user/remove")
+    public R removeCurrentUser(@Validated @RequestBody LoginBySmsCodeVO vo) {
+        loginService.validateSmsVerificationCode(vo.getPhoneNumber(), vo.getCode());
+        UserExt currentUser = SecurityUtils.getLoginUser().getUser();
+        Assert.notNull(currentUser);
+        String phoneNumber = currentUser.getPhonenumber();
+        Assert.isTrue(StrUtil.equals(vo.getPhoneNumber(), phoneNumber), "手机号与账号不匹配");
+        userService.batchDeleteUser(Collections.singletonList(currentUser.getUserId()));
+        // 清除用户缓存（退出登录）
+        tokenService.deleteCacheUser(Collections.singletonList(currentUser.getUserId()));
         return R.ok();
     }
 
