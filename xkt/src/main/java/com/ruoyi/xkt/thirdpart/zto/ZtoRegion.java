@@ -32,4 +32,8 @@ public class ZtoRegion {
      * 层级
      */
     private Integer layer;
+    /**
+     * 是否有效
+     */
+    private Integer enabled;
 }

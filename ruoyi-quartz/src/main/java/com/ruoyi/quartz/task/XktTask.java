@@ -1547,25 +1547,28 @@ public class XktTask {
         try {
             Map<Long, ZtoRegion> ztoRegionMap = ztoExpressManager.getAllRegion()
                     .stream()
-                    .collect(Collectors.toMap(ZtoRegion::getId, Function.identity()));
+                    .filter(o -> Integer.valueOf(1).equals(o.getEnabled()))
+                    .collect(Collectors.toMap(ZtoRegion::getId, o -> o, (o, n) -> n));
             List<ExpressRegion> expressRegions = new ArrayList<>(ztoRegionMap.size());
-            ztoRegionMap.values().forEach(ztoRegion -> {
+            for (ZtoRegion ztoRegion : ztoRegionMap.values()) {
+                if (ztoRegion.getLayer() != null && ztoRegion.getLayer() > 4) {
+                    continue;
+                }
                 ExpressRegion expressRegion = new ExpressRegion();
-                expressRegion.setId(ztoRegion.getId());
-                expressRegion.setRegionCode(ztoRegion.getNationalCode());
+                expressRegion.setRegionCode(ztoRegion.getCode());
                 expressRegion.setRegionName(ztoRegion.getFullName());
                 if (ztoRegion.getParentId() != null) {
                     ZtoRegion ztoParentRegion = ztoRegionMap.get(ztoRegion.getParentId());
                     if (ztoParentRegion != null) {
-                        expressRegion.setParentRegionCode(ztoParentRegion.getNationalCode());
+                        expressRegion.setParentRegionCode(ztoParentRegion.getCode());
                         expressRegion.setParentRegionName(ztoParentRegion.getFullName());
                     }
                 }
-                expressRegion.setRegionLevel(ztoRegion.getLayer());
+                expressRegion.setRegionLevel(Optional.ofNullable(ztoRegion.getLayer()).map(n -> n - 1).orElse(0));
                 expressRegion.setVersion(0L);
                 expressRegion.setDelFlag(Constants.UNDELETED);
                 expressRegions.add(expressRegion);
-            });
+            }
             expressService.clearAndInsertAllRegion(expressRegions);
         } catch (Exception e) {
             log.error("同步行政区划异常", e);
