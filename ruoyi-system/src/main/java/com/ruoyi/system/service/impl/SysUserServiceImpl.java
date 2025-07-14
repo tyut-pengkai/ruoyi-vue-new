@@ -531,6 +531,9 @@ public class SysUserServiceImpl implements ISysUserService {
      * @param user
      */
     private void fillMenus(UserInfo user) {
+        if (user == null) {
+            return;
+        }
         List<RoleInfo> roles = CollUtil.emptyIfNull(user.getRoles());
         Set<SysMenu> menus = new HashSet<>();
         for (RoleInfo role : roles) {
