@@ -69,7 +69,7 @@ public class NoticeController extends BaseController {
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
-    @ApiOperation(value = "档口首页获取公告列表", httpMethod = "GET", response = R.class)
+    @ApiOperation(value = "档口首页、电商卖家首页获取公告列表", httpMethod = "GET", response = R.class)
     @GetMapping("/list")
     public R<List<NoticeLatest10ResVO>> latest10() {
         return R.ok(BeanUtil.copyToList(noticeService.latest10(), NoticeLatest10ResVO.class));

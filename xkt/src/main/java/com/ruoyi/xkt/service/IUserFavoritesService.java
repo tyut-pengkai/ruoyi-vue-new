@@ -42,4 +42,10 @@ public interface IUserFavoritesService {
      */
     Integer batchDelete(UserFavBatchDeleteDTO batchDTO);
 
+    /**
+     * 获取用户收藏商品各个状态数量
+     *
+     * @return UserFavStatusCountResDTO
+     */
+    UserFavStatusCountResDTO getStatusNum();
 }

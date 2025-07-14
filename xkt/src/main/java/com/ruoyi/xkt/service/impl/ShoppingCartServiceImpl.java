@@ -13,7 +13,6 @@ import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
 import com.ruoyi.xkt.dto.userShoppingCart.*;
-import com.ruoyi.xkt.enums.EProductStatus;
 import com.ruoyi.xkt.enums.FileType;
 import com.ruoyi.xkt.enums.ProductSizeStatus;
 import com.ruoyi.xkt.mapper.*;
@@ -162,6 +161,8 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
         List<StoreProductColorSize> standardSizeList = this.prodColorSizeMapper.selectList(new LambdaQueryWrapper<StoreProductColorSize>()
                 .eq(StoreProductColorSize::getStoreProdId, shoppingCart.getStoreProdId()).eq(StoreProductColorSize::getDelFlag, Constants.UNDELETED)
                 .eq(StoreProductColorSize::getStandard, ProductSizeStatus.STANDARD.getValue()));
+        // 标准尺码
+        List<Integer> standardList = standardSizeList.stream().map(StoreProductColorSize::getSize).distinct().collect(Collectors.toList());
         Map<String, List<StoreProductColorSize>> colorSizeMap = standardSizeList.stream().collect(Collectors
                 .groupingBy(x -> x.getStoreProdId().toString() + x.getStoreColorId().toString()));
         // 获取商品颜色列表
@@ -191,10 +192,7 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
                 .collect(Collectors.toList());
         return new ShopCartDetailResDTO() {{
             setProdArtNum(shoppingCart.getProdArtNum()).setStoreProdId(shoppingCart.getStoreProdId())
-                    .setStandardSizeList(standardSizeList.stream().map(StoreProductColorSize::getSize)
-                            .sorted(Comparator.comparing(Function.identity()))
-                            .collect(Collectors.toList()))
-                    .setColorList(colorSizeStockList)
+                    .setStandardSizeList(standardList).setColorList(colorSizeStockList)
                     .setDetailList(BeanUtil.copyToList(detailList, ShopCartDetailResDTO.SCDDetailDTO.class));
         }};
     }

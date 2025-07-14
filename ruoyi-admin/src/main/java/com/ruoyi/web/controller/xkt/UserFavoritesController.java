@@ -6,10 +6,8 @@ import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.web.controller.xkt.vo.userFavorite.UserFavBatchAddToShopCartVO;
-import com.ruoyi.web.controller.xkt.vo.userFavorite.UserFavBatchDeleteVO;
-import com.ruoyi.web.controller.xkt.vo.userFavorite.UserFavoritePageVO;
-import com.ruoyi.web.controller.xkt.vo.userFavorite.UserFavoriteVO;
+import com.ruoyi.web.controller.xkt.vo.storeProd.StoreProdStatusCountResVO;
+import com.ruoyi.web.controller.xkt.vo.userFavorite.*;
 import com.ruoyi.xkt.dto.userFavorite.*;
 import com.ruoyi.xkt.service.IUserFavoritesService;
 import io.swagger.annotations.Api;
@@ -32,6 +30,12 @@ import org.springframework.web.bind.annotation.*;
 public class UserFavoritesController extends XktBaseController {
 
     final IUserFavoritesService userFavService;
+
+    @ApiOperation(value = "获取商品各个状态数量", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/status/num")
+    public R<UserFavStatusCountResVO> getStatusNum() {
+        return R.ok(BeanUtil.toBean(userFavService.getStatusNum(), UserFavStatusCountResVO.class));
+    }
 
     @PreAuthorize("@ss.hasAnyRoles('seller')")
     @ApiOperation(value = "用户收藏商品", httpMethod = "POST", response = R.class)

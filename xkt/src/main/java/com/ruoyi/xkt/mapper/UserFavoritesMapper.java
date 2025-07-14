@@ -3,6 +3,7 @@ package com.ruoyi.xkt.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.UserFavorites;
 import com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO;
+import com.ruoyi.xkt.dto.userFavorite.UserFavStatusCountResDTO;
 import com.ruoyi.xkt.dto.userFavorite.UserFavoritePageDTO;
 import com.ruoyi.xkt.dto.userFavorite.UserFavoritePageResDTO;
 import org.apache.ibatis.annotations.Param;
@@ -35,4 +36,11 @@ public interface UserFavoritesMapper extends BaseMapper<UserFavorites> {
      */
     List<DailyStoreTagDTO> searchTop10Prod(@Param("oneMonthAgo") Date oneMonthAgo, @Param("yesterday") Date yesterday);
 
+    /**
+     * 获取用户收藏商品各状态数量
+     *
+     * @param userId 用户ID
+     * @return
+     */
+    UserFavStatusCountResDTO getStatusNum(@Param("userId") Long userId);
 }

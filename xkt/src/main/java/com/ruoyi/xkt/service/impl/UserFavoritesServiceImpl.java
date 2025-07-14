@@ -219,11 +219,13 @@ public class UserFavoritesServiceImpl implements IUserFavoritesService {
     @Override
     @Transactional
     public Integer batchDelete(UserFavBatchDeleteDTO batchDTO) {
+        Long userId = SecurityUtils.getUserIdSafe();
+        if (ObjectUtils.isEmpty(userId)) {
+            throw new ServiceException("用户未登录，请先登录!", HttpStatus.ERROR);
+        }
         // 获取当前登录用户
-        LoginUser loginUser = SecurityUtils.getLoginUser();
         List<UserFavorites> favoriteList = this.userFavMapper.selectList(new LambdaQueryWrapper<UserFavorites>()
-                .eq(UserFavorites::getUserId, loginUser.getUserId())
-                .in(UserFavorites::getStoreProdId, batchDTO.getStoreProdIdList())
+                .eq(UserFavorites::getUserId, userId).in(UserFavorites::getStoreProdId, batchDTO.getStoreProdIdList())
                 .eq(UserFavorites::getDelFlag, Constants.UNDELETED));
         if (CollectionUtils.isEmpty(favoriteList)) {
             return 0;
@@ -249,6 +251,21 @@ public class UserFavoritesServiceImpl implements IUserFavoritesService {
                             (ObjectUtils.isNotEmpty(storeProd) ? storeProd.getProdArtNum() : "") + "!");
         });
         return count;
+    }
+
+    /**
+     * 获取用户收藏商品各个状态数量
+     *
+     * @return UserFavStatusCountResDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public UserFavStatusCountResDTO getStatusNum() {
+        Long userId = SecurityUtils.getUserIdSafe();
+        if (ObjectUtils.isEmpty(userId)) {
+            throw new ServiceException("用户未登录，请先登录!", HttpStatus.ERROR);
+        }
+        return this.userFavMapper.getStatusNum(userId);
     }
 
 

@@ -38,7 +38,7 @@ public class QuickFunctionController extends XktBaseController {
     private static final String MENU_TYPE_C = "C";
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,seller,store')")
-    @ApiOperation(value = "档口首页 档口或电商卖家选择的快捷功能", httpMethod = "GET", response = R.class)
+    @ApiOperation(value = "档口或电商卖家选择的快捷功能", httpMethod = "GET", response = R.class)
     @GetMapping("/selected/{roleId}/{bizId}")
     public R<List<StoreQuickFuncVO>> getSelectedList(@PathVariable("roleId") Long roleId, @PathVariable("bizId") Long bizId) {
         // 找到当前所有的快捷菜单
@@ -47,7 +47,7 @@ public class QuickFunctionController extends XktBaseController {
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,seller,store')")
-    @ApiOperation(value = "档口常用功能 点击 设置", httpMethod = "GET", response = R.class)
+    @ApiOperation(value = "常用功能 点击 设置", httpMethod = "GET", response = R.class)
     @GetMapping("/menus/{roleId}/{bizId}")
     public R<QuickFuncVO> getMenuList(@PathVariable("roleId") Long roleId, @PathVariable("bizId") Long bizId) {
         // 找到当前所有的快捷菜单
