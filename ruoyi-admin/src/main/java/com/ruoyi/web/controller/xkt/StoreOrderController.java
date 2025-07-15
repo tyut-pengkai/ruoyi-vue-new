@@ -224,10 +224,8 @@ public class StoreOrderController extends XktBaseController {
     @ApiOperation("确认收货")
     @PostMapping("receipt")
     public R receipt(@Valid @RequestBody StoreOrderReceiptReqVO vo) {
-        if (!SecurityUtils.isAdmin()) {
-            //仅档口可操作
-            storeOrderService.checkOrderStore(vo.getStoreOrderId(), SecurityUtils.getStoreId());
-        }
+        //仅本人可操作
+        storeOrderService.checkOrderUser(vo.getStoreOrderId(), SecurityUtils.getUserId());
         storeOrderService.receiptOrder(vo.getStoreOrderId(), SecurityUtils.getUserId());
         return success();
     }
