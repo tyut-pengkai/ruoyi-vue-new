@@ -19,12 +19,16 @@ import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
+import com.ruoyi.common.core.domain.XktBaseEntity;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.exception.user.CaptchaException;
+import com.ruoyi.common.exception.user.CaptchaExpireException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.es.EsClientWrapper;
+import com.ruoyi.framework.oss.OSSClientWrapper;
 import com.ruoyi.system.domain.dto.productCategory.ProdCateDTO;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.es.ESProductDTO;
@@ -34,7 +38,6 @@ import com.ruoyi.xkt.dto.storeColor.StoreColorDTO;
 import com.ruoyi.xkt.dto.storeProdCateAttr.StoreProdCateAttrDTO;
 import com.ruoyi.xkt.dto.storeProdColor.StoreProdColorDTO;
 import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceSimpleDTO;
-import com.ruoyi.xkt.dto.storeProdColorSize.StoreProdColorSizeDTO;
 import com.ruoyi.xkt.dto.storeProdColorSize.StoreProdSizeDTO;
 import com.ruoyi.xkt.dto.storeProdProcess.StoreProdProcessDTO;
 import com.ruoyi.xkt.dto.storeProdSvc.StoreProdSvcDTO;
@@ -104,6 +107,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
     final UserNoticeSettingMapper userNoticeSetMapper;
     final UserNoticeMapper userNoticeMapper;
     final UserSubscriptionsMapper userSubMapper;
+    final OSSClientWrapper ossClient;
 
     /**
      * 查询档口商品
@@ -560,6 +564,65 @@ public class StoreProductServiceImpl implements IStoreProductService {
         List<StoreProduct> storeProdList = this.storeProdMapper.selectList(queryWrapper);
         return storeProdList.stream().map(x -> new StoreProdFuzzyLatest30ResDTO().setStoreId(x.getStoreId())
                 .setStoreProdId(x.getId()).setProdArtNum(x.getProdArtNum())).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<PicPackSimpleDTO> prepareGetPicPackDownloadUrl(Long storeProductId) {
+        Assert.notNull(storeProductId);
+        List<Long> fileIds = storeProdFileMapper.selectList(Wrappers.lambdaQuery(StoreProductFile.class)
+                .eq(StoreProductFile::getStoreProdId, storeProductId)
+                .in(StoreProductFile::getFileType, FileType.picPackValues())
+                .eq(XktBaseEntity::getDelFlag, UNDELETED))
+                .stream()
+                .map(StoreProductFile::getFileId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        if (CollUtil.isEmpty(fileIds)) {
+            return ListUtil.empty();
+        }
+        List<SysFile> files = fileMapper.selectByIds(fileIds);
+        return files.stream()
+                .filter(o-> UNDELETED.equals(o.getDelFlag()))
+                .map(o -> {
+                    PicPackSimpleDTO dto = BeanUtil.toBean(o, PicPackSimpleDTO.class);
+                    dto.setFileId(o.getId());
+                    return dto;
+                }).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public PicPackInfoDTO getPicPackDownloadUrl(PicPackReqDTO picPackReqDTO) {
+        Assert.notNull(picPackReqDTO.getUserId());
+        String reqCacheKey = CacheConstants.PIC_PACK_USER_REQ_COUNT_CACHE + picPackReqDTO.getUserId();
+        int reqCount = Optional.ofNullable((Integer) redisCache.getCacheObject(reqCacheKey)).orElse(0);
+        //3次请求后需要输入验证码
+        if (reqCount > 2) {
+            //需验证验证码
+            if (StrUtil.isEmpty(picPackReqDTO.getCode()) || StrUtil.isEmpty(picPackReqDTO.getUuid())) {
+                //未传验证码
+                return new PicPackInfoDTO(true);
+            }
+            //验证码校验
+            validateCaptcha(picPackReqDTO.getCode(), picPackReqDTO.getUuid());
+            //重置请求次数
+            reqCount = 0;
+        }
+        SysFile file = fileMapper.selectById(picPackReqDTO.getFileId());
+        Assert.notNull(file);
+        String downloadUrl;
+        try {
+            //获取完整下载链接
+            downloadUrl = ossClient.generateUrl(ossClient.getConfiguration().getBucketName(), file.getFileUrl(),
+                    600000L, true).toString();
+        } catch (Exception e) {
+            log.error("获取图包异常", e);
+            throw new ServiceException("获取图包失败");
+        }
+        //请求次数+1
+        redisCache.setCacheObject(reqCacheKey, reqCount + 1);
+        return new PicPackInfoDTO(file.getId(), file.getFileName(), file.getFileUrl(), file.getFileSize(), downloadUrl, false);
     }
 
 
@@ -1209,6 +1272,25 @@ public class StoreProductServiceImpl implements IStoreProductService {
         // 调用bulk方法执行批量更新操作
         BulkResponse bulkResponse = esClientWrapper.getEsClient().bulk(e -> e.index(Constants.ES_IDX_PRODUCT_INFO).operations(list));
         System.out.println("bulkResponse.items() = " + bulkResponse.items());
+    }
+
+    /**
+     * 校验验证码
+     *
+     * @param code 验证码
+     * @param uuid 唯一标识
+     * @return 结果
+     */
+    private void validateCaptcha(String code, String uuid) {
+        String verifyKey = CacheConstants.CAPTCHA_CODE_KEY + uuid;
+        String captcha = redisCache.getCacheObject(verifyKey);
+        redisCache.deleteObject(verifyKey);
+        if (captcha == null) {
+            throw new CaptchaExpireException();
+        }
+        if (!StrUtil.emptyIfNull(code).equalsIgnoreCase(captcha)) {
+            throw new CaptchaException();
+        }
     }
 
 

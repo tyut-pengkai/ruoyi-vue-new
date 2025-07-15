@@ -277,6 +277,10 @@ public class CacheConstants {
      * 商品分类销量前100
      */
     public static final String CATE_TOP_50_SALE_PROD = "cate_top_50_sale_prod";
+    /**
+     * 图包用户请求次数缓存
+     */
+    public static final String PIC_PACK_USER_REQ_COUNT_CACHE = "pic_pack_user_req_count_cache:";
 
 
 }

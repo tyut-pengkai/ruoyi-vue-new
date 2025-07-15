@@ -3,6 +3,9 @@ package com.ruoyi.xkt.enums;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * @author liangyq
  * @date 2025-04-02 23:42
@@ -32,5 +35,9 @@ public enum FileType {
             }
         }
         return null;
+    }
+
+    public static List<Integer> picPackValues() {
+        return Arrays.asList(DOWNLOAD.getValue(), MAIN_PIC_450.getValue(), MAIN_PIC_750.getValue());
     }
 }

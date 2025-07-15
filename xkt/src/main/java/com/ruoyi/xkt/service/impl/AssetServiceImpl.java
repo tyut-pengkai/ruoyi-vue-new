@@ -10,13 +10,16 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.framework.sms.SmsClientWrapper;
+import com.ruoyi.system.mapper.SysUserMapper;
 import com.ruoyi.xkt.domain.ExternalAccount;
 import com.ruoyi.xkt.domain.FinanceBill;
 import com.ruoyi.xkt.domain.InternalAccount;
+import com.ruoyi.xkt.domain.Store;
 import com.ruoyi.xkt.dto.account.*;
 import com.ruoyi.xkt.dto.finance.FinanceBillDTO;
 import com.ruoyi.xkt.dto.finance.FinanceBillExt;
@@ -24,6 +27,7 @@ import com.ruoyi.xkt.dto.finance.RechargeAddDTO;
 import com.ruoyi.xkt.dto.finance.RechargeAddResult;
 import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.manager.PaymentManager;
+import com.ruoyi.xkt.mapper.StoreMapper;
 import com.ruoyi.xkt.service.IAssetService;
 import com.ruoyi.xkt.service.IExternalAccountService;
 import com.ruoyi.xkt.service.IFinanceBillService;
@@ -60,6 +64,10 @@ public class AssetServiceImpl implements IAssetService {
     private SmsClientWrapper smsClient;
     @Autowired
     private RedisCache redisCache;
+    @Autowired
+    private SysUserMapper userMapper;
+    @Autowired
+    private StoreMapper storeMapper;
 
 
     @Transactional(rollbackFor = Exception.class)
@@ -137,6 +145,14 @@ public class AssetServiceImpl implements IAssetService {
         Assert.notEmpty(transactionPasswordSet.getPhoneNumber());
         Assert.notEmpty(transactionPasswordSet.getVerifyCode());
         Assert.notEmpty(transactionPasswordSet.getTransactionPassword());
+        //必须是档口注册人的手机号
+        Store store = storeMapper.selectById(transactionPasswordSet.getStoreId());
+        Assert.notNull(store);
+        SysUser user = userMapper.selectById(store.getUserId());
+        Assert.notNull(user);
+        if (!StrUtil.equals(transactionPasswordSet.getPhoneNumber(), user.getPhonenumber())) {
+            throw new ServiceException("请输入档口供应商注册账号绑定的手机号");
+        }
         validateSmsVerificationCode(transactionPasswordSet.getPhoneNumber(), transactionPasswordSet.getVerifyCode());
         InternalAccount internalAccount = internalAccountService.getAccountAndCheck(transactionPasswordSet.getStoreId(),
                 EAccountOwnerType.STORE);

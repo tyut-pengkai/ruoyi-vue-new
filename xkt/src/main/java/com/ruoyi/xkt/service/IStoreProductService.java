@@ -159,4 +159,20 @@ public interface IStoreProductService {
      */
     List<StoreProdFuzzyLatest30ResDTO> fuzzyQueryLatest30List(Long storeId, String prodArtNum);
 
+    /**
+     * 准备获取图包下载链接
+     *
+     * @param storeProductId
+     * @return
+     */
+    List<PicPackSimpleDTO> prepareGetPicPackDownloadUrl(Long storeProductId);
+
+    /**
+     * 获取图包下载链接（提供给前端请求使用）
+     *
+     * @param picPackReqDTO
+     * @return
+     */
+    PicPackInfoDTO getPicPackDownloadUrl(PicPackReqDTO picPackReqDTO);
+
 }

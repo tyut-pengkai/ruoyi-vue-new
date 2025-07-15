@@ -21,4 +21,7 @@ public class AssetInfoVO {
      */
     @ApiModelProperty(value = "支付宝账户")
     private ExternalAccountVO alipayAccount;
+
+    @ApiModelProperty(value = "是否设置过交易密码")
+    private Boolean hasTransactionPassword;
 }

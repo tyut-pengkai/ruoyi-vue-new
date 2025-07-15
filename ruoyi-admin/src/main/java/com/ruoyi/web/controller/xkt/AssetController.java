@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.xkt;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.github.pagehelper.Page;
 import com.ruoyi.common.core.controller.XktBaseController;
@@ -47,7 +48,10 @@ public class AssetController extends XktBaseController {
     @GetMapping(value = "store/current")
     public R<AssetInfoVO> getCurrentStoreAsset() {
         AssetInfoDTO dto = assetService.getStoreAssetInfo(SecurityUtils.getStoreId());
-        return success(BeanUtil.toBean(dto, AssetInfoVO.class));
+        AssetInfoVO vo = BeanUtil.toBean(dto, AssetInfoVO.class);
+        vo.setHasTransactionPassword(dto.getInternalAccount() != null
+                && StrUtil.isNotBlank(dto.getInternalAccount().getTransactionPassword()));
+        return success(vo);
     }
 
     @PreAuthorize("@ss.hasAnyRoles('seller')")
@@ -55,7 +59,9 @@ public class AssetController extends XktBaseController {
     @GetMapping(value = "user/current")
     public R<AssetInfoVO> getCurrentUserAsset() {
         AssetInfoDTO dto = assetService.getUserAssetInfo(SecurityUtils.getUserId());
-        return success(BeanUtil.toBean(dto, AssetInfoVO.class));
+        AssetInfoVO vo = BeanUtil.toBean(dto, AssetInfoVO.class);
+        vo.setHasTransactionPassword(false);
+        return success(vo);
     }
 
     @PreAuthorize("@ss.hasAnyRoles('store,seller')||@ss.hasSupplierSubRole()")
