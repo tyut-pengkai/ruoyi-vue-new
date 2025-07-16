@@ -1,11 +1,20 @@
 <template>
-  <footer v-if="visible" class="copyright">
+  <footer v-if="visible" class="copyright" :class="{
+    'inner': inner,
+  }">
     <span>{{ content }}</span>
   </footer>
 </template>
 
 <script>
 export default {
+  props: {
+    // 是否内页copyright
+    inner: {
+      type: Boolean,
+      default: true
+    }
+  },
   computed: {
     visible() {
       return this.$store.state.settings.footerVisible
@@ -18,7 +27,7 @@ export default {
 </script>
 
 <style scoped>
-.copyright {
+.inner {
   position: fixed;
   bottom: 0;
   left: 0;
