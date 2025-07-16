@@ -245,9 +245,6 @@ public class StoreOrderInfoVO {
     @ApiModelProperty(value = "订单明细")
     private List<Detail> orderDetails;
 
-    @ApiModelProperty(value = "轨迹信息")
-    private List<Track> expressTracks;
-
     @ApiModelProperty(value = "下单用户昵称")
     private String orderUserNickName;
 
@@ -392,8 +389,8 @@ public class StoreOrderInfoVO {
         @ApiModelProperty(value = "更新时间")
         private Date updateTime;
 
-        @ApiModelProperty(value = "档口商品名称")
-        private String prodName;
+//        @ApiModelProperty(value = "档口商品名称")
+//        private String prodName;
 
         @ApiModelProperty(value = "商品货号")
         private String prodArtNum;

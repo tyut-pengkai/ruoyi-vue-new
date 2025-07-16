@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.xkt;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.ListUtil;
 import com.alibaba.fastjson2.JSON;
 import com.github.pagehelper.Page;
 import com.ruoyi.common.annotation.Log;
@@ -137,6 +138,20 @@ public class StoreOrderController extends XktBaseController {
         }
         //没有订单权限
         return success();
+    }
+
+    @ApiOperation(value = "订单物流信息")
+    @GetMapping(value = "/{id}/track")
+    public R<List<StoreOrderInfoVO.Track>> getOrderTracks(@PathVariable("id") Long id) {
+        StoreOrder order = storeOrderService.getById(id);
+        if (SecurityUtils.isAdmin()
+                || Objects.equals(order.getOrderUserId(), SecurityUtils.getUserId())
+                || Objects.equals(order.getStoreId(), SecurityUtils.getStoreId())) {
+            return success(BeanUtil.copyToList(storeOrderService.getOrderExpressTracks(id),
+                    StoreOrderInfoVO.Track.class));
+        }
+        //没有订单权限
+        return success(ListUtil.empty());
     }
 
 

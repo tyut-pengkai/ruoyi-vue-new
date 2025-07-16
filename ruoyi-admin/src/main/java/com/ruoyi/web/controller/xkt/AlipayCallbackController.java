@@ -155,7 +155,7 @@ public class AlipayCallbackController extends XktBaseController {
                 }
             }
             logger.warn("支付宝回调订单匹配失败:{}", params);
-            return FAILURE;
+            return SUCCESS;
         }
         logger.warn("支付宝验签未通过:{}", params);
         return FAILURE;

@@ -30,10 +30,6 @@ public class StoreOrderDetailDTO {
      */
     private Long storeProdId;
     /**
-     * 商品名称
-     */
-    private String prodName;
-    /**
      * 商品货号
      */
     private String prodArtNum;

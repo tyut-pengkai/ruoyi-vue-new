@@ -43,5 +43,4 @@ public class StoreOrderInfoDTO extends StoreOrderDTO {
 
     private List<StoreOrderDetailInfoDTO> orderDetails;
 
-    private List<ExpressTrackDTO> expressTracks;
 }

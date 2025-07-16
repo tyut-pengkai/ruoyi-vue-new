@@ -3,6 +3,7 @@ package com.ruoyi.xkt.service;
 import com.github.pagehelper.Page;
 import com.ruoyi.xkt.domain.StoreOrder;
 import com.ruoyi.xkt.dto.express.ExpressPrintDTO;
+import com.ruoyi.xkt.dto.express.ExpressTrackDTO;
 import com.ruoyi.xkt.dto.order.*;
 import com.ruoyi.xkt.enums.EPayChannel;
 import com.ruoyi.xkt.enums.EPayPage;
@@ -60,6 +61,14 @@ public interface IStoreOrderService {
      * @return
      */
     StoreOrderInfoDTO getInfo(Long storeOrderId);
+
+    /**
+     * 获取订单轨迹
+     *
+     * @param storeOrderId
+     * @return
+     */
+    List<ExpressTrackDTO> getOrderExpressTracks(Long storeOrderId);
 
     /**
      * 分页查询订单

@@ -383,34 +383,6 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         //物流信息
         Map<Long, String> expressNameMap = expressService.getAllExpressNameMap();
         orderInfo.setExpressName(expressNameMap.get(order.getExpressId()));
-        Map<String, List<StoreOrderDetailInfoDTO>> expressWaybillGroupMap = detailInfos.stream()
-                .filter(o -> StrUtil.isNotEmpty(o.getExpressWaybillNo()))
-                .collect(Collectors.groupingBy(StoreOrderDetailInfoDTO::getExpressWaybillNo));
-        Map<String, List<ExpressTrackRecordDTO>> trackRecordGroupMap = expressService.listTrackRecord(
-                expressWaybillGroupMap.keySet())
-                .stream()
-                .collect(Collectors.groupingBy(ExpressTrackRecordDTO::getExpressWaybillNo));
-        List<ExpressTrackDTO> expressTracks = new ArrayList<>(expressWaybillGroupMap.size());
-        for (Map.Entry<String, List<StoreOrderDetailInfoDTO>> entry : expressWaybillGroupMap.entrySet()) {
-            ExpressTrackDTO expressTrackDTO = new ExpressTrackDTO();
-            List<String> goodsSummaries = entry.getValue().stream()
-                    .map(o -> StrUtil.concat(true, o.getProdArtNum(), ", ", o.getColorName(), ", ",
-                            String.valueOf(o.getSize()))).collect(Collectors.toList());
-            //发货时间
-            Long detailId = CollUtil.getFirst(entry.getValue()).getId();
-            StoreOrderOperationRecordDTO shipRecord = operationRecordService.getOneRecord(detailId,
-                    EOrderTargetTypeAction.ORDER_DETAIL, EOrderAction.SHIP);
-            expressTrackDTO.setCreateTime(Optional.ofNullable(shipRecord)
-                    .map(StoreOrderOperationRecordDTO::getOperationTime).orElse(null));
-            Long expressId = CollUtil.getFirst(entry.getValue()).getExpressId();
-            expressTrackDTO.setExpressId(expressId);
-            expressTrackDTO.setExpressName(expressNameMap.get(expressId));
-            expressTrackDTO.setExpressWaybillNo(entry.getKey());
-            expressTrackDTO.setGoodsSummary(StrUtil.join("; ", goodsSummaries));
-            expressTrackDTO.setRecords(trackRecordGroupMap.get(entry.getKey()));
-            expressTracks.add(expressTrackDTO);
-        }
-        orderInfo.setExpressTracks(expressTracks);
         Map<String, String> regionMap = expressService.getRegionNameMapCache();
         orderInfo.setDestinationProvinceName(regionMap.get(orderInfo.getDestinationProvinceCode()));
         orderInfo.setDestinationCityName(regionMap.get(orderInfo.getDestinationCityCode()));
@@ -447,6 +419,51 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             orderInfo.setOrderUserPhoneNumber(orderUser.getPhonenumber());
         }
         return orderInfo;
+    }
+
+    @Override
+    public List<ExpressTrackDTO> getOrderExpressTracks(Long storeOrderId) {
+        Assert.notNull(storeOrderId);
+        //物流信息
+        Map<Long, String> expressNameMap = expressService.getAllExpressNameMap();
+        Map<String, List<StoreOrderDetail>> expressWaybillGroupMap = storeOrderDetailMapper.selectList(Wrappers
+                .lambdaQuery(StoreOrderDetail.class)
+                .eq(StoreOrderDetail::getStoreOrderId, storeOrderId)
+                .eq(SimpleEntity::getDelFlag, Constants.UNDELETED))
+                .stream()
+                .filter(o -> StrUtil.isNotEmpty(o.getExpressWaybillNo()))
+                .collect(Collectors.groupingBy(StoreOrderDetail::getExpressWaybillNo));
+        Map<String, List<ExpressTrackRecordDTO>> trackRecordGroupMap = expressService.listTrackRecord(
+                expressWaybillGroupMap.keySet())
+                .stream()
+                .collect(Collectors.groupingBy(ExpressTrackRecordDTO::getExpressWaybillNo));
+        List<ExpressTrackDTO> expressTracks = new ArrayList<>(expressWaybillGroupMap.size());
+        for (Map.Entry<String, List<StoreOrderDetail>> entry : expressWaybillGroupMap.entrySet()) {
+            ExpressTrackDTO expressTrackDTO = new ExpressTrackDTO();
+            List<String> goodsSummaries = entry.getValue().stream()
+                    .map(o -> StrUtil.concat(true, o.getProdArtNum(), ", ", o.getColorName(), ", ",
+                            String.valueOf(o.getSize()))).collect(Collectors.toList());
+            //发货时间
+            Long detailId = CollUtil.getFirst(entry.getValue()).getId();
+            StoreOrderOperationRecordDTO shipRecord = operationRecordService.getOneRecord(detailId,
+                    EOrderTargetTypeAction.ORDER_DETAIL, EOrderAction.SHIP);
+            expressTrackDTO.setCreateTime(Optional.ofNullable(shipRecord)
+                    .map(StoreOrderOperationRecordDTO::getOperationTime).orElse(null));
+            StoreOrderDetail oneDetail = CollUtil.getFirst(entry.getValue());
+            Long expressId = oneDetail.getExpressId();
+            expressTrackDTO.setExpressId(expressId);
+            expressTrackDTO.setExpressName(expressNameMap.get(expressId));
+            expressTrackDTO.setExpressWaybillNo(entry.getKey());
+            expressTrackDTO.setGoodsSummary(StrUtil.join("; ", goodsSummaries));
+            if (EExpressType.PLATFORM.getValue().equals(oneDetail.getExpressType())) {
+                expressTrackDTO.setRecords(trackRecordGroupMap.get(entry.getKey()));
+            } else {
+                //TODO 商家自发货，从三方接口查询轨迹
+//                String [] expressWaybillNos = entry.getKey().split(",");
+            }
+            expressTracks.add(expressTrackDTO);
+        }
+        return expressTracks;
     }
 
     @Override
