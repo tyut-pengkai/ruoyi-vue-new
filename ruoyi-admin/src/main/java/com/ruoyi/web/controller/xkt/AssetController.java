@@ -73,6 +73,22 @@ public class AssetController extends XktBaseController {
     }
 
     @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @ApiOperation(value = "获取档口支付绑定手机号")
+    @GetMapping(value = "store/phonenumber")
+    public R<PhoneNumberVO> getStorePhoneNumber() {
+        String pn = assetService.getStorePhoneNumber(SecurityUtils.getStoreId());
+        return R.ok(new PhoneNumberVO(pn));
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('seller')")
+    @ApiOperation(value = "获取卖家支付绑定手机号")
+    @GetMapping(value = "user/phonenumber")
+    public R<PhoneNumberVO> getUserPhoneNumber() {
+        String pn = assetService.getUserPhoneNumber(SecurityUtils.getUserId());
+        return R.ok(new PhoneNumberVO(pn));
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "档口绑定支付宝")
     @PostMapping(value = "store/alipay/bind")
     public R<AssetInfoVO> bindStoreAlipay(@Validated @RequestBody AlipayStoreBindVO vo) {

@@ -203,6 +203,20 @@ public class SysLoginController {
         return R.fail();
     }
 
+    @Log(title = "修改手机号", businessType = BusinessType.UPDATE)
+    @ApiOperation(value = "修改手机号")
+    @PostMapping("/changePhoneNumber")
+    public R changePhoneNumber(@Validated @RequestBody LoginBySmsCodeVO vo) {
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        String old = loginUser.getUser().getPhonenumber();
+        String now = vo.getPhoneNumber();
+        Assert.isFalse(StrUtil.equals(old, now), "新手机号不能与原手机号相同");
+        loginService.validateSmsVerificationCode(vo.getPhoneNumber(), vo.getCode());
+        userService.updateUserPhoneNumber(loginUser.getUserId(), vo.getPhoneNumber());
+        tokenService.deleteCacheUser(loginUser.getUserId());
+        return R.ok();
+    }
+
     /**
      * 获取用户信息
      *

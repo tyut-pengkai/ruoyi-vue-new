@@ -154,4 +154,20 @@ public interface IAssetService {
      * @param phoneNumber
      */
     void sendSmsVerificationCode(String phoneNumber);
+
+    /**
+     * 获取档口支付绑定手机号
+     *
+     * @param storeId
+     * @return
+     */
+    String getStorePhoneNumber(Long storeId);
+
+    /**
+     * 获取卖家支付绑定手机号
+     *
+     * @param userId
+     * @return
+     */
+    String getUserPhoneNumber(Long userId);
 }

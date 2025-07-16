@@ -6,6 +6,7 @@ import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.web.controller.xkt.vo.storeProd.*;
 import com.ruoyi.xkt.domain.StoreProduct;
@@ -155,5 +156,21 @@ public class StoreProductController extends XktBaseController {
         util.exportExcel(response, list, "档口商品数据");
     }
 
+    @ApiOperation(value = "获取商品图包列表", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/pic-pack/{storeProdId}")
+    public R<List<PicPackSimpleVO>> listPickPack(@PathVariable("storeProdId") Long storeProdId) {
+        List<PicPackSimpleDTO> dtoList = storeProdService.prepareGetPicPackDownloadUrl(storeProdId);
+        return success(BeanUtil.copyToList(dtoList, PicPackSimpleVO.class));
+    }
+
+    @Log(title = "获取商品图包下载链接", businessType = BusinessType.OTHER)
+    @ApiOperation(value = "获取商品图包下载链接", httpMethod = "POST", response = R.class)
+    @PostMapping(value = "/pic-pack/url")
+    public R<PicPackInfoVO> getPicPackInfo(@Validated @RequestBody PicPackReqVO vo) {
+        PicPackReqDTO reqDTO = BeanUtil.toBean(vo, PicPackReqDTO.class);
+        reqDTO.setUserId(SecurityUtils.getUserId());
+        PicPackInfoDTO infoDTO = storeProdService.getPicPackDownloadUrl(reqDTO);
+        return success(BeanUtil.toBean(infoDTO, PicPackInfoVO.class));
+    }
 
 }

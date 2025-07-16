@@ -154,6 +154,14 @@ public interface ISysUserService {
     public boolean updateUserAvatar(String userName, String avatar);
 
     /**
+     * 修改用户手机号
+     *
+     * @param userId
+     * @param phoneNumber
+     */
+    void updateUserPhoneNumber(Long userId, String phoneNumber);
+
+    /**
      * 导入用户数据
      *
      * @param userList        用户数据列表

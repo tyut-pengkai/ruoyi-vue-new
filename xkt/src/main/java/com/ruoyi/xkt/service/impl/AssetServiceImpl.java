@@ -76,7 +76,7 @@ public class AssetServiceImpl implements IAssetService {
                                                  EPayChannel payChannel) {
         Assert.notNull(storeId);
         Assert.notEmpty(transactionPassword);
-        Assert.isTrue(NumberUtil.isLessOrEqual(amount, BigDecimal.ZERO), "提现金额异常");
+        Assert.isTrue(NumberUtil.isGreaterOrEqual(amount, Constants.ZERO_POINT_ONE), "提现金额不能低于0.1元");
         InternalAccount internalAccount = internalAccountService.getAccountAndCheck(storeId, EAccountOwnerType.STORE);
         ExternalAccount externalAccount = externalAccountService.getAccountAndCheck(storeId, EAccountOwnerType.STORE,
                 EAccountType.getByChannel(payChannel));
@@ -146,11 +146,8 @@ public class AssetServiceImpl implements IAssetService {
         Assert.notEmpty(transactionPasswordSet.getVerifyCode());
         Assert.notEmpty(transactionPasswordSet.getTransactionPassword());
         //必须是档口注册人的手机号
-        Store store = storeMapper.selectById(transactionPasswordSet.getStoreId());
-        Assert.notNull(store);
-        SysUser user = userMapper.selectById(store.getUserId());
-        Assert.notNull(user);
-        if (!StrUtil.equals(transactionPasswordSet.getPhoneNumber(), user.getPhonenumber())) {
+        if (!StrUtil.equals(transactionPasswordSet.getPhoneNumber(),
+                getStorePhoneNumber(transactionPasswordSet.getStoreId()))) {
             throw new ServiceException("请输入档口供应商注册账号绑定的手机号");
         }
         validateSmsVerificationCode(transactionPasswordSet.getPhoneNumber(), transactionPasswordSet.getVerifyCode());
@@ -166,8 +163,19 @@ public class AssetServiceImpl implements IAssetService {
     public AssetInfoDTO bindAlipay(AlipayBindDTO alipayBind) {
         Assert.notNull(alipayBind.getOwnerId());
         EAccountOwnerType ownerType = EAccountOwnerType.of(alipayBind.getOwnerType());
-        if (EAccountOwnerType.STORE != ownerType
-                && EAccountOwnerType.USER != ownerType) {
+        if (EAccountOwnerType.STORE == ownerType) {
+            //必须是档口注册人的手机号
+            if (!StrUtil.equals(alipayBind.getAccountOwnerPhoneNumber(),
+                    getStorePhoneNumber(alipayBind.getOwnerId()))) {
+                throw new ServiceException("请输入档口供应商注册账号绑定的手机号");
+            }
+        } else if (EAccountOwnerType.USER == ownerType) {
+            //必须是登录用户的手机号
+            if (!StrUtil.equals(alipayBind.getAccountOwnerPhoneNumber(),
+                    getUserPhoneNumber(alipayBind.getOwnerId()))) {
+                throw new ServiceException("请输入当前用户绑定的手机号");
+            }
+        } else {
             throw new ServiceException("账户归属异常");
         }
         Assert.notEmpty(alipayBind.getAccountOwnerName());
@@ -337,6 +345,22 @@ public class AssetServiceImpl implements IAssetService {
             redisCache.setCacheObject(rk, code, 5, TimeUnit.MINUTES);
         }
         redisCache.setCacheObject(k, "1", 60, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public String getStorePhoneNumber(Long storeId) {
+        Store store = storeMapper.selectById(storeId);
+        Assert.notNull(store);
+        SysUser user = userMapper.selectById(store.getUserId());
+        Assert.notNull(user);
+        return user.getPhonenumber();
+    }
+
+    @Override
+    public String getUserPhoneNumber(Long userId) {
+        SysUser user = userMapper.selectById(userId);
+        Assert.notNull(user);
+        return user.getPhonenumber();
     }
 
     /**

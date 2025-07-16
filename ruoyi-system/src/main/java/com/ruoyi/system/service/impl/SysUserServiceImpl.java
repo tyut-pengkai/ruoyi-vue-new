@@ -300,6 +300,21 @@ public class SysUserServiceImpl implements ISysUserService {
         return false;
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void updateUserPhoneNumber(Long userId, String phoneNumber) {
+        SysUser user = userMapper.selectById(userId);
+        Assert.notNull(user);
+        if (StrUtil.equals(user.getUserName(), user.getPhonenumber())) {
+            user.setUserName(phoneNumber);
+        }
+        if (StrUtil.equals(user.getNickName(), user.getPhonenumber())) {
+            user.setNickName(phoneNumber);
+        }
+        user.setPhonenumber(phoneNumber);
+        updateUserBase(user);
+    }
+
     /**
      * 新增用户角色信息
      *
