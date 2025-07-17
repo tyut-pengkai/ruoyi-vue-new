@@ -131,11 +131,18 @@ public class UserSubscriptionsServiceImpl implements IUserSubscriptionsService {
     @Transactional(readOnly = true)
     public Page<UserSubscPageResDTO> page(UserSubscPageDTO pageDTO) {
         // 获取当前登录用户
-        LoginUser loginUser = SecurityUtils.getLoginUser();
+        Long userId = SecurityUtils.getUserIdSafe();
+        if (ObjectUtils.isEmpty(userId)) {
+            throw new ServiceException("用户未登录，请先登录!", HttpStatus.ERROR);
+        }
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
-        List<UserSubscPageResDTO> list = this.userSubMapper.selectUserSubscPage(loginUser.getUserId(), pageDTO.getStoreName());
+        List<UserSubscPageResDTO> list = this.userSubMapper.selectUserSubscPage(userId, pageDTO.getStoreName());
         if (CollectionUtils.isEmpty(list)) {
             return Page.empty(pageDTO.getPageNum(), pageDTO.getPageSize());
+        }
+        // APP 查询直接返回数据即可
+        if (pageDTO.getSource() == 2) {
+            return Page.convert(new PageInfo<>(list));
         }
         // 今天
         final Date now = java.sql.Date.valueOf(LocalDate.now());

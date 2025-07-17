@@ -18,20 +18,24 @@
 
     <select id="selectUserSubscPage" resultType="com.ruoyi.xkt.dto.userSubscriptions.UserSubscPageResDTO">
         SELECT
-        us.id AS userSubscId,
-        us.store_id,
-        s.store_name,
-        s.contact_phone,
-        s.contact_back_phone,
-        s.wechat_account,
-        s.qq_account,
-        s.store_address
+            us.id AS userSubscId,
+            us.store_id,
+            s.store_name,
+            s.contact_phone,
+            s.contact_back_phone,
+            s.wechat_account,
+            s.qq_account,
+            s.store_address,
+            s.del_flag AS storeDelFlag,
+            DATEDIFF(CURDATE(), DATE(us.create_time)) AS focusDays
         FROM
-        user_subscriptions us
-        LEFT JOIN store s ON us.store_id = s.id
+            user_subscriptions us
+            JOIN store s ON us.store_id = s.id
         WHERE
-        us.del_flag = 0 AND us.user_id = #{userId}
-        <if test="storeName != null  and storeName != ''">and s.store_name = #{storeName}</if>
+            us.del_flag = 0 AND us.user_id = #{userId}
+            <if test="storeName != null  and storeName != ''">and s.store_name = #{storeName}</if>
+        ORDER BY
+            us.create_time DESC
     </select>
 
     <select id="selectTop10List" resultType="com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO">

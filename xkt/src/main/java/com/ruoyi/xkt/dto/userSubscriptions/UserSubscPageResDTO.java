@@ -1,10 +1,13 @@
 package com.ruoyi.xkt.dto.userSubscriptions;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
+
+import java.util.Date;
 
 /**
  * @author liujiang
@@ -33,6 +36,10 @@ public class UserSubscPageResDTO {
     private String qqAccount;
     @ApiModelProperty(value = "档口地址")
     private String storeAddress;
+    @ApiModelProperty(value = "档口状态")
+    private Integer storeDelFlag;
+    @ApiModelProperty(value = "关注日期")
+    private Long focusDays;
     @ApiModelProperty(value = "最近30天销售量")
     private Long last30DaysSaleQuantity;
     @ApiModelProperty(value = "最近7天新增商品数")

@@ -1516,7 +1516,7 @@ public class XktTask {
         // 新增一条档口消息通知
         Notice notice = new Notice().setNoticeTitle(storeName + "商品上新啦!").setNoticeType(NoticeType.NOTICE.getValue())
                 .setNoticeContent(storeName + "上新了货号为: " + storeProd.getProdArtNum() + " 的商品!请及时关注!")
-                .setOwnerType(NoticeOwnerType.STORE.getValue()).setStoreId(storeProd.getStoreId())
+                .setOwnerType(NoticeOwnerType.SYSTEM.getValue()).setStoreId(storeProd.getStoreId())
                 .setUserId(userId).setPerpetuity(NoticePerpetuityType.PERMANENT.getValue());
         this.noticeMapper.insert(notice);
         final Date voucherDate = java.sql.Date.valueOf(LocalDate.now());

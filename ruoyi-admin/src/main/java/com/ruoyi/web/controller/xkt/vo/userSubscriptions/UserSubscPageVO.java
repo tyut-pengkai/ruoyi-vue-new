@@ -7,6 +7,9 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 /**
  * @author liujiang
  * @version v1.0
@@ -20,5 +23,8 @@ public class UserSubscPageVO extends BasePageVO {
 
     @ApiModelProperty(value = "档口名称")
     private String storeName;
+    @NotNull(message = "查询来源不能为空!")
+    @ApiModelProperty(value = "查询来源", notes = "1 PC, 2 APP")
+    private Integer source;
 
 }
