@@ -29,6 +29,7 @@ import com.ruoyi.xkt.manager.ExpressManager;
 import com.ruoyi.xkt.manager.PaymentManager;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.*;
+import com.ruoyi.xkt.thirdpart.kuaidi100.Kuaidi100Client;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -79,6 +80,8 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
     private IFinanceBillService financeBillService;
     @Autowired
     private List<PaymentManager> paymentManagers;
+    @Autowired
+    private Kuaidi100Client kuaidi100Client;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -438,30 +441,48 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                 .stream()
                 .collect(Collectors.groupingBy(ExpressTrackRecordDTO::getExpressWaybillNo));
         List<ExpressTrackDTO> expressTracks = new ArrayList<>(expressWaybillGroupMap.size());
+        StoreOrder order = storeOrderMapper.selectById(storeOrderId);
         for (Map.Entry<String, List<StoreOrderDetail>> entry : expressWaybillGroupMap.entrySet()) {
-            ExpressTrackDTO expressTrackDTO = new ExpressTrackDTO();
+            StoreOrderDetail oneDetail = CollUtil.getFirst(entry.getValue());
+            Long detailId = oneDetail.getId();
+            Long expressId = oneDetail.getExpressId();
+            //商品摘要
             List<String> goodsSummaries = entry.getValue().stream()
                     .map(o -> StrUtil.concat(true, o.getProdArtNum(), ", ", o.getColorName(), ", ",
                             String.valueOf(o.getSize()))).collect(Collectors.toList());
+            String goodsSummaryStr = StrUtil.join("; ", goodsSummaries);
             //发货时间
-            Long detailId = CollUtil.getFirst(entry.getValue()).getId();
             StoreOrderOperationRecordDTO shipRecord = operationRecordService.getOneRecord(detailId,
                     EOrderTargetTypeAction.ORDER_DETAIL, EOrderAction.SHIP);
-            expressTrackDTO.setCreateTime(Optional.ofNullable(shipRecord)
-                    .map(StoreOrderOperationRecordDTO::getOperationTime).orElse(null));
-            StoreOrderDetail oneDetail = CollUtil.getFirst(entry.getValue());
-            Long expressId = oneDetail.getExpressId();
-            expressTrackDTO.setExpressId(expressId);
-            expressTrackDTO.setExpressName(expressNameMap.get(expressId));
-            expressTrackDTO.setExpressWaybillNo(entry.getKey());
-            expressTrackDTO.setGoodsSummary(StrUtil.join("; ", goodsSummaries));
+            Date createTime = Optional.ofNullable(shipRecord)
+                    .map(StoreOrderOperationRecordDTO::getOperationTime).orElse(null);
             if (EExpressType.PLATFORM.getValue().equals(oneDetail.getExpressType())) {
+                //平台发货
+                ExpressTrackDTO expressTrackDTO = new ExpressTrackDTO();
+                expressTrackDTO.setCreateTime(createTime);
+                expressTrackDTO.setExpressId(expressId);
+                expressTrackDTO.setExpressName(expressNameMap.get(expressId));
+                expressTrackDTO.setExpressWaybillNo(entry.getKey());
+                expressTrackDTO.setGoodsSummary(goodsSummaryStr);
                 expressTrackDTO.setRecords(trackRecordGroupMap.get(entry.getKey()));
+                expressTracks.add(expressTrackDTO);
             } else {
-                //TODO 商家自发货，从三方接口查询轨迹
-//                String [] expressWaybillNos = entry.getKey().split(",");
+                //档口发货
+                String[] expressWaybillNos = entry.getKey().split(",");
+                for (String expressWaybillNo : expressWaybillNos) {
+                    ExpressTrackDTO expressTrackDTO = new ExpressTrackDTO();
+                    expressTrackDTO.setCreateTime(createTime);
+                    expressTrackDTO.setExpressId(expressId);
+                    expressTrackDTO.setExpressName(expressNameMap.get(expressId));
+                    expressTrackDTO.setExpressWaybillNo(expressWaybillNo);
+                    expressTrackDTO.setGoodsSummary(goodsSummaryStr);
+                    //通过快递100查询轨迹
+                    List<TrackRecordDTO> records = kuaidi100Client.queryTrack(expressWaybillNo,
+                            order.getDestinationContactPhoneNumber());
+                    expressTrackDTO.setRecords(BeanUtil.copyToList(records, ExpressTrackRecordDTO.class));
+                    expressTracks.add(expressTrackDTO);
+                }
             }
-            expressTracks.add(expressTrackDTO);
         }
         return expressTracks;
     }
