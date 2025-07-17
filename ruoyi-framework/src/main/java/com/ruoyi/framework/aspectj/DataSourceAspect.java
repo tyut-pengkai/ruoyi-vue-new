@@ -67,6 +67,15 @@ public class DataSourceAspect
             return dataSource;
         }
 
-        return AnnotationUtils.findAnnotation(signature.getDeclaringType(), DataSource.class);
-    }
-}
+         // 组合检查声明类和目标类
+         Class<?> declaringType = signature.getDeclaringType();
+         Class<?> targetClass = point.getTarget().getClass();
+         
+         DataSource classAnnotation = AnnotationUtils.findAnnotation(targetClass, DataSource.class);
+         if (classAnnotation == null) {
+             classAnnotation = AnnotationUtils.findAnnotation(declaringType, DataSource.class);
+         }
+         return classAnnotation;
+     }
+ }
+ 
