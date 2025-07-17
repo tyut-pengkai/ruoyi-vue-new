@@ -49,7 +49,7 @@ public class FeedbackController extends XktBaseController {
         return R.ok(feedbackService.page(BeanUtil.toBean(pageVO, FeedbackPageDTO.class)));
     }
 
-    @ApiOperation(value = "意见反馈详情", httpMethod = "PUT", response = R.class)
+    @ApiOperation(value = "意见反馈详情", httpMethod = "GET", response = R.class)
     @GetMapping("/{id}")
     public R<FeedbackResVO> getInfo(@PathVariable Long id) {
         return R.ok(BeanUtil.toBean(feedbackService.getInfo(id), FeedbackResVO.class));

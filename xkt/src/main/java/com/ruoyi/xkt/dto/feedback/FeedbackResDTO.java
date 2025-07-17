@@ -20,6 +20,6 @@ public class FeedbackResDTO {
     @ApiModelProperty(value = "内容")
     private String content;
     @ApiModelProperty(value = "联系方式")
-    private String contract;
+    private String contact;
 
 }

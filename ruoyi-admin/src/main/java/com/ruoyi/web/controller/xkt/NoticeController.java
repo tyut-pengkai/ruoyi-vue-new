@@ -47,7 +47,7 @@ public class NoticeController extends BaseController {
         return R.ok(noticeService.edit(BeanUtil.toBean(editVO, NoticeEditDTO.class)));
     }
 
-    @ApiOperation(value = "公告详情（档口公告、系统公告）", httpMethod = "PUT", response = R.class)
+    @ApiOperation(value = "公告详情（档口公告、系统公告）", httpMethod = "GET", response = R.class)
     @GetMapping("/{noticeId}")
     public R<NoticeResVO> getInfo(@PathVariable Long noticeId) {
         return R.ok(BeanUtil.toBean(noticeService.getInfo(noticeId), NoticeResVO.class));
