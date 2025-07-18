@@ -2,7 +2,7 @@ package com.ruoyi.xkt.service;
 
 import com.github.pagehelper.Page;
 import com.ruoyi.xkt.domain.StoreOrder;
-import com.ruoyi.xkt.dto.express.ExpressPrintDTO;
+import com.ruoyi.xkt.dto.express.ExpressShippingLabelDTO;
 import com.ruoyi.xkt.dto.express.ExpressTrackDTO;
 import com.ruoyi.xkt.dto.order.*;
 import com.ruoyi.xkt.enums.EPayChannel;
@@ -71,6 +71,22 @@ public interface IStoreOrderService {
     List<ExpressTrackDTO> getOrderExpressTracks(Long storeOrderId);
 
     /**
+     * 面单预备原单号打印项列表
+     *
+     * @param storeOrderId
+     * @return
+     */
+    List<ShipLabelPreOrgPrintItemDTO> listPreOrgPrintItem(Long storeOrderId);
+
+    /**
+     * 原单号打印
+     *
+     * @param expressWaybillNos
+     * @return
+     */
+    List<ExpressShippingLabelDTO> printOrgShippingLabel(Collection<String> expressWaybillNos);
+
+    /**
      * 分页查询订单
      *
      * @param queryDTO
@@ -110,12 +126,10 @@ public interface IStoreOrderService {
      *
      * @param storeOrderId
      * @param storeOrderDetailIds
-     * @param expressId
      * @param operatorId
      * @return
      */
-    StoreOrderExt shipOrderByPlatform(Long storeOrderId, List<Long> storeOrderDetailIds, Long expressId,
-                                      Long operatorId);
+    StoreOrderExt shipOrderByPlatform(Long storeOrderId, List<Long> storeOrderDetailIds, Long operatorId);
 
     /**
      * 发货（档口物流）
@@ -133,10 +147,14 @@ public interface IStoreOrderService {
     /**
      * 打印面单
      *
+     * @param storeOrderId
      * @param storeOrderDetailIds
+     * @param expressId
+     * @param operatorId
      * @return
      */
-    List<ExpressPrintDTO> printOrder(List<Long> storeOrderDetailIds);
+    ExpressShippingLabelDTO printOrder(Long storeOrderId, List<Long> storeOrderDetailIds, Long expressId,
+                                       Long operatorId);
 
     /**
      * 确认收货

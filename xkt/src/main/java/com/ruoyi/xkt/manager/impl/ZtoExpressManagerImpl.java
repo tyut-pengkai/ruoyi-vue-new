@@ -7,6 +7,7 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson2.JSON;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.xkt.dto.express.*;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -72,7 +74,7 @@ public class ZtoExpressManagerImpl implements ExpressManager, InitializingBean {
     }
 
     @Override
-    public String shipStoreOrder(ExpressShipReqDTO shipReqDTO) {
+    public ExpressShippingLabelDTO shipStoreOrder(ExpressShipReqDTO shipReqDTO) {
         Assert.notNull(shipReqDTO);
         Assert.notEmpty(shipReqDTO.getExpressReqNo());
         ZtoCreateOrderParam createOrderParam = trans2CreateOrderReq(shipReqDTO);
@@ -83,10 +85,32 @@ public class ZtoExpressManagerImpl implements ExpressManager, InitializingBean {
         try {
             String bodyStr = client.execute(request);
             log.info("中通订单创建返回信息: {}", bodyStr);
-            JSONObject bodyJson = JSONUtil.parseObj(bodyStr);
-            boolean success = BooleanUtil.isTrue(bodyJson.getBool("status"));
+            com.alibaba.fastjson2.JSONObject bodyJson = JSON.parseObject(bodyStr);
+            boolean success = BooleanUtil.isTrue(bodyJson.getBoolean("status"));
             if (success) {
-                return bodyJson.getJSONObject("result").getStr("billCode");
+                com.alibaba.fastjson2.JSONObject resultJson = bodyJson.getJSONObject("result");
+                String billCode = resultJson.getString("billCode");
+                if (billCode != null){
+                    ExpressShippingLabelDTO rtn = new ExpressShippingLabelDTO(shipReqDTO.getOriginContactName(),
+                            shipReqDTO.getOriginContactPhoneNumber(), shipReqDTO.getOriginProvinceName(),
+                            shipReqDTO.getOriginCityName(), shipReqDTO.getOriginCountyName(),
+                            shipReqDTO.getOriginDetailAddress(), shipReqDTO.getDestinationContactName(),
+                            shipReqDTO.getDestinationContactPhoneNumber(), shipReqDTO.getDestinationProvinceName(),
+                            shipReqDTO.getDestinationCityName(), shipReqDTO.getDestinationCountyName(),
+                            shipReqDTO.getDestinationDetailAddress());
+                    rtn.setExpressWaybillNo(billCode);
+                    rtn.setExpressId(channel().getExpressId());
+                    rtn.setVasType("快递包裹");
+                    com.alibaba.fastjson2.JSONObject bigMarkInfo = resultJson.getJSONObject("bigMarkInfo");
+                    rtn.setMark(bigMarkInfo.getString("mark"));
+                    rtn.setShortMark("");
+                    rtn.setBagAddr(bigMarkInfo.getString("bagAddr"));
+                    rtn.setLastPrintTime(new Date());
+                    rtn.setPrintCount(1);
+                    rtn.setGoodsInfo(shipReqDTO.getGoodsSummary());
+                    rtn.setRemark(rtn.getGoodsInfo());
+                    return rtn;
+                }
             }
 
         } catch (Exception e) {

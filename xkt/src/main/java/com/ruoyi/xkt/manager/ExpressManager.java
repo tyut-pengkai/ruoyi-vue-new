@@ -24,7 +24,7 @@ public interface ExpressManager {
      * @param shipReqDTO
      * @return 运单号
      */
-    String shipStoreOrder(ExpressShipReqDTO shipReqDTO);
+    ExpressShippingLabelDTO shipStoreOrder(ExpressShipReqDTO shipReqDTO);
 
     /**
      * 取消发货

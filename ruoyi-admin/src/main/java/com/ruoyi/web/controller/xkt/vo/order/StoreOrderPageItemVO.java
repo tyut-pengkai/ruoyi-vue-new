@@ -258,7 +258,7 @@ public class StoreOrderPageItemVO extends StoreOrderDTO {
     private String platformInvolveResult;
 
     @ApiModelProperty(value = "物流运单号（快递单号）信息集合")
-    private List<ExpressWaybillNoInfoVO> expressWaybillInfos;
+    private List<ExpressWaybillNoInfoVO> expressWaybillNoInfos;
 
     @ApiModel
     @Data

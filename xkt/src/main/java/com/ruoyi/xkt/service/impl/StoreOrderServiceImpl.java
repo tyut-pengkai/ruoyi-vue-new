@@ -5,6 +5,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Assert;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.NumberUtil;
@@ -70,6 +71,8 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
     private StoreProductFileMapper storeProductFileMapper;
     @Autowired
     private SysUserMapper sysUserMapper;
+    @Autowired
+    private ExpressShippingLabelMapper expressShippingLabelMapper;
     @Autowired
     private IExpressService expressService;
     @Autowired
@@ -262,7 +265,6 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             StoreProduct sp = spMap.get(spcs.getStoreProdId());
             StoreColor sc = scMap.get(spcs.getStoreColorId());
             orderDetail.setStoreProdId(sp.getId());
-//            orderDetail.setProdName(sp.getProdName());
             orderDetail.setProdArtNum(sp.getProdArtNum());
             orderDetail.setProdTitle(sp.getProdTitle());
             orderDetail.setStoreColorId(sc.getId());
@@ -426,6 +428,54 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
 
     @Override
     public List<ExpressTrackDTO> getOrderExpressTracks(Long storeOrderId) {
+        return getOrderExpressTracks(storeOrderId, false);
+    }
+
+    @Override
+    public List<ShipLabelPreOrgPrintItemDTO> listPreOrgPrintItem(Long storeOrderId) {
+        List<ExpressTrackDTO> dtos = getOrderExpressTracks(storeOrderId, true);
+        Set<String> expressWaybillNos = dtos.stream().map(ExpressTrackDTO::getExpressWaybillNo)
+                .collect(Collectors.toSet());
+        if (CollUtil.isEmpty(expressWaybillNos)) {
+            return ListUtil.empty();
+        }
+        Map<String, Date> printTimeMap = expressShippingLabelMapper.selectList(Wrappers
+                .lambdaQuery(ExpressShippingLabel.class)
+                .in(ExpressShippingLabel::getExpressWaybillNo, expressWaybillNos))
+                .stream()
+                .collect(Collectors.toMap(ExpressShippingLabel::getExpressWaybillNo,
+                        ExpressShippingLabel::getLastPrintTime));
+        return dtos.stream()
+                .map(dto -> {
+                    ShipLabelPreOrgPrintItemDTO item = BeanUtil.toBean(dto, ShipLabelPreOrgPrintItemDTO.class);
+                    item.setLastPrintTime(printTimeMap.get(item.getExpressWaybillNo()));
+                    return item;
+                }).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ExpressShippingLabelDTO> printOrgShippingLabel(Collection<String> expressWaybillNos) {
+        Assert.notEmpty(expressWaybillNos);
+        List<ExpressShippingLabel> expressShippingLabels = expressShippingLabelMapper.selectList(Wrappers
+                .lambdaQuery(ExpressShippingLabel.class)
+                .in(ExpressShippingLabel::getExpressWaybillNo, expressWaybillNos)
+                .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
+        for (ExpressShippingLabel expressShippingLabel : expressShippingLabels) {
+            expressShippingLabel.setLastPrintTime(new Date());
+            expressShippingLabel.setPrintCount(expressShippingLabel.getPrintCount() + 1);
+            expressShippingLabelMapper.updateById(prepareUpdate(expressShippingLabel));
+        }
+        return BeanUtil.copyToList(expressShippingLabels, ExpressShippingLabelDTO.class);
+    }
+
+    /**
+     * 获取轨迹
+     *
+     * @param storeOrderId      订单ID
+     * @param ignoreTrackRecord 忽略轨迹记录
+     * @return
+     */
+    private List<ExpressTrackDTO> getOrderExpressTracks(Long storeOrderId, boolean ignoreTrackRecord) {
         Assert.notNull(storeOrderId);
         //物流信息
         Map<Long, String> expressNameMap = expressService.getAllExpressNameMap();
@@ -436,10 +486,9 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                 .stream()
                 .filter(o -> StrUtil.isNotEmpty(o.getExpressWaybillNo()))
                 .collect(Collectors.groupingBy(StoreOrderDetail::getExpressWaybillNo));
-        Map<String, List<ExpressTrackRecordDTO>> trackRecordGroupMap = expressService.listTrackRecord(
-                expressWaybillGroupMap.keySet())
-                .stream()
-                .collect(Collectors.groupingBy(ExpressTrackRecordDTO::getExpressWaybillNo));
+        Map<String, List<ExpressTrackRecordDTO>> trackRecordGroupMap = ignoreTrackRecord ? MapUtil.empty() :
+                expressService.listTrackRecord(expressWaybillGroupMap.keySet()).stream()
+                        .collect(Collectors.groupingBy(ExpressTrackRecordDTO::getExpressWaybillNo));
         List<ExpressTrackDTO> expressTracks = new ArrayList<>(expressWaybillGroupMap.size());
         StoreOrder order = storeOrderMapper.selectById(storeOrderId);
         for (Map.Entry<String, List<StoreOrderDetail>> entry : expressWaybillGroupMap.entrySet()) {
@@ -464,7 +513,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                 expressTrackDTO.setExpressName(expressNameMap.get(expressId));
                 expressTrackDTO.setExpressWaybillNo(entry.getKey());
                 expressTrackDTO.setGoodsSummary(goodsSummaryStr);
-                expressTrackDTO.setRecords(trackRecordGroupMap.get(entry.getKey()));
+                expressTrackDTO.setRecords(trackRecordGroupMap.getOrDefault(entry.getKey(), ListUtil.empty()));
                 expressTracks.add(expressTrackDTO);
             } else {
                 //档口发货
@@ -477,9 +526,14 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                     expressTrackDTO.setExpressWaybillNo(expressWaybillNo);
                     expressTrackDTO.setGoodsSummary(goodsSummaryStr);
                     //通过快递100查询轨迹
-                    List<TrackRecordDTO> records = kuaidi100Client.queryTrack(expressWaybillNo,
-                            order.getDestinationContactPhoneNumber());
-                    expressTrackDTO.setRecords(BeanUtil.copyToList(records, ExpressTrackRecordDTO.class));
+                    if (ignoreTrackRecord) {
+                        expressTrackDTO.setRecords(ListUtil.empty());
+                    } else {
+                        List<TrackRecordDTO> records = kuaidi100Client.queryTrack(expressWaybillNo,
+                                order.getDestinationContactPhoneNumber());
+                        expressTrackDTO.setRecords(BeanUtil.copyToList(records, ExpressTrackRecordDTO.class));
+                    }
+
                     expressTracks.add(expressTrackDTO);
                 }
             }
@@ -675,14 +729,8 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public StoreOrderExt shipOrderByPlatform(Long storeOrderId, List<Long> storeOrderDetailIds, Long expressId,
-                                             Long operatorId) {
+    public StoreOrderExt shipOrderByPlatform(Long storeOrderId, List<Long> storeOrderDetailIds, Long operatorId) {
         Assert.notEmpty(storeOrderDetailIds);
-        ExpressManager expressManager = expressService.getExpressManager(expressId);
-        Express express = expressService.getById(expressId);
-        if (!BeanValidators.exists(express) || !express.getSystemDeliverAccess()) {
-            throw new ServiceException(CharSequenceUtil.format("快递[{}]不可用", expressId));
-        }
         StoreOrder order = getAndBaseCheck(storeOrderId);
         if (!EOrderStatus.PENDING_SHIPMENT.getValue().equals(order.getOrderStatus())) {
             throw new ServiceException(CharSequenceUtil.format("订单[{}]当前状态无法发货",
@@ -700,11 +748,11 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                             order.getOrderNo()));
                 }
             }
-//            if (EExpressType.STORE.getValue().equals(containDetail.getExpressType())) {
-//                //已存在档口发货的明细
-//                throw new ServiceException(CharSequenceUtil.format("订单[{}]由档口物流发货！",
-//                        order.getOrderNo()));
-//            }
+            if (EExpressType.STORE.getValue().equals(containDetail.getExpressType())) {
+                //已存在档口发货的明细
+                throw new ServiceException(CharSequenceUtil.format("订单[{}]由档口物流发货！",
+                        order.getOrderNo()));
+            }
         }
         List<StoreOrderDetail> orderDetails = storeOrderDetailMapper.selectByIds(storeOrderDetailIds);
         for (StoreOrderDetail orderDetail : orderDetails) {
@@ -719,27 +767,21 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             }
             if (!EOrderStatus.PENDING_SHIPMENT.getValue().equals(orderDetail.getDetailStatus())) {
                 throw new ServiceException(CharSequenceUtil.format("订单明细[{}]当前状态无法发货",
-                        order.getOrderNo()));
+                        orderDetail.getId()));
+            }
+            if (orderDetail.getExpressType() == null
+                    || orderDetail.getExpressId() == null
+                    || orderDetail.getExpressStatus() == null
+                    || StrUtil.isEmpty(orderDetail.getExpressWaybillNo())) {
+                throw new ServiceException(CharSequenceUtil.format("订单明细[{}]需先打印快递单！",
+                        orderDetail.getId()));
             }
         }
         //发货
-        ExpressShipReqDTO shipReq = createShipReq(order, orderDetails);
-        String expressWaybillNo = expressManager.shipStoreOrder(shipReq);
-        //订阅轨迹
-        ExpressTrackSubReqDTO trackSubReq = new ExpressTrackSubReqDTO(shipReq.getExpressReqNo(),
-                expressWaybillNo, shipReq.getOriginContactPhoneNumber(), shipReq.getDestinationContactPhoneNumber());
-        boolean trackSubSuccess = expressManager.subscribeTrack(trackSubReq);
-        Assert.isTrue(trackSubSuccess, "物流轨迹订阅失败");
-
         List<Long> orderDetailIdList = new ArrayList<>(orderDetails.size());
         for (StoreOrderDetail orderDetail : orderDetails) {
             //明细->已发货
             orderDetail.setDetailStatus(EOrderStatus.SHIPPED.getValue());
-            orderDetail.setExpressId(expressId);
-            orderDetail.setExpressType(EExpressType.PLATFORM.getValue());
-            orderDetail.setExpressStatus(EExpressStatus.PLACED.getValue());
-            orderDetail.setExpressReqNo(shipReq.getExpressReqNo());
-            orderDetail.setExpressWaybillNo(expressWaybillNo);
             int orderDetailSuccess = storeOrderDetailMapper.updateById(prepareUpdate(orderDetail));
             if (orderDetailSuccess == 0) {
                 throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
@@ -765,7 +807,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         }
         //操作记录
         addOperationRecords(order.getId(), EOrderAction.SHIP, orderDetailIdList, EOrderAction.SHIP,
-                "平台物流发货", operatorId, new Date());
+                "平台发货", operatorId, new Date());
         return new StoreOrderExt(order, orderDetails);
     }
 
@@ -795,11 +837,11 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                             order.getOrderNo()));
                 }
             }
-//            if (EExpressType.PLATFORM.getValue().equals(containDetail.getExpressType())) {
-//                //已存在平台发货的明细
-//                throw new ServiceException(CharSequenceUtil.format("订单[{}]由平台物流发货！",
-//                        order.getOrderNo()));
-//            }
+            if (EExpressType.PLATFORM.getValue().equals(containDetail.getExpressType())) {
+                //已存在平台发货的明细
+                throw new ServiceException(CharSequenceUtil.format("订单[{}]由平台物流发货！",
+                        order.getOrderNo()));
+            }
         }
         List<StoreOrderDetail> orderDetails = storeOrderDetailMapper.selectByIds(storeOrderDetailIds);
         List<Long> orderDetailIdList = new ArrayList<>(orderDetails.size());
@@ -813,7 +855,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             }
             if (!EOrderStatus.PENDING_SHIPMENT.getValue().equals(orderDetail.getDetailStatus())) {
                 throw new ServiceException(CharSequenceUtil.format("订单明细[{}]当前状态无法发货",
-                        order.getOrderNo()));
+                        orderDetail.getId()));
             }
             //明细->已发货
             orderDetail.setDetailStatus(EOrderStatus.SHIPPED.getValue());
@@ -846,29 +888,95 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         }
         //操作记录
         addOperationRecords(order.getId(), EOrderAction.SHIP, orderDetailIdList, EOrderAction.SHIP,
-                "档口物流发货", operatorId, new Date());
+                "档口发货", operatorId, new Date());
         return new StoreOrderExt(order, orderDetails);
     }
 
     @Override
-    public List<ExpressPrintDTO> printOrder(List<Long> storeOrderDetailIds) {
+    public ExpressShippingLabelDTO printOrder(Long storeOrderId, List<Long> storeOrderDetailIds, Long expressId,
+                                              Long operatorId) {
         Assert.notEmpty(storeOrderDetailIds);
-        Map<Long, List<StoreOrderDetail>> detailMap = storeOrderDetailMapper.selectByIds(storeOrderDetailIds).stream()
-                .filter(o -> BeanValidators.exists(o)
-                        && Objects.nonNull(o.getExpressId())
-                        && StrUtil.isNotEmpty(o.getExpressWaybillNo())
-                        && EExpressType.PLATFORM.getValue().equals(o.getExpressType()))
-                .collect(Collectors.groupingBy(StoreOrderDetail::getExpressId));
-        List<ExpressPrintDTO> rtnList = new ArrayList<>();
-        for (Map.Entry<Long, List<StoreOrderDetail>> entry : detailMap.entrySet()) {
-            ExpressManager expressManager = expressService.getExpressManager(entry.getKey());
-            Map<Long, String> detailMap2 = entry.getValue()
-                    .stream()
-                    .collect(Collectors.toMap(SimpleEntity::getId, StoreOrderDetail::getExpressWaybillNo));
-            List<ExpressPrintDTO> pds = expressManager.printOrder(new HashSet<>(detailMap2.values()));
-            rtnList.addAll(pds);
+        ExpressManager expressManager = expressService.getExpressManager(expressId);
+        Express express = expressService.getById(expressId);
+        if (!BeanValidators.exists(express) || !express.getSystemDeliverAccess()) {
+            throw new ServiceException(CharSequenceUtil.format("快递[{}]不可用", expressId));
         }
-        return rtnList;
+        StoreOrder order = getAndBaseCheck(storeOrderId);
+        if (!EOrderStatus.PENDING_SHIPMENT.getValue().equals(order.getOrderStatus())) {
+            throw new ServiceException(CharSequenceUtil.format("订单[{}]当前状态无法打印快递单",
+                    order.getOrderNo()));
+        }
+        List<StoreOrderDetail> containDetails = storeOrderDetailMapper.selectList(
+                Wrappers.lambdaQuery(StoreOrderDetail.class)
+                        .eq(StoreOrderDetail::getStoreOrderId, order.getId())
+                        .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
+        for (StoreOrderDetail containDetail : containDetails) {
+            if (EDeliveryType.SHIP_COMPLETE.getValue().equals(order.getDeliveryType())) {
+                //如果是货齐再发，此次发货需要包含所有明细
+                if (!storeOrderDetailIds.contains(containDetail.getId())) {
+                    throw new ServiceException(CharSequenceUtil.format("订单[{}]不可拆单发货",
+                            order.getOrderNo()));
+                }
+            }
+            if (EExpressType.STORE.getValue().equals(containDetail.getExpressType())) {
+                //已存在档口发货的明细
+                throw new ServiceException(CharSequenceUtil.format("订单[{}]由档口物流发货！",
+                        order.getOrderNo()));
+            }
+        }
+        List<StoreOrderDetail> orderDetails = storeOrderDetailMapper.selectByIds(storeOrderDetailIds);
+        for (StoreOrderDetail orderDetail : orderDetails) {
+            //校验明细状态
+            if (!BeanValidators.exists(orderDetail)) {
+                throw new ServiceException(CharSequenceUtil.format("订单明细[{}]不存在",
+                        orderDetail.getId()));
+            }
+            if (!order.getId().equals(orderDetail.getStoreOrderId())) {
+                throw new ServiceException(CharSequenceUtil.format("发货订单[{}]与明细[{}]不匹配",
+                        order.getId(), orderDetail.getId()));
+            }
+            if (!EOrderStatus.PENDING_SHIPMENT.getValue().equals(orderDetail.getDetailStatus())) {
+                throw new ServiceException(CharSequenceUtil.format("订单明细[{}]当前状态无法发货",
+                        orderDetail.getId()));
+            }
+        }
+        //物流发货
+        ExpressShipReqDTO shipReq = createShipReq(order, orderDetails);
+        ExpressShippingLabelDTO shippingLabelDTO = expressManager.shipStoreOrder(shipReq);
+        //订阅轨迹
+        ExpressTrackSubReqDTO trackSubReq = new ExpressTrackSubReqDTO(shipReq.getExpressReqNo(),
+                shippingLabelDTO.getExpressWaybillNo(), shipReq.getOriginContactPhoneNumber(),
+                shipReq.getDestinationContactPhoneNumber());
+        boolean trackSubSuccess = expressManager.subscribeTrack(trackSubReq);
+        Assert.isTrue(trackSubSuccess, "物流轨迹订阅失败");
+
+        List<Long> orderDetailIdList = new ArrayList<>(orderDetails.size());
+        for (StoreOrderDetail orderDetail : orderDetails) {
+            //明细
+            orderDetail.setExpressId(expressId);
+            orderDetail.setExpressType(EExpressType.PLATFORM.getValue());
+            orderDetail.setExpressStatus(EExpressStatus.PLACED.getValue());
+            orderDetail.setExpressReqNo(shipReq.getExpressReqNo());
+            orderDetail.setExpressWaybillNo(shippingLabelDTO.getExpressWaybillNo());
+            int orderDetailSuccess = storeOrderDetailMapper.updateById(prepareUpdate(orderDetail));
+            if (orderDetailSuccess == 0) {
+                throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
+            }
+            orderDetailIdList.add(orderDetail.getId());
+        }
+        //订单
+        int orderSuccess = storeOrderMapper.updateById(prepareUpdate(order));
+        if (orderSuccess == 0) {
+            throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
+        }
+        //面单信息
+        ExpressShippingLabel shippingLabel = BeanUtil.toBean(shippingLabelDTO, ExpressShippingLabel.class);
+        shippingLabel.setDelFlag(Constants.UNDELETED);
+        expressShippingLabelMapper.insert(prepareInsert(shippingLabel));
+        //操作记录
+        addOperationRecords(order.getId(), EOrderAction.EXPRESS_SHIP, orderDetailIdList, EOrderAction.EXPRESS_SHIP,
+                "打印快递单", operatorId, new Date());
+        return shippingLabelDTO;
     }
 
     @Transactional(rollbackFor = Exception.class)

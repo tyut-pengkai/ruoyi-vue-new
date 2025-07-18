@@ -1,10 +1,13 @@
 package com.ruoyi.xkt.dto.express;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -115,6 +118,17 @@ public class ExpressShipReqDTO {
          * 货品备注
          */
         private String remark;
+    }
+
+    public String getGoodsSummary() {
+        if (CollUtil.isEmpty(orderItems)) {
+            return null;
+        }
+        List<String> list = new ArrayList<>(orderItems.size());
+        for (OrderItem item : orderItems) {
+            list.add(StrUtil.emptyIfNull(item.getName()) + "*" + item.getQuantity());
+        }
+        return StrUtil.join(";", list);
     }
 
 }

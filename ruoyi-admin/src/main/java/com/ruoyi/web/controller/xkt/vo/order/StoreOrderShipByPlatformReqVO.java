@@ -24,8 +24,8 @@ public class StoreOrderShipByPlatformReqVO {
     @ApiModelProperty(value = "订单明细ID", required = true)
     private List<Long> storeOrderDetailIds;
 
-    @NotNull(message = "物流ID不能为空")
-    @ApiModelProperty(value = "物流ID", required = true)
-    private Long expressId;
+//    @NotNull(message = "物流ID不能为空")
+//    @ApiModelProperty(value = "物流ID", required = true)
+//    private Long expressId;
 
 }

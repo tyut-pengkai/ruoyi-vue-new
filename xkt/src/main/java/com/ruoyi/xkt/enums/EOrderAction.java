@@ -25,6 +25,7 @@ public enum EOrderAction {
     APPLY_PLATFORM_INVOLVE(12, "申请平台介入"),
     COMPLETE_PLATFORM_INVOLVE(13, "平台介入完成"),
     USER_COMPLETE_AFTER_SALE(14, "用户确认售后完成"),
+    EXPRESS_SHIP(15, "物流发货"),
     ;
 
     private final Integer value;

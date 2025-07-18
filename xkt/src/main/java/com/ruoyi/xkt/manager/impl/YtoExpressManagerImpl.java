@@ -6,6 +6,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson2.JSON;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.xkt.dto.express.*;
 import com.ruoyi.xkt.enums.EExpressChannel;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -48,7 +50,7 @@ public class YtoExpressManagerImpl implements ExpressManager {
     }
 
     @Override
-    public String shipStoreOrder(ExpressShipReqDTO shipReqDTO) {
+    public ExpressShippingLabelDTO shipStoreOrder(ExpressShipReqDTO shipReqDTO) {
         YtoCreateOrderParam createOrderParam = trans2CreateOrderReq(shipReqDTO);
         try {
             String param = JSONUtil.toJsonStr(createOrderParam);
@@ -61,10 +63,33 @@ public class YtoExpressManagerImpl implements ExpressManager {
             String rtnStr = HttpUtil.post(gatewayUrl + "open/privacy_create_adapter/v1/N364gM/" + appKey,
                     JSONUtil.toJsonStr(request));
             log.info("圆通订单创建返回信息: {}", rtnStr);
-            JSONObject rtnJson = JSONUtil.parseObj(rtnStr);
-            String waybillNo = rtnJson.getStr("mailNo");
+            com.alibaba.fastjson2.JSONObject rtnJson = JSON.parseObject(rtnStr);
+            String waybillNo = rtnJson.getString("mailNo");
             if (StrUtil.isNotEmpty(waybillNo)) {
-                return waybillNo;
+                ExpressShippingLabelDTO rtn = new ExpressShippingLabelDTO(shipReqDTO.getOriginContactName(),
+                        shipReqDTO.getOriginContactPhoneNumber(), shipReqDTO.getOriginProvinceName(),
+                        shipReqDTO.getOriginCityName(), shipReqDTO.getOriginCountyName(),
+                        shipReqDTO.getOriginDetailAddress(), shipReqDTO.getDestinationContactName(),
+                        shipReqDTO.getDestinationContactPhoneNumber(), shipReqDTO.getDestinationProvinceName(),
+                        shipReqDTO.getDestinationCityName(), shipReqDTO.getDestinationCountyName(),
+                        shipReqDTO.getDestinationDetailAddress());
+                rtn.setExpressWaybillNo(waybillNo);
+                rtn.setExpressId(channel().getExpressId());
+                rtn.setVasType("");
+                String mark = rtnJson.getString("shortAddress");
+                rtn.setMark(mark);
+                if (mark != null) {
+                    String[] ms = mark.split("-");
+                    if (ms.length > 1) {
+                        rtn.setShortMark(ms[1]);
+                    }
+                }
+                rtn.setBagAddr("");
+                rtn.setLastPrintTime(new Date());
+                rtn.setPrintCount(1);
+                rtn.setGoodsInfo(shipReqDTO.getGoodsSummary());
+                rtn.setRemark(rtn.getGoodsInfo());
+                return rtn;
             }
         } catch (Exception e) {
             log.error("圆通订单创建异常", e);

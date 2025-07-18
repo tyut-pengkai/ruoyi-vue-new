@@ -14,13 +14,17 @@ import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.common.utils.desensitization.DesensitizationUtil;
 import com.ruoyi.framework.notice.fs.FsNotice;
+import com.ruoyi.web.controller.xkt.vo.IdVO;
+import com.ruoyi.web.controller.xkt.vo.express.ExpressShippingLabelVO;
+import com.ruoyi.web.controller.xkt.vo.express.ExpressWaybillNosVO;
 import com.ruoyi.web.controller.xkt.vo.order.*;
 import com.ruoyi.xkt.domain.StoreOrder;
 import com.ruoyi.xkt.domain.StoreOrderDetail;
 import com.ruoyi.xkt.dto.express.ExpressCancelReqDTO;
 import com.ruoyi.xkt.dto.express.ExpressInterceptReqDTO;
-import com.ruoyi.xkt.dto.express.ExpressPrintDTO;
+import com.ruoyi.xkt.dto.express.ExpressShippingLabelDTO;
 import com.ruoyi.xkt.dto.order.*;
 import com.ruoyi.xkt.enums.EExpressStatus;
 import com.ruoyi.xkt.enums.EPayChannel;
@@ -177,7 +181,7 @@ public class StoreOrderController extends XktBaseController {
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @Log(title = "订单", businessType = BusinessType.OTHER)
-    @ApiOperation("发货-平台物流")
+    @ApiOperation("发货-有单号（已打印快递单）")
     @PostMapping("ship/platform")
     public R<List<StoreOrderShipRespVO>> shipByPlatform(@Valid @RequestBody StoreOrderShipByPlatformReqVO vo) {
         if (!SecurityUtils.isAdmin()) {
@@ -185,7 +189,7 @@ public class StoreOrderController extends XktBaseController {
             storeOrderService.checkOrderStore(vo.getStoreOrderId(), SecurityUtils.getStoreId());
         }
         StoreOrderExt orderExt = storeOrderService.shipOrderByPlatform(vo.getStoreOrderId(),
-                vo.getStoreOrderDetailIds(), vo.getExpressId(), SecurityUtils.getUserId());
+                vo.getStoreOrderDetailIds(), SecurityUtils.getUserId());
         List<StoreOrderShipRespVO> respList = new ArrayList<>(vo.getStoreOrderDetailIds().size());
         for (StoreOrderDetail detail : orderExt.getOrderDetails()) {
             if (vo.getStoreOrderDetailIds().contains(detail.getId())) {
@@ -197,7 +201,7 @@ public class StoreOrderController extends XktBaseController {
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @Log(title = "订单", businessType = BusinessType.OTHER)
-    @ApiOperation("发货-档口物流")
+    @ApiOperation("发货-无单号（未在平台打印过快递单）")
     @PostMapping("ship/store")
     public R<List<StoreOrderShipRespVO>> shipByStore(@Valid @RequestBody StoreOrderShipByStoreReqVO vo) {
         if (!SecurityUtils.isAdmin()) {
@@ -217,21 +221,38 @@ public class StoreOrderController extends XktBaseController {
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @Log(title = "订单", businessType = BusinessType.OTHER)
-    @ApiOperation("打印面单")
-    @PostMapping("ship/print")
-    public R<List<StoreOrderPrintRespVO>> print(@Valid @RequestBody StoreOrderPrintReqVO vo) {
+    @ApiOperation("打印快递单")
+    @PostMapping("/ship/print")
+    public R<ExpressShippingLabelVO> print(@Valid @RequestBody StoreOrderPrintReqVO vo) {
         if (!SecurityUtils.isAdmin()) {
             //仅档口可操作
             storeOrderService.checkOrderStore(vo.getStoreOrderDetailIds(), SecurityUtils.getStoreId());
         }
-        List<ExpressPrintDTO> dtoList = storeOrderService.printOrder(vo.getStoreOrderDetailIds());
-        List<StoreOrderPrintRespVO> rtnList = dtoList.stream().map(o -> {
-            StoreOrderPrintRespVO rtn = new StoreOrderPrintRespVO();
-            rtn.setExpressWaybillNo(o.getWaybillNo());
-            rtn.setResult(o.getResult());
-            return rtn;
-        }).collect(Collectors.toList());
-        return success(rtnList);
+        ExpressShippingLabelDTO dto = storeOrderService.printOrder(vo.getStoreOrderId(),
+                vo.getStoreOrderDetailIds(), vo.getExpressId(), SecurityUtils.getUserId());
+        return success(DesensitizationUtil.desensitize(BeanUtil.toBean(dto, ExpressShippingLabelVO.class)));
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
+    @Log(title = "订单", businessType = BusinessType.OTHER)
+    @ApiOperation("原单号打印-选择列表")
+    @PostMapping("/ship/pre-print-origin")
+    public R<List<ShipLabelPreOrgPrintItemVO>> listPreOrgPrintItem(@Valid @RequestBody IdVO vo) {
+        if (!SecurityUtils.isAdmin()) {
+            //仅档口可操作
+            storeOrderService.checkOrderStore(vo.getId(), SecurityUtils.getStoreId());
+        }
+        List<ShipLabelPreOrgPrintItemDTO> dtos = storeOrderService.listPreOrgPrintItem(vo.getId());
+        return success(BeanUtil.copyToList(dtos, ShipLabelPreOrgPrintItemVO.class));
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
+    @Log(title = "订单", businessType = BusinessType.OTHER)
+    @ApiOperation("原单号打印-打印")
+    @PostMapping("/ship/print-origin")
+    public R<List<ExpressShippingLabelVO>> printOrgShippingLabel(@Valid @RequestBody ExpressWaybillNosVO vo) {
+        List<ExpressShippingLabelDTO> dtos = storeOrderService.printOrgShippingLabel(vo.getExpressWaybillNos());
+        return success(DesensitizationUtil.desensitize(BeanUtil.copyToList(dtos, ExpressShippingLabelVO.class)));
     }
 
     @PreAuthorize("@ss.hasAnyRoles('seller')")
