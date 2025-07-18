@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.xkt.vo.order;
 
+import com.ruoyi.web.controller.xkt.vo.express.ExpressWaybillNoInfoVO;
 import com.ruoyi.xkt.dto.order.StoreOrderDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -255,6 +256,9 @@ public class StoreOrderPageItemVO extends StoreOrderDTO {
 
     @ApiModelProperty(value = "平台介入结果")
     private String platformInvolveResult;
+
+    @ApiModelProperty(value = "物流运单号（快递单号）信息集合")
+    private List<ExpressWaybillNoInfoVO> expressWaybillInfos;
 
     @ApiModel
     @Data

@@ -505,6 +505,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                     .stream()
                     .collect(Collectors.groupingBy(StoreOrderDetailDTO::getStoreOrderId));
             Map<String, String> regionMap = expressService.getRegionNameMapCache();
+            Map<Long, String> expressMap = expressService.getAllExpressNameMap();
             for (StoreOrderPageItemDTO order : list) {
                 //物流信息
                 order.setDestinationProvinceName(regionMap.get(order.getDestinationProvinceCode()));
@@ -514,10 +515,20 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                 order.setOriginCityName(regionMap.get(order.getOriginCityCode()));
                 order.setOriginCountyName(regionMap.get(order.getOriginCountyCode()));
                 order.setOrderDetails(orderDetailGroup.get(order.getId()));
+                Set<ExpressWaybillNoInfoDTO> expressWaybillNoInfos = new LinkedHashSet<>();
                 for (StoreOrderDetailInfoDTO detail : order.getOrderDetails()) {
                     //首图
                     detail.setFirstMainPicUrl(mainPicMap.get(detail.getStoreProdId()));
+                    if (StrUtil.isNotEmpty(detail.getExpressWaybillNo())) {
+                        String[] nos = detail.getExpressWaybillNo().split(",");
+                        Long eId = detail.getExpressId();
+                        String eName = expressMap.get(eId);
+                        for (String no : nos) {
+                            expressWaybillNoInfos.add(new ExpressWaybillNoInfoDTO(eId, eName, no));
+                        }
+                    }
                 }
+                order.setExpressWaybillNoInfos(new ArrayList<>(expressWaybillNoInfos));
             }
         }
         return page;

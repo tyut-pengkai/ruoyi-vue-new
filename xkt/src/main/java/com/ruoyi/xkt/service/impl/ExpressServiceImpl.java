@@ -312,7 +312,7 @@ public class ExpressServiceImpl implements IExpressService {
                 Wrappers.lambdaQuery(ExpressTrackRecord.class)
                         .in(ExpressTrackRecord::getExpressWaybillNo, expressWaybillNos)
                         .eq(SimpleEntity::getDelFlag, Constants.UNDELETED)
-//                        .orderByAsc(SimpleEntity::getCreateTime)
+                        .orderByDesc(SimpleEntity::getCreateTime)
         );
         return BeanUtil.copyToList(expressTrackRecords, ExpressTrackRecordDTO.class);
     }

@@ -1,5 +1,6 @@
 package com.ruoyi.xkt.dto.order;
 
+import com.ruoyi.xkt.dto.express.ExpressWaybillNoInfoDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -34,5 +35,7 @@ public class StoreOrderPageItemDTO extends StoreOrderDTO {
     private String destinationCountyName;
 
     private List<StoreOrderDetailInfoDTO> orderDetails;
+
+    private List<ExpressWaybillNoInfoDTO> expressWaybillNoInfos;
 
 }

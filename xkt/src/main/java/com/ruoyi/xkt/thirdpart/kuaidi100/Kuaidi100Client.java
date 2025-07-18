@@ -87,7 +87,7 @@ public class Kuaidi100Client {
                 /**
                  * 返回结果排序:desc降序（默认）,asc 升序
                  */
-                param.put("order", "asc");
+                param.put("order", "desc");
                 /**
                  * 签名， 用于验证身份， 按param + key + customer 的顺序进行MD5加密（注意加密后字符串一定要转32位大写），
                  * 不需要加上“+”号
