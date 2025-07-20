@@ -36,8 +36,9 @@ sms:
   accessKeyId: LTAI5tGWiFU2zweJwarUJgzF
   accessKeySecret: gVpsVKSds5keQeN0mDDVKmY8YTGOkk
   regionId:
-  send: true
+  send: false
   verificationCode:
+    testModel: true
     signName: 成都一方鹏商贸
     templateCode: SMS_318925388
 ocr:
