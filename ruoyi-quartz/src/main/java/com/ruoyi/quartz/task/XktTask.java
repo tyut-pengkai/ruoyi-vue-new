@@ -764,6 +764,52 @@ public class XktTask {
         redisCache.setCacheObject(CacheConstants.CATE_TOP_50_SALE_PROD, cateSaleTop50ProdList);
     }
 
+    /**
+     * 凌晨3:00更新档口权重到redis
+     */
+    public void updateStoreWeightToES() throws IOException {
+        // 找到昨天开通会员的所有档口
+        List<StoreMember> memberList = this.storeMemberMapper.selectList(new LambdaQueryWrapper<StoreMember>()
+                .eq(StoreMember::getDelFlag, Constants.UNDELETED)
+                .eq(StoreMember::getLevel, StoreMemberLevel.STRENGTH_CONSTRUCT.getValue())
+                .eq(StoreMember::getVoucherDate, java.sql.Date.valueOf(LocalDate.now().minusDays(1))));
+        if (CollectionUtils.isEmpty(memberList)) {
+            return;
+        }
+        final List<Long> storeIdList = memberList.stream().map(StoreMember::getStoreId).collect(Collectors.toList());
+        List<Store> storeList = this.storeMapper.selectList(new LambdaQueryWrapper<Store>()
+                .eq(Store::getDelFlag, Constants.UNDELETED).in(Store::getId, storeIdList));
+        List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+                .eq(StoreProduct::getDelFlag, Constants.UNDELETED).in(StoreProduct::getStoreId, storeIdList));
+        if (CollectionUtils.isEmpty(storeProdList)) {
+            return;
+        }
+        // 档口权重map
+        Map<Long, Integer> storeWeightMap = storeList.stream().collect(Collectors
+                .toMap(Store::getId, x -> ObjectUtils.defaultIfNull(x.getStoreWeight(), 0)));
+        // 构建一个批量数据集合
+        List<BulkOperation> list = new ArrayList<>();
+        storeProdList.forEach(storeProd -> {
+            // 构建部分文档更新请求
+            list.add(new BulkOperation.Builder().update(u -> u
+                            .action(a -> a.doc(new HashMap<String, Object>() {{
+                                put("storeWeight", ObjectUtils.defaultIfNull(storeWeightMap.get(storeProd.getStoreId()), Constants.STORE_WEIGHT_DEFAULT_ZERO));
+                            }}))
+                            .id(String.valueOf(storeProd.getId()))
+                            .index(Constants.ES_IDX_PRODUCT_INFO))
+                    .build());
+        });
+        try {
+            // 调用bulk方法执行批量更新操作
+            BulkResponse bulkResponse = esClientWrapper.getEsClient().bulk(e -> e.index(Constants.ES_IDX_PRODUCT_INFO).operations(list));
+            log.info("bulkResponse.result() = {}", bulkResponse.items());
+        } catch (IOException | RuntimeException e) {
+            // 记录日志并抛出或处理异常
+            log.error("向ES更新档口权重失败，商品ID: {}, 错误信息: {}", storeProdList.stream().map(StoreProduct::getId).collect(Collectors.toList()), e.getMessage());
+            throw e; // 或者做其他补偿处理，比如异步重试
+        }
+    }
+
 
     /**
      * 每晚22:00:10 更新广告位竞价状态 将biddingTempStatus赋值给biddingStatus

@@ -1269,9 +1269,15 @@ public class StoreProductServiceImpl implements IStoreProductService {
                             .index(Constants.ES_IDX_PRODUCT_INFO))
                     .build());
         });
-        // 调用bulk方法执行批量更新操作
-        BulkResponse bulkResponse = esClientWrapper.getEsClient().bulk(e -> e.index(Constants.ES_IDX_PRODUCT_INFO).operations(list));
-        System.out.println("bulkResponse.items() = " + bulkResponse.items());
+        try {
+            // 调用bulk方法执行批量更新操作
+            BulkResponse bulkResponse = esClientWrapper.getEsClient().bulk(e -> e.index(Constants.ES_IDX_PRODUCT_INFO).operations(list));
+            log.info("bulkResponse.result() = {}", bulkResponse.items());
+        } catch (IOException | RuntimeException e) {
+            // 记录日志并抛出或处理异常
+            log.error("向ES更新商品状态失败，商品ID: {}, 错误信息: {}", statusDTO.getStoreProdIdList(), e.getMessage());
+            throw e; // 或者做其他补偿处理，比如异步重试
+        }
     }
 
     /**

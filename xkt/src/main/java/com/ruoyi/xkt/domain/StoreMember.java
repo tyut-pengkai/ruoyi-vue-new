@@ -40,5 +40,9 @@ public class StoreMember extends XktBaseEntity {
      * 截止日期 yyyy-MM-dd
      */
     private Date endTime;
+    /**
+     * 单据日期
+     */
+    private Date voucherDate;
 
 }
