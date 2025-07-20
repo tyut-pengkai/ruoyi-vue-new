@@ -26,6 +26,10 @@ public class ExpressTrackDTO {
      */
     private String expressName;
     /**
+     * 物流类型[1:平台物流 2:档口物流]
+     */
+    private Integer expressType;
+    /**
      * 商品概要
      */
     private String goodsSummary;

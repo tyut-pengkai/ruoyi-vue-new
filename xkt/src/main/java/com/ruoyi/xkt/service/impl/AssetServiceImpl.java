@@ -42,7 +42,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author liangyq
@@ -333,18 +332,11 @@ public class AssetServiceImpl implements IAssetService {
 
     @Override
     public void sendSmsVerificationCode(String phoneNumber) {
-        String k = CacheConstants.SMS_CAPTCHA_CODE_CD_PHONE_NUM_KEY + phoneNumber;
-        String v = redisCache.getCacheObject(k);
-        if (StrUtil.isNotEmpty(v)) {
-            throw new ServiceException("验证码发送间隔需大于60S");
-        }
-        String code = RandomUtil.randomNumbers(6);
-        boolean success = smsClient.sendVerificationCode(phoneNumber, code);
+        boolean success = smsClient.sendVerificationCode(CacheConstants.SMS_ASSET_CAPTCHA_CODE_KEY, phoneNumber,
+                RandomUtil.randomNumbers(6));
         if (success) {
-            String rk = CacheConstants.SMS_ASSET_CAPTCHA_CODE_KEY + phoneNumber;
-            redisCache.setCacheObject(rk, code, 5, TimeUnit.MINUTES);
+            throw new ServiceException("短信发送失败");
         }
-        redisCache.setCacheObject(k, "1", 60, TimeUnit.SECONDS);
     }
 
     @Override
@@ -371,13 +363,8 @@ public class AssetServiceImpl implements IAssetService {
      * @return
      */
     private void validateSmsVerificationCode(String phoneNumber, String code) {
-        String rk = CacheConstants.SMS_ASSET_CAPTCHA_CODE_KEY + phoneNumber;
-        String cacheCode = redisCache.getCacheObject(rk);
-        if (cacheCode == null) {
-            throw new ServiceException("验证码已失效");
-        }
-        redisCache.deleteObject(rk);
-        if (!StrUtil.equals(cacheCode, code)) {
+        boolean match = smsClient.matchVerificationCode(CacheConstants.SMS_ASSET_CAPTCHA_CODE_KEY, phoneNumber, code);
+        if (!match) {
             throw new ServiceException("验证码错误");
         }
     }

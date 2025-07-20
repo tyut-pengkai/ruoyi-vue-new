@@ -23,11 +23,7 @@ import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 登录校验方法
@@ -243,29 +239,13 @@ public class SysLoginService {
      * @param uuid         图形验证码uuid
      */
     public void sendSmsVerificationCode(String phoneNumber, boolean checkPicCode, String code, String uuid) {
-        String k = CacheConstants.SMS_CAPTCHA_CODE_CD_PHONE_NUM_KEY + phoneNumber;
-        String v = redisCache.getCacheObject(k);
-        if (StrUtil.isNotEmpty(v)) {
-            throw new ServiceException("验证码发送间隔需大于60S");
-        }
         if (checkPicCode) {
             validateCaptcha(null, code, uuid);
         }
-        sendSmsVerificationCode(phoneNumber);
-        redisCache.setCacheObject(k, "1", 60, TimeUnit.SECONDS);
-    }
-
-    /**
-     * 发送登录/注册短信验证码
-     *
-     * @param phoneNumber 电话号码
-     */
-    public void sendSmsVerificationCode(String phoneNumber) {
-        String code = RandomUtil.randomNumbers(6);
-        boolean success = smsClient.sendVerificationCode(phoneNumber, code);
-        if (success) {
-            String rk = CacheConstants.SMS_LOGIN_CAPTCHA_CODE_KEY + phoneNumber;
-            redisCache.setCacheObject(rk, code, 5, TimeUnit.MINUTES);
+        boolean success = smsClient.sendVerificationCode(CacheConstants.SMS_LOGIN_CAPTCHA_CODE_KEY, phoneNumber,
+                RandomUtil.randomNumbers(6));
+        if (!success) {
+            throw new ServiceException("短信发送失败");
         }
     }
 
@@ -277,14 +257,9 @@ public class SysLoginService {
      * @return
      */
     public void validateSmsVerificationCode(String phoneNumber, String code) {
-        String rk = CacheConstants.SMS_LOGIN_CAPTCHA_CODE_KEY + phoneNumber;
-        String cacheCode = redisCache.getCacheObject(rk);
-        if (cacheCode == null) {
-            throw new CaptchaExpireException();
-        }
-        redisCache.deleteObject(rk);
-        if (!StrUtil.equals(cacheCode, code)) {
-            throw new CaptchaException();
+        boolean match = smsClient.matchVerificationCode(CacheConstants.SMS_LOGIN_CAPTCHA_CODE_KEY, phoneNumber, code);
+        if (!match) {
+            throw new ServiceException("验证码错误");
         }
     }
 }

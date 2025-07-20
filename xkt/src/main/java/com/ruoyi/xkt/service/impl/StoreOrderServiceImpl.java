@@ -433,7 +433,10 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
 
     @Override
     public List<ShipLabelPreOrgPrintItemDTO> listPreOrgPrintItem(Long storeOrderId) {
-        List<ExpressTrackDTO> dtos = getOrderExpressTracks(storeOrderId, true);
+        List<ExpressTrackDTO> dtos = getOrderExpressTracks(storeOrderId, true)
+                .stream()
+                .filter(o -> EExpressType.PLATFORM.getValue().equals(o.getExpressType()))
+                .collect(Collectors.toList());
         Set<String> expressWaybillNos = dtos.stream().map(ExpressTrackDTO::getExpressWaybillNo)
                 .collect(Collectors.toSet());
         if (CollUtil.isEmpty(expressWaybillNos)) {
@@ -511,6 +514,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                 expressTrackDTO.setCreateTime(createTime);
                 expressTrackDTO.setExpressId(expressId);
                 expressTrackDTO.setExpressName(expressNameMap.get(expressId));
+                expressTrackDTO.setExpressType(oneDetail.getExpressType());
                 expressTrackDTO.setExpressWaybillNo(entry.getKey());
                 expressTrackDTO.setGoodsSummary(goodsSummaryStr);
                 expressTrackDTO.setRecords(trackRecordGroupMap.getOrDefault(entry.getKey(), ListUtil.empty()));
@@ -523,6 +527,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                     expressTrackDTO.setCreateTime(createTime);
                     expressTrackDTO.setExpressId(expressId);
                     expressTrackDTO.setExpressName(expressNameMap.get(expressId));
+                    expressTrackDTO.setExpressType(oneDetail.getExpressType());
                     expressTrackDTO.setExpressWaybillNo(expressWaybillNo);
                     expressTrackDTO.setGoodsSummary(goodsSummaryStr);
                     //通过快递100查询轨迹
@@ -543,7 +548,8 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
 
     @Override
     public Page<StoreOrderPageItemDTO> page(StoreOrderQueryDTO queryDTO) {
-        Page<StoreOrderPageItemDTO> page = PageHelper.startPage(queryDTO.getPageNum(), queryDTO.getPageSize());
+        Page<StoreOrderPageItemDTO> page = PageHelper.startPage(queryDTO.getPageNum(), queryDTO.getPageSize(),
+                "so.create_time DESC");
         storeOrderMapper.listStoreOrderPageItem(queryDTO);
         if (CollUtil.isNotEmpty(page.getResult())) {
             List<StoreOrderPageItemDTO> list = page.getResult();
