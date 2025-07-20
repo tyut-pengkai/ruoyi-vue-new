@@ -26,10 +26,10 @@ oss:
   stsCacheDuration: 1800
 img-search:
   endPoint: imagesearch.cn-hangzhou.aliyuncs.com
-  accessKeyId: LTAI5tHtvRvjLEKWPJnArUgK
-  accessKeySecret: mml7Gfu82l3MQH1gDDDspxaluVwILO
+  accessKeyId: LTAI5tMbgwJxYgKwc2fCC1oT
+  accessKeySecret: GQbasTQ3QVu92sCbnVJMFfaGybIosx
   regionId: cn-hangzhou
-  instanceName: liuboboerzengsanmei
+  instanceName: zengsanmeiliuboboer
   # 如果是内网访问图像搜索服务，则endpointType为必填项，值统一为"internal"
   endpointType:
 sms:
