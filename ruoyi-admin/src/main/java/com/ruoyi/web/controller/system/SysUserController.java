@@ -253,4 +253,11 @@ public class SysUserController extends BaseController
     {
         return success(deptService.selectDeptTreeList(dept));
     }
+
+    @Log(title = "用户管理", businessType = BusinessType.UPDATE)
+    @PutMapping("/userLevel")
+    public AjaxResult updateUserLevel(@RequestBody SysUser user)
+    {
+        return toAjax(userService.updateUserLevel(user.getUserId(), user.getUserLevel()));
+    }
 }
