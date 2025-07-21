@@ -203,4 +203,8 @@ public interface ISysUserService
      * @return 结果
      */
     public String importUser(List<SysUser> userList, Boolean isUpdateSupport, String operName);
+   /**
+     * 修改用户等级
+     */
+    public int updateUserLevel(Long userId, Integer userLevel);
 }

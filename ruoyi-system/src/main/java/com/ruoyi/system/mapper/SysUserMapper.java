@@ -124,4 +124,8 @@ public interface SysUserMapper
      * @return 结果
      */
     public SysUser checkEmailUnique(String email);
+    /**
+     * 修改用户等级
+     */
+    public int updateUserLevel(@Param("userId") Long userId, @Param("userLevel") Integer userLevel);
 }
