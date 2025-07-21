@@ -74,7 +74,7 @@ public class SysMenuServiceImpl implements ISysMenuService {
                 .collect(Collectors.groupingBy(MenuTreeNode::getParentId));
         for (MenuTreeNode treeNode : list) {
             // 如果没有父级, 设置为根节点
-            if (existsParentMap.get(treeNode.getMenuId())) {
+            if (!existsParentMap.get(treeNode.getMenuId())) {
                 treeNodeList.add(treeNode);
             }
             // 为当前节点添加子节点
