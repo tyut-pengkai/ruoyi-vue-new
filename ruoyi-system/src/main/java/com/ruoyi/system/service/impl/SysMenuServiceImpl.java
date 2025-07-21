@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -57,6 +58,14 @@ public class SysMenuServiceImpl implements ISysMenuService {
 
     @Override
     public <T extends SysMenu> List<MenuTreeNode> getMenuTree(Collection<T> menus) {
+        if (CollUtil.isEmpty(menus)) {
+            return ListUtil.empty();
+        }
+        Map<Long, T> menuMap = menus.stream().collect(Collectors.toMap(SysMenu::getMenuId, Function.identity()));
+        Map<Long, Boolean> existsParentMap = new HashMap<>(menus.size());
+        for (T menu : menus) {
+            existsParentMap.put(menu.getMenuId(), menuMap.get(menu.getParentId()) != null);
+        }
         List<MenuTreeNode> list = BeanUtil.copyToList(menus, MenuTreeNode.class);
         List<MenuTreeNode> treeNodeList = CollUtil.newArrayList();
         // 按parentCode进行分组
@@ -65,7 +74,7 @@ public class SysMenuServiceImpl implements ISysMenuService {
                 .collect(Collectors.groupingBy(MenuTreeNode::getParentId));
         for (MenuTreeNode treeNode : list) {
             // 如果没有父级, 设置为根节点
-            if (treeNode.getParentId() == null || treeNode.getParentId() == 0) {
+            if (existsParentMap.get(treeNode.getMenuId())) {
                 treeNodeList.add(treeNode);
             }
             // 为当前节点添加子节点
