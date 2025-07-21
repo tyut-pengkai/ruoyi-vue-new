@@ -249,7 +249,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 				AND su.status = #{status}
 			</if>
 			<if test="storeIds != null and !storeIds.isEmpty()">
-				AND sur.store_id IN
+				AND sr.store_id IN
 				<foreach collection="storeIds" item="obj" open="(" close=")" separator=",">
 					#{obj}
 				</foreach>
