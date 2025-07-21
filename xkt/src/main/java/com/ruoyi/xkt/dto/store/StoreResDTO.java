@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -15,10 +16,13 @@ import java.util.Date;
  */
 @ApiModel("档口基本信息")
 @Data
+@Accessors(chain = true)
 public class StoreResDTO {
 
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
+    @ApiModelProperty(value = "登录账号")
+    private String loginAccount;
     @ApiModelProperty(value = "档口名称")
     private String storeName;
     @ApiModelProperty(value = "档口负责人ID")

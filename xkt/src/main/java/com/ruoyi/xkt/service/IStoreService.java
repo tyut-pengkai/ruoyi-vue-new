@@ -3,6 +3,7 @@ package com.ruoyi.xkt.service;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.xkt.dto.store.*;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -156,7 +157,7 @@ public interface IStoreService {
      * @param storeWeightUpdateDTO 更新入参
      * @return Integer
      */
-    Integer updateStoreWeight(StoreWeightUpdateDTO storeWeightUpdateDTO);
+    Integer updateStoreWeight(StoreWeightUpdateDTO storeWeightUpdateDTO) throws IOException;
 
     /**
      * 获取今日客户销售额

@@ -3,12 +3,15 @@ package com.ruoyi.xkt.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
+import co.elastic.clients.elasticsearch.core.BulkResponse;
+import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
+import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.ESystemRole;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.core.redis.RedisCache;
@@ -16,6 +19,7 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.bigDecimal.CollectorsUtil;
+import com.ruoyi.framework.es.EsClientWrapper;
 import com.ruoyi.system.mapper.SysUserMapper;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.xkt.domain.*;
@@ -27,11 +31,13 @@ import com.ruoyi.xkt.service.IAssetService;
 import com.ruoyi.xkt.service.IStoreCertificateService;
 import com.ruoyi.xkt.service.IStoreService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -44,6 +50,7 @@ import java.util.stream.Collectors;
  * @author ruoyi
  * @date 2025-03-26
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class StoreServiceImpl implements IStoreService {
@@ -63,6 +70,7 @@ public class StoreServiceImpl implements IStoreService {
     final StoreCertificateMapper storeCertMapper;
     final SysFileMapper fileMapper;
     final IStoreCertificateService storeCertService;
+    final EsClientWrapper esClientWrapper;
 
 
     /**
@@ -164,7 +172,10 @@ public class StoreServiceImpl implements IStoreService {
                 .eq(Store::getId, storeId))).orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
         StoreResDTO resDTO = BeanUtil.toBean(store, StoreResDTO.class);
         resDTO.setStoreId(storeId);
-        return resDTO;
+        // 获取用户登录账号
+        SysUser user = this.userMapper.selectOne(new LambdaQueryWrapper<SysUser>()
+                .eq(SysUser::getUserId, store.getUserId()).eq(SysUser::getDelFlag, Constants.UNDELETED));
+        return ObjectUtils.isEmpty(user) ? resDTO : resDTO.setLoginAccount(user.getPhonenumber());
     }
 
     /**
@@ -467,7 +478,7 @@ public class StoreServiceImpl implements IStoreService {
      */
     @Override
     @Transactional
-    public Integer updateStoreWeight(StoreWeightUpdateDTO storeWeightUpdateDTO) {
+    public Integer updateStoreWeight(StoreWeightUpdateDTO storeWeightUpdateDTO) throws IOException {
         Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
                         .eq(Store::getId, storeWeightUpdateDTO.getStoreId()).eq(Store::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
@@ -475,7 +486,37 @@ public class StoreServiceImpl implements IStoreService {
             throw new ServiceException("权重范围在-100-100之间!", HttpStatus.ERROR);
         }
         store.setStoreWeight(storeWeightUpdateDTO.getStoreWeight());
-        return this.storeMapper.updateById(store);
+        int count = this.storeMapper.updateById(store);
+        // 更新档口权重到ES中
+        List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+                .eq(StoreProduct::getStoreId, storeWeightUpdateDTO.getStoreId()).eq(StoreProduct::getDelFlag, Constants.UNDELETED));
+        if (CollectionUtils.isEmpty(storeProdList)) {
+            log.info("没有需要更新的档口商品数据");
+            return count;
+        }
+        final Integer storeWeight = ObjectUtils.defaultIfNull(storeWeightUpdateDTO.getStoreWeight(), 0);
+        // 构建一个批量数据集合
+        List<BulkOperation> list = new ArrayList<>();
+        storeProdList.forEach(storeProd -> {
+            // 构建部分文档更新请求
+            list.add(new BulkOperation.Builder().update(u -> u
+                            .action(a -> a.doc(new HashMap<String, Object>() {{
+                                put("storeWeight", storeWeight);
+                            }}))
+                            .id(String.valueOf(storeProd.getId()))
+                            .index(Constants.ES_IDX_PRODUCT_INFO))
+                    .build());
+        });
+        try {
+            // 调用bulk方法执行批量更新操作
+            BulkResponse bulkResponse = esClientWrapper.getEsClient().bulk(e -> e.index(Constants.ES_IDX_PRODUCT_INFO).operations(list));
+            log.info("bulkResponse.result() = {}", bulkResponse.items());
+        } catch (IOException | RuntimeException e) {
+            // 记录日志并抛出或处理异常
+            log.error("向ES更新档口权重失败，商品ID: {}, 错误信息: {}", storeProdList.stream().map(StoreProduct::getId).collect(Collectors.toList()), e.getMessage());
+            throw e; // 或者做其他补偿处理，比如异步重试
+        }
+        return count;
     }
 
 

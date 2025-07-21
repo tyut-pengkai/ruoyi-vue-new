@@ -18,6 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -87,7 +88,7 @@ public class StoreController extends XktBaseController {
     @ApiOperation(value = "修改档口权重", httpMethod = "PUT", response = R.class)
     @Log(title = "修改档口权重", businessType = BusinessType.UPDATE)
     @PutMapping("/store-weight")
-    public R<Integer> updateStoreWeight(@Validated @RequestBody StoreWeightUpdateVO storeWeightUpdateVO) {
+    public R<Integer> updateStoreWeight(@Validated @RequestBody StoreWeightUpdateVO storeWeightUpdateVO) throws IOException {
         return R.ok(storeService.updateStoreWeight(BeanUtil.toBean(storeWeightUpdateVO, StoreWeightUpdateDTO.class)));
     }
 

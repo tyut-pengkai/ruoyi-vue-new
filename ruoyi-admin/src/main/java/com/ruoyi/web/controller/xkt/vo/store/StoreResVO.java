@@ -19,6 +19,8 @@ public class StoreResVO {
 
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
+    @ApiModelProperty(value = "登录账号")
+    private String loginAccount;
     @ApiModelProperty(value = "档口名称")
     private String storeName;
     @ApiModelProperty(value = "档口负责人ID")
