@@ -547,4 +547,11 @@ public class SysUserServiceImpl implements ISysUserService
         }
         return successMsg.toString();
     }
+    @Override
+    public int updateUserLevel(Long userId, Integer userLevel) {
+        if(userLevel < 1 || userLevel > 10) {
+            throw new ServiceException("用户等级必须在1-10之间");
+        }
+        return userMapper.updateUserLevel(userId, userLevel);
+    }
 }
