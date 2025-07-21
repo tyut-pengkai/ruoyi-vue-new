@@ -147,11 +147,13 @@ public class StoreUserController extends BaseController {
             }
         }
         if (csRoleIds.isEmpty()) {
+            Assert.notEmpty(vo.getCode(), "验证码不能为空");
             //原来不是当前档口子账号，校验短信验证码
             loginService.validateSmsVerificationCode(vo.getPhonenumber(), vo.getCode());
         }
         UserInfoEdit dto = BeanUtil.toBean(info, UserInfoEdit.class);
         roleIds.addAll(CollUtil.emptyIfNull(vo.getRoleIds()));
+        dto.setUserName(vo.getUserName());
         dto.setRoleIds(roleIds);
         Long userId = userService.updateUser(dto);
         // 清除用户缓存（退出登录）
