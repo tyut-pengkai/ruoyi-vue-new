@@ -535,7 +535,7 @@ public class SysUserServiceImpl implements ISysUserService {
         if (subCount > 0 && otherCount > 0) {
             throw new ServiceException("用户不能同时有子角色与\"电商卖家\"以外的角色");
         }
-        if ((sellerCount + otherCount) > 0) {
+        if ((sellerCount + otherCount) > 1) {
             throw new ServiceException("用户只能有一个系统角色");
         }
     }
