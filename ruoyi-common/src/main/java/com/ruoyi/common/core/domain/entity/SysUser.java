@@ -335,4 +335,14 @@ public class SysUser extends BaseEntity
             .append("dept", getDept())
             .toString();
     }
+    /** 用户等级(1-10) */
+    private Integer userLevel;
+
+    public Integer getUserLevel() {
+        return userLevel;
+    }
+
+    public void setUserLevel(Integer userLevel) {
+        this.userLevel = userLevel;
+    }
 }
