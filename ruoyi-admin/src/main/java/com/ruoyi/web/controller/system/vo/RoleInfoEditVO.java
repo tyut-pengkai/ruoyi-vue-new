@@ -59,4 +59,7 @@ public class RoleInfoEditVO {
      */
     @ApiModelProperty("菜单ID集")
     private List<Long> menuIds;
+
+    @ApiModelProperty("备注")
+    private String remark;
 }

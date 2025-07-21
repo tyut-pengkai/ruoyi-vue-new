@@ -25,16 +25,14 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 角色信息
@@ -82,6 +80,17 @@ public class StoreRoleController extends XktBaseController {
         query.setStoreIds(Collections.singletonList(SecurityUtils.getStoreId()));
         List<RoleListItem> all = roleService.listRole(query);
         return R.ok(BeanUtil.copyToList(all, RoleListItemVO.class));
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('store')")
+    @ApiOperation(value = "角色详情 - 档口")
+    @GetMapping(value = "/{id}")
+    public R<RoleInfoVO> getInfo(@PathVariable("id") Long id) {
+        RoleInfo infoDTO = roleService.getRoleById(id);
+        RoleInfoVO vo = BeanUtil.toBean(infoDTO, RoleInfoVO.class);
+        vo.setMenuIds(CollUtil.emptyIfNull(vo.getMenus()).stream().map(MenuInfoVO::getMenuId)
+                .collect(Collectors.toList()));
+        return R.ok(vo);
     }
 
 

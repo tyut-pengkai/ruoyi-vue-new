@@ -66,7 +66,7 @@ public class SysRoleController extends XktBaseController {
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')")
-    @ApiOperation(value = "角色详情 - 管理员")
+    @ApiOperation(value = "角色详情 - 管理员/档口")
     @GetMapping(value = "/{id}")
     public R<RoleInfoVO> getInfo(@PathVariable("id") Long id) {
         RoleInfo infoDTO = roleService.getRoleById(id);
