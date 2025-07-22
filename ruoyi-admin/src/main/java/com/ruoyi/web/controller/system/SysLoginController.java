@@ -22,6 +22,7 @@ import com.ruoyi.system.service.ISysMenuService;
 import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.web.controller.system.vo.*;
+import com.ruoyi.xkt.manager.AliAuthManager;
 import com.ruoyi.xkt.service.IStoreService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -59,6 +60,8 @@ public class SysLoginController {
     private TokenService tokenService;
     @Autowired
     private RedisCache redisCache;
+    @Autowired
+    private AliAuthManager aliAuthManager;
 
     /**
      * 登录方法
@@ -69,14 +72,17 @@ public class SysLoginController {
     @ApiOperation(value = "用户名密码登录")
     @PostMapping("/loginByUname")
     public AjaxResult login(@Validated @RequestBody LoginByUsernameVO loginBody) {
+        boolean captchaPass = aliAuthManager.validate(loginBody.getLot_number(), loginBody.getCaptcha_output(),
+                loginBody.getPass_token(), loginBody.getGen_time());
+        if (!captchaPass) {
+            return AjaxResult.error("验证失败");
+        }
         AjaxResult ajax = AjaxResult.success();
         // 生成令牌
         LoginCredential credential = LoginCredential.builder()
                 .loginType(ELoginType.USERNAME)
                 .username(loginBody.getUsername())
                 .password(loginBody.getPassword())
-                .imgUuid(loginBody.getUuid())
-                .imgVerificationCode(loginBody.getCode())
                 .build();
         String token = loginService.login(credential);
         ajax.put(Constants.TOKEN, token);
@@ -101,7 +107,12 @@ public class SysLoginController {
     @ApiOperation(value = "发送登录短信验证码")
     @PostMapping("/sendSmsVerificationCode")
     public R sendSmsVerificationCode(@Validated @RequestBody LoginSmsReqVO vo) {
-        loginService.sendSmsVerificationCode(vo.getPhoneNumber(), true, vo.getCode(), vo.getUuid());
+        boolean captchaPass = aliAuthManager.validate(vo.getLot_number(), vo.getCaptcha_output(),
+                vo.getPass_token(), vo.getGen_time());
+        if (!captchaPass) {
+            return R.fail("验证失败");
+        }
+        loginService.sendSmsVerificationCode(vo.getPhoneNumber(), false, null, null);
         return R.ok();
     }
 

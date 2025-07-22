@@ -25,8 +25,4 @@ public class LoginCredential {
 
     private String smsVerificationCode;
 
-    private String imgUuid;
-
-    private String imgVerificationCode;
-
 }
