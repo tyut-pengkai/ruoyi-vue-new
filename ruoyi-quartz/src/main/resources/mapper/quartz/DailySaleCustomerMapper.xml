@@ -46,4 +46,23 @@
             LIMIT 10
     </select>
 
+    <select id="getMaxSaleCus" resultType="com.ruoyi.xkt.dto.store.StoreIndexOverviewResDTO">
+        SELECT
+            SUM( dsc.sale_amount ) AS topSaleCusAmount,
+            sc.cus_name AS topSaleCusName
+        FROM
+            daily_sale_customer dsc
+                JOIN store_customer sc ON dsc.store_cus_id = sc.id
+        WHERE
+            dsc.del_flag = 0
+            AND dsc.store_id = #{storeId}
+            AND dsc.voucher_date BETWEEN #{voucherDateStart} AND #{voucherDateEnd}
+        GROUP BY
+            dsc.store_cus_id,
+            sc.cus_name
+        ORDER BY
+            topSaleCusAmount DESC
+            LIMIT 1
+    </select>
+
 </mapper> 

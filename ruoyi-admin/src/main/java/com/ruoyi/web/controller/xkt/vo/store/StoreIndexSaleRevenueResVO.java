@@ -21,8 +21,7 @@ public class StoreIndexSaleRevenueResVO {
     private Long storeId;
     @ApiModelProperty(value = "销售出库金额")
     private BigDecimal saleAmount;
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     @ApiModelProperty(value = "单据日期")
-    private Date voucherDate;
+    private Integer day;
 
 }

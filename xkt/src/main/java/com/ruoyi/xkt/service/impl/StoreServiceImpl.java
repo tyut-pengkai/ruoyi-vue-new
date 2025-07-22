@@ -2,6 +2,7 @@ package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
@@ -274,12 +275,16 @@ public class StoreServiceImpl implements IStoreService {
     @Override
     @Transactional(readOnly = true)
     public StoreIndexOverviewResDTO indexOverview(StoreOverviewDTO overviewDTO) {
-        List<DailySale> saleList = this.dailySaleMapper.selectList(new LambdaQueryWrapper<DailySale>()
-                .eq(DailySale::getStoreId, overviewDTO.getStoreId()).eq(DailySale::getDelFlag, Constants.UNDELETED)
-                .between(DailySale::getVoucherDate, overviewDTO.getVoucherDateStart(), overviewDTO.getVoucherDateEnd()));
-        if (CollectionUtils.isEmpty(saleList)) {
-            return new StoreIndexOverviewResDTO();
-        }
+        final String voucherDateStart = DateUtil.formatDate(overviewDTO.getVoucherDateStart());
+        final String voucherDateEnd = DateUtil.formatDate(overviewDTO.getVoucherDateEnd());
+        // 档口销售数据
+        List<DailySale> saleList = Optional.ofNullable(this.dailySaleMapper.selectList(new LambdaQueryWrapper<DailySale>()
+                        .eq(DailySale::getStoreId, overviewDTO.getStoreId()).eq(DailySale::getDelFlag, Constants.UNDELETED)
+                        .between(DailySale::getVoucherDate, voucherDateStart, voucherDateEnd)))
+                .orElse(Collections.emptyList());
+        saleList = CollectionUtils.isNotEmpty(saleList) ? saleList : Collections.emptyList();
+        // 最大销售额客户
+        StoreIndexOverviewResDTO maxSaleCus = this.dailySaleCusMapper.getMaxSaleCus(overviewDTO.getStoreId(), voucherDateStart, voucherDateEnd);
         // 总的销售出库金额
         BigDecimal saleAmount = saleList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSaleAmount(), BigDecimal.ZERO)).reduce(BigDecimal.ZERO, BigDecimal::add);
         // 总的销售退货金额
@@ -293,7 +298,9 @@ public class StoreServiceImpl implements IStoreService {
         // 总的累计客户数
         Integer customerNum = saleList.stream().map(x -> ObjectUtils.defaultIfNull(x.getCustomerNum(), 0)).reduce(0, Integer::sum);
         return new StoreIndexOverviewResDTO().setSaleAmount(saleAmount).setRefundAmount(refundAmount).setSaleNum(saleNum).setRefundNum(refundNum)
-                .setStorageNum(storageNum).setCustomerNum(customerNum);
+                .setStorageNum(storageNum).setCustomerNum(customerNum).setStoreId(overviewDTO.getStoreId())
+                .setTopSaleCusName(ObjectUtils.isNotEmpty(maxSaleCus) ? maxSaleCus.getTopSaleCusName() : "")
+                .setTopSaleCusAmount(ObjectUtils.isNotEmpty(maxSaleCus) ? maxSaleCus.getTopSaleCusAmount() : null);
     }
 
     /**
@@ -305,10 +312,16 @@ public class StoreServiceImpl implements IStoreService {
     @Override
     @Transactional(readOnly = true)
     public List<StoreIndexSaleRevenueResDTO> indexSaleRevenue(StoreSaleRevenueDTO revenueDTO) {
-        List<DailySale> saleList = this.dailySaleMapper.selectList(new LambdaQueryWrapper<DailySale>()
-                .eq(DailySale::getStoreId, revenueDTO.getStoreId()).eq(DailySale::getDelFlag, Constants.UNDELETED)
-                .between(DailySale::getVoucherDate, revenueDTO.getVoucherDateStart(), revenueDTO.getVoucherDateEnd()));
-        return BeanUtil.copyToList(saleList, StoreIndexSaleRevenueResDTO.class);
+        final String voucherDateStart = DateUtil.formatDate(revenueDTO.getVoucherDateStart());
+        final String voucherDateEnd = DateUtil.formatDate(revenueDTO.getVoucherDateEnd());
+        List<DailySale> saleList = Optional.ofNullable(this.dailySaleMapper.selectList(new LambdaQueryWrapper<DailySale>()
+                        .eq(DailySale::getStoreId, revenueDTO.getStoreId()).eq(DailySale::getDelFlag, Constants.UNDELETED)
+                        .between(DailySale::getVoucherDate, voucherDateStart, voucherDateEnd)))
+                .orElse(Collections.emptyList());
+        return saleList.stream().map(x -> BeanUtil.toBean(x, StoreIndexSaleRevenueResDTO.class)
+                        .setDay(x.getVoucherDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().getDayOfMonth()))
+                .sorted(Comparator.comparingInt(StoreIndexSaleRevenueResDTO::getDay))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -412,7 +425,8 @@ public class StoreServiceImpl implements IStoreService {
     @Override
     @Transactional(readOnly = true)
     public List<StoreIndexSaleTop10ResDTO> indexTop10Sale(StoreSaleTop10DTO saleTop10DTO) {
-        return this.dailySaleProdMapper.selectTop10SaleList(saleTop10DTO);
+        return this.dailySaleProdMapper.selectTop10SaleList(saleTop10DTO.getStoreId(),
+                DateUtil.formatDate(saleTop10DTO.getVoucherDateStart()), DateUtil.formatDate(saleTop10DTO.getVoucherDateEnd()));
     }
 
     /**
@@ -424,7 +438,8 @@ public class StoreServiceImpl implements IStoreService {
     @Override
     @Transactional(readOnly = true)
     public List<StoreIndexCusSaleTop10ResDTO> indexTop10SaleCus(StoreSaleCustomerTop10DTO saleCusTop10DTO) {
-        return this.dailySaleCusMapper.selectTop10SaleCustomerList(saleCusTop10DTO);
+        return this.dailySaleCusMapper.selectTop10SaleCustomerList(saleCusTop10DTO.getStoreId(),
+                DateUtil.formatDate(saleCusTop10DTO.getVoucherDateStart()), DateUtil.formatDate(saleCusTop10DTO.getVoucherDateEnd()));
     }
 
     /**

@@ -29,5 +29,9 @@ public class StoreIndexOverviewResVO {
     private Integer storageNum;
     @ApiModelProperty(value = "累计客户数")
     private Integer customerNum;
+    @ApiModelProperty(value = "销售大客户")
+    private String topSaleCusName;
+    @ApiModelProperty(value = "销售大客户金额")
+    private BigDecimal topSaleCusAmount;
 
 }

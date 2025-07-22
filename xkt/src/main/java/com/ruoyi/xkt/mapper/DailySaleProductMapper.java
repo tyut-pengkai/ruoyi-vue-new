@@ -7,7 +7,6 @@ import com.ruoyi.xkt.dto.dailySale.DailySaleProdDTO;
 import com.ruoyi.xkt.dto.dailyStoreProd.DailyStoreProdSaleDTO;
 import com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO;
 import com.ruoyi.xkt.dto.store.StoreIndexSaleTop10ResDTO;
-import com.ruoyi.xkt.dto.store.StoreSaleTop10DTO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
@@ -40,10 +39,14 @@ public interface DailySaleProductMapper extends BaseMapper<DailySaleProduct> {
     /**
      * 获取档口首页商品销量前10
      *
-     * @param saleTop10DTO 查询入参
+     * @param storeId          storeId
+     * @param voucherDateStart 开始时间
+     * @param voucherDateEnd   结束时间
      * @return List<StoreIndexSaleTop10ResDTO>
      */
-    List<StoreIndexSaleTop10ResDTO> selectTop10SaleList(StoreSaleTop10DTO saleTop10DTO);
+    List<StoreIndexSaleTop10ResDTO> selectTop10SaleList(@Param("storeId") Long storeId,
+                                                        @Param("voucherDateStart") String voucherDateStart,
+                                                        @Param("voucherDateEnd") String voucherDateEnd);
 
     /**
      * 获取爆款频出的前50商品及档口
