@@ -26,7 +26,7 @@ import java.util.List;
  * @author ruoyi
  * @date 2025-03-26
  */
-@Api(tags = "用户所有通知")
+@Api(tags = "用户消息通知")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/rest/v1/user-notices")
@@ -51,5 +51,18 @@ public class UserNoticeController extends XktBaseController {
     public R<Page<UserNoticeAppResDTO>> appTypePage(@Validated @RequestBody UserNoticeAppTypePageVO pageVO) {
         return R.ok(userNoticeService.appTypePage(BeanUtil.toBean(pageVO, UserNoticeAppTypePageDTO.class)));
     }
+
+    @ApiOperation(value = "APP - 全部已读", httpMethod = "PUT", response = R.class)
+    @PutMapping("/app/read/all")
+    public R<Integer> appAllRead() {
+        return R.ok(userNoticeService.appBatchRead());
+    }
+
+    @ApiOperation(value = "APP - 未读的分类，点击进入分类列表时调用变为已读", httpMethod = "PUT", response = R.class)
+    @PutMapping("/app/read/type/{targetNoticeType}")
+    public R<Integer> appTypeRead(@PathVariable Integer targetNoticeType) {
+        return R.ok(userNoticeService.appTypeRead(targetNoticeType));
+    }
+
 
 }

@@ -35,4 +35,19 @@ public interface IUserNoticeService {
      * @return List<UserNoticeAppResDTO>
      */
     Page<UserNoticeAppResDTO> appTypePage(UserNoticeAppTypePageDTO pageDTO);
+
+    /**
+     * app 全部已读
+     *
+     * @return Integer
+     */
+    Integer appBatchRead();
+
+    /**
+     * app 某一个具体分类已读
+     *
+     * @param targetNoticeType type
+     * @return
+     */
+    Integer appTypeRead(Integer targetNoticeType);
 }

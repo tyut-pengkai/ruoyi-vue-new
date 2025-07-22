@@ -17,14 +17,14 @@ public class LoginByUsernameVO {
      * 用户名
      */
     @NotEmpty(message = "用户名不能为空")
-    @ApiModelProperty("用户名")
+    @ApiModelProperty(value = "用户名", required = true)
     private String username;
 
     /**
      * 用户密码
      */
     @NotEmpty(message = "用户密码不能为空")
-    @ApiModelProperty("用户密码")
+    @ApiModelProperty(value = "用户密码", required = true)
     private String password;
 
     /**

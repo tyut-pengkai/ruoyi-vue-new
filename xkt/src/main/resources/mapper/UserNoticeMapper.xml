@@ -34,25 +34,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             un.target_notice_type,
             n.notice_content,
             un.create_time,
-            un.read_status,
-            CASE
-                un.target_notice_type
-                WHEN 1 THEN
-                    uns.sys_msg_notice
-                WHEN 2 THEN
-                    uns.order_notice
-                WHEN 3 THEN
-                    uns.focus_notice
-                WHEN 4 THEN
-                    uns.favorite_notice
-                END AS remindStatus
+            un.read_status
         FROM
             user_notice un
-                LEFT JOIN user_notice_setting uns ON un.user_id = uns.user_id
                 LEFT JOIN notice n ON un.notice_id = n.id
         WHERE
-            un.del_flag = 0
-          AND un.user_id = #{userId}
+            un.del_flag = 0 AND un.user_id = #{userId}
+        ORDER BY
+            un.target_notice_type
     </select>
 
     <select id="selectAppTypePage" resultType="com.ruoyi.xkt.dto.userNotice.UserNoticeAppResDTO">

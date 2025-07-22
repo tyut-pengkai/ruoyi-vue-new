@@ -65,11 +65,8 @@
             us.user_id
         FROM
             user_subscriptions us
-                JOIN user_notice_setting uns ON us.user_id = uns.user_id
         WHERE
-            us.store_id = #{storeId}
-          AND us.del_flag = 0
-          AND uns.focus_notice = 1
+            us.store_id = #{storeId} AND us.del_flag = 0
     </select>
 
     <select id="selectFocusAndFavUserIdList" resultType="com.ruoyi.xkt.dto.userNotice.UserFocusAndFavUserIdDTO">
