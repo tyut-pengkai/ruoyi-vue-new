@@ -4,7 +4,12 @@ import cn.hutool.core.bean.BeanUtil;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.domain.model.LoginUser;
+import com.ruoyi.common.core.domain.model.UserInfo;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.framework.web.service.TokenService;
+import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.web.controller.xkt.vo.storeCertificate.StoreCertResVO;
 import com.ruoyi.web.controller.xkt.vo.storeCertificate.StoreCertVO;
 import com.ruoyi.xkt.dto.storeCertificate.StoreCertDTO;
@@ -29,13 +34,23 @@ import org.springframework.web.bind.annotation.*;
 public class StoreCertificateController extends XktBaseController {
 
     final IStoreCertificateService storeCertService;
+    final ISysUserService userService;
+    final TokenService tokenService;
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')")
     @ApiOperation(value = "新增档口认证", httpMethod = "POST", response = R.class)
     @Log(title = "新增档口认证", businessType = BusinessType.INSERT)
     @PostMapping
     public R<Integer> add(@Validated @RequestBody StoreCertVO storeCertVO) {
-        return R.ok(storeCertService.create(BeanUtil.toBean(storeCertVO, StoreCertDTO.class)));
+        Integer count = storeCertService.create(BeanUtil.toBean(storeCertVO, StoreCertDTO.class));
+        if (count > 0) {
+            // 当前登录用户关联档口：更新关联用户缓存
+            LoginUser currentUser = SecurityUtils.getLoginUser();
+            UserInfo currentUserInfo = userService.getUserById(SecurityUtils.getUserId());
+            currentUser.updateByUser(currentUserInfo);
+            tokenService.refreshToken(currentUser);
+        }
+        return R.ok();
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')")
