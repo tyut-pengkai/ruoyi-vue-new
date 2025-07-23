@@ -98,7 +98,7 @@
                 AND order_user_id = #{orderUserId}
             </if>
             <if test="createTimeBegin != null and createTimeEnd != null">
-                AND create_time BETWEEN #{createTimeBegin}' AND #{createTimeEnd}
+                AND create_time BETWEEN #{createTimeBegin} AND #{createTimeEnd}
             </if>
         </where>
     </select>

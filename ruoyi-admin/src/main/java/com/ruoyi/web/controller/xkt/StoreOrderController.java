@@ -181,7 +181,7 @@ public class StoreOrderController extends XktBaseController {
     @PreAuthorize("@ss.hasAnyRoles('store,seller')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "订单物流信息")
     @GetMapping(value = "/count/{srcPage}")
-    public R<StoreOrderCountVO> count(@PathVariable("srcPage") Long srcPage) {
+    public R<StoreOrderCountVO> count(@PathVariable("srcPage") Integer srcPage) {
         StoreOrderCountQueryDTO queryDTO = new StoreOrderCountQueryDTO();
         if (1 == srcPage) {
             queryDTO.setOrderUserId(SecurityUtils.getUserId());
