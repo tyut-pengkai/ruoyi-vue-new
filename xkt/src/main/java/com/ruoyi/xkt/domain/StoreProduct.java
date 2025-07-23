@@ -91,12 +91,6 @@ public class StoreProduct extends XktBaseEntity {
     private Integer listingWay;
 
     /**
-     * 下一个生成的条形码尾号
-     */
-    @Excel(name = "下一个生成的条形码尾号")
-    private Integer nextBarcodeNum;
-
-    /**
      * 定时发货时间(精确到小时)
      */
     @JsonFormat(pattern = "yyyy-MM-dd")

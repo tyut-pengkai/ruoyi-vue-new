@@ -131,14 +131,15 @@ public class XktTask {
     public void seasonTag() {
         LocalDate today = LocalDate.now();
         int month = today.getMonthValue();
+        int day = today.getDayOfMonth();
         String seasonLabel = "";
-        if (month == 3) {
+        if (month == 3 && day == 1) {
             seasonLabel = today.getYear() + "年春季";
-        } else if (month == 6) {
+        } else if (month == 6 && day == 1) {
             seasonLabel = today.getYear() + "年夏季";
-        } else if (month == 9) {
+        } else if (month == 9 && day == 1) {
             seasonLabel = today.getYear() + "年秋季";
-        } else if (month == 12) {
+        } else if (month == 12 && day == 1) {
             seasonLabel = today.getYear() + "年冬季";
         }
         if (StringUtils.isEmpty(seasonLabel)) {

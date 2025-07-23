@@ -43,7 +43,7 @@ public class Store extends XktBaseEntity {
     /**
      * 档口LOGO
      */
-    private String storeLogo;
+    private Long storeLogoId;
 
     /**
      * 品牌名称

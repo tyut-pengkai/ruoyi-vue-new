@@ -44,11 +44,7 @@ public class StoreCertificateController extends XktBaseController {
     public R<Integer> add(@Validated @RequestBody StoreCertVO storeCertVO) {
         Integer count = storeCertService.create(BeanUtil.toBean(storeCertVO, StoreCertDTO.class));
         if (count > 0) {
-            // 当前登录用户关联档口：更新关联用户缓存
-            LoginUser currentUser = SecurityUtils.getLoginUser();
-            UserInfo currentUserInfo = userService.getUserById(SecurityUtils.getUserId());
-            currentUser.updateByUser(currentUserInfo);
-            tokenService.refreshToken(currentUser);
+            this.refreshUserCache();
         }
         return R.ok();
     }
@@ -64,8 +60,23 @@ public class StoreCertificateController extends XktBaseController {
     @ApiOperation(value = "修改档口认证", httpMethod = "PUT", response = R.class)
     @Log(title = "修改档口认证", businessType = BusinessType.UPDATE)
     @PutMapping
-    public R<Integer> edit(@Validated @RequestBody StoreCertVO storeCertVO) {
-        return R.ok(storeCertService.update(BeanUtil.toBean(storeCertVO, StoreCertDTO.class)));
+    public R<Integer> update(@Validated @RequestBody StoreCertVO storeCertVO) {
+        Integer count = storeCertService.update(BeanUtil.toBean(storeCertVO, StoreCertDTO.class));
+        if (count > 0) {
+            this.refreshUserCache();
+        }
+        return R.ok();
+    }
+
+    /**
+     * 更新缓存
+     */
+    public void refreshUserCache() {
+        // 当前登录用户关联档口：更新关联用户缓存
+        LoginUser currentUser = SecurityUtils.getLoginUser();
+        UserInfo currentUserInfo = userService.getUserById(SecurityUtils.getUserId());
+        currentUser.updateByUser(currentUserInfo);
+        tokenService.refreshToken(currentUser);
     }
 
 }

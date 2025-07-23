@@ -15,7 +15,7 @@ import java.util.List;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("新增档口认证信息")
+@ApiModel("档口认证详情")
 @Data
 @Accessors(chain = true)
 public class StoreCertResVO {

@@ -20,12 +20,12 @@ import com.ruoyi.xkt.enums.StoreStatus;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IAssetService;
 import com.ruoyi.xkt.service.IStoreCertificateService;
-import com.ruoyi.xkt.service.IStoreService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
@@ -66,29 +66,8 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
         // 新增档口认证的文件列表
         this.handleStoreCertFileList(certDTO, storeCert);
         // 新增档口
-        this.create();
+        this.createStore(certDTO);
         return this.storeCertMapper.insert(storeCert);
-    }
-
-    public int create() {
-        Store store = new Store();
-        // 初始化注册时只需绑定用户ID即可
-        store.setUserId(SecurityUtils.getUserId());
-        // 默认档口状态为：待审核
-        store.setStoreStatus(StoreStatus.UN_AUDITED.getValue());
-        // 当前时间往后推1年为试用期时间
-        Date oneYearAfter = Date.from(LocalDate.now().plusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
-        store.setTrialEndTime(oneYearAfter);
-        // 设置档口默认权重 0
-        store.setStoreWeight(Constants.STORE_WEIGHT_DEFAULT_ZERO);
-        int count = this.storeMapper.insert(store);
-        // 创建档口账户
-        assetService.createInternalAccountIfNotExists(store.getId());
-        // 档口用户绑定
-        userService.refreshRelStore(store.getUserId(), ESystemRole.SUPPLIER.getId());
-        // 放到redis中
-        redisCache.setCacheObject(CacheConstants.STORE_KEY + store.getId(), store.getId());
-        return count;
     }
 
     /**
@@ -124,9 +103,9 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
     @Transactional
     public Integer update(StoreCertDTO certDTO) {
         // 档口认证ID不能为空
-        Optional.ofNullable(certDTO.getStoreCertId()).orElseThrow(() -> new ServiceException("档口认证ID不能为空!", HttpStatus.ERROR));
+        Optional.ofNullable(certDTO.getStoreCert().getStoreCertId()).orElseThrow(() -> new ServiceException("档口认证ID不能为空!", HttpStatus.ERROR));
         StoreCertificate storeCert = Optional.ofNullable(this.storeCertMapper.selectOne(new LambdaQueryWrapper<StoreCertificate>()
-                        .eq(StoreCertificate::getId, certDTO.getStoreCertId()).eq(StoreCertificate::getDelFlag, Constants.UNDELETED)
+                        .eq(StoreCertificate::getId, certDTO.getStoreCert().getStoreCertId()).eq(StoreCertificate::getDelFlag, Constants.UNDELETED)
                         .eq(StoreCertificate::getStoreId, certDTO.getStoreId())))
                 .orElseThrow(() -> new ServiceException("档口认证不存在!", HttpStatus.ERROR));
         // 先将旧的档口认证相关文件置为无效
@@ -139,8 +118,11 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
         BeanUtil.copyProperties(certDTO, storeCert);
         // 新增档口认证的文件列表
         this.handleStoreCertFileList(certDTO, storeCert);
+        // 更新档口信息
+        this.updateStore(certDTO.getStoreId(), certDTO.getStoreBasic());
         return this.storeCertMapper.updateById(storeCert);
     }
+
 
     /**
      * 新增档口认证文件列表
@@ -150,10 +132,10 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
      */
     private void handleStoreCertFileList(StoreCertDTO certDTO, StoreCertificate storeCert) {
         // 档口认证文件类型与文件名映射
-        Map<Integer, String> typeNameTransMap = certDTO.getFileList().stream().collect(Collectors
-                .toMap(StoreCertDTO.StoreCertFileDTO::getFileType, StoreCertDTO.StoreCertFileDTO::getFileName));
+        Map<Integer, String> typeNameTransMap = certDTO.getStoreCert().getFileList().stream().collect(Collectors
+                .toMap(StoreCertDTO.SCStoreFileDTO::getFileType, StoreCertDTO.SCStoreFileDTO::getFileName));
         // 上传的文件列表
-        final List<StoreCertDTO.StoreCertFileDTO> fileDTOList = certDTO.getFileList();
+        final List<StoreCertDTO.SCStoreFileDTO> fileDTOList = certDTO.getStoreCert().getFileList();
         // 将文件插入到SysFile表中
         List<SysFile> fileList = BeanUtil.copyToList(fileDTOList, SysFile.class);
         this.fileMapper.insert(fileList);
@@ -165,6 +147,63 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
         storeCert.setIdCardEmblemFileId(fileMap.get(typeNameTransMap.get(FileType.ID_CARD_EMBLEM.getValue())));
         // 设置营业执照文件ID
         storeCert.setLicenseFileId(fileMap.get(typeNameTransMap.get(FileType.BUSINESS_LICENSE.getValue())));
+    }
+
+    /**
+     * 新增档口
+     *
+     * @param certDTO
+     */
+    private void createStore(StoreCertDTO certDTO) {
+        Store store = BeanUtil.toBean(certDTO.getStoreBasic(), Store.class);
+        // 初始化注册时只需绑定用户ID即可
+        store.setUserId(SecurityUtils.getUserId());
+        // 默认档口状态为：待审核
+        store.setStoreStatus(StoreStatus.UN_AUDITED.getValue());
+        // 当前时间往后推1年为试用期时间
+        Date oneYearAfter = Date.from(LocalDate.now().plusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
+        store.setTrialEndTime(oneYearAfter);
+        // 设置档口默认权重 0
+        store.setStoreWeight(Constants.STORE_WEIGHT_DEFAULT_ZERO);
+        // 已使用的档口空间
+        BigDecimal storageUsage = certDTO.getStoreCert().getFileList().stream().map(x -> ObjectUtils.defaultIfNull(x.getFileSize(), BigDecimal.ZERO))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        // 新增档口LOGO
+        if (ObjectUtils.isNotEmpty(certDTO.getStoreBasic().getStoreLogo())) {
+            SysFile file = BeanUtil.toBean(certDTO.getStoreBasic().getStoreLogo(), SysFile.class);
+            this.fileMapper.insert(file);
+            store.setStoreLogoId(file.getId());
+            store.setStorageUsage(storageUsage.add(file.getFileSize()));
+        }
+        this.storeMapper.insert(store);
+        // 创建档口账户
+        assetService.createInternalAccountIfNotExists(store.getId());
+        // 档口用户绑定
+        userService.refreshRelStore(store.getUserId(), ESystemRole.SUPPLIER.getId());
+        // 放到redis中
+        redisCache.setCacheObject(CacheConstants.STORE_KEY + store.getId(), store.getId());
+    }
+
+    /**
+     * 认证流程更新档口
+     *
+     * @param storeId    档口ID
+     * @param storeBasic 档口基本信息
+     */
+    private void updateStore(Long storeId, StoreCertDTO.SCStoreBasicDTO storeBasic) {
+        Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
+                        .eq(Store::getId, storeId).eq(Store::getDelFlag, Constants.UNDELETED)))
+                .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
+        BeanUtil.copyProperties(storeBasic, store);
+        if (ObjectUtils.isNotEmpty(storeBasic.getStoreLogo())) {
+            // 直接新增
+            SysFile file = BeanUtil.toBean(storeBasic.getStoreLogo(), SysFile.class);
+            this.fileMapper.insert(file);
+            store.setStoreLogoId(file.getId());
+        }
+        // 默认档口状态为：待审核
+        store.setStoreStatus(StoreStatus.UN_AUDITED.getValue());
+        this.storeMapper.updateById(store);
     }
 
 
