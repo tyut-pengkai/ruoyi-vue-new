@@ -20,6 +20,7 @@ import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.bean.BeanValidators;
+import com.ruoyi.common.utils.spring.SpringUtils;
 import com.ruoyi.system.mapper.SysUserMapper;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.express.*;
@@ -594,6 +595,11 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         return page;
     }
 
+    @Override
+    public StoreOrderCountDTO count(StoreOrderCountQueryDTO queryDTO) {
+        return storeOrderMapper.countOrder(queryDTO);
+    }
+
     @Transactional(rollbackFor = Exception.class)
     @Override
     public StoreOrderExt preparePayOrder(Long storeOrderId, EPayChannel payChannel) {
@@ -898,9 +904,10 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         return new StoreOrderExt(order, orderDetails);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public ExpressShippingLabelDTO printOrder(Long storeOrderId, List<Long> storeOrderDetailIds, Long expressId,
-                                              Long operatorId) {
+                                              Boolean needShip, Long operatorId) {
         Assert.notEmpty(storeOrderDetailIds);
         ExpressManager expressManager = expressService.getExpressManager(expressId);
         Express express = expressService.getById(expressId);
@@ -982,6 +989,10 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         //操作记录
         addOperationRecords(order.getId(), EOrderAction.EXPRESS_SHIP, orderDetailIdList, EOrderAction.EXPRESS_SHIP,
                 "打印快递单", operatorId, new Date());
+        if (Boolean.TRUE.equals(needShip)) {
+            //立即发货
+            SpringUtils.getAopProxy(this).shipOrderByPlatform(storeOrderId, storeOrderDetailIds, operatorId);
+        }
         return shippingLabelDTO;
     }
 

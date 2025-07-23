@@ -2,6 +2,8 @@ package com.ruoyi.web.controller.xkt;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.ListUtil;
+import cn.hutool.core.date.DateField;
+import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson2.JSON;
 import com.github.pagehelper.Page;
 import com.ruoyi.common.annotation.Log;
@@ -43,10 +45,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -179,6 +178,28 @@ public class StoreOrderController extends XktBaseController {
         return success(PageVO.of(pageDTO, StoreOrderPageItemVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store,seller')||@ss.hasSupplierSubRole()")
+    @ApiOperation(value = "订单物流信息")
+    @GetMapping(value = "/count/{srcPage}")
+    public R<StoreOrderCountVO> count(@PathVariable("srcPage") Long srcPage) {
+        StoreOrderCountQueryDTO queryDTO = new StoreOrderCountQueryDTO();
+        if (1 == srcPage) {
+            queryDTO.setOrderUserId(SecurityUtils.getUserId());
+        } else {
+            Long storeId = SecurityUtils.getStoreId();
+            if (storeId == null && !SecurityUtils.isAdmin()) {
+                //没有权限
+                return R.fail();
+            }
+            queryDTO.setStoreId(storeId);
+        }
+        //半年内
+        Date now = new Date();
+        queryDTO.setCreateTimeBegin(DateUtil.offset(now, DateField.MONTH, -6));
+        queryDTO.setCreateTimeEnd(now);
+        return success(BeanUtil.toBean(storeOrderService.count(queryDTO), StoreOrderCountVO.class));
+    }
+
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @Log(title = "订单", businessType = BusinessType.OTHER)
     @ApiOperation("发货-有单号（已打印快递单）")
@@ -229,7 +250,7 @@ public class StoreOrderController extends XktBaseController {
             storeOrderService.checkOrderStore(vo.getStoreOrderDetailIds(), SecurityUtils.getStoreId());
         }
         ExpressShippingLabelDTO dto = storeOrderService.printOrder(vo.getStoreOrderId(),
-                vo.getStoreOrderDetailIds(), vo.getExpressId(), SecurityUtils.getUserId());
+                vo.getStoreOrderDetailIds(), vo.getExpressId(), vo.getNeedShip(), SecurityUtils.getUserId());
         return success(DesensitizationUtil.desensitize(BeanUtil.toBean(dto, ExpressShippingLabelVO.class)));
     }
 

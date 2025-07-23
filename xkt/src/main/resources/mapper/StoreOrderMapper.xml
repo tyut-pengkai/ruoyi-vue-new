@@ -24,6 +24,9 @@
             <if test="orderNo != null and orderNo !=''">
                 AND so.order_no LIKE CONCAT('%', #{orderNo}, '%')
             </if>
+            <if test="originOrderNo != null and originOrderNo !=''">
+                AND EXISTS (SELECT 1 FROM store_order so1 WHERE so1.id = so.origin_order_id AND so1.order_no = #{originOrderNo} AND so1.del_flag = '0')
+            </if>
             <if test="orderType != null">
                 AND so.order_type = #{orderType}
             </if>
@@ -69,5 +72,34 @@
                 AND sod.detail_status = 24
                 AND sod.pay_status = 2
             )
+    </select>
+    <select id="countOrder" parameterType="com.ruoyi.xkt.dto.order.StoreOrderCountQueryDTO"
+            resultType="com.ruoyi.xkt.dto.order.StoreOrderCountDTO">
+        SELECT
+            SUM(1) AS `all`,
+            SUM(CASE WHEN `order_type` = 2 THEN 1 ELSE 0 END) AS `after_sale`,
+            SUM(CASE WHEN `order_status` = 10 THEN 1 ELSE 0 END) AS `cancelled`,
+            SUM(CASE WHEN `order_status` = 11 THEN 1 ELSE 0 END) AS `pending_payment`,
+            SUM(CASE WHEN `order_status` = 12 THEN 1 ELSE 0 END) AS `pending_shipment`,
+            SUM(CASE WHEN `order_status` = 13 THEN 1 ELSE 0 END) AS `shipped`,
+            SUM(CASE WHEN `order_status` = 14 THEN 1 ELSE 0 END) AS `completed`,
+            SUM(CASE WHEN `order_status` = 21 THEN 1 ELSE 0 END) AS `after_sale_in_progress`,
+            SUM(CASE WHEN `order_status` = 22 THEN 1 ELSE 0 END) AS `after_sale_rejected`,
+            SUM(CASE WHEN `order_status` = 23 THEN 1 ELSE 0 END) AS `platform_intervened`,
+            SUM(CASE WHEN `order_status` = 24 THEN 1 ELSE 0 END) AS `after_sale_completed`
+        FROM
+            store_order
+        <where>
+            del_flag = '0'
+            <if test="storeId != null">
+                AND store_id = #{storeId}
+            </if>
+            <if test="orderUserId != null">
+                AND order_user_id = #{orderUserId}
+            </if>
+            <if test="createTimeBegin != null and createTimeEnd != null">
+                AND create_time BETWEEN #{createTimeBegin}' AND #{createTimeEnd}
+            </if>
+        </where>
     </select>
 </mapper>

@@ -2,6 +2,8 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreOrder;
+import com.ruoyi.xkt.dto.order.StoreOrderCountDTO;
+import com.ruoyi.xkt.dto.order.StoreOrderCountQueryDTO;
 import com.ruoyi.xkt.dto.order.StoreOrderPageItemDTO;
 import com.ruoyi.xkt.dto.order.StoreOrderQueryDTO;
 import org.springframework.stereotype.Repository;
@@ -18,4 +20,6 @@ public interface StoreOrderMapper extends BaseMapper<StoreOrder> {
     List<StoreOrderPageItemDTO> listStoreOrderPageItem(StoreOrderQueryDTO queryDTO);
 
     List<StoreOrder> listNeedContinueRefundOrder();
+
+    StoreOrderCountDTO countOrder(StoreOrderCountQueryDTO queryDTO);
 }

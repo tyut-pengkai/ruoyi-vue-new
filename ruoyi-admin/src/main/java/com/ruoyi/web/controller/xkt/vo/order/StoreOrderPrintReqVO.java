@@ -27,4 +27,7 @@ public class StoreOrderPrintReqVO {
     @NotNull(message = "物流ID不能为空")
     @ApiModelProperty(value = "物流ID", required = true)
     private Long expressId;
+
+    @ApiModelProperty(value = "打印成功后立即发货", required = true)
+    private Boolean needShip;
 }

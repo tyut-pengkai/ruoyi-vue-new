@@ -95,6 +95,14 @@ public interface IStoreOrderService {
     Page<StoreOrderPageItemDTO> page(StoreOrderQueryDTO queryDTO);
 
     /**
+     * 订单统计
+     *
+     * @param queryDTO
+     * @return
+     */
+    StoreOrderCountDTO count(StoreOrderCountQueryDTO queryDTO);
+
+    /**
      * 准备支付订单
      *
      * @param storeOrderId
@@ -150,11 +158,12 @@ public interface IStoreOrderService {
      * @param storeOrderId
      * @param storeOrderDetailIds
      * @param expressId
+     * @param needShip
      * @param operatorId
      * @return
      */
     ExpressShippingLabelDTO printOrder(Long storeOrderId, List<Long> storeOrderDetailIds, Long expressId,
-                                       Long operatorId);
+                                       Boolean needShip, Long operatorId);
 
     /**
      * 确认收货

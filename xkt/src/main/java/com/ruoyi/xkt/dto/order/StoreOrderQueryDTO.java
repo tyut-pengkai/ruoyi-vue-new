@@ -28,6 +28,10 @@ public class StoreOrderQueryDTO extends BasePageDTO {
      */
     private String orderNo;
     /**
+     * 售后订单原订单号
+     */
+    private String originOrderNo;
+    /**
      * 订单类型[1:销售订单 2:退货订单]
      */
     private Integer orderType;

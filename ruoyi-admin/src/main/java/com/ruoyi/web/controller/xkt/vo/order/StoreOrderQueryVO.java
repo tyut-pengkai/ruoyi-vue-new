@@ -34,6 +34,9 @@ public class StoreOrderQueryVO extends BasePageVO {
      */
     @ApiModelProperty(value = "订单号（模糊）")
     private String orderNo;
+
+    @ApiModelProperty(value = "售后订单原订单号")
+    private String originOrderNo;
     /**
      * 订单类型[1:销售订单 2:退货订单]
      */
