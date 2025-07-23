@@ -854,7 +854,9 @@ public class StoreProductServiceImpl implements IStoreProductService {
     @Override
     @Transactional(readOnly = true)
     public StoreProdStatusCountResDTO getStatusNum(Long storeId) {
-        return this.storeProdMapper.getStatusNum(storeId);
+        final Date now = java.sql.Date.valueOf(LocalDate.now().plusDays(1));
+        final Date sixMonthAgo = java.sql.Date.valueOf(LocalDate.now().minusMonths(6));
+        return this.storeProdMapper.getStatusNum(storeId, sixMonthAgo, now);
     }
 
     /**

@@ -27,6 +27,7 @@ import org.apache.ibatis.executor.BatchResult;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -60,7 +61,9 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
     @Override
     @Transactional(readOnly = true)
     public StoreProdDemandStatusCountResDTO getStatusNum(Long storeId) {
-        return this.storeProdDemandMapper.getStatusNum(storeId);
+        final Date now = java.sql.Date.valueOf(LocalDate.now().plusDays(1));
+        final Date sixMonthAgo = java.sql.Date.valueOf(LocalDate.now().minusMonths(6));
+        return this.storeProdDemandMapper.getStatusNum(storeId, sixMonthAgo, now);
     }
 
     /**

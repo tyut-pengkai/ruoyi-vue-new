@@ -8,6 +8,7 @@ import com.ruoyi.xkt.dto.userShoppingCart.ShopCartPageResDTO;
 import com.ruoyi.xkt.dto.userShoppingCart.ShopCartStatusCountResDTO;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -38,9 +39,13 @@ public interface ShoppingCartMapper extends BaseMapper<ShoppingCart> {
     /**
      * 获取用户进货车各状态数量
      *
-     * @param userId         用户ID
+     * @param userId      用户ID
+     * @param sixMonthAgo 6个月前
+     * @param now         现在
      * @return ShopCartStatusCountResDTO
      */
-    ShopCartStatusCountResDTO getStatusNum(@Param("userId") Long userId);
+    ShopCartStatusCountResDTO getStatusNum(@Param("userId") Long userId,
+                                           @Param("sixMonthAgo") Date sixMonthAgo,
+                                           @Param("now") Date now);
 
 }

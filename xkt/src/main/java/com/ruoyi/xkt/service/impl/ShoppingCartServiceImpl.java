@@ -1,6 +1,7 @@
 package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -9,6 +10,7 @@ import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -311,7 +314,9 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
     @Override
     @Transactional(readOnly = true)
     public ShopCartStatusCountResDTO getStatusNum() {
-        return this.shopCartMapper.getStatusNum(SecurityUtils.getUserId());
+        final Date now = java.sql.Date.valueOf(LocalDate.now().plusDays(1));
+        final Date sixMonthAgo = java.sql.Date.valueOf(LocalDate.now().minusMonths(6));
+        return this.shopCartMapper.getStatusNum(SecurityUtils.getUserId(), sixMonthAgo, now);
     }
 
     /**

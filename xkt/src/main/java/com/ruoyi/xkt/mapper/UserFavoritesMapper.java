@@ -39,8 +39,12 @@ public interface UserFavoritesMapper extends BaseMapper<UserFavorites> {
     /**
      * 获取用户收藏商品各状态数量
      *
-     * @param userId 用户ID
+     * @param userId      用户ID
+     * @param sixMonthAgo 六个月前
+     * @param now         当前时间
      * @return
      */
-    UserFavStatusCountResDTO getStatusNum(@Param("userId") Long userId);
+    UserFavStatusCountResDTO getStatusNum(@Param("userId") Long userId,
+                                          @Param("sixMonthAgo") Date sixMonthAgo,
+                                          @Param("now") Date now);
 }

@@ -5,6 +5,7 @@ import com.ruoyi.xkt.domain.StoreProductDemand;
 import com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandStatusCountResDTO;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -35,8 +36,12 @@ public interface StoreProductDemandMapper extends BaseMapper<StoreProductDemand>
     /**
      * 查询各状态数量
      *
-     * @param storeId 档口ID
+     * @param storeId     档口ID
+     * @param sixMonthAgo 六个月前的时间
+     * @param now         当前时间
      * @return StoreProdDemandStatusCountResDTO
      */
-    StoreProdDemandStatusCountResDTO getStatusNum(@Param("storeId") Long storeId);
+    StoreProdDemandStatusCountResDTO getStatusNum(@Param("storeId") Long storeId,
+                                                  @Param("sixMonthAgo") Date sixMonthAgo,
+                                                  @Param("now") Date now);
 }

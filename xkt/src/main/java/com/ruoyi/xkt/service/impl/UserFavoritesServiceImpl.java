@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -265,7 +266,9 @@ public class UserFavoritesServiceImpl implements IUserFavoritesService {
         if (ObjectUtils.isEmpty(userId)) {
             throw new ServiceException("用户未登录，请先登录!", HttpStatus.ERROR);
         }
-        return this.userFavMapper.getStatusNum(userId);
+        final Date now = java.sql.Date.valueOf(LocalDate.now().plusDays(1));
+        final Date sixMonthAgo = java.sql.Date.valueOf(LocalDate.now().minusMonths(6));
+        return this.userFavMapper.getStatusNum(userId, sixMonthAgo,  now);
     }
 
 

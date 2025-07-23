@@ -113,10 +113,14 @@ public interface StoreProductMapper extends BaseMapper<StoreProduct> {
     /**
      * 获取档口各个状态的数量
      *
-     * @param storeId    档口ID
+     * @param storeId     档口ID
+     * @param sixMonthAgo 六个月前
+     * @param now         当前时间
      * @return StoreProdStatusCountResDTO
      */
-    StoreProdStatusCountResDTO getStatusNum(@Param("storeId") Long storeId);
+    StoreProdStatusCountResDTO getStatusNum(@Param("storeId") Long storeId,
+                                            @Param("sixMonthAgo") Date sixMonthAgo,
+                                            @Param("now") Date now);
 
     /**
      * 获取档口各个状态的分类数量

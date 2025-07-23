@@ -281,7 +281,9 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
     @Override
     @Transactional(readOnly = true)
     public AdminAdRoundStatusCountResDTO statusCount() {
-        return this.advertRoundMapper.statusCount();
+        final Date now = java.sql.Date.valueOf(LocalDate.now().plusDays(1));
+        final Date sixMonthAgo = java.sql.Date.valueOf(LocalDate.now().minusMonths(6));
+        return this.advertRoundMapper.statusCount(sixMonthAgo,  now);
     }
 
     /**

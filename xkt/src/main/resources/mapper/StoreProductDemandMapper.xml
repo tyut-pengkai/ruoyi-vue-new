@@ -34,6 +34,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             store_product_demand spd
         WHERE
             spd.del_flag = 0 AND spd.store_id = #{storeId}
+            AND spd.create_time between #{sixMonthAgo} AND #{now}
     </select>
 
 

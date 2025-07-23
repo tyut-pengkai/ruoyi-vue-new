@@ -154,6 +154,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             advert_round ar
         WHERE
             ar.del_flag = 0
+            AND ar.create_time BETWEEN #{sixMonthAgo} AND #{now}
     </select>
 
 

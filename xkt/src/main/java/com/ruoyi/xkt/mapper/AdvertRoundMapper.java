@@ -9,7 +9,7 @@ import com.ruoyi.xkt.dto.advertRound.AdvertRoundStorePageDTO;
 import com.ruoyi.xkt.dto.advertRound.AdvertRoundStorePageResDTO;
 import org.apache.ibatis.annotations.Param;
 
-import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -65,9 +65,11 @@ public interface AdvertRoundMapper extends BaseMapper<AdvertRound> {
     /**
      * 推广状态数量
      *
+     * @param sixMonthAgo 6个月前
+     * @param now         当前时间
      * @return AdminAdRoundStatusCountResDTO
      */
-    AdminAdRoundStatusCountResDTO statusCount();
+    AdminAdRoundStatusCountResDTO statusCount(@Param("sixMonthAgo") Date sixMonthAgo, @Param("now") Date now);
 
 }
 
