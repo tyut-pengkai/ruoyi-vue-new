@@ -1,9 +1,9 @@
 package com.ruoyi.common.constant;
 
 /**
- * 用户常量信息
- * 
- * @author ruoyi
+ * 用户常量信息222
+ * 3333
+ * @author ruoyi  11111
  */
 public class UserConstants
 {
