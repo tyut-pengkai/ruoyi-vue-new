@@ -118,6 +118,7 @@ public class AliPaymentMangerImpl implements PaymentManager, InitializingBean {
         reqDTO.setOutTradeNo(tradeNo);
         reqDTO.setTotalAmount(amount.toPlainString());
         reqDTO.setSubject(subject);
+        reqDTO.setEnablePayChannels("balance,moneyFund,bankPay,debitCardExpress");
         reqDTO.setTimeExpire(DateUtil.formatDateTime(expireTime));
 
         switch (payPage) {
