@@ -2,6 +2,7 @@ package com.ruoyi.xkt.service;
 
 import com.ruoyi.xkt.dto.storeCertificate.StoreCertDTO;
 import com.ruoyi.xkt.dto.storeCertificate.StoreCertResDTO;
+import com.ruoyi.xkt.dto.storeCertificate.StoreCertStepResDTO;
 
 /**
  * 档口认证Service接口
@@ -35,4 +36,11 @@ public interface IStoreCertificateService {
      */
     Integer update(StoreCertDTO certDTO);
 
+    /**
+     * 新增认证流程 获取认证信息
+     *
+     * @param storeId 档口ID
+     * @return StoreCertStepResDTO
+     */
+    StoreCertStepResDTO getStepCertInfo(Long storeId);
 }

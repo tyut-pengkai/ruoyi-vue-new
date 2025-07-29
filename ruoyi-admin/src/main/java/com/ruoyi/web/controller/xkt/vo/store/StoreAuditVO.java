@@ -1,12 +1,13 @@
 package com.ruoyi.web.controller.xkt.vo.store;
 
-import com.ruoyi.web.controller.xkt.vo.storeCertificate.StoreCertVO;
+import com.ruoyi.web.controller.xkt.vo.storeCertificate.StoreCertCreateVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * @author liujiang
@@ -25,8 +26,9 @@ public class StoreAuditVO {
     @ApiModelProperty(value = "审核状态", required = true)
     private Boolean approve;
     @ApiModelProperty(value = "拒绝理由")
+    @Size(min = 0, max = 500, message = "拒绝理由不能超过500个字符!")
     private String rejectReason;
     @ApiModelProperty(value = "档口认证信息")
-    private StoreCertVO storeCert;
+    private StoreCertCreateVO storeCert;
 
 }

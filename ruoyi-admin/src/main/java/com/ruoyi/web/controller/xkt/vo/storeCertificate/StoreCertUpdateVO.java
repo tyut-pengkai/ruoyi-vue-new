@@ -23,10 +23,10 @@ import java.util.List;
 @Data
 @ApiModel
 @Accessors(chain = true)
-public class StoreCertVO {
+public class StoreCertUpdateVO {
 
     @ApiModelProperty(value = "档口ID", required = true)
-    @NotNull(message = "档口ID不能为空")
+    @NotNull(message = "档口ID不能为空!")
     private Long storeId;
     @Valid
     @ApiModelProperty(value = "档口认证信息", required = true)

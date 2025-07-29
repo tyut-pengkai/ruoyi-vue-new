@@ -384,7 +384,6 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         Store store = storeMapper.selectById(order.getStoreId());
         if (store != null) {
             orderInfo.setStoreName(store.getStoreName());
-            orderInfo.setBrandName(store.getBrandName());
         }
         //物流信息
         Map<Long, String> expressNameMap = expressService.getAllExpressNameMap();

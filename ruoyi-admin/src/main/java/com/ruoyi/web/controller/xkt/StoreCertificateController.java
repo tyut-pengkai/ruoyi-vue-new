@@ -11,7 +11,9 @@ import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.web.service.TokenService;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.web.controller.xkt.vo.storeCertificate.StoreCertResVO;
-import com.ruoyi.web.controller.xkt.vo.storeCertificate.StoreCertVO;
+import com.ruoyi.web.controller.xkt.vo.storeCertificate.StoreCertCreateVO;
+import com.ruoyi.web.controller.xkt.vo.storeCertificate.StoreCertStepResVO;
+import com.ruoyi.web.controller.xkt.vo.storeCertificate.StoreCertUpdateVO;
 import com.ruoyi.xkt.dto.storeCertificate.StoreCertDTO;
 import com.ruoyi.xkt.service.IStoreCertificateService;
 import io.swagger.annotations.Api;
@@ -41,8 +43,8 @@ public class StoreCertificateController extends XktBaseController {
     @ApiOperation(value = "新增档口认证", httpMethod = "POST", response = R.class)
     @Log(title = "新增档口认证", businessType = BusinessType.INSERT)
     @PostMapping
-    public R<Integer> add(@Validated @RequestBody StoreCertVO storeCertVO) {
-        Integer count = storeCertService.create(BeanUtil.toBean(storeCertVO, StoreCertDTO.class));
+    public R<Integer> add(@Validated @RequestBody StoreCertCreateVO storeCertCreateVO) {
+        Integer count = storeCertService.create(BeanUtil.toBean(storeCertCreateVO, StoreCertDTO.class));
         if (count > 0) {
             this.refreshUserCache();
         }
@@ -57,11 +59,19 @@ public class StoreCertificateController extends XktBaseController {
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')")
+    @ApiOperation(value = "新增认证时 详情接口", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/step/{storeId}")
+    public R<StoreCertStepResVO> getStepCertInfo(@PathVariable("storeId") Long storeId) {
+        return R.ok(BeanUtil.toBean(storeCertService.getStepCertInfo(storeId), StoreCertStepResVO.class));
+    }
+
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')")
     @ApiOperation(value = "修改档口认证", httpMethod = "PUT", response = R.class)
     @Log(title = "修改档口认证", businessType = BusinessType.UPDATE)
     @PutMapping
-    public R<Integer> update(@Validated @RequestBody StoreCertVO storeCertVO) {
-        Integer count = storeCertService.update(BeanUtil.toBean(storeCertVO, StoreCertDTO.class));
+    public R<Integer> update(@Validated @RequestBody StoreCertUpdateVO updateVO) {
+        Integer count = storeCertService.update(BeanUtil.toBean(updateVO, StoreCertDTO.class));
         if (count > 0) {
             this.refreshUserCache();
         }

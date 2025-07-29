@@ -46,12 +46,6 @@ public class Store extends XktBaseEntity {
     private Long storeLogoId;
 
     /**
-     * 品牌名称
-     */
-    @Excel(name = "品牌名称")
-    private String brandName;
-
-    /**
      * 联系人
      */
     @Excel(name = "联系人")

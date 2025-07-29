@@ -15,6 +15,7 @@ import com.ruoyi.xkt.domain.StoreCertificate;
 import com.ruoyi.xkt.domain.SysFile;
 import com.ruoyi.xkt.dto.storeCertificate.StoreCertDTO;
 import com.ruoyi.xkt.dto.storeCertificate.StoreCertResDTO;
+import com.ruoyi.xkt.dto.storeCertificate.StoreCertStepResDTO;
 import com.ruoyi.xkt.enums.FileType;
 import com.ruoyi.xkt.enums.StoreStatus;
 import com.ruoyi.xkt.mapper.*;
@@ -62,11 +63,12 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
     @Override
     @Transactional
     public Integer create(StoreCertDTO certDTO) {
-        StoreCertificate storeCert = BeanUtil.toBean(certDTO, StoreCertificate.class);
+        // 新增档口
+        Store store = this.createStore(certDTO);
+        StoreCertificate storeCert = BeanUtil.toBean(certDTO.getStoreCert(), StoreCertificate.class)
+                .setStoreId(store.getId());
         // 新增档口认证的文件列表
         this.handleStoreCertFileList(certDTO, storeCert);
-        // 新增档口
-        this.createStore(certDTO);
         return this.storeCertMapper.insert(storeCert);
     }
 
@@ -115,12 +117,32 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
                 .orElseThrow(() -> new ServiceException("档口认证相关文件不存在!", HttpStatus.ERROR));
         this.fileMapper.updateById(oldFileList.stream().peek(x -> x.setDelFlag(Constants.DELETED)).collect(Collectors.toList()));
         // 更新属性
-        BeanUtil.copyProperties(certDTO, storeCert);
+        BeanUtil.copyProperties(certDTO.getStoreCert(), storeCert);
         // 新增档口认证的文件列表
         this.handleStoreCertFileList(certDTO, storeCert);
         // 更新档口信息
         this.updateStore(certDTO.getStoreId(), certDTO.getStoreBasic());
         return this.storeCertMapper.updateById(storeCert);
+    }
+
+    /**
+     * 新增认证流程 获取认证信息
+     *
+     * @param storeId 档口ID
+     * @return StoreCertStepResDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public StoreCertStepResDTO getStepCertInfo(Long storeId) {
+        StoreCertificate storeCert = this.storeCertMapper.selectOne(new LambdaQueryWrapper<StoreCertificate>()
+                .eq(StoreCertificate::getStoreId, storeId).eq(StoreCertificate::getDelFlag, Constants.UNDELETED));
+        if (ObjectUtils.isEmpty(storeCert)) {
+            return new StoreCertStepResDTO();
+        }
+        Store store = this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
+                .eq(Store::getId, storeId).eq(Store::getDelFlag, Constants.UNDELETED));
+        return new StoreCertStepResDTO().setStoreCert(BeanUtil.toBean(storeCert, StoreCertStepResDTO.SCSStoreCertDTO.class))
+                .setStoreBasic(BeanUtil.toBean(store, StoreCertStepResDTO.SCSStoreBasicDTO.class));
     }
 
 
@@ -154,7 +176,7 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
      *
      * @param certDTO
      */
-    private void createStore(StoreCertDTO certDTO) {
+    private Store createStore(StoreCertDTO certDTO) {
         Store store = BeanUtil.toBean(certDTO.getStoreBasic(), Store.class);
         // 初始化注册时只需绑定用户ID即可
         store.setUserId(SecurityUtils.getUserId());
@@ -182,6 +204,7 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
         userService.refreshRelStore(store.getUserId(), ESystemRole.SUPPLIER.getId());
         // 放到redis中
         redisCache.setCacheObject(CacheConstants.STORE_KEY + store.getId(), store.getId());
+        return store;
     }
 
     /**
