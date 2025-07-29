@@ -598,11 +598,11 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils
         {
             return null;
         }
+        s = s.toLowerCase();
         if (s.indexOf(SEPARATOR) == -1)
         {
             return s;
         }
-        s = s.toLowerCase();
         StringBuilder sb = new StringBuilder(s.length());
         boolean upperCase = false;
         for (int i = 0; i < s.length(); i++)
