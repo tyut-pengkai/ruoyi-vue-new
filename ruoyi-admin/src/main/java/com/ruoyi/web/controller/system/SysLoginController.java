@@ -311,7 +311,12 @@ public class SysLoginController {
                 vo.setCurrentMenuTreeNodes(BeanUtil.copyToList(menuService.getMenuTree(currentMenus),
                         MenuTreeNodeVO.class));
                 //当前档口
-                vo.setCurrentStoreId(roleInfoVO.getRelStoreId());
+                Long storeId = roleInfoVO.getRelStoreId();
+                vo.setCurrentStoreId(storeId);
+                if (storeId != null) {
+                    //档口状态
+                    vo.setCurrentStoreStatus(storeService.getStoreStatus(storeId));
+                }
             }
         }
         return vo;

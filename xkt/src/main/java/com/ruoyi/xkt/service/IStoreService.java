@@ -173,4 +173,12 @@ public interface IStoreService {
      * @return StoreIndexTodaySaleResDTO
      */
     StoreIndexTodaySaleTop5ResDTO indexTodayProdSaleRevenueTop5(Long storeId);
+
+    /**
+     * 档口状态
+     *
+     * @param storeId
+     * @return
+     */
+    Integer getStoreStatus(Long storeId);
 }

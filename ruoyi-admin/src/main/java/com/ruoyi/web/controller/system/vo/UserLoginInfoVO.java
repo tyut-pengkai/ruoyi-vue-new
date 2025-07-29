@@ -28,4 +28,7 @@ public class UserLoginInfoVO extends UserInfoVO {
     @ApiModelProperty("当前档口ID")
     private Long currentStoreId;
 
+    @ApiModelProperty("当前档口状态[1:待审核 2:审核驳回 3:试用期 4:正式使用 5:强制清退 null:未认证]")
+    private Integer currentStoreStatus;
+
 }

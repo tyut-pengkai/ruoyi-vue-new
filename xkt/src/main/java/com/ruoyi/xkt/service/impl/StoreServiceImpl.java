@@ -361,6 +361,12 @@ public class StoreServiceImpl implements IStoreService {
         return new StoreIndexTodaySaleTop5ResDTO().setStoreId(storeId).setOtherAmount(otherAmount).setSaleList(top5List);
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public Integer getStoreStatus(Long storeId) {
+        return Optional.ofNullable(storeMapper.selectById(storeId)).map(Store::getStoreStatus).orElse(null);
+    }
+
     /**
      * 档口首页今日销售额
      *
