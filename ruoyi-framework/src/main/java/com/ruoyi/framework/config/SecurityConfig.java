@@ -120,6 +120,8 @@ public class SecurityConfig
                         .antMatchers("/swagger-ui.html", "/swagger-resources/**", "/webjars/**", "/*/api-docs", "/druid/**").permitAll()
                         //支付宝回调
                         .antMatchers("/rest/v1/alipay-callback/**").permitAll()
+                        //OSS回调
+                        .antMatchers("/rest/v1/oss-callback/upload").permitAll()
                         //物流回调
                         .antMatchers("/rest/v1/express-callback/**").permitAll()
                         // 系统广告及首页
