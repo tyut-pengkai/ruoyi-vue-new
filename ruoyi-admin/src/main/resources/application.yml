@@ -33,14 +33,14 @@ img-search:
   # 如果是内网访问图像搜索服务，则endpointType为必填项，值统一为"internal"
   endpointType:
 sms:
-  accessKeyId: LTAI5tGWiFU2zweJwarUJgzF
-  accessKeySecret: gVpsVKSds5keQeN0mDDVKmY8YTGOkk
+  accessKeyId: LTAI5tFmJ5DiJ1iq2hNe9PPB
+  accessKeySecret: lCoSOQPkxgdQ6bDoi3TbAlsKXmOLp1
   regionId:
-  send: false
+  send: true
   verificationCode:
-    testModel: true
-    signName: 成都一方鹏商贸
-    templateCode: SMS_318925388
+    testModel: false
+    signName: 成都智创步橘科技
+    templateCode: SMS_323190329
 ocr:
   accessKeyId: LTAI5tDTNoFKAUXJ996azKdS
   accessKeySecret: tbchxLXOioKcQW9PF9sgjPUZyMA3zm
