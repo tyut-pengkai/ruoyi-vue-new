@@ -334,7 +334,7 @@ public class AssetServiceImpl implements IAssetService {
     public void sendSmsVerificationCode(String phoneNumber) {
         boolean success = smsClient.sendVerificationCode(CacheConstants.SMS_ASSET_CAPTCHA_CODE_KEY, phoneNumber,
                 RandomUtil.randomNumbers(6));
-        if (success) {
+        if (!success) {
             throw new ServiceException("短信发送失败");
         }
     }
