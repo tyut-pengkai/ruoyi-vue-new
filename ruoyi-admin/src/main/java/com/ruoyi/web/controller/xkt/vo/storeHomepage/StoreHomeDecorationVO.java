@@ -20,6 +20,9 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreHomeDecorationVO {
 
+    @NotNull(message = "档口ID不能为空!")
+    @ApiModelProperty(value = "档口ID", required = true)
+    private Long storeId;
     @NotNull(message = "模板编号不能为空!")
     @ApiModelProperty(value = "模板编号", required = true)
     private Integer templateNum;
@@ -30,7 +33,6 @@ public class StoreHomeDecorationVO {
 
     @Data
     public static class BigBannerVO {
-
         @ApiModelProperty(value = "业务类型ID，如果选择：不跳转 不传，选择：跳转店铺，传storeId，选择：跳转商品，传storeProdId")
         private Long bizId;
         @ApiModelProperty(value = "业务名称")
@@ -47,23 +49,20 @@ public class StoreHomeDecorationVO {
         private Integer fileType;
         @ApiModelProperty(value = "排序")
         private Integer orderNum;
-
     }
 
     @Data
     public static class DecorationVO {
-
         @ApiModelProperty(value = "文件大小")
         private Long bizId;
         @ApiModelProperty(value = "业务名称")
         private String bizName;
-        @ApiModelProperty(value = "文件大小")
+        @ApiModelProperty(value = "跳转类型")
         private Integer jumpType;
         @ApiModelProperty(value = "文件类型 2轮播小图 3店家推荐 4人气爆款 5当季新品 6销量排行")
         private Integer fileType;
         @ApiModelProperty(value = "排序")
         private Integer orderNum;
-
     }
 
 

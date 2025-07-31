@@ -54,22 +54,24 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
     /**
      * 新增档口首页各部分图
      *
-     * @param storeId     档口ID
-     * @param templateNum 使用的模板No
      * @param homepageDTO 新增档口首页各部分图
      * @return Integer
      */
     @Override
     @Transactional
-    public Integer insert(Long storeId, StoreHomeDecorationDTO homepageDTO) {
+    public Integer insert(StoreHomeDecorationDTO homepageDTO) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(storeId)) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(homepageDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
-        List<StoreHomepage> homepageList = this.insertToHomepage(storeId, homepageDTO);
+        List<StoreHomepage> homepageList = this.insertToHomepage(homepageDTO);
+        if (CollectionUtils.isEmpty(homepageList)) {
+            return 0;
+        }
         // 当前档口首页各部分总的文件大小
-        BigDecimal totalSize = homepageDTO.getBannerList().stream().map(x -> ObjectUtils.defaultIfNull(x.getFileSize(), BigDecimal.ZERO)).reduce(BigDecimal.ZERO, BigDecimal::add);
-        Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>().eq(Store::getId, storeId).eq(Store::getDelFlag, Constants.UNDELETED)))
+        BigDecimal totalSize = homepageDTO.getBigBannerList().stream().map(x -> ObjectUtils.defaultIfNull(x.getFileSize(), BigDecimal.ZERO)).reduce(BigDecimal.ZERO, BigDecimal::add);
+        Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
+                        .eq(Store::getId, homepageDTO.getStoreId()).eq(Store::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
         store.setTemplateNum(homepageDTO.getTemplateNum());
         // 更新档口首页使用的总的文件容量
@@ -97,24 +99,36 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                 .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
         List<StoreHomepage> homeList = this.storeHomeMapper.selectList(new LambdaQueryWrapper<StoreHomepage>()
                 .eq(StoreHomepage::getStoreId, storeId).eq(StoreHomepage::getDelFlag, Constants.UNDELETED));
+        if (CollectionUtils.isEmpty(homeList)) {
+            return new StoreHomeDecorationResDTO();
+        }
+        final List<Long> fileIdList = homeList.stream().map(StoreHomepage::getFileId).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(fileIdList)) {
+            return new StoreHomeDecorationResDTO();
+        }
         List<SysFile> fileList = Optional.ofNullable(this.fileMapper.selectList(new LambdaQueryWrapper<SysFile>()
-                        .in(SysFile::getId, homeList.stream().map(StoreHomepage::getFileId).filter(ObjectUtils::isNotEmpty).collect(Collectors.toList()))
-                        .eq(SysFile::getDelFlag, Constants.UNDELETED)))
+                        .in(SysFile::getId, fileIdList).eq(SysFile::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("文件不存在", HttpStatus.ERROR));
         Map<Long, SysFile> fileMap = fileList.stream().collect(Collectors.toMap(SysFile::getId, Function.identity()));
-        // 所有的档口商品ID
-        List<StoreProduct> storeProdList = Optional.ofNullable(this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
-                        .eq(StoreProduct::getStoreId, storeId).in(StoreProduct::getId, homeList.stream()
-                                .filter(x -> Objects.equals(x.getJumpType(), HomepageJumpType.JUMP_PRODUCT.getValue())).map(StoreHomepage::getBizId).collect(Collectors.toList()))
-                        .eq(StoreProduct::getDelFlag, Constants.UNDELETED)))
-                .orElseThrow(() -> new ServiceException("档口商品不存在", HttpStatus.ERROR));
-        Map<Long, StoreProduct> storeProdMap = storeProdList.stream().collect(Collectors.toMap(StoreProduct::getId, Function.identity()));
+        Map<Long, StoreProduct> storeProdMap = new HashMap<>();
+        // 档口商品ID列表
+        List<Long> storeProdIdList = homeList.stream()
+                .filter(x -> Objects.equals(x.getJumpType(), HomepageJumpType.JUMP_PRODUCT.getValue())).map(StoreHomepage::getBizId).collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(storeProdIdList)) {
+            // 所有的档口商品ID
+            List<StoreProduct> storeProdList = Optional.ofNullable(this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+                            .eq(StoreProduct::getStoreId, storeId).in(StoreProduct::getId, storeProdIdList)
+                            .eq(StoreProduct::getDelFlag, Constants.UNDELETED)))
+                    .orElseThrow(() -> new ServiceException("档口商品不存在", HttpStatus.ERROR));
+            storeProdMap = storeProdList.stream().collect(Collectors.toMap(StoreProduct::getId, Function.identity()));
+        }
+        Map<Long, StoreProduct> finalStoreProdMap = storeProdMap;
         // 轮播图
         List<StoreHomeDecorationResDTO.DecorationDTO> bigBannerList = homeList.stream().filter(x -> Objects.equals(x.getFileType(), HomepageType.SLIDING_PICTURE.getValue()))
                 .map(x -> {
                     StoreHomeDecorationResDTO.DecorationDTO decorationDTO = BeanUtil.toBean(x, StoreHomeDecorationResDTO.DecorationDTO.class)
                             .setBizName((Objects.equals(x.getJumpType(), HomepageJumpType.JUMP_PRODUCT.getValue()))
-                                    ? (storeProdMap.containsKey(x.getBizId()) ? storeProdMap.get(x.getBizId()).getProdArtNum() : null)
+                                    ? (finalStoreProdMap.containsKey(x.getBizId()) ? finalStoreProdMap.get(x.getBizId()).getProdArtNum() : null)
                                     : (ObjectUtils.isEmpty(x.getBizId()) ? null : store.getStoreName()));
                     if (fileMap.containsKey(x.getFileId())) {
                         decorationDTO.setFileType(x.getFileType()).setFileName(fileMap.get(x.getFileId()).getFileName())
@@ -126,7 +140,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
         List<StoreHomeDecorationResDTO.DecorationDTO> decorList = homeList.stream().filter(x -> !Objects.equals(x.getFileType(), HomepageType.SLIDING_PICTURE.getValue()))
                 .map(x -> {
                     StoreHomeDecorationResDTO.DecorationDTO decorationDTO = BeanUtil.toBean(x, StoreHomeDecorationResDTO.DecorationDTO.class)
-                            .setBizName(storeProdMap.containsKey(x.getBizId()) ? storeProdMap.get(x.getBizId()).getProdArtNum() : null);
+                            .setBizName(finalStoreProdMap.containsKey(x.getBizId()) ? finalStoreProdMap.get(x.getBizId()).getProdArtNum() : null);
                     if (fileMap.containsKey(x.getFileId())) {
                         decorationDTO.setFileType(x.getFileType()).setFileName(fileMap.get(x.getFileId()).getFileName())
                                 .setFileUrl(fileMap.get(x.getFileId()).getFileUrl()).setFileSize(fileMap.get(x.getFileId()).getFileSize());
@@ -144,28 +158,27 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
     /**
      * 更新档口首页各部分图信息
      *
-     * @param storeId     档口ID
      * @param homepageDTO 更新的dto
      * @return Integer
      */
     @Override
     @Transactional
-    public Integer updateStoreHomepage(Long storeId, StoreHomeDecorationDTO homepageDTO) {
+    public Integer updateStoreHomepage(StoreHomeDecorationDTO homepageDTO) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(storeId)) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(homepageDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         // 先将所有的档口模板的文件都删除掉
         List<StoreHomepage> oldHomeList = this.storeHomeMapper.selectList(new LambdaQueryWrapper<StoreHomepage>()
-                .eq(StoreHomepage::getStoreId, storeId).eq(StoreHomepage::getDelFlag, Constants.UNDELETED));
+                .eq(StoreHomepage::getStoreId, homepageDTO.getStoreId()).eq(StoreHomepage::getDelFlag, Constants.UNDELETED));
         if (CollectionUtils.isNotEmpty(oldHomeList)) {
             oldHomeList.forEach(x -> x.setDelFlag(Constants.DELETED));
             this.storeHomeMapper.updateById(oldHomeList);
         }
         // 新增档口首页各个部分的图信息
-        List<StoreHomepage> homepageList = this.insertToHomepage(storeId, homepageDTO);
+        List<StoreHomepage> homepageList = this.insertToHomepage(homepageDTO);
         Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
-                        .eq(Store::getId, storeId).eq(Store::getDelFlag, Constants.UNDELETED)))
+                        .eq(Store::getId, homepageDTO.getStoreId()).eq(Store::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
         store.setTemplateNum(homepageDTO.getTemplateNum());
         this.storeMapper.updateById(store);
@@ -516,25 +529,24 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
     /**
      * 新增档口首页模板展示
      *
-     * @param storeId     档口ID
      * @param homepageDTO 新增档口首页入参
      * @return
      */
-    private List<StoreHomepage> insertToHomepage(Long storeId, StoreHomeDecorationDTO homepageDTO) {
-        // 新增的首页轮播大图部分
-        List<SysFile> bigBannerFileList = homepageDTO.getBannerList().stream().filter(x -> StringUtils.isNotBlank(x.getFileUrl())
-                        && StringUtils.isNotBlank(x.getFileName()) && ObjectUtils.isNotEmpty(x.getFileSize()) && ObjectUtils.isNotEmpty(x.getOrderNum()))
-                .map(x -> BeanUtil.toBean(x, SysFile.class)).collect(Collectors.toList());
+    private List<StoreHomepage> insertToHomepage(StoreHomeDecorationDTO homepageDTO) {
         List<StoreHomepage> homePageList = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(bigBannerFileList)) {
+        if (CollectionUtils.isNotEmpty(homepageDTO.getBigBannerList())) {
+            // 新增的首页轮播大图部分
+            List<SysFile> bigBannerFileList = homepageDTO.getBigBannerList().stream().filter(x -> StringUtils.isNotBlank(x.getFileUrl())
+                            && StringUtils.isNotBlank(x.getFileName()) && ObjectUtils.isNotEmpty(x.getFileSize()) && ObjectUtils.isNotEmpty(x.getOrderNum()))
+                    .map(x -> BeanUtil.toBean(x, SysFile.class)).collect(Collectors.toList());
             this.fileMapper.insert(bigBannerFileList);
             Map<String, SysFile> bigBannerMap = bigBannerFileList.stream().collect(Collectors.toMap(SysFile::getFileName, Function.identity()));
-            homePageList.addAll(homepageDTO.getBannerList().stream().map(x -> BeanUtil.toBean(x, StoreHomepage.class).setStoreId(storeId)
+            homePageList.addAll(homepageDTO.getBigBannerList().stream().map(x -> BeanUtil.toBean(x, StoreHomepage.class).setStoreId(homepageDTO.getStoreId())
                             .setFileId(bigBannerMap.containsKey(x.getFileName()) ? bigBannerMap.get(x.getFileName()).getId() : null))
                     .collect(Collectors.toList()));
         }
-        if (CollectionUtils.isNotEmpty(homepageDTO.getDecorList())) {
-            homePageList.addAll(homepageDTO.getDecorList().stream().map(x -> BeanUtil.toBean(x, StoreHomepage.class).setStoreId(storeId))
+        if (CollectionUtils.isNotEmpty(homepageDTO.getDecorationList())) {
+            homePageList.addAll(homepageDTO.getDecorationList().stream().map(x -> BeanUtil.toBean(x, StoreHomepage.class).setStoreId(homepageDTO.getStoreId()))
                     .collect(Collectors.toList()));
         }
         if (CollectionUtils.isNotEmpty(homePageList)) {

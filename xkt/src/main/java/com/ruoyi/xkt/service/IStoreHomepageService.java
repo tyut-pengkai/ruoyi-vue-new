@@ -15,11 +15,10 @@ public interface IStoreHomepageService {
     /**
      * 新增档口首页各部分图
      *
-     * @param storeId     档口ID
      * @param homepageDTO 新增档口首页各部分图
      * @return Integer
      */
-    Integer insert(Long storeId, StoreHomeDecorationDTO homepageDTO);
+    Integer insert(StoreHomeDecorationDTO homepageDTO);
 
     /**
      * 获取档口首页各个部分的图信息
@@ -32,11 +31,10 @@ public interface IStoreHomepageService {
     /**
      * 更新档口首页各部分图信息
      *
-     * @param storeId     档口ID
-     * @param homeDTO     更新的dto
+     * @param homeDTO 更新的dto
      * @return Integer
      */
-    Integer updateStoreHomepage(Long storeId, StoreHomeDecorationDTO homeDTO);
+    Integer updateStoreHomepage(StoreHomeDecorationDTO homeDTO);
 
     /**
      * 获取档口推荐商品列表
