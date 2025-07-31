@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.web.bind.annotation.PathVariable;
 
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -18,6 +20,9 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreHomeDecorationVO {
 
+    @NotNull(message = "模板编号不能为空!")
+    @ApiModelProperty(value = "模板编号", required = true)
+    private Integer templateNum;
     @ApiModelProperty(value = "档口首页装修大轮播图")
     private List<BigBannerVO> bigBannerList;
     @ApiModelProperty(value = "档口首页装修其它图部分")

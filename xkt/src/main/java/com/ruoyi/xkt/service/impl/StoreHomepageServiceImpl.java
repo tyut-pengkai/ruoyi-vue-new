@@ -61,7 +61,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
      */
     @Override
     @Transactional
-    public Integer insert(Long storeId, Integer templateNum, StoreHomeDecorationDTO homepageDTO) {
+    public Integer insert(Long storeId, StoreHomeDecorationDTO homepageDTO) {
         // 用户是否为档口管理者或子账户
         if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(storeId)) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
@@ -71,7 +71,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
         BigDecimal totalSize = homepageDTO.getBannerList().stream().map(x -> ObjectUtils.defaultIfNull(x.getFileSize(), BigDecimal.ZERO)).reduce(BigDecimal.ZERO, BigDecimal::add);
         Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>().eq(Store::getId, storeId).eq(Store::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
-        store.setTemplateNum(templateNum);
+        store.setTemplateNum(homepageDTO.getTemplateNum());
         // 更新档口首页使用的总的文件容量
         store.setStorageUsage(ObjectUtils.defaultIfNull(store.getStorageUsage(), BigDecimal.ZERO).add(totalSize));
         this.storeMapper.updateById(store);
@@ -145,13 +145,12 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
      * 更新档口首页各部分图信息
      *
      * @param storeId     档口ID
-     * @param templateNum 选择的模板Num
      * @param homepageDTO 更新的dto
      * @return Integer
      */
     @Override
     @Transactional
-    public Integer updateStoreHomepage(Long storeId, Integer templateNum, StoreHomeDecorationDTO homepageDTO) {
+    public Integer updateStoreHomepage(Long storeId, StoreHomeDecorationDTO homepageDTO) {
         // 用户是否为档口管理者或子账户
         if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(storeId)) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
@@ -168,7 +167,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
         Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
                         .eq(Store::getId, storeId).eq(Store::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
-        store.setTemplateNum(templateNum);
+        store.setTemplateNum(homepageDTO.getTemplateNum());
         this.storeMapper.updateById(store);
         return homepageList.size();
     }

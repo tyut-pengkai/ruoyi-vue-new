@@ -34,10 +34,9 @@ public class StoreHomepageController extends XktBaseController {
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "新增档口装修数据", httpMethod = "POST", response = R.class)
     @Log(title = "新增档口装修数据", businessType = BusinessType.INSERT)
-    @PostMapping("/decoration/{storeId}/{templateNum}")
-    public R<Integer> addDecoration(@PathVariable("storeId") Long storeId, @PathVariable("templateNum") Integer templateNum,
-                                    @Validated @RequestBody StoreHomeDecorationVO decorationVO) {
-        return R.ok(storeHomeService.insert(storeId, templateNum, BeanUtil.toBean(decorationVO, StoreHomeDecorationDTO.class)));
+    @PostMapping("/decoration/{storeId}")
+    public R<Integer> addDecoration(@PathVariable("storeId") Long storeId, @Validated @RequestBody StoreHomeDecorationVO decorationVO) {
+        return R.ok(storeHomeService.insert(storeId, BeanUtil.toBean(decorationVO, StoreHomeDecorationDTO.class)));
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
@@ -50,10 +49,9 @@ public class StoreHomepageController extends XktBaseController {
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "修改档口装修数据", httpMethod = "PUT", response = R.class)
     @Log(title = "修改档口装修数据", businessType = BusinessType.UPDATE)
-    @PutMapping("/decoration/{storeId}/{templateNum}")
-    public R<Integer> editDecoration(@PathVariable("storeId") Long storeId, @PathVariable("templateNum") Integer templateNum,
-                                     @Validated @RequestBody StoreHomeDecorationVO homepageVO) {
-        return R.ok(storeHomeService.updateStoreHomepage(storeId, templateNum, BeanUtil.toBean(homepageVO, StoreHomeDecorationDTO.class)));
+    @PutMapping("/decoration/{storeId}")
+    public R<Integer> editDecoration(@PathVariable("storeId") Long storeId, @Validated @RequestBody StoreHomeDecorationVO homepageVO) {
+        return R.ok(storeHomeService.updateStoreHomepage(storeId, BeanUtil.toBean(homepageVO, StoreHomeDecorationDTO.class)));
     }
 
     @ApiOperation(value = "获取档口推荐商品列表", httpMethod = "GET", response = R.class)

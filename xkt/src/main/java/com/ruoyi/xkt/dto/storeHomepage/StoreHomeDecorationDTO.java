@@ -18,6 +18,8 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StoreHomeDecorationDTO {
 
+    @ApiModelProperty(value = "模板编号")
+    private Integer templateNum;
     @ApiModelProperty(value = "档口首页装修大轮播图")
     private List<BigBannerDTO> bannerList;
     @ApiModelProperty(value = "档口首页装修其它图部分")
