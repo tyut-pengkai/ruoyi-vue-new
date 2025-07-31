@@ -9,7 +9,9 @@ import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.storeHomepage.*;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdPriceAndMainPicAndTagDTO;
+import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
 import com.ruoyi.xkt.enums.AdDisplayType;
+import com.ruoyi.xkt.enums.FileType;
 import com.ruoyi.xkt.enums.HomepageJumpType;
 import com.ruoyi.xkt.enums.HomepageType;
 import com.ruoyi.xkt.mapper.*;
@@ -111,6 +113,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                 .orElseThrow(() -> new ServiceException("文件不存在", HttpStatus.ERROR));
         Map<Long, SysFile> fileMap = fileList.stream().collect(Collectors.toMap(SysFile::getId, Function.identity()));
         Map<Long, StoreProduct> storeProdMap = new HashMap<>();
+        Map<Long, String> mainPicMap = new HashMap<>();
         // 档口商品ID列表
         List<Long> storeProdIdList = homeList.stream()
                 .filter(x -> Objects.equals(x.getJumpType(), HomepageJumpType.JUMP_PRODUCT.getValue())).map(StoreHomepage::getBizId).collect(Collectors.toList());
@@ -121,6 +124,10 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                             .eq(StoreProduct::getDelFlag, Constants.UNDELETED)))
                     .orElseThrow(() -> new ServiceException("档口商品不存在", HttpStatus.ERROR));
             storeProdMap = storeProdList.stream().collect(Collectors.toMap(StoreProduct::getId, Function.identity()));
+            // 查找排名第一个商品主图列表
+            List<StoreProdMainPicDTO> mainPicList = this.prodFileMapper.selectMainPicByStoreProdIdList(storeProdIdList, FileType.MAIN_PIC.getValue(), ORDER_NUM_1);
+            mainPicMap = CollectionUtils.isEmpty(mainPicList) ? new HashMap<>() : mainPicList.stream()
+                    .collect(Collectors.toMap(StoreProdMainPicDTO::getStoreProdId, StoreProdMainPicDTO::getFileUrl));
         }
         Map<Long, StoreProduct> finalStoreProdMap = storeProdMap;
         // 轮播图
@@ -131,26 +138,20 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                                     ? (finalStoreProdMap.containsKey(x.getBizId()) ? finalStoreProdMap.get(x.getBizId()).getProdArtNum() : null)
                                     : (ObjectUtils.isEmpty(x.getBizId()) ? null : store.getStoreName()));
                     if (fileMap.containsKey(x.getFileId())) {
-                        decorationDTO.setFileType(x.getFileType()).setFileName(fileMap.get(x.getFileId()).getFileName())
-                                .setFileUrl(fileMap.get(x.getFileId()).getFileUrl()).setFileSize(fileMap.get(x.getFileId()).getFileSize());
+                        decorationDTO.setFileType(x.getFileType()).setFileUrl(fileMap.get(x.getFileId()).getFileUrl());
                     }
                     return decorationDTO;
                 }).collect(Collectors.toList());
         // 其它图部分
+        Map<Long, String> finalMainPicMap = mainPicMap;
         List<StoreHomeDecorationResDTO.DecorationDTO> decorList = homeList.stream().filter(x -> !Objects.equals(x.getFileType(), HomepageType.SLIDING_PICTURE.getValue()))
-                .map(x -> {
-                    StoreHomeDecorationResDTO.DecorationDTO decorationDTO = BeanUtil.toBean(x, StoreHomeDecorationResDTO.DecorationDTO.class)
-                            .setBizName(finalStoreProdMap.containsKey(x.getBizId()) ? finalStoreProdMap.get(x.getBizId()).getProdArtNum() : null);
-                    if (fileMap.containsKey(x.getFileId())) {
-                        decorationDTO.setFileType(x.getFileType()).setFileName(fileMap.get(x.getFileId()).getFileName())
-                                .setFileUrl(fileMap.get(x.getFileId()).getFileUrl()).setFileSize(fileMap.get(x.getFileId()).getFileSize());
-                    }
-                    return decorationDTO;
-                })
+                .map(x -> BeanUtil.toBean(x, StoreHomeDecorationResDTO.DecorationDTO.class)
+                        .setBizName(finalStoreProdMap.containsKey(x.getBizId()) ? finalStoreProdMap.get(x.getBizId()).getProdArtNum() : null)
+                        .setFileType(x.getFileType()).setFileUrl(finalMainPicMap.get(x.getBizId())))
                 .collect(Collectors.toList());
         return new StoreHomeDecorationResDTO() {{
             setTemplateNum(store.getTemplateNum());
-            setBannerList(bigBannerList);
+            setBigBannerList(bigBannerList);
             setDecorationList(decorList);
         }};
     }

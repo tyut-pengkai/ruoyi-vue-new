@@ -56,7 +56,7 @@ public class StoreHomeDecorationDTO {
         private Long bizId;
         @ApiModelProperty(value = "业务名称")
         private String bizName;
-        @ApiModelProperty(value = "文件大小")
+        @ApiModelProperty(value = "跳转类型")
         private Integer jumpType;
         @ApiModelProperty(value = "文件类型 2轮播小图 3店家推荐 4人气爆款 5当季新品 6销量排行")
         private Integer fileType;
