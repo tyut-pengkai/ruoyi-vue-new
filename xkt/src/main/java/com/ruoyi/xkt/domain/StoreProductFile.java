@@ -6,8 +6,6 @@ import com.ruoyi.common.core.domain.XktBaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.math.BigDecimal;
 
@@ -65,21 +63,9 @@ public class StoreProductFile extends XktBaseEntity {
     @Excel(name = "排序")
     private Integer orderNum;
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("id", getId())
-                .append("storeProdId", getStoreProdId())
-                .append("fileId", getFileId())
-                .append("fileType", getFileType())
-                .append("fileSize", getFileSize())
-                .append("orderNum", getOrderNum())
-                .append("version", getVersion())
-                .append("delFlag", getDelFlag())
-                .append("createBy", getCreateBy())
-                .append("createTime", getCreateTime())
-                .append("updateBy", getUpdateBy())
-                .append("updateTime", getUpdateTime())
-                .toString();
-    }
+    /**
+     * 图包处理状态 图包状态[1:非图包/不处理 2:待处理 3:处理中 4:已处理 5:处理异常]
+     */
+    private Integer picZipStatus;
+
 }

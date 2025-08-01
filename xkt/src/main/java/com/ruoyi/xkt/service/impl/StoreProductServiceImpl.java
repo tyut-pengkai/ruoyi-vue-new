@@ -25,7 +25,9 @@ import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.exception.user.CaptchaException;
 import com.ruoyi.common.exception.user.CaptchaExpireException;
+import com.ruoyi.common.utils.AdValidator;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.HtmlValidator;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.es.EsClientWrapper;
 import com.ruoyi.framework.oss.OSSClientWrapper;
@@ -202,18 +204,19 @@ public class StoreProductServiceImpl implements IStoreProductService {
     @Override
     @Transactional
     public int create(StoreProdDTO createDTO) throws IOException {
-
-        // TODO 富文本标签过滤
-        // TODO 富文本标签过滤
-        // TODO 富文本标签过滤
-        // TODO 富文本标签过滤
-        // TODO 富文本标签过滤
-        // TODO 富文本标签过滤
-        // TODO 富文本标签过滤
-
         // 用户是否为档口管理者或子账户
         if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(createDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        } // 校验标题中是否包含违禁词
+        List<String> prohibitedWords = AdValidator.findProhibitedWords(createDTO.getProdTitle().trim());
+        if (CollectionUtils.isNotEmpty(prohibitedWords)) {
+            throw new ServiceException("商品标题含有违禁词: " + String.join(",", prohibitedWords), HttpStatus.ERROR);
+        }
+        // 校验富文本标签是否合法
+        boolean isValid = HtmlValidator.isValidHtml(createDTO.getDetail());
+        if (!isValid) {
+            // 清理 HTML
+            createDTO.setDetail(HtmlValidator.sanitizeHtml(createDTO.getDetail()));
         }
         // 组装StoreProduct数据
         StoreProduct storeProd = BeanUtil.toBean(createDTO, StoreProduct.class).setVoucherDate(DateUtils.getNowDate())
@@ -247,17 +250,21 @@ public class StoreProductServiceImpl implements IStoreProductService {
     @Override
     @Transactional
     public int update(final Long storeProdId, StoreProdDTO updateDTO) throws IOException {
-
-
-        // TODO 富文本标签过滤
-        // TODO 富文本标签过滤
-        // TODO 富文本标签过滤
-        // TODO 富文本标签过滤
-        // TODO 富文本标签过滤
-        // TODO 富文本标签过滤
-        // TODO 富文本标签过滤
-
-
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(updateDTO.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
+        // 校验标题中是否包含违禁词
+        List<String> prohibitedWords = AdValidator.findProhibitedWords(updateDTO.getProdTitle().trim());
+        if (CollectionUtils.isNotEmpty(prohibitedWords)) {
+            throw new ServiceException("商品标题含有违禁词: " + String.join(",", prohibitedWords), HttpStatus.ERROR);
+        }
+        // 校验富文本标签是否合法
+        boolean isValid = HtmlValidator.isValidHtml(updateDTO.getDetail());
+        if (!isValid) {
+            // 清理 HTML
+            updateDTO.setDetail(HtmlValidator.sanitizeHtml(updateDTO.getDetail()));
+        }
         StoreProduct storeProd = Optional.ofNullable(this.storeProdMapper.selectOne(new LambdaQueryWrapper<StoreProduct>()
                         .eq(StoreProduct::getId, storeProdId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口商品不存在!", HttpStatus.ERROR));
@@ -310,7 +317,9 @@ public class StoreProductServiceImpl implements IStoreProductService {
         Map<String, Long> fileMap = fileList.stream().collect(Collectors.toMap(SysFile::getFileName, SysFile::getId));
         // 档口文件（商品主图、主图视频、下载的商品详情）
         List<StoreProductFile> prodFileList = fileDTOList.stream().map(x -> BeanUtil.toBean(x, StoreProductFile.class)
-                        .setFileId(fileMap.get(x.getFileName())).setStoreProdId(storeProd.getId()).setStoreId(updateDTO.getStoreId()))
+                        .setFileId(fileMap.get(x.getFileName())).setStoreProdId(storeProd.getId()).setStoreId(updateDTO.getStoreId())
+                        .setPicZipStatus(Objects.equals(x.getFileType(), FileType.DOWNLOAD.getValue())
+                                ? StoreProdFileZipStatus.PENDING.getValue() : StoreProdFileZipStatus.NON_ZIP.getValue()))
                 .collect(Collectors.toList());
         this.storeProdFileMapper.insert(prodFileList);
         // 档口类目属性
@@ -425,7 +434,9 @@ public class StoreProductServiceImpl implements IStoreProductService {
         Map<String, Long> fileMap = fileList.stream().collect(Collectors.toMap(SysFile::getFileName, SysFile::getId));
         // 档口文件（商品主图、主图视频、下载的商品详情）
         List<StoreProductFile> prodFileList = fileDTOList.stream().map(x -> BeanUtil.toBean(x, StoreProductFile.class)
-                        .setFileId(fileMap.get(x.getFileName())).setStoreProdId(storeProd.getId()).setStoreId(createDTO.getStoreId()))
+                        .setFileId(fileMap.get(x.getFileName())).setStoreProdId(storeProd.getId()).setStoreId(createDTO.getStoreId())
+                        .setPicZipStatus(Objects.equals(x.getFileType(), FileType.DOWNLOAD.getValue())
+                                ? StoreProdFileZipStatus.PENDING.getValue() : StoreProdFileZipStatus.NON_ZIP.getValue()))
                 .collect(Collectors.toList());
         this.storeProdFileMapper.insert(prodFileList);
         // 档口类目属性
@@ -447,9 +458,9 @@ public class StoreProductServiceImpl implements IStoreProductService {
     /**
      * 新增档口商品颜色等
      *
-     * @param createDTO 入参
+     * @param createDTO   入参
      * @param storeProdId 档口商品ID
-     * @param storeId 档口ID
+     * @param storeId     档口ID
      */
     private void createProdColor(StoreProdDTO createDTO, Long storeProdId, Long storeId) {
         // 处理档口所有颜色
@@ -571,9 +582,9 @@ public class StoreProductServiceImpl implements IStoreProductService {
     public List<PicPackSimpleDTO> prepareGetPicPackDownloadUrl(Long storeProductId) {
         Assert.notNull(storeProductId);
         List<Long> fileIds = storeProdFileMapper.selectList(Wrappers.lambdaQuery(StoreProductFile.class)
-                .eq(StoreProductFile::getStoreProdId, storeProductId)
-                .in(StoreProductFile::getFileType, FileType.picPackValues())
-                .eq(XktBaseEntity::getDelFlag, UNDELETED))
+                        .eq(StoreProductFile::getStoreProdId, storeProductId)
+                        .in(StoreProductFile::getFileType, FileType.picPackValues())
+                        .eq(XktBaseEntity::getDelFlag, UNDELETED))
                 .stream()
                 .map(StoreProductFile::getFileId)
                 .filter(Objects::nonNull)
@@ -583,7 +594,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
         }
         List<SysFile> files = fileMapper.selectByIds(fileIds);
         return files.stream()
-                .filter(o-> UNDELETED.equals(o.getDelFlag()))
+                .filter(o -> UNDELETED.equals(o.getDelFlag()))
                 .map(o -> {
                     PicPackSimpleDTO dto = BeanUtil.toBean(o, PicPackSimpleDTO.class);
                     dto.setFileId(o.getId());
@@ -879,7 +890,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
     /**
      * 给设置了所有商品优惠的客户创建优惠
      *
-     * @param colorList 档口商品颜色列表
+     * @param colorList   档口商品颜色列表
      * @param storeProdId 档口商品ID
      */
     private void createStoreCusDiscount(List<StoreProductColor> colorList, Long storeProdId) {
