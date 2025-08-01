@@ -93,8 +93,9 @@ public interface ISysUserService {
      *
      * @param userId
      * @param password
+     * @return username
      */
-    void resetPassword(Long userId, String password);
+    String resetPassword(Long userId, String password);
 
     /**
      * 更新登录信息

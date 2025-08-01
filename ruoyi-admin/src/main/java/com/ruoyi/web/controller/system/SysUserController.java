@@ -19,6 +19,7 @@ import com.ruoyi.common.core.page.PageVO;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.framework.web.service.SysLoginService;
+import com.ruoyi.framework.web.service.SysPasswordService;
 import com.ruoyi.framework.web.service.TokenService;
 import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
@@ -57,6 +58,8 @@ public class SysUserController extends BaseController {
     private TokenService tokenService;
     @Autowired
     private SysLoginService loginService;
+    @Autowired
+    private SysPasswordService passwordService;
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "用户分页查询 - 管理员")
@@ -167,7 +170,8 @@ public class SysUserController extends BaseController {
     @Log(title = "用户管理", businessType = BusinessType.UPDATE)
     @PostMapping("/resetPwd")
     public R resetPwd(@Validated @RequestBody PwdResetVO vo) {
-        userService.resetPassword(vo.getId(), vo.getNewPwd());
+        String username = userService.resetPassword(vo.getId(), vo.getNewPwd());
+        passwordService.clearLoginRecordCache(username);
         return R.ok();
     }
 

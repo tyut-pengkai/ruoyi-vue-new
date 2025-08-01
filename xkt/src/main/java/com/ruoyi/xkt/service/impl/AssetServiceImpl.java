@@ -365,7 +365,7 @@ public class AssetServiceImpl implements IAssetService {
     private void validateSmsVerificationCode(String phoneNumber, String code) {
         boolean match = smsClient.matchVerificationCode(CacheConstants.SMS_ASSET_CAPTCHA_CODE_KEY, phoneNumber, code);
         if (!match) {
-            throw new ServiceException("验证码错误");
+            throw new ServiceException("验证码错误或已过期");
         }
     }
 

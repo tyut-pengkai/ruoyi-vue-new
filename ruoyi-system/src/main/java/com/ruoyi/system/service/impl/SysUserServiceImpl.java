@@ -176,14 +176,14 @@ public class SysUserServiceImpl implements ISysUserService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void resetPassword(Long userId, String password) {
+    public String resetPassword(Long userId, String password) {
         if (userId == null || StrUtil.isEmpty(password)) {
-            return;
+            return null;
         }
         SysUser user = userMapper.selectById(userId);
         user.setPassword(SecurityUtils.encryptPassword(password));
         updateUserBase(user, true);
-        return;
+        return user.getUserName();
     }
 
     @Transactional(rollbackFor = Exception.class)

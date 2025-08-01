@@ -1,5 +1,6 @@
 package com.ruoyi.framework.web.service;
 
+import cn.hutool.core.util.StrUtil;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.redis.RedisCache;
@@ -44,7 +45,8 @@ public class SysPasswordService
     {
         String username = user.getUserName();
 
-        Integer retryCount = redisCache.getCacheObject(getCacheKey(username));
+        String cacheKey = getCacheKey(username);
+        Integer retryCount = redisCache.getCacheObject(cacheKey);
 
         if (retryCount == null)
         {
@@ -53,13 +55,14 @@ public class SysPasswordService
 
         if (retryCount >= Integer.valueOf(maxRetryCount).intValue())
         {
-            throw new UserPasswordRetryLimitExceedException(maxRetryCount, lockTime);
+            long expire = redisCache.getExpire(cacheKey) / 60;
+            throw new UserPasswordRetryLimitExceedException(expire);
         }
 
         if (!matches(user, password))
         {
             retryCount = retryCount + 1;
-            redisCache.setCacheObject(getCacheKey(username), retryCount, lockTime, TimeUnit.MINUTES);
+            redisCache.setCacheObject(cacheKey, retryCount, lockTime, TimeUnit.MINUTES);
             throw new UserPasswordNotMatchException();
         }
         else
@@ -76,9 +79,13 @@ public class SysPasswordService
 
     public void clearLoginRecordCache(String loginName)
     {
-        if (redisCache.hasKey(getCacheKey(loginName)))
+        if (StrUtil.isEmpty(loginName)) {
+            return;
+        }
+        String cacheKey = getCacheKey(loginName);
+        if (redisCache.hasKey(cacheKey))
         {
-            redisCache.deleteObject(getCacheKey(loginName));
+            redisCache.deleteObject(cacheKey);
         }
     }
 }

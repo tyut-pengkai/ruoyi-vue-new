@@ -17,6 +17,7 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.web.service.SysLoginService;
+import com.ruoyi.framework.web.service.SysPasswordService;
 import com.ruoyi.framework.web.service.TokenService;
 import com.ruoyi.system.service.ISysMenuService;
 import com.ruoyi.system.service.ISysRoleService;
@@ -62,6 +63,8 @@ public class SysLoginController {
     private RedisCache redisCache;
     @Autowired
     private AliAuthManager aliAuthManager;
+    @Autowired
+    private SysPasswordService passwordService;
 
     /**
      * 登录方法
@@ -180,7 +183,8 @@ public class SysLoginController {
     public R changePassword(@Validated @RequestBody PasswordChangeVO vo) {
         loginService.validateSmsVerificationCode(vo.getPhoneNumber(), vo.getCode());
         UserInfo user = userService.getUserByPhoneNumber(vo.getPhoneNumber());
-        userService.resetPassword(user.getUserId(), vo.getNewPassword());
+        String username = userService.resetPassword(user.getUserId(), vo.getNewPassword());
+        passwordService.clearLoginRecordCache(username);
         tokenService.deleteCacheUser(user.getUserId());
         return R.ok();
     }
@@ -197,7 +201,8 @@ public class SysLoginController {
         if (SecurityUtils.matchesPassword(password, vo.getNewPassword())) {
             return R.fail("新密码不能与旧密码相同");
         }
-        userService.resetPassword(loginUser.getUserId(), vo.getNewPassword());
+        String username = userService.resetPassword(loginUser.getUserId(), vo.getNewPassword());
+        passwordService.clearLoginRecordCache(username);
         tokenService.deleteCacheUser(loginUser.getUserId());
         return R.ok();
     }
