@@ -19,8 +19,6 @@ public class StoreOrderInfoDTO extends StoreOrderDTO {
 
     private String storeName;
 
-    private String brandName;
-
     private String expressName;
 
     private String originProvinceName;

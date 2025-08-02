@@ -7,7 +7,6 @@
         SELECT
             so.*,
             s.store_name,
-            s.brand_name,
             e.express_name
         FROM
             store_order so

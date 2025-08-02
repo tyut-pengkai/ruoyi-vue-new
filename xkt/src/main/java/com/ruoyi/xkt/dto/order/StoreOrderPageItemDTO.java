@@ -18,8 +18,6 @@ public class StoreOrderPageItemDTO extends StoreOrderDTO {
 
     private String storeName;
 
-    private String brandName;
-
     private String expressName;
 
     private String originProvinceName;

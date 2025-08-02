@@ -31,11 +31,6 @@ public class StoreOrderInfoVO {
     @ApiModelProperty(value = "档口名称")
     private String storeName;
     /**
-     * 品牌名称
-     */
-    @ApiModelProperty(value = "品牌名称")
-    private String brandName;
-    /**
      * 下单用户ID
      */
     @ApiModelProperty(value = "下单用户ID")
