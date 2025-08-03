@@ -33,7 +33,7 @@ public class SysDictTypeController extends BaseController {
 
     final ISysDictTypeService dictTypeService;
 
-    @PreAuthorize("@ss.hasPermi('system:dict:add')")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "新增字典类型", httpMethod = "POST", response = R.class)
     @Log(title = "新增字典类型", businessType = BusinessType.INSERT)
     @PostMapping
@@ -41,14 +41,14 @@ public class SysDictTypeController extends BaseController {
         return R.ok(dictTypeService.create(BeanUtil.toBean(dictTypeVO, DictTypeDTO.class)));
     }
 
-    @PreAuthorize("@ss.hasPermi('system:dict:list')")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "查询字典类型列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<DictTypePageResVO>> page(@Validated @RequestBody DictTypePageVO pageVO) {
         return R.ok(dictTypeService.page(BeanUtil.toBean(pageVO, DictTypePageDTO.class)));
     }
 
-    @PreAuthorize("@ss.hasPermi('system:dict:edit')")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "修改字典类型", httpMethod = "PUT", response = R.class)
     @Log(title = "修改字典类型", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -56,7 +56,7 @@ public class SysDictTypeController extends BaseController {
         return R.ok(dictTypeService.update(BeanUtil.toBean(dictTypeVO, DictTypeDTO.class)));
     }
 
-    @PreAuthorize("@ss.hasPermi('system:dict:remove')")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "删除字典类型", httpMethod = "DELETE", response = R.class)
     @Log(title = "字典类型", businessType = BusinessType.DELETE)
     @DeleteMapping()
@@ -64,14 +64,13 @@ public class SysDictTypeController extends BaseController {
         return R.ok(dictTypeService.delete(BeanUtil.toBean(deleteVO, DictTypeDeleteDTO.class)));
     }
 
-    @PreAuthorize("@ss.hasPermi('system:dict:query')")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "查询字典类型详细", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{dictId}")
     public R<DictTypeResVO> getInfo(@PathVariable Long dictId) {
         return R.ok(BeanUtil.toBean(dictTypeService.selectById(dictId), DictTypeResVO.class));
     }
 
-    @PreAuthorize("@ss.hasPermi('system:dict:remove')")
     @ApiOperation(value = "刷新字典缓存", httpMethod = "DELETE", response = R.class)
     @Log(title = "刷新字典缓存", businessType = BusinessType.CLEAN)
     @DeleteMapping("/refreshCache")
@@ -80,6 +79,7 @@ public class SysDictTypeController extends BaseController {
         return R.ok();
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "获取字典选择框列表", httpMethod = "DELETE", response = R.class)
     @GetMapping("/optionselect")
     public R<List<DictTypeResVO>> optionSelect() {

@@ -15,6 +15,7 @@ import com.ruoyi.system.service.ISysDictTypeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,6 +35,7 @@ public class SysDictDataController extends BaseController {
     final ISysDictDataService dictDataService;
     final ISysDictTypeService dictTypeService;
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "新增字典明细类型", httpMethod = "POST", response = R.class)
     @Log(title = "新增字典明细类型", businessType = BusinessType.INSERT)
     @PostMapping
@@ -41,6 +43,7 @@ public class SysDictDataController extends BaseController {
         return R.ok(dictDataService.create(BeanUtil.toBean(dataVO, DictDataDTO.class)));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "修改字典明细类型", httpMethod = "PUT", response = R.class)
     @Log(title = "修改字典明细类型", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -48,6 +51,7 @@ public class SysDictDataController extends BaseController {
         return R.ok(dictDataService.update(BeanUtil.toBean(dataVO, DictDataDTO.class)));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "删除字典明细类型", httpMethod = "PUT", response = R.class)
     @Log(title = "删除字典明细类型", businessType = BusinessType.DELETE)
     @DeleteMapping()
@@ -55,12 +59,14 @@ public class SysDictDataController extends BaseController {
         return R.ok(dictDataService.delete(BeanUtil.toBean(deleteVO, DictDataDeleteDTO.class)));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "查询字典数据详细", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{dictDataId}")
     public R<DictDataResVO> getInfo(@PathVariable Long dictDataId) {
         return R.ok(BeanUtil.toBean(dictDataService.selectById(dictDataId), DictDataResVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @GetMapping(value = "/type/{dictType}")
     @ApiOperation(value = "根据字典类型查询字典数据信息", httpMethod = "GET", response = R.class)
     public R<List<DictDataResVO>> dictType(@PathVariable String dictType) {

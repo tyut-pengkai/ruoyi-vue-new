@@ -22,15 +22,13 @@ import com.ruoyi.system.mapper.SysDictDataMapper;
 import com.ruoyi.system.mapper.SysDictTypeMapper;
 import com.ruoyi.system.service.ISysDictTypeService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.ruoyi.common.utils.SecurityUtils.getUsername;
@@ -112,6 +110,15 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService {
         SysDictType dict = Optional.ofNullable(this.dictTypeMapper.selectOne(new LambdaQueryWrapper<SysDictType>()
                         .eq(SysDictType::getDictId, typeDTO.getDictId()).eq(SysDictType::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("字典类型不存在!", HttpStatus.ERROR));
+        // 如果字典类型被修改，则同步修改sys_dict_data中的数据
+        if (!Objects.equals(dict.getDictType(), typeDTO.getDictType())) {
+            List<SysDictData> dataList = this.dictDataMapper.selectList(new LambdaQueryWrapper<SysDictData>()
+                    .eq(SysDictData::getDictType, dict.getDictType()).eq(SysDictData::getDelFlag, Constants.UNDELETED));
+            if (CollectionUtils.isNotEmpty(dataList)) {
+                dataList.forEach(x -> x.setDictType(typeDTO.getDictType()));
+                this.dictDataMapper.updateById(dataList);
+            }
+        }
         dict.setUpdateBy(getUsername());
         BeanUtil.copyProperties(typeDTO, dict);
         return this.dictTypeMapper.updateById(dict);
