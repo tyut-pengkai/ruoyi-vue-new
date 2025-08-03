@@ -32,14 +32,6 @@ public class StoreHomepageController extends XktBaseController {
     final IStoreHomepageService storeHomeService;
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
-    @ApiOperation(value = "新增档口装修数据", httpMethod = "POST", response = R.class)
-    @Log(title = "新增档口装修数据", businessType = BusinessType.INSERT)
-    @PostMapping("/decoration")
-    public R<Integer> addDecoration(@Validated @RequestBody StoreHomeDecorationVO decorationVO) {
-        return R.ok(storeHomeService.insert(BeanUtil.toBean(decorationVO, StoreHomeDecorationDTO.class)));
-    }
-
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "查询档口装修数据", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/decoration/{storeId}")
     public R<StoreHomeDecorationVO> getDecorationInfo(@PathVariable("storeId") Long storeId) {

@@ -54,36 +54,6 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
     final StoreCertificateMapper storeCertMapper;
 
     /**
-     * 新增档口首页各部分图
-     *
-     * @param homepageDTO 新增档口首页各部分图
-     * @return Integer
-     */
-    @Override
-    @Transactional
-    public Integer insert(StoreHomeDecorationDTO homepageDTO) {
-        // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(homepageDTO.getStoreId())) {
-            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
-        }
-        List<StoreHomepage> homepageList = this.insertToHomepage(homepageDTO);
-        if (CollectionUtils.isEmpty(homepageList)) {
-            return 0;
-        }
-        // 当前档口首页各部分总的文件大小
-        BigDecimal totalSize = homepageDTO.getBigBannerList().stream().map(x -> ObjectUtils.defaultIfNull(x.getFileSize(), BigDecimal.ZERO)).reduce(BigDecimal.ZERO, BigDecimal::add);
-        Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
-                        .eq(Store::getId, homepageDTO.getStoreId()).eq(Store::getDelFlag, Constants.UNDELETED)))
-                .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
-        store.setTemplateNum(homepageDTO.getTemplateNum());
-        // 更新档口首页使用的总的文件容量
-        store.setStorageUsage(ObjectUtils.defaultIfNull(store.getStorageUsage(), BigDecimal.ZERO).add(totalSize));
-        this.storeMapper.updateById(store);
-        return homepageList.size();
-    }
-
-
-    /**
      * 获取档口首页各个部分的图信息
      *
      * @param storeId 档口ID

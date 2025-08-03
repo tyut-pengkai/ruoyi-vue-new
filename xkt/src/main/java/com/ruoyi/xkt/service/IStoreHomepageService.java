@@ -13,14 +13,6 @@ import java.util.List;
 public interface IStoreHomepageService {
 
     /**
-     * 新增档口首页各部分图
-     *
-     * @param homepageDTO 新增档口首页各部分图
-     * @return Integer
-     */
-    Integer insert(StoreHomeDecorationDTO homepageDTO);
-
-    /**
      * 获取档口首页各个部分的图信息
      *
      * @param storeId 档口ID

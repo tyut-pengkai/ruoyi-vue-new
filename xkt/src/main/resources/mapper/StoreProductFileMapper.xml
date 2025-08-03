@@ -66,6 +66,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                     #{storeProdId}
                 </foreach>
             </if>
+        ORDER BY
+            spf.store_prod_id DESC,
+            spf.order_num
     </select>
 
 

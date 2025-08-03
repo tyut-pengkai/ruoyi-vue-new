@@ -227,8 +227,7 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
             List<StorePrintSnDTO.SPSizeVO> sizeQuantityList = colorSizeVO.getSizeQuantityList();
             // storeProductColorId 下 所有的条码
             List<StorePrintSnResDTO.SPSizeSnDTO> sizeSnList = new ArrayList<>();
-            for (int j = 0; j < sizeQuantityList.size(); j++) {
-                final StorePrintSnDTO.SPSizeVO quantityVO = sizeQuantityList.get(j);
+            for (final StorePrintSnDTO.SPSizeVO quantityVO : sizeQuantityList) {
                 // 获取系统条码对应信息
                 final String key = colorSizeVO.getStoreProdId() + ":" + colorSizeVO.getStoreColorId() + ":" + quantityVO.getSize();
                 StoreProductColorSize colorSize = colorSizeMap.get(key);
@@ -246,7 +245,7 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
                     snList.add(colorSize.getSnPrefix() + String.format("%08d", nextSn));
                 }
                 // 更新下一个待打印条码开始值
-                updateList.add( colorSize.setNextSn(nextSn));
+                updateList.add(colorSize.setNextSn(nextSn));
                 sizeSnList.add(new StorePrintSnResDTO.SPSizeSnDTO().setSize(quantityVO.getSize()).setSnList(snList));
             }
             printSnList.add(new StorePrintSnResDTO().setStoreProdColorId(colorSizeVO.getStoreProdColorId()).setSizeSnList(sizeSnList));
