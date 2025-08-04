@@ -115,7 +115,8 @@ public class SysLoginController {
         if (!captchaPass) {
             return R.fail("验证失败");
         }
-        loginService.sendSmsVerificationCode(vo.getPhoneNumber(), false, null, null);
+        loginService.sendSmsVerificationCode(vo.getPhoneNumber(),
+                CacheConstants.SMS_LOGIN_CAPTCHA_CODE_CD_PHONE_NUM_KEY, false, null, null);
         return R.ok();
     }
 

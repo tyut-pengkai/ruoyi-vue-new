@@ -11,7 +11,10 @@ import com.ruoyi.common.core.domain.model.UserInfo;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.UserStatus;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.exception.user.*;
+import com.ruoyi.common.exception.user.BlackListException;
+import com.ruoyi.common.exception.user.CaptchaException;
+import com.ruoyi.common.exception.user.CaptchaExpireException;
+import com.ruoyi.common.exception.user.UserNotExistsException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.MessageUtils;
 import com.ruoyi.common.utils.StringUtils;
@@ -230,17 +233,19 @@ public class SysLoginService {
     /**
      * 发送登录/注册短信验证码
      *
-     * @param phoneNumber  电话号码
-     * @param checkPicCode 校验图形验证码
-     * @param code         图形验证码code
-     * @param uuid         图形验证码uuid
+     * @param phoneNumber      电话号码
+     * @param cdCacheKeyPrefix 发送间隔缓存前缀
+     * @param checkPicCode     校验图形验证码
+     * @param code             图形验证码code
+     * @param uuid             图形验证码uuid
      */
-    public void sendSmsVerificationCode(String phoneNumber, boolean checkPicCode, String code, String uuid) {
+    public void sendSmsVerificationCode(String phoneNumber, String cdCacheKeyPrefix, boolean checkPicCode, String code,
+                                        String uuid) {
         if (checkPicCode) {
             validateCaptcha(null, code, uuid);
         }
-        boolean success = smsClient.sendVerificationCode(CacheConstants.SMS_LOGIN_CAPTCHA_CODE_KEY, phoneNumber,
-                RandomUtil.randomNumbers(6));
+        boolean success = smsClient.sendVerificationCode(cdCacheKeyPrefix, CacheConstants.SMS_LOGIN_CAPTCHA_CODE_KEY,
+                phoneNumber, RandomUtil.randomNumbers(6));
         if (!success) {
             throw new ServiceException("短信发送失败");
         }

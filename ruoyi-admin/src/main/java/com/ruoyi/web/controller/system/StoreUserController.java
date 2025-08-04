@@ -6,6 +6,7 @@ import cn.hutool.core.lang.Assert;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.R;
@@ -95,7 +96,8 @@ public class StoreUserController extends BaseController {
     @ApiOperation(value = "发送子账号创建短信验证码 - 档口")
     @PostMapping("/sendSmsVerificationCode")
     public R sendSmsVerificationCode(@Validated @RequestBody PhoneNumberVO vo) {
-        loginService.sendSmsVerificationCode(vo.getPhoneNumber(), false, null, null);
+        loginService.sendSmsVerificationCode(vo.getPhoneNumber(),
+                CacheConstants.SMS_REGISTER_CAPTCHA_CODE_CD_PHONE_NUM_KEY, false, null, null);
         return R.ok();
     }
 

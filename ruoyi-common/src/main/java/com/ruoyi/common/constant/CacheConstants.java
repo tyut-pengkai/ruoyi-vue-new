@@ -35,7 +35,9 @@ public class CacheConstants {
     /**
      * 短信验证码CD中号码
      */
-    public static final String SMS_CAPTCHA_CODE_CD_PHONE_NUM_KEY = "sms_captcha_code_cd_phone_nums:";
+    public static final String SMS_ASSET_CAPTCHA_CODE_CD_PHONE_NUM_KEY = "sms_asset_captcha_code_cd_phone_nums:";
+    public static final String SMS_LOGIN_CAPTCHA_CODE_CD_PHONE_NUM_KEY = "sms_login_captcha_code_cd_phone_nums:";
+    public static final String SMS_REGISTER_CAPTCHA_CODE_CD_PHONE_NUM_KEY = "sms_register_captcha_code_cd_phone_nums:";
 
     /**
      * 扫码登录浏览器ID

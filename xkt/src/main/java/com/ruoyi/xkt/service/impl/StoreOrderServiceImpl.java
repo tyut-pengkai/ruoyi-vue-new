@@ -1212,6 +1212,15 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             orderDetail.setRefundReasonCode(afterSaleDTO.getRefundReasonCode());
             orderDetail.setVersion(0L);
             orderDetail.setDelFlag(Constants.UNDELETED);
+            if (EOrderStatus.SHIPPED.getValue().equals(originOrderDetail.getDetailStatus())
+                    || EOrderStatus.COMPLETED.getValue().equals(originOrderDetail.getDetailStatus())) {
+                //已发货不退运费
+                orderDetail.setTotalAmount(NumberUtil.sub(originOrderDetail.getTotalAmount(),
+                        originOrderDetail.getExpressFee()));
+                orderDetail.setRealTotalAmount(NumberUtil.sub(originOrderDetail.getRealTotalAmount(),
+                        originOrderDetail.getExpressFee()));
+                orderDetail.setExpressFee(BigDecimal.ZERO);
+            }
             //计算订单费用
             orderGoodsQuantity = orderGoodsQuantity + orderDetail.getGoodsQuantity();
             orderGoodsAmount = NumberUtil.add(orderGoodsAmount, orderDetail.getGoodsAmount());
@@ -1381,7 +1390,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                 throw new ServiceException(CharSequenceUtil.format("订单明细[{}]不存在或与订单[{}]不匹配",
                         storeOrderDetailId, storeOrderId));
             }
-            if (!EOrderStatus.COMPLETED.getValue().equals(orderDetail.getDetailStatus())
+            if (!EOrderStatus.AFTER_SALE_COMPLETED.getValue().equals(orderDetail.getDetailStatus())
                     || !EPayStatus.PAYING.getValue().equals(orderDetail.getPayStatus())) {
                 throw new ServiceException(CharSequenceUtil.format("订单明细[{}]状态异常", storeOrderDetailId));
             }

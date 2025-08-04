@@ -1,7 +1,6 @@
 package com.ruoyi.framework.sms;
 
 import cn.hutool.core.util.StrUtil;
-import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.framework.sms.ali.AliSmsServer;
@@ -52,20 +51,21 @@ public class SmsClientWrapper {
     /**
      * 发送短信验证码
      *
+     * @param cdCacheKeyPrefix
      * @param cacheKeyPrefix
      * @param phoneNumber
      * @param code
      * @return
      */
-    public boolean sendVerificationCode(String cacheKeyPrefix, String phoneNumber, String code) {
-        String checkKey = CacheConstants.SMS_CAPTCHA_CODE_CD_PHONE_NUM_KEY + phoneNumber;
-        if (redisCache.exists(checkKey)) {
+    public boolean sendVerificationCode(String cdCacheKeyPrefix, String cacheKeyPrefix, String phoneNumber, String code) {
+        String cdCheckKey = cdCacheKeyPrefix + phoneNumber;
+        if (redisCache.exists(cdCheckKey)) {
             throw new ServiceException("验证码发送间隔需大于60S");
         }
         boolean success = sendSms(verificationCodeSignName, phoneNumber, verificationCodeTemplateCode,
                 "{\"code\":\"" + code + "\"}");
         if (success) {
-            redisCache.setCacheObject(checkKey, "1", 60, TimeUnit.SECONDS);
+            redisCache.setCacheObject(cdCheckKey, "1", 60, TimeUnit.SECONDS);
             redisCache.setCacheObject(cacheKeyPrefix + phoneNumber, code, 300, TimeUnit.SECONDS);
         }
         return success;

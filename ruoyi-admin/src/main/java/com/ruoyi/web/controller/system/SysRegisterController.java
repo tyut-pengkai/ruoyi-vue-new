@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.system;
 
 import cn.hutool.core.util.BooleanUtil;
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -91,7 +92,7 @@ public class SysRegisterController extends BaseController {
         return R.ok(!unique);
     }
 
-    @ApiOperation(value = "发送登录短信验证码")
+    @ApiOperation(value = "发送注册短信验证码")
     @PostMapping("/sendSmsVerificationCode")
     public R sendSmsVerificationCode(@Validated @RequestBody LoginSmsReqVO vo) {
         boolean captchaPass = aliAuthManager.validate(vo.getLot_number(), vo.getCaptcha_output(),
@@ -99,7 +100,8 @@ public class SysRegisterController extends BaseController {
         if (!captchaPass) {
             return R.fail("验证失败");
         }
-        loginService.sendSmsVerificationCode(vo.getPhoneNumber(), false, null, null);
+        loginService.sendSmsVerificationCode(vo.getPhoneNumber(),
+                CacheConstants.SMS_REGISTER_CAPTCHA_CODE_CD_PHONE_NUM_KEY, false, null, null);
         return R.ok();
     }
 
