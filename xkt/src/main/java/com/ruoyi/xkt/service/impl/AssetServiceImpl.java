@@ -75,7 +75,7 @@ public class AssetServiceImpl implements IAssetService {
                                                  EPayChannel payChannel) {
         Assert.notNull(storeId);
         Assert.notEmpty(transactionPassword);
-        Assert.isTrue(NumberUtil.isGreaterOrEqual(amount, Constants.ZERO_POINT_ONE), "提现金额不能低于0.1元");
+        Assert.isTrue(NumberUtil.isGreaterOrEqual(amount, BigDecimal.ONE), "提现金额不能低于1元");
         InternalAccount internalAccount = internalAccountService.getAccountAndCheck(storeId, EAccountOwnerType.STORE);
         ExternalAccount externalAccount = externalAccountService.getAccountAndCheck(storeId, EAccountOwnerType.STORE,
                 EAccountType.getByChannel(payChannel));

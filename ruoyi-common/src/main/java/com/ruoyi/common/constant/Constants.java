@@ -270,4 +270,6 @@ public class Constants
 
     public static final BigDecimal ZERO_POINT_ONE = BigDecimal.valueOf(0.1);
 
+    public static final BigDecimal ALI_SERVICE_FEE_RATE = BigDecimal.valueOf(0.006);
+
 }
