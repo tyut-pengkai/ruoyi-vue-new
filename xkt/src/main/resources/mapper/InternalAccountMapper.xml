@@ -59,7 +59,7 @@
             IF(fb.src_type = 2, fb.trans_amount, 0) input_amount
         FROM
             finance_bill fb
-            LEFT JOIN store_order so ON fb.src_id = so.id AND fb.src_type IN (1, 4)
+            LEFT JOIN store_order so ON fb.rel_id = so.id AND fb.src_type IN (1, 4)
         WHERE
             so.order_user_id = #{userId}
             AND fb.bill_status = 3

@@ -215,7 +215,6 @@ public class AliPaymentMangerImpl implements PaymentManager, InitializingBean {
         // 设置退款金额
         BigDecimal amount = BigDecimal.ZERO;
         for (StoreOrderDetail orderDetail : orderRefund.getRefundOrderDetails()) {
-            //TODO 暂时商品金额+快递费一起退，需调整为实际退款金额
             amount = NumberUtil.add(amount, orderDetail.getTotalAmount());
         }
         model.setRefundAmount(amount.toPlainString());
@@ -359,7 +358,6 @@ public class AliPaymentMangerImpl implements PaymentManager, InitializingBean {
         model.setBusinessParams("{\"payer_show_name_use_alias\":\"true\"}");
         request.setBizModel(model);
         try {
-            //TODO 测试
             AlipayFundTransUniTransferResponse response = alipayClient.certificateExecute(request);
             log.info("支付宝转账: {}", response.getBody());
             if (response.isSuccess()) {

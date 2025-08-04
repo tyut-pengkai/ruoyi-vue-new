@@ -653,7 +653,8 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             log.error("订单状态异常，更新支付结果失败: id = {}", storeOrderId);
             throw new ServiceException("订单状态异常");
         }
-        if (!NumberUtil.equals(order.getTotalAmount(), totalAmount)) {
+        if (!NumberUtil.equals(order.getTotalAmount(), totalAmount)
+                || !NumberUtil.equals(order.getTotalAmount(), realTotalAmount)) {
             log.error("订单支付金额异常，更新支付结果失败: id = {} totalAmount = {} realTotalAmount = {}",
                     storeOrderId, totalAmount, realTotalAmount);
             throw new ServiceException("订单支付金额异常");
@@ -661,8 +662,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         order.setOrderStatus(EOrderStatus.PENDING_SHIPMENT.getValue());
         order.setPayStatus(EPayStatus.PAID.getValue());
         order.setPayTradeNo(payTradeNo);
-        //TODO 暂时使用总金额
-        order.setRealTotalAmount(order.getTotalAmount());
+        order.setRealTotalAmount(realTotalAmount);
         int orderSuccess = storeOrderMapper.updateById(prepareUpdate(order));
         if (orderSuccess == 0) {
             throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
