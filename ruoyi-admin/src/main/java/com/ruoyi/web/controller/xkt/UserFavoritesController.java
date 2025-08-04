@@ -37,7 +37,7 @@ public class UserFavoritesController extends XktBaseController {
         return R.ok(BeanUtil.toBean(userFavService.getStatusNum(), UserFavStatusCountResVO.class));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('seller')")
+    @PreAuthorize("@ss.hasAnyRoles('seller,agent')")
     @ApiOperation(value = "用户收藏商品", httpMethod = "POST", response = R.class)
     @Log(title = "用户收藏商品", businessType = BusinessType.INSERT)
     @PostMapping("/batch")
@@ -45,14 +45,14 @@ public class UserFavoritesController extends XktBaseController {
         return success(userFavService.create(BeanUtil.toBean(favoriteVO, UserFavoriteDTO.class)));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('seller')")
+    @PreAuthorize("@ss.hasAnyRoles('seller,agent')")
     @ApiOperation(value = "获取用户收藏列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<UserFavoritePageResDTO>> page(@Validated @RequestBody UserFavoritePageVO pageVO) {
         return R.ok(userFavService.page(BeanUtil.toBean(pageVO, UserFavoritePageDTO.class)));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('seller')")
+    @PreAuthorize("@ss.hasAnyRoles('seller,agent')")
     @ApiOperation(value = "批量加入进货车", httpMethod = "POST", response = R.class)
     @Log(title = "批量加入进货车", businessType = BusinessType.INSERT)
     @PostMapping("/batch/shopping-cart")
@@ -60,7 +60,7 @@ public class UserFavoritesController extends XktBaseController {
         return success(userFavService.batchAddToShoppingCart(BeanUtil.toBean(batchVO, UserFavBatchAddToShopCartDTO.class)));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('seller')")
+    @PreAuthorize("@ss.hasAnyRoles('seller,agent')")
     @ApiOperation(value = "批量取消收藏", httpMethod = "DELETE", response = R.class)
     @Log(title = "批量取消收藏", businessType = BusinessType.INSERT)
     @DeleteMapping("/batch")

@@ -32,7 +32,7 @@ public class UserAddressController extends XktBaseController {
     @Autowired
     private IUserAddressService userAddressService;
 
-    @PreAuthorize("@ss.hasAnyRoles('seller')")
+    @PreAuthorize("@ss.hasAnyRoles('seller,agent')")
     @ApiOperation(value = "创建用户收货地址", httpMethod = "POST", response = R.class)
     @PostMapping("create")
     public R<UserAddressInfoVO> create(@Valid @RequestBody UserAddressCreateVO vo) {
@@ -41,7 +41,7 @@ public class UserAddressController extends XktBaseController {
         return success(BeanUtil.toBean(userAddressService.createUserAddress(dto), UserAddressInfoVO.class));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('seller')")
+    @PreAuthorize("@ss.hasAnyRoles('seller,agent')")
     @ApiOperation(value = "修改用户收货地址", httpMethod = "POST", response = R.class)
     @PostMapping("edit")
     public R<UserAddressInfoVO> edit(@Valid @RequestBody UserAddressModifyVO vo) {
@@ -51,7 +51,7 @@ public class UserAddressController extends XktBaseController {
         return success(BeanUtil.toBean(userAddressService.modifyUserAddress(dto), UserAddressInfoVO.class));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('seller')")
+    @PreAuthorize("@ss.hasAnyRoles('seller,agent')")
     @ApiOperation(value = "复制用户收货地址", httpMethod = "POST", response = R.class)
     @PostMapping("copy")
     public R<UserAddressInfoVO> copy(@Valid @RequestBody IdVO vo) {
@@ -60,7 +60,7 @@ public class UserAddressController extends XktBaseController {
         return success(BeanUtil.toBean(dto, UserAddressInfoVO.class));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('seller')")
+    @PreAuthorize("@ss.hasAnyRoles('seller,agent')")
     @ApiOperation(value = "删除用户收货地址", httpMethod = "POST", response = R.class)
     @PostMapping("delete")
     public R delete(@Valid @RequestBody IdVO vo) {
@@ -69,7 +69,7 @@ public class UserAddressController extends XktBaseController {
         return success();
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('seller')")
+    @PreAuthorize("@ss.hasAnyRoles('seller,agent')")
     @ApiOperation(value = "用户收货地址详情", httpMethod = "GET", response = R.class)
     @GetMapping("/{id}")
     public R<UserAddressInfoVO> getInfo(@PathVariable("id") Long id) {
@@ -78,7 +78,7 @@ public class UserAddressController extends XktBaseController {
         return success(BeanUtil.toBean(infoDTO, UserAddressInfoVO.class));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('seller')")
+    @PreAuthorize("@ss.hasAnyRoles('seller,agent')")
     @ApiOperation(value = "用户收货地址列表", httpMethod = "POST", response = R.class)
     @PostMapping("/list")
     public R<List<UserAddressInfoVO>> list() {

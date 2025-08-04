@@ -30,7 +30,7 @@ public class PictureSearchController extends XktBaseController {
 
     final IPictureSearchService picSearchService;
 
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,seller')")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,seller,agent')")
     @ApiOperation(value = "电商卖家 以图搜款", httpMethod = "POST", response = R.class)
     @PostMapping("")
     public R<List<StoreProdViewVO>> searchProductByPic(@Validated @RequestBody PicSearchVO searchVO) {

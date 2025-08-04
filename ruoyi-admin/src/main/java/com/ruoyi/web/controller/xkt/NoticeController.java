@@ -68,7 +68,7 @@ public class NoticeController extends BaseController {
         return R.ok(noticeService.page(BeanUtil.toBean(pageVO, NoticePageDTO.class)));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store,seller,agent')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "档口首页、电商卖家首页获取公告列表", httpMethod = "GET", response = R.class)
     @GetMapping("/list")
     public R<List<NoticeLatest10ResVO>> latest10() {

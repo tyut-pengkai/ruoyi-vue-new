@@ -69,7 +69,7 @@ public class StoreOrderController extends XktBaseController {
     @Autowired
     private RedisCache redisCache;
 
-    @PreAuthorize("@ss.hasRole('seller')")
+    @PreAuthorize("@ss.hasRole('seller,agent')")
     @Log(title = "订单", businessType = BusinessType.INSERT)
     @ApiOperation("创建订单")
     @PostMapping("create")
@@ -85,7 +85,7 @@ public class StoreOrderController extends XktBaseController {
         return success(respVO);
     }
 
-    @PreAuthorize("@ss.hasRole('seller')")
+    @PreAuthorize("@ss.hasRole('seller,agent')")
     @Log(title = "订单", businessType = BusinessType.UPDATE)
     @ApiOperation("修改订单")
     @PostMapping("edit")
@@ -98,7 +98,7 @@ public class StoreOrderController extends XktBaseController {
         return success(result.getOrder().getId());
     }
 
-    @PreAuthorize("@ss.hasRole('seller')")
+    @PreAuthorize("@ss.hasRole('seller,agent')")
     @Log(title = "订单", businessType = BusinessType.OTHER)
     @ApiOperation("支付订单")
     @PostMapping("pay")
@@ -115,7 +115,7 @@ public class StoreOrderController extends XktBaseController {
         return success(respVO);
     }
 
-    @PreAuthorize("@ss.hasRole('seller')")
+    @PreAuthorize("@ss.hasRole('seller,agent')")
     @Log(title = "订单", businessType = BusinessType.UPDATE)
     @ApiOperation("取消订单")
     @PostMapping("cancel")
@@ -158,7 +158,7 @@ public class StoreOrderController extends XktBaseController {
     }
 
 
-    @PreAuthorize("@ss.hasAnyRoles('store,seller')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('store,seller,agent')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "订单分页查询")
     @PostMapping("/page")
     @ResponseHeader
@@ -178,7 +178,7 @@ public class StoreOrderController extends XktBaseController {
         return success(PageVO.of(pageDTO, StoreOrderPageItemVO.class));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('store,seller')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('store,seller,agent')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "订单物流信息")
     @GetMapping(value = "/count/{srcPage}")
     public R<StoreOrderCountVO> count(@PathVariable("srcPage") Integer srcPage) {
@@ -276,7 +276,7 @@ public class StoreOrderController extends XktBaseController {
         return success(DesensitizationUtil.desensitize(BeanUtil.copyToList(dtos, ExpressShippingLabelVO.class)));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('seller')")
+    @PreAuthorize("@ss.hasAnyRoles('seller,agent')")
     @Log(title = "订单", businessType = BusinessType.OTHER)
     @ApiOperation("确认收货")
     @PostMapping("receipt")
@@ -287,7 +287,7 @@ public class StoreOrderController extends XktBaseController {
         return success();
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('seller')")
+    @PreAuthorize("@ss.hasAnyRoles('seller,agent')")
     @Log(title = "订单", businessType = BusinessType.OTHER)
     @ApiOperation("申请售后（创建售后订单）")
     @PostMapping("refund/apply")
@@ -351,7 +351,7 @@ public class StoreOrderController extends XktBaseController {
         return R.ok(vo.getStoreOrderId());
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('seller')")
+    @PreAuthorize("@ss.hasAnyRoles('seller,agent')")
     @Log(title = "订单", businessType = BusinessType.OTHER)
     @ApiOperation("售后完成（用户）")
     @PostMapping("refund/complete")

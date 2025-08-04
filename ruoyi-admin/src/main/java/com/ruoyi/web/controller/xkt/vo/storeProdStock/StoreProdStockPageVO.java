@@ -18,5 +18,7 @@ public class StoreProdStockPageVO extends BasePageVO {
 
     @ApiModelProperty(value = "商品货号")
     private String prodArtNum;
+    @ApiModelProperty(value = "档口ID")
+    private Long storeId;
 
 }

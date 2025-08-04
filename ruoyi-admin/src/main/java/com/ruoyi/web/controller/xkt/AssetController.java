@@ -54,7 +54,7 @@ public class AssetController extends XktBaseController {
         return success(vo);
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('seller')")
+    @PreAuthorize("@ss.hasAnyRoles('seller,agent')")
     @ApiOperation(value = "卖家资产")
     @GetMapping(value = "user/current")
     public R<AssetInfoVO> getCurrentUserAsset() {
@@ -64,7 +64,7 @@ public class AssetController extends XktBaseController {
         return success(vo);
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('store,seller')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('store,seller,agent')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "发送短信验证码（资产相关功能）")
     @PostMapping("/sendSmsVerificationCode")
     public R sendSmsVerificationCode(@Validated @RequestBody PhoneNumberVO vo) {
@@ -80,7 +80,7 @@ public class AssetController extends XktBaseController {
         return R.ok(new PhoneNumberVO(pn));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('seller')")
+    @PreAuthorize("@ss.hasAnyRoles('seller,agent')")
     @ApiOperation(value = "获取卖家支付绑定手机号")
     @GetMapping(value = "user/phonenumber")
     public R<PhoneNumberVO> getUserPhoneNumber() {
@@ -98,7 +98,7 @@ public class AssetController extends XktBaseController {
         return success(BeanUtil.toBean(assetService.bindAlipay(dto), AssetInfoVO.class));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('seller')")
+    @PreAuthorize("@ss.hasAnyRoles('seller,agent')")
     @ApiOperation(value = "卖家绑定支付宝")
     @PostMapping(value = "user/alipay/bind")
     public R<AssetInfoVO> bindUserAlipay(@Validated @RequestBody AlipayUserBindVO vo) {
@@ -146,7 +146,7 @@ public class AssetController extends XktBaseController {
         return success(PageVO.of(pageDTO, TransDetailStorePageItemVO.class));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('seller')")
+    @PreAuthorize("@ss.hasAnyRoles('seller,agent')")
     @ApiOperation(value = "卖家交易明细")
     @PostMapping("user/trans-detail/page")
     public R<PageVO<TransDetailUserPageItemVO>> pageUserTransDetail(@Validated @RequestBody BasePageVO vo) {
