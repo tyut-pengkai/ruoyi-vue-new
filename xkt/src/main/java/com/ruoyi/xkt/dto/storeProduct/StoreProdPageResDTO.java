@@ -24,6 +24,8 @@ public class StoreProdPageResDTO {
     private Long storeProdColorId;
     @ApiModelProperty(value = "档口商品ID")
     private Long storeProdId;
+    @ApiModelProperty(value = "颜色ID")
+    private Long storeColorId;
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
     @ApiModelProperty(value = "档口商品主图url")

@@ -25,6 +25,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             resultType="com.ruoyi.xkt.dto.storeProduct.StoreProdPageResDTO">
         SELECT DISTINCT
             spc.id AS storeProdColorId,
+            spc.store_color_id AS storeColorId,
             spc.store_prod_id AS storeProdId,
             spc.store_id AS storeId,
             sp.prod_art_num AS prodArtNum,
