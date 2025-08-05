@@ -56,7 +56,7 @@
             '鞋库通平台发货' trans_target,
             '支付宝' pay_type,
             IF(fb.src_type = 1, fb.trans_amount, 0) output_amount,
-            IF(fb.src_type = 2, fb.trans_amount, 0) input_amount
+            IF(fb.src_type = 4, fb.trans_amount, 0) input_amount
         FROM
             finance_bill fb
             LEFT JOIN store_order so ON fb.rel_id = so.id AND fb.src_type IN (1, 4)
