@@ -975,7 +975,7 @@ public class XktTask {
                     //支付状态->已支付，收款单到账
                     storeOrderService.refundSuccess(storeOrderRefund.getRefundOrder().getId(),
                             storeOrderRefund.getRefundOrderDetails().stream().map(SimpleEntity::getId).collect(Collectors.toList()),
-                            SecurityUtils.getUserId());
+                            null);
                 } else {
                     //可能是退款失败，也可能是退款处理中，重复调用支付宝接口时只要参数正确也不会重复退款
                     boolean success = paymentManager.refundStoreOrder(storeOrderRefund);
@@ -985,7 +985,7 @@ public class XktTask {
                         //支付状态->已支付，收款单到账
                         storeOrderService.refundSuccess(storeOrderRefund.getRefundOrder().getId(),
                                 storeOrderRefund.getRefundOrderDetails().stream().map(SimpleEntity::getId).collect(Collectors.toList()),
-                                SecurityUtils.getUserId());
+                                null);
                     } else {
                         fsNotice.sendMsg2DefaultChat("退款失败", "参数: " + JSON.toJSONString(storeOrderRefund));
                     }

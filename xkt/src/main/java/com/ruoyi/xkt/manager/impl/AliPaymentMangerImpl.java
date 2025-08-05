@@ -222,8 +222,8 @@ public class AliPaymentMangerImpl implements PaymentManager, InitializingBean {
         model.setRefundReason("正常退款");
         // 设置退款请求号
         model.setOutRequestNo(orderRefund.getRefundOrder().getOrderNo());
+        request.setBizModel(model);
         try {
-            //TODO 沙箱环境接口无法完全退款？
             AlipayTradeRefundResponse response = alipayClient.certificateExecute(request);
             log.info("支付宝退款：{}", response.getBody());
             String fundChange = JSON.parseObject(response.getBody())

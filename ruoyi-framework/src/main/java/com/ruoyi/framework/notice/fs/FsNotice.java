@@ -33,7 +33,7 @@ public class FsNotice extends AbstractNotice {
     private String defaultAppId;
     @Value("${fs.robot.appSecret:AZTpyNiW4hpLRXcDhrdjJcr8Z404gVqf}")
     private String defaultAppSecret;
-    @Value("${fs.robot.defaultChatId:oc_4f66ce3cf471f50aac6c3fdae7f0aad9}")
+    @Value("${fs.robot.defaultChatId:oc_34e207df88addd15d83ec274fda95ef6}")
     private String defaultChatId;
     @Value("${fs.robot.monitorSwitch:true}")
     private Boolean monitorSwitch;
