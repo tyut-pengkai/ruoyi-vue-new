@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -209,12 +210,13 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
                 afterSaleOrderDetailMap.put(afterSaleOrderDetail.getOriginOrderDetailId(), afterSaleOrderDetail);
             }
         }
-        Map<Long, FinanceBill> refundPaymentBillMap = MapUtil.empty();
-        Map<Long, FinanceBillDetail> refundPaymentBillDetailMap = MapUtil.empty();
+        Map<Long, FinanceBill> refundPaymentBillMap;
+        Map<Long, FinanceBillDetail> refundPaymentBillDetailMap;
         if (CollUtil.isNotEmpty(afterSaleBillUks)) {
             refundPaymentBillMap = financeBillMapper.selectList(
                     Wrappers.lambdaQuery(FinanceBill.class)
                             .in(FinanceBill::getBusinessUniqueKey, afterSaleBillUks)
+                            .eq(FinanceBill::getBillType, EFinBillType.PAYMENT.getValue())
                             .eq(SimpleEntity::getDelFlag, Constants.UNDELETED))
                     .stream()
                     .collect(Collectors.toMap(SimpleEntity::getId, Function.identity()));
@@ -224,50 +226,58 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
                             .in(FinanceBillDetail::getFinanceBillId, refundPaymentBillMap.keySet())
                             .eq(SimpleEntity::getDelFlag, Constants.UNDELETED)).stream()
                     .collect(Collectors.toMap(FinanceBillDetail::getRelId, Function.identity()));
+        } else {
+            refundPaymentBillMap = MapUtil.empty();
+            refundPaymentBillDetailMap = MapUtil.empty();
         }
-        BigDecimal businessAmount = BigDecimal.ZERO;
-        BigDecimal transAmount = BigDecimal.ZERO;
-        Integer goodsQuantity = 0;
-        List<FinanceBillDetail> billDetails = new ArrayList<>(orderExt.getOrderDetails().size());
-        for (StoreOrderDetail orderDetail : orderExt.getOrderDetails()) {
-            FinanceBillDetail billDetail = new FinanceBillDetail();
-            billDetail.setRelType(EFinBillDetailRelType.STORE_ORDER_DETAIL.getValue());
-            billDetail.setRelId(orderDetail.getId());
-            billDetail.setBusinessAmount(orderDetail.getTotalAmount());
-            billDetail.setTransAmount(orderDetail.getRealTotalAmount());
-            goodsQuantity += orderDetail.getGoodsQuantity();
-            billDetail.setDelFlag(Constants.UNDELETED);
-            billDetails.add(billDetail);
-            StoreOrderDetail afterSaleOrderDetail = afterSaleOrderDetailMap.get(orderDetail.getId());
-            if (afterSaleOrderDetail != null
-                    && EPayStatus.PAID.getValue().equals(afterSaleOrderDetail.getPayStatus())) {
-                //扣除已退款部分数量
-                goodsQuantity -= afterSaleOrderDetail.getGoodsQuantity();
-                //退款单据
-                FinanceBillDetail refundPaymentBillDetail = refundPaymentBillDetailMap
-                        .get(afterSaleOrderDetail.getId());
-                Assert.notNull(refundPaymentBillDetail);
-                FinanceBill refundPaymentBill = refundPaymentBillMap
-                        .get(refundPaymentBillDetail.getFinanceBillId());
-                Assert.notNull(refundPaymentBill);
-                Assert.isTrue(EFinBillStatus.SUCCESS.getValue().equals(refundPaymentBill.getBillStatus()));
-                //扣除已退款部分金额
-                billDetail.setBusinessAmount(NumberUtil.sub(billDetail.getBusinessAmount(),
-                        refundPaymentBillDetail.getBusinessAmount()));
-                billDetail.setTransAmount(NumberUtil.sub(billDetail.getTransAmount(),
-                        refundPaymentBillDetail.getTransAmount()));
-            }
-            businessAmount = NumberUtil.add(businessAmount, billDetail.getBusinessAmount());
-            transAmount = NumberUtil.add(transAmount, billDetail.getTransAmount());
+        BigDecimal refundBusinessAmount = BigDecimal.ZERO;
+        BigDecimal refundTransAmount = BigDecimal.ZERO;
+        for (FinanceBill refundBill : refundPaymentBillMap.values()) {
+            //退款金额
+            refundBusinessAmount = NumberUtil.add(refundBusinessAmount, refundBill.getBusinessAmount());
+            refundTransAmount = NumberUtil.add(refundTransAmount, refundBill.getTransAmount());
         }
+        BigDecimal businessAmount = NumberUtil.sub(orderExt.getOrder().getTotalAmount(), refundBusinessAmount);
+        BigDecimal transAmount = NumberUtil.sub(orderExt.getOrder().getRealTotalAmount(), refundTransAmount);
+        int goodsQuantity = 0;
+        int refundGoodsQuantity = 0;
         if (NumberUtil.equals(BigDecimal.ZERO, transAmount)) {
             log.info("订单[{}]已全部退款，完成时不再创建转移单", orderExt.getOrder().getId());
             return null;
         }
+        List<FinanceBillDetail> billDetails = new ArrayList<>(orderExt.getOrderDetails().size());
+        for (StoreOrderDetail orderDetail : orderExt.getOrderDetails()) {
+            StoreOrderDetail refundOrderDetail = afterSaleOrderDetailMap.get(orderDetail.getId());
+            FinanceBillDetail refundBillDetail = Optional.ofNullable(refundOrderDetail)
+                    .map(rod -> refundPaymentBillDetailMap.get(rod.getId())).orElse(null);
+            FinanceBillDetail billDetail = new FinanceBillDetail();
+            billDetail.setRelType(EFinBillDetailRelType.STORE_ORDER_DETAIL.getValue());
+            billDetail.setRelId(orderDetail.getId());
+            if (refundBillDetail == null) {
+                billDetail.setBusinessAmount(orderDetail.getTotalAmount());
+                billDetail.setTransAmount(orderDetail.getRealTotalAmount());
+            } else {
+                FinanceBill refundBill = refundPaymentBillMap
+                        .get(refundBillDetail.getFinanceBillId());
+                Assert.notNull(refundBill);
+                Assert.isTrue(EFinBillStatus.SUCCESS.getValue().equals(refundBill.getBillStatus()));
+                //扣除已退款部分金额
+                billDetail.setBusinessAmount(NumberUtil.sub(orderDetail.getTotalAmount(),
+                        refundBillDetail.getBusinessAmount()));
+                billDetail.setTransAmount(NumberUtil.sub(orderDetail.getRealTotalAmount(),
+                        refundBillDetail.getTransAmount()));
+                //已退款部分数量
+                refundGoodsQuantity += refundOrderDetail.getGoodsQuantity();
+            }
+            goodsQuantity += orderDetail.getGoodsQuantity();
+            billDetail.setDelFlag(Constants.UNDELETED);
+            billDetails.add(billDetail);
+        }
         bill.setBusinessAmount(businessAmount);
         bill.setTransAmount(transAmount);
-        bill.setRemark(CharSequenceUtil.format("档口代发订单{}双，共计{}元", goodsQuantity,
-                transAmount.toPlainString()));
+        String refundStr = refundGoodsQuantity == 0 ? "" : "，退货" + refundGoodsQuantity + "双";
+        bill.setRemark(CharSequenceUtil.format("档口代发订单{}双{}，共计{}元", goodsQuantity,
+                refundStr, transAmount.toPlainString()));
         bill.setVersion(0L);
         bill.setDelFlag(Constants.UNDELETED);
         financeBillMapper.insert(prepareInsert(bill));
@@ -381,7 +391,7 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
     @Override
     public FinanceBillExt createWithdrawPaymentBill(Long storeId, BigDecimal amount, EPayChannel payChannel) {
         Assert.notNull(storeId);
-        Assert.isTrue(NumberUtil.isGreater(amount, BigDecimal.ZERO), "提现金额异常");
+        Assert.isTrue(NumberUtil.isGreaterOrEqual(amount, BigDecimal.ONE), "提现金额异常");
         Assert.notNull(payChannel);
         FinanceBill bill = new FinanceBill();
         bill.setBillNo(generateBillNo(EFinBillType.PAYMENT));
@@ -401,15 +411,20 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
         bill.setInputExternalAccountId(inputExternalAccountId);
         bill.setOutputExternalAccountId(payChannel.getPlatformExternalAccountId());
         bill.setBusinessAmount(amount);
-        bill.setTransAmount(amount);
-        bill.setRemark(CharSequenceUtil.format("账户提现{}元", amount.toPlainString()));
+        //支付宝服务费 TODO 再次确认
+        BigDecimal aliServiceFee = NumberUtil.mul(amount, Constants.ALI_SERVICE_FEE_RATE)
+                .setScale(2, RoundingMode.HALF_UP);
+        bill.setTransAmount(NumberUtil.sub(amount, aliServiceFee));
+        bill.setRemark(CharSequenceUtil.format("账户提现{}元，支付宝服务费{}元",
+                bill.getTransAmount().toPlainString(), aliServiceFee.toPlainString()));
         bill.setVersion(0L);
         bill.setDelFlag(Constants.UNDELETED);
         financeBillMapper.insert(prepareInsert(bill));
         TransInfo transInfo = TransInfo.builder()
                 .srcBillId(bill.getId())
                 .srcBillType(bill.getBillType())
-                .transAmount(bill.getTransAmount())
+                //账户变动金额(含服务费)
+                .transAmount(bill.getBusinessAmount())
                 .transTime(new Date())
                 .handlerId(null)
                 .remark("账户提现")
