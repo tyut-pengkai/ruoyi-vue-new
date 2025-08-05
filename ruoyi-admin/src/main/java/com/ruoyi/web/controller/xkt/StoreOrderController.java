@@ -69,7 +69,7 @@ public class StoreOrderController extends XktBaseController {
     @Autowired
     private RedisCache redisCache;
 
-    @PreAuthorize("@ss.hasRole('seller,agent')")
+    @PreAuthorize("@ss.hasAnyRoles('seller,agent')")
     @Log(title = "订单", businessType = BusinessType.INSERT)
     @ApiOperation("创建订单")
     @PostMapping("create")
@@ -85,7 +85,7 @@ public class StoreOrderController extends XktBaseController {
         return success(respVO);
     }
 
-    @PreAuthorize("@ss.hasRole('seller,agent')")
+    @PreAuthorize("@ss.hasAnyRoles('seller,agent')")
     @Log(title = "订单", businessType = BusinessType.UPDATE)
     @ApiOperation("修改订单")
     @PostMapping("edit")
@@ -98,7 +98,7 @@ public class StoreOrderController extends XktBaseController {
         return success(result.getOrder().getId());
     }
 
-    @PreAuthorize("@ss.hasRole('seller,agent')")
+    @PreAuthorize("@ss.hasAnyRoles('seller,agent')")
     @Log(title = "订单", businessType = BusinessType.OTHER)
     @ApiOperation("支付订单")
     @PostMapping("pay")
@@ -115,7 +115,7 @@ public class StoreOrderController extends XktBaseController {
         return success(respVO);
     }
 
-    @PreAuthorize("@ss.hasRole('seller,agent')")
+    @PreAuthorize("@ss.hasAnyRoles('seller,agent')")
     @Log(title = "订单", businessType = BusinessType.UPDATE)
     @ApiOperation("取消订单")
     @PostMapping("cancel")
@@ -283,7 +283,7 @@ public class StoreOrderController extends XktBaseController {
     public R receipt(@Valid @RequestBody StoreOrderReceiptReqVO vo) {
         //仅本人可操作
         storeOrderService.checkOrderUser(vo.getStoreOrderId(), SecurityUtils.getUserId());
-        storeOrderService.receiptOrder(vo.getStoreOrderId(), SecurityUtils.getUserId());
+        storeOrderService.completeOrder(vo.getStoreOrderId(), SecurityUtils.getUserId());
         return success();
     }
 

@@ -391,7 +391,7 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
     @Override
     public FinanceBillExt createWithdrawPaymentBill(Long storeId, BigDecimal amount, EPayChannel payChannel) {
         Assert.notNull(storeId);
-        Assert.isTrue(NumberUtil.isGreater(amount, BigDecimal.ONE), "提现金额异常");
+        Assert.isTrue(NumberUtil.isGreaterOrEqual(amount, BigDecimal.ONE), "提现金额异常");
         Assert.notNull(payChannel);
         FinanceBill bill = new FinanceBill();
         bill.setBillNo(generateBillNo(EFinBillType.PAYMENT));
