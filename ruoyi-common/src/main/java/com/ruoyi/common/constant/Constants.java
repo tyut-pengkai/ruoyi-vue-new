@@ -221,7 +221,28 @@ public class Constants
     public static final String EXPRESS_REGION_LIST_CACHE_KEY = "EXPRESS_REGION_LIST";
     public static final String EXPRESS_REGION_TREE_CACHE_KEY = "EXPRESS_REGION_TREE";
 
-    // 上市季节年份
+    // 销售出库
+    public static final String VOUCHER_SEQ_STORE_SALE_PREFIX = "SD";
+    // 销售出库类型
+    public static final String VOUCHER_SEQ_STORE_SALE_TYPE = "STORE_SALE";
+    // 采购入库
+    public static final String VOUCHER_SEQ_STORAGE_PREFIX = "RK";
+    // 采购入库类型
+    public static final String VOUCHER_SEQ_STORAGE_TYPE = "STORAGE";
+    // 需求单
+    public static final String VOUCHER_SEQ_DEMAND_PREFIX = "XQ";
+    // 需求单类型
+    public static final String VOUCHER_SEQ_DEMAND_TYPE = "DEMAND";
+    // 代发订单
+    public static final String VOUCHER_SEQ_STORE_ORDER_PREFIX = "DF";
+    // 代发订单类型
+    public static final String VOUCHER_SEQ_STORE_ORDER_TYPE = "STORE_ORDER";
+    // %04d
+    public static final String VOUCHER_SEQ_FORMAT = "%04d";
+
+    /**
+     * 上市季节年份
+     */
     public static final String RELEASE_YEAR_SEASON = "release_year_season";
     /**
      * ES 索引 product_info
