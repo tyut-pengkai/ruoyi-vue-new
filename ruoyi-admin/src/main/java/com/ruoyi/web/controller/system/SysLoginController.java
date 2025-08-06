@@ -23,7 +23,7 @@ import com.ruoyi.system.service.ISysMenuService;
 import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.web.controller.system.vo.*;
-import com.ruoyi.xkt.manager.AliAuthManager;
+import com.ruoyi.xkt.manager.TencentAuthManager;
 import com.ruoyi.xkt.service.IStoreService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -62,7 +62,7 @@ public class SysLoginController {
     @Autowired
     private RedisCache redisCache;
     @Autowired
-    private AliAuthManager aliAuthManager;
+    private TencentAuthManager tencentAuthManager;
     @Autowired
     private SysPasswordService passwordService;
 
@@ -75,8 +75,7 @@ public class SysLoginController {
     @ApiOperation(value = "用户名密码登录")
     @PostMapping("/loginByUname")
     public AjaxResult login(@Validated @RequestBody LoginByUsernameVO loginBody) {
-        boolean captchaPass = aliAuthManager.validate(loginBody.getLot_number(), loginBody.getCaptcha_output(),
-                loginBody.getPass_token(), loginBody.getGen_time());
+        boolean captchaPass = tencentAuthManager.validate(loginBody.getTicket(), loginBody.getRandstr());
         if (!captchaPass) {
             return AjaxResult.error("验证失败");
         }
@@ -110,8 +109,7 @@ public class SysLoginController {
     @ApiOperation(value = "发送登录短信验证码")
     @PostMapping("/sendSmsVerificationCode")
     public R sendSmsVerificationCode(@Validated @RequestBody LoginSmsReqVO vo) {
-        boolean captchaPass = aliAuthManager.validate(vo.getLot_number(), vo.getCaptcha_output(),
-                vo.getPass_token(), vo.getGen_time());
+        boolean captchaPass = tencentAuthManager.validate(vo.getTicket(), vo.getRandstr());
         if (!captchaPass) {
             return R.fail("验证失败");
         }

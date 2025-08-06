@@ -16,7 +16,7 @@ import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.web.controller.system.vo.LoginSmsReqVO;
 import com.ruoyi.web.controller.system.vo.RegisterBySmsCodeVO;
 import com.ruoyi.web.controller.xkt.vo.PhoneNumberVO;
-import com.ruoyi.xkt.manager.AliAuthManager;
+import com.ruoyi.xkt.manager.TencentAuthManager;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +48,7 @@ public class SysRegisterController extends BaseController {
     private ISysUserService userService;
 
     @Autowired
-    private AliAuthManager aliAuthManager;
+    private TencentAuthManager tencentAuthManager;
 
     @ApiOperation(value = "档口供应商注册")
     @PostMapping("/registerStore")
@@ -95,8 +95,7 @@ public class SysRegisterController extends BaseController {
     @ApiOperation(value = "发送注册短信验证码")
     @PostMapping("/sendSmsVerificationCode")
     public R sendSmsVerificationCode(@Validated @RequestBody LoginSmsReqVO vo) {
-        boolean captchaPass = aliAuthManager.validate(vo.getLot_number(), vo.getCaptcha_output(),
-                vo.getPass_token(), vo.getGen_time());
+        boolean captchaPass = tencentAuthManager.validate(vo.getTicket(), vo.getRandstr());
         if (!captchaPass) {
             return R.fail("验证失败");
         }

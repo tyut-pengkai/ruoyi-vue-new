@@ -298,6 +298,14 @@
             </dependency>
             <!-- ES相关 end-->
 
+            <dependency>
+                <groupId>com.tencentcloudapi</groupId>
+                <artifactId>tencentcloud-sdk-java</artifactId>
+                <!-- go to https://central.sonatype.com/artifact/com.tencentcloudapi/tencentcloud-sdk-java/versions and get the latest version. -->
+                <!-- 请到 https://central.sonatype.com/artifact/com.tencentcloudapi/tencentcloud-sdk-java/versions 查询所有版本，最新版本如下 -->
+                <version>3.1.1000</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

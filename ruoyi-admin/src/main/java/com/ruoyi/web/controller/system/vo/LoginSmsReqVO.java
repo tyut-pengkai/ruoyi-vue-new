@@ -1,6 +1,6 @@
 package com.ruoyi.web.controller.system.vo;
 
-import com.ruoyi.web.controller.xkt.vo.AliCaptchaAuthReqVO;
+import com.ruoyi.web.controller.xkt.vo.TencentCaptchaAuthReqVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -18,7 +18,7 @@ import javax.validation.constraints.Pattern;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class LoginSmsReqVO extends AliCaptchaAuthReqVO {
+public class LoginSmsReqVO extends TencentCaptchaAuthReqVO {
 
     @Pattern(regexp = "^1[3-9]\\d{9}$", message = "手机号格式不正确")
     @NotEmpty(message = "手机号不能为空")

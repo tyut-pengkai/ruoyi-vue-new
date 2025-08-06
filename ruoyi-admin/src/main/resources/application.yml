@@ -226,3 +226,11 @@ aliauth:
   captcha:
     appId: 386ec134856c9fe7d47ce2a34ee91038
     appKey: 1b4e3ff703ca1ea0fb802d188079a25c
+
+# 腾讯认证
+tencent:
+  secretId: AKIDEbxNfmkW5RaVDhDc2Pcs198zpeP6kEZi
+  secretKey: 3ub7QZYN9qR4bxBE6qQs9GBuSnuoW0JP
+  captcha:
+    captchaAppId: 199022475
+    appSecretKey: wcqMdqjV3fnvFKxUAq5mwulnD
