@@ -128,6 +128,7 @@ public class XktTask {
     }
 
     /**
+     * 每天执行定时任务
      * 每年3月1日、6月1日、9月1日、12月1日执行 生成春夏秋冬标签
      */
     @Transactional
