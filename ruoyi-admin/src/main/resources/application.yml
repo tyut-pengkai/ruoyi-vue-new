@@ -16,8 +16,8 @@ oss:
   endPoint: oss-cn-hangzhou.aliyuncs.com
   accessKeyId: LTAI5tCrN19aDVWLLfpKVEZw
   accessKeySecret: aVddl48X8SoKua7NaI51CL1Am84XNp
-  bucketName: cdbuju
-  publicBucketName: xkt-pub
+  bucketName: cdbuju-pri
+  publicBucketName: cdbuju
   https: true
   regionId: cn-hangzhou
   roleArn: acs:ram::1970150216435822:role/oss-upload
