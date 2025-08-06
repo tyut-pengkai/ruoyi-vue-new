@@ -71,7 +71,7 @@ public class OcrClientWrapper implements InitializingBean {
         } catch (Exception e) {
             log.error("阿里云身份证OCR异常", e);
         }
-        throw new ServiceException("OCR识别失败，请重新上传图片 或 联系专属业务经理：13548158817");
+        throw new ServiceException("OCR识别失败，请重新上传图片 或 联系专属业务经理：刘江 13548158817");
     }
 
     public BusinessLicense recognizeBusinessLicense(String url) {
@@ -88,6 +88,6 @@ public class OcrClientWrapper implements InitializingBean {
         } catch (Exception e) {
             log.error("阿里云营业执照OCR异常", e);
         }
-        throw new ServiceException("OCR识别失败，请重新上传图片 或 联系专属业务经理：13548158817");
+        throw new ServiceException("OCR识别失败，请重新上传图片 或 联系专属业务经理：刘江 13548158817");
     }
 }
