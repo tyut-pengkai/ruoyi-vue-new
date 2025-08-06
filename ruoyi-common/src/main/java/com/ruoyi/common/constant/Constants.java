@@ -220,6 +220,9 @@ public class Constants
     public static final String EXPRESS_REGION_NAME_MAP_CACHE_KEY = "EXPRESS_REGION_NAME_MAP";
     public static final String EXPRESS_REGION_LIST_CACHE_KEY = "EXPRESS_REGION_LIST";
     public static final String EXPRESS_REGION_TREE_CACHE_KEY = "EXPRESS_REGION_TREE";
+
+    // 上市季节年份
+    public static final String RELEASE_YEAR_SEASON = "release_year_season";
     /**
      * ES 索引 product_info
      */

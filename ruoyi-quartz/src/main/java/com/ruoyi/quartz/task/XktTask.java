@@ -16,12 +16,14 @@ import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.SimpleEntity;
+import com.ruoyi.common.core.domain.entity.SysDictData;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.es.EsClientWrapper;
 import com.ruoyi.framework.notice.fs.FsNotice;
+import com.ruoyi.system.mapper.SysDictDataMapper;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.account.WithdrawPrepareResult;
 import com.ruoyi.xkt.dto.advertRound.pc.store.PCStoreRecommendDTO;
@@ -119,13 +121,14 @@ public class XktTask {
     final StoreMemberMapper storeMemberMapper;
     final IExpressService expressService;
     final ZtoExpressManagerImpl ztoExpressManager;
+    final SysDictDataMapper dictDataMapper;
 
     public void test() throws IOException {
         System.err.println("aaa");
     }
 
     /**
-     * 每年3月1日、6月1日、9月1日、12月1日执行
+     * 每年3月1日、6月1日、9月1日、12月1日执行 生成春夏秋冬标签
      */
     @Transactional
     public void seasonTag() {
@@ -146,11 +149,21 @@ public class XktTask {
             return;
         }
         log.info("生成季节标签：{}", seasonLabel);
-
-        // TODO 插入到sys_dict_type sys_dict_data两张表
-        // TODO 插入到sys_dict_type sys_dict_data两张表
-        // TODO 插入到sys_dict_type sys_dict_data两张表
-
+        List<SysDictData> dictDataList = this.dictDataMapper.selectList(new LambdaQueryWrapper<SysDictData>()
+                .eq(SysDictData::getDictType, Constants.RELEASE_YEAR_SEASON).eq(SysDictData::getDelFlag, Constants.UNDELETED)
+                .eq(SysDictData::getStatus, "0"));
+        // 当前最大排序
+        final Long maxSort = dictDataList.stream().max(Comparator.comparingLong(SysDictData::getDictSort))
+                .map(x -> x.getDictSort()).orElse(100L);
+        // 往sys_dict_data表插入一条数据
+        SysDictData dictData = new SysDictData();
+        dictData.setDictLabel(seasonLabel);
+        dictData.setDictValue(seasonLabel);
+        dictData.setDictType(Constants.RELEASE_YEAR_SEASON);
+        dictData.setDictSort(maxSort + 1);
+        dictData.setStatus("0");
+        dictData.setCreateBy("admin");
+        this.dictDataMapper.insert(dictData);
     }
 
     /**
@@ -707,8 +720,6 @@ public class XktTask {
      * 凌晨2:40 更新年费过期档口
      */
     public void autoCloseTimeoutStore() {
-
-
 
 
         // TODO 更新未交年费档口

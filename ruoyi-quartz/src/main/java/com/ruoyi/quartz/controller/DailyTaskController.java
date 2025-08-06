@@ -24,6 +24,13 @@ public class DailyTaskController extends BaseController {
 
     final XktTask task;
 
+    @PostMapping("/season")
+    public R season(SysJob sysJob) {
+        task.seasonTag();
+        return R.ok();
+    }
+
+
     @PostMapping("/daily-sale")
     public R dailySale(SysJob sysJob) {
         task.dailySale();
