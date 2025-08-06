@@ -95,102 +95,82 @@ create table sys_menu (
   primary key (menu_id)
 ) engine=innodb auto_increment=2000 comment = '菜单权限表';
 
--- ----------------------------
--- 初始化-菜单信息表数据
--- ----------------------------
--- 一级菜单
-insert into sys_menu values('1', '系统管理', '0', '1', 'system',           null, '', '', 1, 0, 'M', '0', '0', '', 'system',   'admin', sysdate(), '', null, '系统管理目录');
-insert into sys_menu values('2', '系统监控', '0', '2', 'monitor',          null, '', '', 1, 0, 'M', '0', '0', '', 'monitor',  'admin', sysdate(), '', null, '系统监控目录');
-insert into sys_menu values('3', '系统工具', '0', '3', 'tool',             null, '', '', 1, 0, 'M', '0', '0', '', 'tool',     'admin', sysdate(), '', null, '系统工具目录');
-insert into sys_menu values('4', '若依官网', '0', '4', 'http://ruoyi.vip', null, '', '', 0, 0, 'M', '0', '0', '', 'guide',    'admin', sysdate(), '', null, '若依官网地址');
--- 二级菜单
-insert into sys_menu values('100',  '用户管理', '1',   '1', 'user',       'system/user/index',        '', '', 1, 0, 'C', '0', '0', 'system:user:list',        'user',          'admin', sysdate(), '', null, '用户管理菜单');
-insert into sys_menu values('101',  '角色管理', '1',   '2', 'role',       'system/role/index',        '', '', 1, 0, 'C', '0', '0', 'system:role:list',        'peoples',       'admin', sysdate(), '', null, '角色管理菜单');
-insert into sys_menu values('102',  '菜单管理', '1',   '3', 'menu',       'system/menu/index',        '', '', 1, 0, 'C', '0', '0', 'system:menu:list',        'tree-table',    'admin', sysdate(), '', null, '菜单管理菜单');
-insert into sys_menu values('105',  '字典管理', '1',   '6', 'dict',       'system/dict/index',        '', '', 1, 0, 'C', '0', '0', 'system:dict:list',        'dict',          'admin', sysdate(), '', null, '字典管理菜单');
-insert into sys_menu values('106',  '参数设置', '1',   '7', 'config',     'system/config/index',      '', '', 1, 0, 'C', '0', '0', 'system:config:list',      'edit',          'admin', sysdate(), '', null, '参数设置菜单');
-insert into sys_menu values('107',  '通知公告', '1',   '8', 'notice',     'system/notice/index',      '', '', 1, 0, 'C', '0', '0', 'system:notice:list',      'message',       'admin', sysdate(), '', null, '通知公告菜单');
-insert into sys_menu values('108',  '日志管理', '1',   '9', 'log',        '',                         '', '', 1, 0, 'M', '0', '0', '',                        'log',           'admin', sysdate(), '', null, '日志管理菜单');
-insert into sys_menu values('109',  '在线用户', '2',   '1', 'online',     'monitor/online/index',     '', '', 1, 0, 'C', '0', '0', 'monitor:online:list',     'online',        'admin', sysdate(), '', null, '在线用户菜单');
-insert into sys_menu values('110',  '定时任务', '2',   '2', 'job',        'monitor/job/index',        '', '', 1, 0, 'C', '0', '0', 'monitor:job:list',        'job',           'admin', sysdate(), '', null, '定时任务菜单');
-insert into sys_menu values('111',  '数据监控', '2',   '3', 'druid',      'monitor/druid/index',      '', '', 1, 0, 'C', '0', '0', 'monitor:druid:list',      'druid',         'admin', sysdate(), '', null, '数据监控菜单');
-insert into sys_menu values('112',  '服务监控', '2',   '4', 'server',     'monitor/server/index',     '', '', 1, 0, 'C', '0', '0', 'monitor:server:list',     'server',        'admin', sysdate(), '', null, '服务监控菜单');
-insert into sys_menu values('113',  '缓存监控', '2',   '5', 'cache',      'monitor/cache/index',      '', '', 1, 0, 'C', '0', '0', 'monitor:cache:list',      'redis',         'admin', sysdate(), '', null, '缓存监控菜单');
-insert into sys_menu values('114',  '缓存列表', '2',   '6', 'cacheList',  'monitor/cache/list',       '', '', 1, 0, 'C', '0', '0', 'monitor:cache:list',      'redis-list',    'admin', sysdate(), '', null, '缓存列表菜单');
-insert into sys_menu values('115',  '表单构建', '3',   '1', 'build',      'tool/build/index',         '', '', 1, 0, 'C', '0', '0', 'tool:build:list',         'build',         'admin', sysdate(), '', null, '表单构建菜单');
-insert into sys_menu values('116',  '代码生成', '3',   '2', 'gen',        'tool/gen/index',           '', '', 1, 0, 'C', '0', '0', 'tool:gen:list',           'code',          'admin', sysdate(), '', null, '代码生成菜单');
-insert into sys_menu values('117',  '系统接口', '3',   '3', 'swagger',    'tool/swagger/index',       '', '', 1, 0, 'C', '0', '0', 'tool:swagger:list',       'swagger',       'admin', sysdate(), '', null, '系统接口菜单');
--- 三级菜单
-insert into sys_menu values('500',  '操作日志', '108', '1', 'operlog',    'monitor/operlog/index',    '', '', 1, 0, 'C', '0', '0', 'monitor:operlog:list',    'form',          'admin', sysdate(), '', null, '操作日志菜单');
-insert into sys_menu values('501',  '登录日志', '108', '2', 'logininfor', 'monitor/logininfor/index', '', '', 1, 0, 'C', '0', '0', 'monitor:logininfor:list', 'logininfor',    'admin', sysdate(), '', null, '登录日志菜单');
--- 用户管理按钮
-insert into sys_menu values('1000', '用户查询', '100', '1',  '', '', '', '', 1, 0, 'F', '0', '0', 'system:user:query',          '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1001', '用户新增', '100', '2',  '', '', '', '', 1, 0, 'F', '0', '0', 'system:user:add',            '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1002', '用户修改', '100', '3',  '', '', '', '', 1, 0, 'F', '0', '0', 'system:user:edit',           '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1003', '用户删除', '100', '4',  '', '', '', '', 1, 0, 'F', '0', '0', 'system:user:remove',         '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1004', '用户导出', '100', '5',  '', '', '', '', 1, 0, 'F', '0', '0', 'system:user:export',         '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1005', '用户导入', '100', '6',  '', '', '', '', 1, 0, 'F', '0', '0', 'system:user:import',         '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1006', '重置密码', '100', '7',  '', '', '', '', 1, 0, 'F', '0', '0', 'system:user:resetPwd',       '#', 'admin', sysdate(), '', null, '');
--- 角色管理按钮
-insert into sys_menu values('1007', '角色查询', '101', '1',  '', '', '', '', 1, 0, 'F', '0', '0', 'system:role:query',          '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1008', '角色新增', '101', '2',  '', '', '', '', 1, 0, 'F', '0', '0', 'system:role:add',            '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1009', '角色修改', '101', '3',  '', '', '', '', 1, 0, 'F', '0', '0', 'system:role:edit',           '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1010', '角色删除', '101', '4',  '', '', '', '', 1, 0, 'F', '0', '0', 'system:role:remove',         '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1011', '角色导出', '101', '5',  '', '', '', '', 1, 0, 'F', '0', '0', 'system:role:export',         '#', 'admin', sysdate(), '', null, '');
--- 菜单管理按钮
-insert into sys_menu values('1012', '菜单查询', '102', '1',  '', '', '', '', 1, 0, 'F', '0', '0', 'system:menu:query',          '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1013', '菜单新增', '102', '2',  '', '', '', '', 1, 0, 'F', '0', '0', 'system:menu:add',            '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1014', '菜单修改', '102', '3',  '', '', '', '', 1, 0, 'F', '0', '0', 'system:menu:edit',           '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1015', '菜单删除', '102', '4',  '', '', '', '', 1, 0, 'F', '0', '0', 'system:menu:remove',         '#', 'admin', sysdate(), '', null, '');
--- 字典管理按钮
-insert into sys_menu values('1025', '字典查询', '105', '1', '#', '', '', '', 1, 0, 'F', '0', '0', 'system:dict:query',          '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1026', '字典新增', '105', '2', '#', '', '', '', 1, 0, 'F', '0', '0', 'system:dict:add',            '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1027', '字典修改', '105', '3', '#', '', '', '', 1, 0, 'F', '0', '0', 'system:dict:edit',           '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1028', '字典删除', '105', '4', '#', '', '', '', 1, 0, 'F', '0', '0', 'system:dict:remove',         '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1029', '字典导出', '105', '5', '#', '', '', '', 1, 0, 'F', '0', '0', 'system:dict:export',         '#', 'admin', sysdate(), '', null, '');
--- 参数设置按钮
-insert into sys_menu values('1030', '参数查询', '106', '1', '#', '', '', '', 1, 0, 'F', '0', '0', 'system:config:query',        '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1031', '参数新增', '106', '2', '#', '', '', '', 1, 0, 'F', '0', '0', 'system:config:add',          '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1032', '参数修改', '106', '3', '#', '', '', '', 1, 0, 'F', '0', '0', 'system:config:edit',         '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1033', '参数删除', '106', '4', '#', '', '', '', 1, 0, 'F', '0', '0', 'system:config:remove',       '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1034', '参数导出', '106', '5', '#', '', '', '', 1, 0, 'F', '0', '0', 'system:config:export',       '#', 'admin', sysdate(), '', null, '');
--- 通知公告按钮
-insert into sys_menu values('1035', '公告查询', '107', '1', '#', '', '', '', 1, 0, 'F', '0', '0', 'system:notice:query',        '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1036', '公告新增', '107', '2', '#', '', '', '', 1, 0, 'F', '0', '0', 'system:notice:add',          '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1037', '公告修改', '107', '3', '#', '', '', '', 1, 0, 'F', '0', '0', 'system:notice:edit',         '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1038', '公告删除', '107', '4', '#', '', '', '', 1, 0, 'F', '0', '0', 'system:notice:remove',       '#', 'admin', sysdate(), '', null, '');
--- 操作日志按钮
-insert into sys_menu values('1039', '操作查询', '500', '1', '#', '', '', '', 1, 0, 'F', '0', '0', 'monitor:operlog:query',      '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1040', '操作删除', '500', '2', '#', '', '', '', 1, 0, 'F', '0', '0', 'monitor:operlog:remove',     '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1041', '日志导出', '500', '3', '#', '', '', '', 1, 0, 'F', '0', '0', 'monitor:operlog:export',     '#', 'admin', sysdate(), '', null, '');
--- 登录日志按钮
-insert into sys_menu values('1042', '登录查询', '501', '1', '#', '', '', '', 1, 0, 'F', '0', '0', 'monitor:logininfor:query',   '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1043', '登录删除', '501', '2', '#', '', '', '', 1, 0, 'F', '0', '0', 'monitor:logininfor:remove',  '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1044', '日志导出', '501', '3', '#', '', '', '', 1, 0, 'F', '0', '0', 'monitor:logininfor:export',  '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1045', '账户解锁', '501', '4', '#', '', '', '', 1, 0, 'F', '0', '0', 'monitor:logininfor:unlock',  '#', 'admin', sysdate(), '', null, '');
--- 在线用户按钮
-insert into sys_menu values('1046', '在线查询', '109', '1', '#', '', '', '', 1, 0, 'F', '0', '0', 'monitor:online:query',       '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1047', '批量强退', '109', '2', '#', '', '', '', 1, 0, 'F', '0', '0', 'monitor:online:batchLogout', '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1048', '单条强退', '109', '3', '#', '', '', '', 1, 0, 'F', '0', '0', 'monitor:online:forceLogout', '#', 'admin', sysdate(), '', null, '');
--- 定时任务按钮
-insert into sys_menu values('1049', '任务查询', '110', '1', '#', '', '', '', 1, 0, 'F', '0', '0', 'monitor:job:query',          '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1050', '任务新增', '110', '2', '#', '', '', '', 1, 0, 'F', '0', '0', 'monitor:job:add',            '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1051', '任务修改', '110', '3', '#', '', '', '', 1, 0, 'F', '0', '0', 'monitor:job:edit',           '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1052', '任务删除', '110', '4', '#', '', '', '', 1, 0, 'F', '0', '0', 'monitor:job:remove',         '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1053', '状态修改', '110', '5', '#', '', '', '', 1, 0, 'F', '0', '0', 'monitor:job:changeStatus',   '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1054', '任务导出', '110', '6', '#', '', '', '', 1, 0, 'F', '0', '0', 'monitor:job:export',         '#', 'admin', sysdate(), '', null, '');
--- 代码生成按钮
-insert into sys_menu values('1055', '生成查询', '116', '1', '#', '', '', '', 1, 0, 'F', '0', '0', 'tool:gen:query',             '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1056', '生成修改', '116', '2', '#', '', '', '', 1, 0, 'F', '0', '0', 'tool:gen:edit',              '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1057', '生成删除', '116', '3', '#', '', '', '', 1, 0, 'F', '0', '0', 'tool:gen:remove',            '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1058', '导入代码', '116', '4', '#', '', '', '', 1, 0, 'F', '0', '0', 'tool:gen:import',            '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1059', '预览代码', '116', '5', '#', '', '', '', 1, 0, 'F', '0', '0', 'tool:gen:preview',           '#', 'admin', sysdate(), '', null, '');
-insert into sys_menu values('1060', '生成代码', '116', '6', '#', '', '', '', 1, 0, 'F', '0', '0', 'tool:gen:code',              '#', 'admin', sysdate(), '', null, '');
-
-
 -- 删除标识&版本号
 ALTER TABLE `sys_menu`  ADD COLUMN `del_flag` char(1) default '0' comment '删除标志（0代表存在 2代表删除）';
 ALTER TABLE `sys_menu`  ADD COLUMN `version` bigint(20) default 0 comment '版本号';
+
+-- ----------------------------
+-- 初始化-菜单信息表数据
+-- ----------------------------
+INSERT INTO `sys_menu` VALUES (1, '步橘网菜单', 0, 1, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-14 22:54:40', 'admin', '2025-07-14 22:54:40', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1001, '商品管理', 1, 1, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:01:20', 'admin', '2025-07-15 16:01:20', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1002, '商品列表', 1001, 1, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:01:38', 'admin', '2025-07-15 16:01:38', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1003, '发布商品', 1001, 2, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:01:50', 'admin', '2025-07-15 16:01:50', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1004, '打印条码', 1001, 3, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:02:02', 'admin', '2025-07-15 16:02:02', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1005, '图片空间', 1001, 4, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:02:16', 'admin', '2025-07-15 16:02:16', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1006, '条码一键迁移', 1001, 5, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:02:31', 'admin', '2025-07-15 16:02:31', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1007, '进货车列表', 1001, 6, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:02:46', 'admin', '2025-07-15 16:02:46', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1008, '我的收藏', 1001, 7, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:02:55', 'admin', '2025-07-15 16:02:55', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1009, '推广营销', 1, 2, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:03:11', 'admin', '2025-07-15 16:03:11', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1010, '推广订购', 1009, 1, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:03:26', 'admin', '2025-07-15 16:03:26', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1011, '已购推广', 1009, 2, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:03:35', 'admin', '2025-07-15 16:03:35', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1012, '代发管理', 1, 3, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:03:52', 'admin', '2025-07-15 16:03:52', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1013, '档口代发', 1012, 1, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:04:04', 'admin', '2025-07-15 16:04:04', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1014, '代发订单', 1012, 2, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:04:15', 'admin', '2025-07-15 16:04:15', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1015, '销售出库', 1, 4, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:04:39', 'admin', '2025-07-15 16:04:39', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1016, '销售/退货', 1015, 1, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:04:48', 'admin', '2025-07-15 16:04:48', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1017, '销售出库列表', 1015, 2, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:04:59', 'admin', '2025-07-15 16:04:59', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1018, '入库管理', 1, 5, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:05:16', 'admin', '2025-07-15 16:05:16', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1019, '入库单列表', 1018, 1, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:05:28', 'admin', '2025-07-15 16:05:28', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1020, '生产入库', 1018, 2, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:05:39', 'admin', '2025-07-15 16:05:39', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1021, '其它入库', 1018, 3, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:05:50', 'admin', '2025-07-15 16:05:50', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1022, '维修入库', 1018, 4, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:06:00', 'admin', '2025-07-15 16:06:00', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1023, '库存管理', 1, 6, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:06:15', 'admin', '2025-07-15 16:06:15', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1024, '库存查询', 1023, 1, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:06:24', 'admin', '2025-07-15 16:06:24', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1025, '库存盘点', 1023, 2, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:06:35', 'admin', '2025-07-15 16:06:35', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1026, '库存一键迁移', 1023, 3, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:06:47', 'admin', '2025-07-15 16:06:47', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1027, '生产需求', 1, 7, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:07:05', 'admin', '2025-07-15 16:07:05', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1028, '提交生产需求', 1027, 1, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:07:15', 'admin', '2025-07-15 16:07:15', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1029, '生产需求列表', 1027, 2, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:07:24', 'admin', '2025-07-15 16:07:24', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1030, '生产模板管理', 1027, 3, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:07:34', 'admin', '2025-07-15 16:07:34', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1031, '店铺管理', 1, 8, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:07:49', 'admin', '2025-07-15 16:07:49', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1032, '基本信息', 1031, 1, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:07:59', 'admin', '2025-07-15 16:07:59', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1033, '认证信息', 1031, 2, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:08:06', 'admin', '2025-07-15 16:08:06', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1034, '工厂管理', 1031, 3, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:08:17', 'admin', '2025-07-15 16:08:17', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1035, '子账号管理', 1031, 4, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:08:28', 'admin', '2025-07-15 16:08:28', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1036, '子角色管理', 1031, 5, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:08:38', 'admin', '2025-07-15 16:08:38', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1037, '店铺装修', 1031, 6, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:08:49', 'admin', '2025-07-15 16:08:49', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1038, '我的关注', 1031, 7, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:09:16', 'admin', '2025-07-15 16:09:16', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1039, '客户管理', 1, 9, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:09:33', 'admin', '2025-07-15 16:09:33', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1040, '客户列表', 1039, 1, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:09:55', 'admin', '2025-07-15 16:10:39', '', '0', 1);
+INSERT INTO `sys_menu` VALUES (1041, '客户销售管理', 1039, 2, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:10:32', 'admin', '2025-07-15 16:10:32', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1042, '资产管理', 1, 10, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:10:54', 'admin', '2025-07-15 16:10:54', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1043, '我的资产', 1042, 1, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:11:08', 'admin', '2025-07-15 16:11:30', '', '0', 1);
+INSERT INTO `sys_menu` VALUES (1044, '推广管理', 1, 11, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:12:20', 'admin', '2025-07-15 16:12:20', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1045, '投放管理', 1044, 1, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:12:30', 'admin', '2025-07-15 16:12:30', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1046, '推广管理', 1044, 2, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:12:44', 'admin', '2025-07-15 16:12:44', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1047, '推广图管理', 1044, 3, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:12:54', 'admin', '2025-07-15 16:12:54', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1048, '档口管理', 1, 12, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:13:06', 'admin', '2025-07-15 16:13:06', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1049, '档口商品列表', 1048, 1, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:13:28', 'admin', '2025-07-15 16:13:28', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1050, '档口入驻审核', 1048, 2, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:13:43', 'admin', '2025-07-15 16:13:43', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1051, '档口列表', 1048, 3, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:13:55', 'admin', '2025-07-15 16:13:55', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1052, '待介入代发单', 1048, 4, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:14:16', 'admin', '2025-07-15 16:14:16', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1053, '档口会员列表', 1048, 5, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:14:31', 'admin', '2025-07-15 16:14:31', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1054, '代发人员', 1, 13, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:14:54', 'admin', '2025-07-15 16:14:54', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1055, '代发入驻审核', 1054, 1, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:15:11', 'admin', '2025-07-15 16:15:11', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1056, '代发人员列表', 1054, 2, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:15:30', 'admin', '2025-07-15 16:15:30', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1057, '用户中心', 1, 14, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:15:58', 'admin', '2025-07-15 16:15:58', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1058, '账户与安全', 1057, 1, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:16:09', 'admin', '2025-07-15 16:16:09', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1059, '系统消息', 1057, 2, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:16:28', 'admin', '2025-07-15 16:16:28', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1060, '代发认证', 1057, 3, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:16:42', 'admin', '2025-07-15 16:16:42', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1061, '系统设置', 1, 15, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:16:59', 'admin', '2025-07-15 16:16:59', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1062, '字典管理', 1061, 1, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:17:12', 'admin', '2025-07-15 16:17:12', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1063, '账号管理', 1061, 2, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:17:22', 'admin', '2025-07-15 16:17:22', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1064, '菜单管理', 1061, 3, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:17:32', 'admin', '2025-07-15 16:17:32', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1065, '角色管理', 1061, 4, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:17:42', 'admin', '2025-07-15 16:17:42', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1066, '商品分类', 1061, 5, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:17:52', 'admin', '2025-07-15 16:17:52', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1067, '定时任务', 1061, 6, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:18:02', 'admin', '2025-07-15 16:18:02', '', '0', 0);
+INSERT INTO `sys_menu` VALUES (1068, '快递费管理', 1061, 6, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:18:14', 'admin', '2025-07-15 16:18:14', '', '0', 0);
 
 -- ----------------------------
 -- 6、用户和角色关联表  用户N-1角色
@@ -223,7 +203,71 @@ create table sys_role_menu (
 -- ----------------------------
 -- 初始化-角色和菜单关联表数据
 -- ----------------------------
-
+INSERT INTO `sys_role_menu` VALUES (2, 1045);
+INSERT INTO `sys_role_menu` VALUES (2, 1046);
+INSERT INTO `sys_role_menu` VALUES (2, 1047);
+INSERT INTO `sys_role_menu` VALUES (2, 1049);
+INSERT INTO `sys_role_menu` VALUES (2, 1050);
+INSERT INTO `sys_role_menu` VALUES (2, 1051);
+INSERT INTO `sys_role_menu` VALUES (2, 1052);
+INSERT INTO `sys_role_menu` VALUES (2, 1053);
+INSERT INTO `sys_role_menu` VALUES (2, 1055);
+INSERT INTO `sys_role_menu` VALUES (2, 1056);
+INSERT INTO `sys_role_menu` VALUES (2, 1058);
+INSERT INTO `sys_role_menu` VALUES (2, 1059);
+INSERT INTO `sys_role_menu` VALUES (2, 1062);
+INSERT INTO `sys_role_menu` VALUES (2, 1063);
+INSERT INTO `sys_role_menu` VALUES (2, 1064);
+INSERT INTO `sys_role_menu` VALUES (2, 1065);
+INSERT INTO `sys_role_menu` VALUES (2, 1066);
+INSERT INTO `sys_role_menu` VALUES (2, 1067);
+INSERT INTO `sys_role_menu` VALUES (2, 1068);
+INSERT INTO `sys_role_menu` VALUES (3, 1002);
+INSERT INTO `sys_role_menu` VALUES (3, 1003);
+INSERT INTO `sys_role_menu` VALUES (3, 1004);
+INSERT INTO `sys_role_menu` VALUES (3, 1005);
+INSERT INTO `sys_role_menu` VALUES (3, 1006);
+INSERT INTO `sys_role_menu` VALUES (3, 1010);
+INSERT INTO `sys_role_menu` VALUES (3, 1011);
+INSERT INTO `sys_role_menu` VALUES (3, 1013);
+INSERT INTO `sys_role_menu` VALUES (3, 1016);
+INSERT INTO `sys_role_menu` VALUES (3, 1017);
+INSERT INTO `sys_role_menu` VALUES (3, 1019);
+INSERT INTO `sys_role_menu` VALUES (3, 1020);
+INSERT INTO `sys_role_menu` VALUES (3, 1021);
+INSERT INTO `sys_role_menu` VALUES (3, 1022);
+INSERT INTO `sys_role_menu` VALUES (3, 1024);
+INSERT INTO `sys_role_menu` VALUES (3, 1025);
+INSERT INTO `sys_role_menu` VALUES (3, 1026);
+INSERT INTO `sys_role_menu` VALUES (3, 1028);
+INSERT INTO `sys_role_menu` VALUES (3, 1029);
+INSERT INTO `sys_role_menu` VALUES (3, 1030);
+INSERT INTO `sys_role_menu` VALUES (3, 1032);
+INSERT INTO `sys_role_menu` VALUES (3, 1033);
+INSERT INTO `sys_role_menu` VALUES (3, 1034);
+INSERT INTO `sys_role_menu` VALUES (3, 1035);
+INSERT INTO `sys_role_menu` VALUES (3, 1036);
+INSERT INTO `sys_role_menu` VALUES (3, 1037);
+INSERT INTO `sys_role_menu` VALUES (3, 1040);
+INSERT INTO `sys_role_menu` VALUES (3, 1041);
+INSERT INTO `sys_role_menu` VALUES (3, 1043);
+INSERT INTO `sys_role_menu` VALUES (3, 1058);
+INSERT INTO `sys_role_menu` VALUES (3, 1059);
+INSERT INTO `sys_role_menu` VALUES (4, 1007);
+INSERT INTO `sys_role_menu` VALUES (4, 1008);
+INSERT INTO `sys_role_menu` VALUES (4, 1014);
+INSERT INTO `sys_role_menu` VALUES (4, 1038);
+INSERT INTO `sys_role_menu` VALUES (4, 1043);
+INSERT INTO `sys_role_menu` VALUES (4, 1058);
+INSERT INTO `sys_role_menu` VALUES (4, 1059);
+INSERT INTO `sys_role_menu` VALUES (5, 1007);
+INSERT INTO `sys_role_menu` VALUES (5, 1008);
+INSERT INTO `sys_role_menu` VALUES (5, 1014);
+INSERT INTO `sys_role_menu` VALUES (5, 1038);
+INSERT INTO `sys_role_menu` VALUES (5, 1043);
+INSERT INTO `sys_role_menu` VALUES (5, 1058);
+INSERT INTO `sys_role_menu` VALUES (5, 1059);
+INSERT INTO `sys_role_menu` VALUES (5, 1060);
 
 
 -- ----------------------------
@@ -511,6 +555,417 @@ create table gen_table_column (
   primary key (column_id)
 ) engine=innodb auto_increment=1 comment = '代码生成业务表字段';
 
+DROP TABLE IF EXISTS `store_order`;
+CREATE TABLE `store_order` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '订单ID',
+	`store_id` bigint(20) NOT NULL COMMENT '档口ID',
+  `order_user_id` bigint(20) NOT NULL COMMENT '下单用户ID',
+  `order_no` varchar(32) NOT NULL COMMENT '订单号',
+	`order_type` tinyint(4) NOT NULL COMMENT '订单类型[1:销售订单 2:退货订单]',
+	`order_status` tinyint(4) NOT NULL COMMENT '订单状态（1开头为销售订单状态，2开头为退货订单状态）[10:已取消 11:待付款 12:待发货 13:已发货 14:已完成 21:售后中 22:售后拒绝 23:平台介入 24:售后完成]',
+	`pay_status` tinyint(4) NOT NULL COMMENT '支付状态[1:初始 2:支付中 3:已支付]',
+	`pay_channel` tinyint(4) NOT NULL COMMENT '支付渠道[1:支付宝]',
+	`pay_trade_no` varchar(255) DEFAULT NULL COMMENT '支付交易号',
+	`order_remark` varchar(255) DEFAULT NULL COMMENT '订单备注',
+	`goods_quantity` int(11) NOT NULL COMMENT '商品数量',
+	`goods_amount` decimal(18,2) NOT NULL COMMENT '商品金额',
+	`express_fee` decimal(18,2) NOT NULL COMMENT '快递费',
+	`total_amount` decimal(18,2) NOT NULL COMMENT '总金额（商品金额+快递费）',
+	`real_total_amount` decimal(18,2) DEFAULT NULL COMMENT '实际总金额（总金额-支付渠道服务费）',
+	`origin_order_id` bigint(20) DEFAULT NULL COMMENT '退货原订单ID',
+	`refund_reason_code` varchar(255) DEFAULT NULL COMMENT '退货原因',
+	`refund_reject_reason` varchar(255) DEFAULT NULL COMMENT '退货拒绝原因',
+	`express_id` bigint(20) DEFAULT NULL COMMENT '物流ID',
+	`origin_contact_name` varchar(32) DEFAULT NULL COMMENT '发货人-名称',
+	`origin_contact_phone_number` varchar(32) DEFAULT NULL COMMENT '发货人-电话',
+	`origin_province_code` varchar(8) DEFAULT NULL COMMENT '发货人-省编码',
+	`origin_city_code` varchar(8) DEFAULT NULL COMMENT '发货人-市编码',
+	`origin_county_code` varchar(8) DEFAULT NULL COMMENT '发货人-区县编码',
+	`origin_detail_address` varchar(255) DEFAULT NULL COMMENT '发货人-详细地址',
+	`destination_contact_name` varchar(32) DEFAULT NULL COMMENT '收货人-名称',
+	`destination_contact_phone_number` varchar(32) DEFAULT NULL COMMENT '收货人-电话',
+	`destination_province_code` varchar(8) DEFAULT NULL COMMENT '收货人-省编码',
+	`destination_city_code` varchar(8) DEFAULT NULL COMMENT '收货人-市编码',
+	`destination_county_code` varchar(8) DEFAULT NULL COMMENT '收货人-区县编码',
+	`destination_detail_address` varchar(255) DEFAULT NULL COMMENT '收货人-详细地址',
+	`delivery_type` tinyint(4) DEFAULT NULL COMMENT '发货方式[1:货其再发 2:有货先发]',
+	`delivery_end_time` datetime DEFAULT NULL COMMENT '最晚发货时间',
+	`auto_end_time` datetime DEFAULT NULL COMMENT '自动完成时间',
+	`voucher_date` date DEFAULT NULL COMMENT '凭证日期',
+	`del_flag` char(1) DEFAULT '0' COMMENT '删除标志（0代表存在 2代表删除）',
+	`create_by` varchar(64) DEFAULT '' COMMENT '创建者',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+	`version` int(11) NOT NULL DEFAULT 0 COMMENT '版本号',
+  PRIMARY KEY (`id`),
+	UNIQUE KEY `uk_order_no` (`order_no`) USING BTREE,
+	KEY `idx_sid_ot` (`store_id`,`order_type`) USING BTREE,
+	KEY `idx_origin_order_id` (`origin_order_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='代发订单';
+
+ALTER TABLE `store_order`
+MODIFY COLUMN `refund_reject_reason` varchar(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '退货拒绝原因' AFTER `refund_reason_code`,
+ADD COLUMN `platform_involve_reason` varchar(512) NULL COMMENT '平台介入原因' AFTER `refund_reject_reason`,
+ADD COLUMN `platform_involve_result` varchar(512) NULL COMMENT '平台介入结果' AFTER `platform_involve_reason`;
+
+DROP TABLE IF EXISTS `store_order_detail`;
+CREATE TABLE `store_order_detail` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '订单明细ID',
+	`store_order_id` bigint(20) NOT NULL COMMENT '订单ID',
+	`store_prod_color_size_id` bigint(20) NOT NULL COMMENT '商品颜色尺码ID',
+	`store_prod_id` bigint(20) NOT NULL COMMENT '商品ID',
+	`prod_name` varchar(64) DEFAULT NULL COMMENT '商品名称',
+	`prod_art_num` varchar(64) DEFAULT NULL COMMENT '商品货号',
+	`prod_title` varchar(64) DEFAULT NULL COMMENT '商品标题',
+	`store_color_id` bigint(20) DEFAULT NULL COMMENT '档口颜色ID',
+	`color_name` varchar(64) DEFAULT NULL COMMENT '颜色名称',
+	`size` tinyint(4) DEFAULT NULL COMMENT '商品尺码',
+	`detail_status` tinyint(4) NOT NULL COMMENT '订单明细状态（同订单状态）[10:已取消 11:待付款 12:待发货 13:已发货 14:已完成 21:售后中 22:售后拒绝 23:平台介入 24:售后完成]',
+	`pay_status` tinyint(4) NOT NULL COMMENT '支付状态[1:初始 2:支付中 3:已支付]',
+	`express_id` bigint(20) DEFAULT NULL COMMENT '物流ID',
+	`express_type` tinyint(4) DEFAULT NULL COMMENT '物流类型[1:平台物流 2:档口物流]',
+	`express_status` tinyint(4) NOT NULL COMMENT '物流状态[1:初始 2:下单中 3:已下单 4:取消中 5:已揽件 6:拦截中 99:已结束]',
+	`express_req_no` varchar(32) DEFAULT NULL COMMENT '物流请求单号',
+	`express_waybill_no` varchar(255) DEFAULT NULL COMMENT '物流运单号（快递单号），档口/用户自己填写时可能存在多个，使用“,”分割',
+	`goods_price` decimal(18,2) NOT NULL COMMENT '商品单价',
+	`goods_quantity` int(11) NOT NULL COMMENT '商品数量',
+	`goods_amount` decimal(18,2) NOT NULL COMMENT '商品金额（商品单价*商品数量）',
+	`express_fee` decimal(18,2) NOT NULL COMMENT '快递费',
+	`total_amount` decimal(18,2) NOT NULL COMMENT '总金额（商品金额+快递费）',
+	`real_total_amount` decimal(18,2) DEFAULT NULL COMMENT '实际总金额（总金额-支付渠道服务费）',
+	`origin_order_detail_id` bigint(20) DEFAULT NULL COMMENT '退货原订单明细ID',
+	`refund_reason_code` varchar(255) DEFAULT NULL COMMENT '退货原因',
+	`refund_reject_reason` varchar(255) DEFAULT NULL COMMENT '退货拒绝原因',
+	`del_flag` char(1) DEFAULT '0' COMMENT '删除标志（0代表存在 2代表删除）',
+	`create_by` varchar(64) DEFAULT '' COMMENT '创建者',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+	`version` int(11) NOT NULL DEFAULT 0 COMMENT '版本号',
+  PRIMARY KEY (`id`),
+	KEY `idx_soid_spcsid` (`store_order_id`,`store_prod_color_size_id`) USING BTREE,
+	KEY `idx_origin_order_detail_id` (`origin_order_detail_id`) USING BTREE,
+	KEY `idx_eid_ewno` (`express_id`,`express_waybill_no`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='代发订单明细';
+
+DROP TABLE IF EXISTS `store_order_operation_record`;
+CREATE TABLE `store_order_operation_record` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '代发订单操作记录ID',
+	`target_id` bigint(20) NOT NULL COMMENT '订单ID/订单明细ID，根据类型确定',
+	`target_type` tinyint(4) NOT NULL COMMENT '类型[1:订单 2:订单明细]',
+	`action` tinyint(4) NOT NULL COMMENT '节点事件[1:下单 2:支付 3:取消 4:发货 5:完成 6:申请售后 7:寄回 8:售后拒绝 9:平台介入 10:售后完成]',
+	`operator_id` bigint(20) DEFAULT NULL COMMENT '操作人ID',
+	`operation_time` datetime DEFAULT NULL COMMENT '操作时间',
+	`remark` varchar(255) DEFAULT NULL COMMENT '备注',
+	`del_flag` char(1) DEFAULT '0' COMMENT '删除标志（0代表存在 2代表删除）',
+	`create_by` varchar(64) DEFAULT '' COMMENT '创建者',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+	KEY `idx_tid_ttype` (`target_id`,`target_type`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='代发订单操作记录';
+
+DROP TABLE IF EXISTS `express_track_record`;
+CREATE TABLE `express_track_record` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '物流轨迹记录ID',
+	`express_waybill_no` varchar(255) NOT NULL COMMENT '物流运单号',
+	`express_id` bigint(20) DEFAULT NULL COMMENT '物流ID',
+	`sort` int(11) NOT NULL DEFAULT 0 COMMENT '排序',
+	`action` varchar(128) DEFAULT NULL COMMENT '节点事件',
+	`description` varchar(5000) DEFAULT NULL COMMENT '描述',
+	`remark` varchar(5000) DEFAULT NULL COMMENT '备注',
+	`del_flag` char(1) DEFAULT '0' COMMENT '删除标志（0代表存在 2代表删除）',
+	`create_by` varchar(64) DEFAULT '' COMMENT '创建者',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+	KEY `idx_express_waybill_no` (`express_waybill_no`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='物流轨迹记录';
+
+DROP TABLE IF EXISTS `express`;
+CREATE TABLE `express` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '物流ID',
+	`express_code` varchar(16) NOT NULL COMMENT '物流编码',
+	`express_name` varchar(32) NOT NULL COMMENT '物流名称',
+	`system_deliver_access` bit(1) NOT NULL DEFAULT 0 COMMENT '系统发货可选',
+	`store_deliver_access` bit(1) NOT NULL DEFAULT 0 COMMENT '档口发货可选',
+	`user_refund_access` bit(1) NOT NULL DEFAULT 0 COMMENT '用户退货可选',
+	`system_config` varchar(5000) DEFAULT NULL COMMENT '系统配置',
+	`del_flag` char(1) DEFAULT '0' COMMENT '删除标志（0代表存在 2代表删除）',
+	`create_by` varchar(64) DEFAULT '' COMMENT '创建者',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+	`version` int(11) NOT NULL DEFAULT 0 COMMENT '版本号',
+  PRIMARY KEY (`id`),
+	UNIQUE KEY `uk_express_code` (`express_code`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='物流信息';
+
+DROP TABLE IF EXISTS `express_region`;
+CREATE TABLE `express_region` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+	`region_code` varchar(8) NOT NULL COMMENT '地区编码，基于行政区划代码做扩展，唯一约束',
+  `region_name` varchar(32) NOT NULL COMMENT '地区名称',
+  `region_level` tinyint NOT NULL COMMENT '地区级别[1:省 2:市 3:区县]',
+  `parent_region_code` varchar(8) DEFAULT NULL COMMENT '上级地区编码，没有上级的默认空',
+  `parent_region_name` varchar(32) DEFAULT NULL COMMENT '上级地区名称，冗余',
+	`del_flag` char(1) DEFAULT '0' COMMENT '删除标志（0代表存在 2代表删除）',
+	`create_by` varchar(64) DEFAULT '' COMMENT '创建者',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+	`version` int(11) NOT NULL DEFAULT 0 COMMENT '版本号',
+  PRIMARY KEY (`id`),
+	UNIQUE KEY `uk_region_code` (`region_code`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='物流行政区划';
+
+DROP TABLE IF EXISTS `express_fee_config`;
+CREATE TABLE `express_fee_config` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+	`express_id` bigint(20) NOT NULL COMMENT '物流ID',
+	`region_code` varchar(8) NOT NULL COMMENT '地区编码，基于行政区划代码做扩展，唯一约束',
+  `parent_region_code` varchar(8) DEFAULT NULL COMMENT '上级地区编码，没有上级的默认空',
+	`first_item_amount` decimal(18,2) NOT NULL COMMENT '首件运费',
+	`next_item_amount` decimal(18,2) NOT NULL COMMENT '续费',
+	`del_flag` char(1) DEFAULT '0' COMMENT '删除标志（0代表存在 2代表删除）',
+	`create_by` varchar(64) DEFAULT '' COMMENT '创建者',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+	`version` int(11) NOT NULL DEFAULT 0 COMMENT '版本号',
+  PRIMARY KEY (`id`),
+	KEY `idx_express_id` (`express_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='物流费用配置';
+
+DROP TABLE IF EXISTS `express_shipping_label` ;
+CREATE TABLE `express_shipping_label` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+	`express_waybill_no` varchar(64) NOT NULL COMMENT '运单号',
+	`express_id` bigint(20) DEFAULT NULL COMMENT '物流ID',
+	`vas_type` varchar(32) DEFAULT NULL COMMENT '服务类型',
+	`mark` varchar(32) DEFAULT NULL COMMENT '转运代码',
+	`short_mark` varchar(32) DEFAULT NULL COMMENT '短转运代码',
+	`bag_addr` varchar(32) DEFAULT NULL COMMENT '集包地',
+	`last_print_time` datetime DEFAULT NULL COMMENT '最后打印时间',
+	`print_count` int(11) DEFAULT NULL COMMENT '打印次数',
+	`goods_info` varchar(512) DEFAULT NULL COMMENT '商品信息',
+	`remark` varchar(512) DEFAULT NULL COMMENT '备注',
+	`origin_contact_name` varchar(32) DEFAULT NULL COMMENT '发货人-名称',
+	`origin_contact_phone_number` varchar(32) DEFAULT NULL COMMENT '发货人-电话',
+	`origin_province_name` varchar(8) DEFAULT NULL COMMENT '发货人-省',
+	`origin_city_name` varchar(8) DEFAULT NULL COMMENT '发货人-市',
+	`origin_county_name` varchar(8) DEFAULT NULL COMMENT '发货人-区县',
+	`origin_detail_address` varchar(255) DEFAULT NULL COMMENT '发货人-详细地址',
+	`destination_contact_name` varchar(32) DEFAULT NULL COMMENT '收货人-名称',
+	`destination_contact_phone_number` varchar(32) DEFAULT NULL COMMENT '收货人-电话',
+	`destination_province_name` varchar(8) DEFAULT NULL COMMENT '收货人-省',
+	`destination_city_name` varchar(8) DEFAULT NULL COMMENT '收货人-市',
+	`destination_county_name` varchar(8) DEFAULT NULL COMMENT '收货人-区县',
+	`destination_detail_address` varchar(255) DEFAULT NULL COMMENT '收货人-详细地址',
+	`del_flag` char(1) DEFAULT '0' COMMENT '删除标志（0代表存在 2代表删除）',
+	`create_by` varchar(64) DEFAULT '' COMMENT '创建者',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+	UNIQUE KEY `uk_express_waybill_no` (`express_waybill_no`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='快递面单';
+
+DROP TABLE IF EXISTS `internal_account`;
+CREATE TABLE `internal_account` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '内部账户ID',
+	`owner_type` tinyint(4) NOT NULL COMMENT '归属[1:平台 2:档口 3:用户]',
+	`owner_id` bigint(20) NOT NULL COMMENT '归属ID（平台=-1，档口=store_id）',
+	`account_status` tinyint(4) NOT NULL COMMENT '账户状态[1:正常 2:冻结]',
+	`transaction_password` varchar(128) DEFAULT NULL COMMENT '交易密码',
+	`phone_number` varchar(32) DEFAULT NULL COMMENT '归属人手机号',
+	`balance` decimal(18,2) NOT NULL DEFAULT '0.00' COMMENT '余额',
+  `usable_balance` decimal(18,2) NOT NULL DEFAULT '0.00' COMMENT '可用余额',
+  `payment_amount` decimal(18,2) NOT NULL DEFAULT '0.00' COMMENT '支付中金额',
+	`remark` varchar(255) DEFAULT NULL COMMENT '备注',
+	`del_flag` char(1) DEFAULT '0' COMMENT '删除标志（0代表存在 2代表删除）',
+	`create_by` varchar(64) DEFAULT '' COMMENT '创建者',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+	UNIQUE KEY `uk_oid_otype` (`owner_id`,`owner_type`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8mb4 COMMENT='内部账户';
+
+DROP TABLE IF EXISTS `internal_account_trans_detail`;
+CREATE TABLE `internal_account_trans_detail` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '内部账户交易明细ID',
+  `internal_account_id` bigint(20) NOT NULL COMMENT '内部账户ID',
+  `src_bill_id` bigint(20) DEFAULT NULL COMMENT '来源单据ID',
+  `src_bill_type` tinyint(4) DEFAULT NULL COMMENT '来源单据类型[1:收款 2:付款 3:转移]',
+  `loan_direction` tinyint(4) NOT NULL COMMENT '借贷方向[1:借(D) 2:贷(C)]',
+  `trans_amount` decimal(18,2) NOT NULL COMMENT '交易金额',
+  `trans_time` datetime NOT NULL COMMENT '交易时间',
+  `handler_id` bigint(20) DEFAULT NULL COMMENT '经办人ID',
+  `entry_status` tinyint(4) NOT NULL COMMENT '入账状态 [1:已入账 2:未入账]',
+  `entry_executed` tinyint(4) NOT NULL COMMENT '入账执行标识[1:已执行 2:未执行]',
+  `remark` varchar(255) DEFAULT NULL COMMENT '备注',
+  `del_flag` char(1) DEFAULT '0' COMMENT '删除标志（0代表存在 2代表删除）',
+	`create_by` varchar(64) DEFAULT '' COMMENT '创建者',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+	`version` int(11) NOT NULL DEFAULT 0 COMMENT '版本号',
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `idx_internal_account_id` (`internal_account_id`) USING BTREE,
+  KEY `idx_sbid_sbtype` (`src_bill_id`,`src_bill_type`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='内部账户交易明细';
+
+DROP TABLE IF EXISTS `external_account`;
+CREATE TABLE `external_account` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '外部账户ID',
+	`owner_type` tinyint(4) NOT NULL COMMENT '归属[1:平台 2:档口 3:用户]',
+	`owner_id` bigint(20) NOT NULL COMMENT '归属ID（平台=-1，档口=store_id，用户=user_id）',
+	`account_status` tinyint(4) NOT NULL COMMENT '账户状态[1:正常 2:冻结]',
+	`account_type` tinyint(4) NOT NULL COMMENT '账户类型[1:支付宝账户]',
+	`account_owner_number` varchar(32) DEFAULT NULL COMMENT '归属人实际账户',
+	`account_owner_name` varchar(32) DEFAULT NULL COMMENT '归属人真实姓名',
+	`account_owner_phone_number` varchar(32) DEFAULT NULL COMMENT '归属人手机号',
+	`account_auth_access` bit(1) NOT NULL DEFAULT 0 COMMENT '归属人认证通过',
+	`remark` varchar(255) DEFAULT NULL COMMENT '备注',
+	`del_flag` char(1) DEFAULT '0' COMMENT '删除标志（0代表存在 2代表删除）',
+	`create_by` varchar(64) DEFAULT '' COMMENT '创建者',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+	UNIQUE KEY `uk_oid_otype_atype` (`owner_id`,`owner_type`,`account_type`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8mb4 COMMENT='外部账户';
+
+DROP TABLE IF EXISTS `external_account_trans_detail`;
+CREATE TABLE `external_account_trans_detail` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '外部账户交易明细ID',
+  `external_account_id` bigint(20) NOT NULL COMMENT '外部账户ID',
+  `src_bill_id` bigint(20) DEFAULT NULL COMMENT '来源单据ID',
+  `src_bill_type` tinyint(4) DEFAULT NULL COMMENT '来源单据类型[2:付款]',
+  `loan_direction` tinyint(4) NOT NULL COMMENT '借贷方向[1:借(D) 2:贷(C)]',
+  `trans_amount` decimal(18,2) NOT NULL COMMENT '交易金额',
+  `trans_time` datetime NOT NULL COMMENT '交易时间',
+  `handler_id` bigint(20) DEFAULT NULL COMMENT '经办人ID',
+  `entry_status` tinyint(4) NOT NULL COMMENT '入账状态 [1:已入账 2:未入账]',
+  `remark` varchar(255) DEFAULT NULL COMMENT '备注',
+  `del_flag` char(1) DEFAULT '0' COMMENT '删除标志（0代表存在 2代表删除）',
+	`create_by` varchar(64) DEFAULT '' COMMENT '创建者',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+	`version` int(11) NOT NULL DEFAULT 0 COMMENT '版本号',
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `idx_external_account_id` (`external_account_id`) USING BTREE,
+  KEY `idx_sbid_sbtype` (`src_bill_id`,`src_bill_type`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='外部账户交易明细';
+
+DROP TABLE IF EXISTS `finance_bill`;
+CREATE TABLE `finance_bill` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '支付单据ID',
+	`bill_no` varchar(32) NOT NULL COMMENT '单号',
+	`bill_type` tinyint(4) NOT NULL COMMENT '单据类型[1:收款 2:付款 3:转移]',
+	`bill_status` tinyint(4) NOT NULL COMMENT '单据状态[1:初始 2:执行中 3:执行成功 4:执行失败]',
+	`src_type` tinyint(4) DEFAULT NULL COMMENT '来源类型[1:代发订单支付 2:代发订单完成 3:提现]',
+	`src_id` bigint(20) DEFAULT NULL COMMENT '来源ID',
+	`rel_type` tinyint(4) DEFAULT NULL COMMENT '关联类型[1:代发订单]',
+	`rel_id` bigint(20) DEFAULT NULL COMMENT '关联ID',
+	`business_unique_key` varchar(64) DEFAULT NULL COMMENT '业务唯一键',
+	`input_internal_account_id` bigint(20) DEFAULT NULL COMMENT '收入内部账户ID',
+	`output_internal_account_id` bigint(20) DEFAULT NULL COMMENT '支出内部账户ID',
+	`input_external_account_id` bigint(20) DEFAULT NULL COMMENT '收入外部账户ID',
+	`output_external_account_id` bigint(20) DEFAULT NULL COMMENT '支出外部账户ID',
+	`business_amount` decimal(18,2) NOT NULL COMMENT '业务金额',
+	`trans_amount` decimal(18,2) NOT NULL COMMENT '交易金额',
+	`remark` varchar(255) DEFAULT NULL COMMENT '备注',
+	`del_flag` char(1) DEFAULT '0' COMMENT '删除标志（0代表存在 2代表删除）',
+	`create_by` varchar(64) DEFAULT '' COMMENT '创建者',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+	`version` int(11) NOT NULL DEFAULT 0 COMMENT '版本号',
+  PRIMARY KEY (`id`),
+	UNIQUE KEY `uk_bill_no` (`bill_no`) USING BTREE,
+	UNIQUE KEY `uk_business_unique_key` (`business_unique_key`) USING BTREE,
+	KEY `idx_sid_stype` (`src_id`,`src_type`) USING BTREE,
+	KEY `idx_rid_rtype` (`rel_id`,`rel_type`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='财务单据';
+
+DROP TABLE IF EXISTS `finance_bill_detail`;
+CREATE TABLE `finance_bill_detail` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '支付单据明细ID',
+	`finance_bill_id` bigint(20) DEFAULT NULL COMMENT '支付单据ID',
+	`rel_type` tinyint(4) DEFAULT NULL COMMENT '关联类型[1:代发订单明细]',
+	`rel_id` bigint(20) DEFAULT NULL COMMENT '关联ID',
+	`business_amount` decimal(18,2) NOT NULL COMMENT '业务金额',
+	`trans_amount` decimal(18,2) NOT NULL COMMENT '交易金额',
+	`remark` varchar(255) DEFAULT NULL COMMENT '备注',
+	`del_flag` char(1) DEFAULT '0' COMMENT '删除标志（0代表存在 2代表删除）',
+	`create_by` varchar(64) DEFAULT '' COMMENT '创建者',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+	KEY `idx_finance_bill_id` (`finance_bill_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='财务单据明细';
+
+DROP TABLE IF EXISTS `alipay_callback`;
+CREATE TABLE `alipay_callback` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+	`biz_type` tinyint(4) DEFAULT NULL COMMENT '业务类型',
+	`notify_type` varchar(64) DEFAULT NULL COMMENT '通知的类型',
+	`notify_id` varchar(64) DEFAULT NULL COMMENT '通知校验 ID',
+	`app_id` varchar(64) DEFAULT NULL COMMENT '支付宝分配给开发者的应用 ID',
+	`charset` varchar(128) DEFAULT NULL COMMENT '编码格式，如 utf-8、gbk、gb2312 等',
+	`version` varchar(32) DEFAULT NULL COMMENT '调用的接口版本，固定为：1.0',
+	`sign_type` varchar(10) DEFAULT NULL COMMENT '商家生成签名字符串所使用的签名算法类型，目前支持 RSA2 和 RSA，推荐使用 RSA2',
+	`sign` varchar(3) DEFAULT NULL COMMENT '详情可查看 异步返回结果的验签',
+	`trade_no` varchar(64) DEFAULT NULL COMMENT '支付宝交易凭证号',
+	`out_trade_no` varchar(512) DEFAULT NULL COMMENT '原支付请求的商户订单号',
+	`out_biz_no` varchar(64) DEFAULT NULL COMMENT '商户业务 ID',
+	`buyer_id` varchar(128) DEFAULT NULL COMMENT '买家支付宝用户号',
+	`buyer_logon_id` varchar(100) DEFAULT NULL COMMENT '买家支付宝账号',
+	`seller_id` varchar(30) DEFAULT NULL COMMENT '卖家支付宝用户号',
+	`seller_email` varchar(100) DEFAULT NULL COMMENT '卖家支付宝账号',
+	`trade_status` varchar(32) DEFAULT NULL COMMENT '交易目前所处的状态[WAIT_BUYER_PAY	交易创建，等待买家付款 TRADE_CLOSED	未付款交易超时关闭，或支付完成后全额退款 TRADE_SUCCESS	交易支付成功 TRADE_FINISHED	交易结束，不可退款]',
+	`total_amount` decimal(18,2) DEFAULT NULL COMMENT '本次交易支付的订单金额，单位为人民币（元）',
+	`receipt_amount` decimal(18,2) DEFAULT NULL COMMENT '商家在收益中实际收到的款项，单位人民币（元）',
+	`invoice_amount` decimal(18,2) DEFAULT NULL COMMENT '用户在交易中支付的可开发票的金额',
+	`buyer_pay_amount` decimal(18,2) DEFAULT NULL COMMENT '用户在交易中支付的金额',
+	`point_amount` decimal(18,2) DEFAULT NULL COMMENT '使用集分宝支付的金额',
+	`refund_fee` decimal(18,2) DEFAULT NULL COMMENT '退款通知中，返回总退款金额，单位为人民币（元），支持两位小数',
+	`subject` varchar(256) DEFAULT NULL COMMENT '商品的标题/交易标题/订单标题/订单关键字等，是请求时对应的参数，原样通知回来',
+	`body` varchar(400) DEFAULT NULL COMMENT '订单的备注、描述、明细等。对应请求时的 body 参数，原样通知回来',
+	`gmt_create` varchar(32) DEFAULT NULL COMMENT '该笔交易创建的时间',
+	`gmt_payment` varchar(32) DEFAULT NULL COMMENT '该笔交易 的买家付款时间',
+	`gmt_refund` varchar(32) DEFAULT NULL COMMENT '该笔交易的退款时间',
+	`gmt_close` varchar(32) DEFAULT NULL COMMENT '该笔交易结束时间',
+	`fund_bill_list` varchar(512) DEFAULT NULL COMMENT '支付成功的各个渠道金额信息',
+	`passback_params` varchar(512) DEFAULT NULL COMMENT '公共回传参数，如果请求时传递了该参数，则返回给商家时会在异步通知时将该参数原样返回',
+	`voucher_detail_list` varchar(512) DEFAULT NULL COMMENT '本交易支付时所有优惠券信息',
+	`process_status` tinyint(4) NOT NULL COMMENT '回调处理状态[1:初始 2:处理中 3:处理成功 4:处理失败]',
+	`del_flag` char(1) DEFAULT '0' COMMENT '删除标志（0代表存在 2代表删除）',
+	`create_by` varchar(64) DEFAULT '' COMMENT '创建者',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_by` varchar(64) DEFAULT '' COMMENT '更新者',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+	UNIQUE KEY `uk_notify_id` (`notify_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='阿里支付回调信息';
+
+-- 上线前补全
+INSERT INTO internal_account ( `id`, `owner_type`, `owner_id`, `account_status`, `transaction_password`, `balance`, `usable_balance`, `payment_amount`, `remark`, `del_flag`, `create_by`, `create_time`, `update_by`, `update_time`)
+VALUES (1, 1, -1, 1, NULL, 0.00, 0.00, 0.00, '平台账户', '0', 'SYSTEM', NOW(), 'SYSTEM', NOW());
+
+INSERT INTO external_account ( `id`, `owner_type`, `owner_id`, `account_status`, `account_type`, `account_owner_number`, `account_owner_name`, `account_owner_phone_number`, `account_auth_access`, `remark`, `del_flag`, `create_by`, `create_time`, `update_by`, `update_time`)
+VALUES (1, 1, -1, 1, 1, '', '', '', 1, '平台支付宝账户', '0', 'SYSTEM', NOW(), 'SYSTEM', NOW());
+
+-- 快递?
+INSERT INTO `express`(`id`, `express_code`, `express_name`, `system_deliver_access`, `store_deliver_access`, `user_refund_access`, `system_config`, `del_flag`, `create_by`, `create_time`, `update_by`, `update_time`, `version`) VALUES (1, 'ZTO', '中通', b'1', b'1', b'1', NULL, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express`(`id`, `express_code`, `express_name`, `system_deliver_access`, `store_deliver_access`, `user_refund_access`, `system_config`, `del_flag`, `create_by`, `create_time`, `update_by`, `update_time`, `version`) VALUES (2, 'YTO', '圆通', b'1', b'1', b'1', NULL, '0', '', NULL, '', NULL, 0);
 
 
 DROP TABLE IF EXISTS `voucher_sequence`;
