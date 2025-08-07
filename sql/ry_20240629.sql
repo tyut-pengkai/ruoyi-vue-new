@@ -2514,23 +2514,26 @@ CREATE TABLE `shopping_cart_detail`
 -- ----------------------------
 -- 17、通知公告表
 -- ----------------------------
-drop table if exists notice;
-create table notice
+DROP TABLE IF EXISTS `notice`;
+CREATE TABLE `notice`
 (
-    id             int(4) not null auto_increment comment '公告ID',
-    notice_title   varchar(50) not null comment '公告标题',
-    notice_type    int(1) not null comment '公告类型（1通知 2公告）',
-    owner_type     char(1)     not null comment '公告拥有者（1系统 2档口）',
-    notice_content longblob    default null comment '公告内容',
-    effect_start   datetime comment '公告生效时间(yyyy-MM-dd HH:mm)',
-    effect_end     datetime comment '公告失效时间(yyyy-MM-dd HH:mm)',
-    perpetuity     tinyint(1) comment '是否永久生效',
-    create_by      varchar(64) default '' comment '创建者',
-    create_time    datetime comment '创建时间',
-    update_by      varchar(64) default '' comment '更新者',
-    update_time    datetime comment '更新时间',
-    primary key (id)
-) engine=innodb auto_increment=10 comment = '通知公告表';
+    `id`             int                                                          NOT NULL AUTO_INCREMENT COMMENT '公告ID',
+    `notice_title`   varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '公告标题',
+    `notice_type`    int                                                          NOT NULL COMMENT '公告类型（1通知 2公告）',
+    `owner_type`     char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci     NOT NULL COMMENT '公告拥有者（1系统 2档口）',
+    `notice_content` longblob NULL COMMENT '公告内容',
+    `store_id`       bigint UNSIGNED NULL DEFAULT NULL COMMENT '档口ID',
+    `user_id`        bigint UNSIGNED NULL DEFAULT NULL COMMENT '用户ID',
+    `effect_start`   datetime NULL DEFAULT NULL COMMENT '公告生效时间(yyyy-MM-dd HH:mm)',
+    `effect_end`     datetime NULL DEFAULT NULL COMMENT '公告失效时间(yyyy-MM-dd HH:mm)',
+    `perpetuity`     tinyint(1) NULL DEFAULT NULL COMMENT '是否永久生效',
+    `create_by`      varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '创建者',
+    `create_time`    datetime NULL DEFAULT NULL COMMENT '创建时间',
+    `update_by`      varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT '' COMMENT '更新者',
+    `update_time`    datetime NULL DEFAULT NULL COMMENT '更新时间',
+    PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '通知公告表' ROW_FORMAT = Dynamic;
+
 
 -- ----------------------------
 -- 初始化-公告信息表数据
@@ -3308,7 +3311,7 @@ CREATE TABLE `store`
     `user_id`            bigint UNSIGNED NOT NULL COMMENT '档口负责人ID',
     `store_name`         varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '档口名称',
     `store_weight`       int NULL DEFAULT NULL COMMENT '权重',
-    `store_logo`         varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '档口logo',
+    `store_logo_id`      bigint UNSIGNED NULL DEFAULT NULL COMMENT '档口logo',
     `brand_name`         varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '品牌名称',
     `contact_name`       varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '联系人',
     `contact_phone`      varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '联系电话',
