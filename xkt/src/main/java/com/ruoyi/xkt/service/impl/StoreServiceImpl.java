@@ -151,6 +151,7 @@ public class StoreServiceImpl implements IStoreService {
                 throw new ServiceException("当前状态不为待审核 或 审核驳回，不可审核!", HttpStatus.ERROR);
             }
             store.setStoreStatus(StoreStatus.TRIAL_PERIOD.getValue());
+            auditDTO.getStoreCert().setStoreId(auditDTO.getStoreId());
             // 更新档口认证信息
             this.storeCertService.update(auditDTO.getStoreCert());
         } else {
