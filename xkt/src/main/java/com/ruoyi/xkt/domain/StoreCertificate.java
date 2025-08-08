@@ -76,7 +76,7 @@ public class StoreCertificate extends XktBaseEntity {
      * 统一社会信用代码
      */
     @Excel(name = "统一社会信用代码")
-    private Integer socialCreditCode;
+    private String socialCreditCode;
 
     /**
      * 经营类型

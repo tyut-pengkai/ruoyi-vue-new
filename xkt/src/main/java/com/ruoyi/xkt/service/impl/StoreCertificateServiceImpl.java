@@ -168,7 +168,8 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
                                 (Objects.equals(x.getId(), storeCert.getIdCardEmblemFileId())
                                         ? FileType.ID_CARD_EMBLEM.getValue() : FileType.BUSINESS_LICENSE.getValue())))
                 .collect(Collectors.toList());
-        return new StoreCertStepResDTO().setStoreCert(BeanUtil.toBean(storeCert, StoreCertStepResDTO.SCSStoreCertDTO.class).setFileList(fileDTOList))
+        return new StoreCertStepResDTO().setStoreCert(BeanUtil.toBean(storeCert, StoreCertStepResDTO.SCSStoreCertDTO.class)
+                        .setStoreCertId(storeCert.getId()).setFileList(fileDTOList))
                 .setStoreBasic(BeanUtil.toBean(store, StoreCertStepResDTO.SCSStoreBasicDTO.class));
     }
 
