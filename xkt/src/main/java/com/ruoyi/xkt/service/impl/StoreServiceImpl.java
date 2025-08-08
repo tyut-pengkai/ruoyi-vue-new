@@ -25,6 +25,7 @@ import com.ruoyi.system.mapper.SysUserMapper;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.store.*;
+import com.ruoyi.xkt.dto.storeCertificate.StoreCertDTO;
 import com.ruoyi.xkt.dto.storeCertificate.StoreCertResDTO;
 import com.ruoyi.xkt.enums.FileType;
 import com.ruoyi.xkt.enums.StoreStatus;
@@ -151,16 +152,18 @@ public class StoreServiceImpl implements IStoreService {
                     !Objects.equals(store.getStoreStatus(), StoreStatus.AUDIT_REJECTED.getValue())) {
                 throw new ServiceException("当前状态不为待审核 或 审核驳回，不可审核!", HttpStatus.ERROR);
             }
-            store.setStoreStatus(StoreStatus.TRIAL_PERIOD.getValue());
             auditDTO.getStoreCert().setStoreId(auditDTO.getStoreId());
             // 更新档口认证信息
-            this.storeCertService.update(auditDTO.getStoreCert());
+            this.updateStoreCert(auditDTO.getStoreCert());
+            store.setStoreStatus(StoreStatus.TRIAL_PERIOD.getValue());
+            store.setRejectReason("");
         } else {
             store.setStoreStatus(StoreStatus.AUDIT_REJECTED.getValue());
             store.setRejectReason(auditDTO.getRejectReason());
         }
         return this.storeMapper.updateById(store);
     }
+
 
     /**
      * 获取档口详细信息
@@ -553,6 +556,53 @@ public class StoreServiceImpl implements IStoreService {
                                         ? FileType.ID_CARD_EMBLEM.getValue() : FileType.BUSINESS_LICENSE.getValue())))
                 .collect(Collectors.toList());
         return BeanUtil.toBean(storeCert, StoreCertResDTO.class).setStoreCertId(storeCert.getId()).setFileList(fileDTOList);
+    }
+
+    /**
+     * 更新档口认证信息
+     *
+     * @param certDTO 认证入参
+     */
+    public void updateStoreCert(StoreCertDTO certDTO) {
+        StoreCertificate storeCert = Optional.ofNullable(this.storeCertMapper.selectOne(new LambdaQueryWrapper<StoreCertificate>()
+                        .eq(StoreCertificate::getId, certDTO.getStoreCertId()).eq(StoreCertificate::getDelFlag, Constants.UNDELETED)
+                        .eq(StoreCertificate::getStoreId, certDTO.getStoreId())))
+                .orElseThrow(() -> new ServiceException("档口认证不存在!", HttpStatus.ERROR));
+        // 先将旧的档口认证相关文件置为无效
+        List<SysFile> oldFileList = Optional.ofNullable(this.fileMapper.selectList(new LambdaQueryWrapper<SysFile>()
+                        .eq(SysFile::getDelFlag, Constants.UNDELETED).in(SysFile::getId,
+                                Arrays.asList(storeCert.getIdCardFaceFileId(), storeCert.getIdCardEmblemFileId(), storeCert.getLicenseFileId()))))
+                .orElseThrow(() -> new ServiceException("档口认证相关文件不存在!", HttpStatus.ERROR));
+        this.fileMapper.updateById(oldFileList.stream().peek(x -> x.setDelFlag(Constants.DELETED)).collect(Collectors.toList()));
+        // 更新属性
+        BeanUtil.copyProperties(certDTO.getStoreCert(), storeCert);
+        // 新增档口认证的文件列表
+        this.handleStoreCertFileList(certDTO, storeCert);
+    }
+
+    /**
+     * 新增档口认证文件
+     *
+     * @param certDTO   认证入参
+     * @param storeCert 认证
+     */
+    public void handleStoreCertFileList(StoreCertDTO certDTO, StoreCertificate storeCert) {
+        // 档口认证文件类型与文件名映射
+        Map<Integer, String> typeNameTransMap = certDTO.getStoreCert().getFileList().stream().collect(Collectors
+                .toMap(StoreCertDTO.SCStoreFileDTO::getFileType, StoreCertDTO.SCStoreFileDTO::getFileName));
+        // 上传的文件列表
+        final List<StoreCertDTO.SCStoreFileDTO> fileDTOList = certDTO.getStoreCert().getFileList();
+        // 将文件插入到SysFile表中
+        List<SysFile> fileList = BeanUtil.copyToList(fileDTOList, SysFile.class);
+        this.fileMapper.insert(fileList);
+        // 文件名称与文件ID映射
+        Map<String, Long> fileMap = fileList.stream().collect(Collectors.toMap(SysFile::getFileName, SysFile::getId));
+        // 设置身份证人脸文件ID
+        storeCert.setIdCardFaceFileId(fileMap.get(typeNameTransMap.get(FileType.ID_CARD_FACE.getValue())));
+        // 设置身份证国徽文件ID
+        storeCert.setIdCardEmblemFileId(fileMap.get(typeNameTransMap.get(FileType.ID_CARD_EMBLEM.getValue())));
+        // 设置营业执照文件ID
+        storeCert.setLicenseFileId(fileMap.get(typeNameTransMap.get(FileType.BUSINESS_LICENSE.getValue())));
     }
 
 

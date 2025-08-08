@@ -124,7 +124,7 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
                         .eq(StoreCertificate::getId, certDTO.getStoreCertId()).eq(StoreCertificate::getDelFlag, Constants.UNDELETED)
                         .eq(StoreCertificate::getStoreId, certDTO.getStoreId())))
                 .orElseThrow(() -> new ServiceException("档口认证不存在!", HttpStatus.ERROR));
-        // 先将旧的档口认证相关文件置为无效
+        // 更新档口认证信息
         List<SysFile> oldFileList = Optional.ofNullable(this.fileMapper.selectList(new LambdaQueryWrapper<SysFile>()
                         .eq(SysFile::getDelFlag, Constants.UNDELETED).in(SysFile::getId,
                                 Arrays.asList(storeCert.getIdCardFaceFileId(), storeCert.getIdCardEmblemFileId(), storeCert.getLicenseFileId()))))
