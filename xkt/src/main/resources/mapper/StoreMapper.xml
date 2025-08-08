@@ -17,7 +17,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         FROM
             store s JOIN sys_user u ON s.user_id = u.user_id
             <if test="storeName != null  and storeName != ''"> and s.store_name like concat('%', #{storeName}, '%')</if>
-            <if test="delFlag != null  and delFlag != ''"> and s.delFlag = #{delFlag}</if>
+            <if test="delFlag != null  and delFlag != ''"> and s.del_flag = #{delFlag}</if>
             <if test="storeStatus != null  and storeStatus != ''"> and s.store_status = #{storeStatus}</if>
     </select>
 
