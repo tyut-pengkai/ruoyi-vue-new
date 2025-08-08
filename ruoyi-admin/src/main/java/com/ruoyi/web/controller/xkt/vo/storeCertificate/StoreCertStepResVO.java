@@ -51,6 +51,8 @@ public class StoreCertStepResVO {
         private String facAddress;
         @ApiModelProperty(value = "生产规模")
         private Integer prodScale;
+        @ApiModelProperty(value = "拒绝理由")
+        private String rejectReason;
     }
 
     @Data

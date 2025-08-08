@@ -157,7 +157,18 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
         }
         Store store = this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
                 .eq(Store::getId, storeId).eq(Store::getDelFlag, Constants.UNDELETED));
-        return new StoreCertStepResDTO().setStoreCert(BeanUtil.toBean(storeCert, StoreCertStepResDTO.SCSStoreCertDTO.class))
+        // 获取认证的证照信息
+        List<Long> fileIdList = Arrays.asList(storeCert.getIdCardFaceFileId(), storeCert.getIdCardEmblemFileId(), storeCert.getLicenseFileId());
+        List<SysFile> fileList = Optional.ofNullable(this.fileMapper.selectList(new LambdaQueryWrapper<SysFile>()
+                        .eq(SysFile::getDelFlag, Constants.UNDELETED).in(SysFile::getId, fileIdList)))
+                .orElseThrow(() -> new ServiceException("文件不存在!", HttpStatus.ERROR));
+        // 档口认证所有的文件列表
+        List<StoreCertStepResDTO.SCStoreFileDTO> fileDTOList = fileList.stream().map(x -> BeanUtil.toBean(x, StoreCertStepResDTO.SCStoreFileDTO.class)
+                        .setFileType(Objects.equals(x.getId(), storeCert.getIdCardFaceFileId()) ? FileType.ID_CARD_FACE.getValue() :
+                                (Objects.equals(x.getId(), storeCert.getIdCardEmblemFileId())
+                                        ? FileType.ID_CARD_EMBLEM.getValue() : FileType.BUSINESS_LICENSE.getValue())))
+                .collect(Collectors.toList());
+        return new StoreCertStepResDTO().setStoreCert(BeanUtil.toBean(storeCert, StoreCertStepResDTO.SCSStoreCertDTO.class).setFileList(fileDTOList))
                 .setStoreBasic(BeanUtil.toBean(store, StoreCertStepResDTO.SCSStoreBasicDTO.class));
     }
 
