@@ -25,6 +25,8 @@ import java.util.List;
 @Accessors(chain = true)
 public class StoreCertCreateVO {
 
+    @ApiModelProperty(value = "档口认证ID（新增时不传，编辑必传）")
+    private Long storeCertId;
     @Valid
     @ApiModelProperty(value = "档口认证信息", required = true)
     @NotNull(message = "档口认证信息不能为空!")
@@ -68,8 +70,6 @@ public class StoreCertCreateVO {
     @Data
     @ApiModel
     public static class SCStoreCertVO {
-        @ApiModelProperty(value = "档口认证ID（新增时不传，编辑必传）")
-        private Long storeCertId;
         @ApiModelProperty(value = "真实姓名", required = true)
         @NotBlank(message = "真实姓名不能为空")
         @Size(min = 0, max = 30, message = "真实姓名长度必须在1到30个字之间")
