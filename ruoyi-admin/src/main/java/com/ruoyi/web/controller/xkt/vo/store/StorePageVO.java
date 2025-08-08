@@ -18,6 +18,8 @@ public class StorePageVO extends BasePageVO {
 
     @ApiModelProperty(value = "档口名称")
     private String storeName;
+    @ApiModelProperty(value = "启用停用 0启用 2停用")
+    private String delFlag;
     @ApiModelProperty(value = "档口状态")
     private Integer storeStatus;
 

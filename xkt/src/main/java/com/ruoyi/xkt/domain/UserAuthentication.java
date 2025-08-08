@@ -42,7 +42,7 @@ public class UserAuthentication extends XktBaseEntity {
      */
     private Long idCardEmblemFileId;
     /**
-     * 代发认证状态
+     * 代发认证状态 1 待审核 2审核驳回  3正式使用
      */
     private Integer authStatus;
     /**

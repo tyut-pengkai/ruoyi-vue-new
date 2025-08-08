@@ -18,6 +18,8 @@ public class UserAuthPageVO extends BasePageVO {
 
     @ApiModelProperty(value = "真实名称")
     private String realName;
+    @ApiModelProperty(value = "停用状态 0正常 2停用")
+    private String delFlag;
     @ApiModelProperty(value = "代发状态")
     private Integer authStatus;
 

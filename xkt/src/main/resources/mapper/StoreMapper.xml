@@ -15,9 +15,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             s.del_flag,
             s.store_weight
         FROM
-            store s
-                LEFT JOIN sys_user u ON s.user_id = u.user_id
+            store s JOIN sys_user u ON s.user_id = u.user_id
             <if test="storeName != null  and storeName != ''"> and s.store_name like concat('%', #{storeName}, '%')</if>
+            <if test="delFlag != null  and delFlag != ''"> and s.delFlag = #{delFlag}</if>
             <if test="storeStatus != null  and storeStatus != ''"> and s.store_status = #{storeStatus}</if>
     </select>
 
@@ -34,13 +34,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             sc.legal_name,
             sc.license_name
         FROM
-            store s
-                LEFT JOIN store_certificate sc ON s.id = sc.store_id
+            store s JOIN store_certificate sc ON s.id = sc.store_id
          WHERE
             s.id = #{storeId}
     </select>
-
-
 
 
 </mapper>

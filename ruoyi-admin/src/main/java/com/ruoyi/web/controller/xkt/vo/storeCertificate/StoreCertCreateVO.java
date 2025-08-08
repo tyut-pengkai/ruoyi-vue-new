@@ -37,7 +37,9 @@ public class StoreCertCreateVO {
     @Data
     @ApiModel
     public static class SCStoreBasicVO {
+        @NotBlank(message = "档口名称不能为空!")
         @ApiModelProperty(value = "档口名称")
+        @Size(min = 0, max = 50, message = "档口名称长度必须在0到10个字之间")
         private String storeName;
         @ApiModelProperty(value = "档口LOGO")
         private SCStoreFileVO storeLogo;

@@ -13,14 +13,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             ua.auth_status,
             ua.del_flag
         FROM
-            user_authentication ua
-                LEFT JOIN sys_user u ON ua.user_id = u.user_id
+            user_authentication ua JOIN sys_user u ON ua.user_id = u.user_id
         <where>
             <if test="realName != null and realName != ''">
                 AND ua.real_name LIKE concat('%', #{realName}, '%')
             </if>
             <if test="authStatus != null and authStatus != ''">
                 AND ua.auth_status = #{authStatus}
+            </if>
+            <if test="delFlag != null and delFlag != ''">
+                AND ua.del_flag = #{delFlag}
             </if>
         </where>
     </select>
@@ -32,8 +34,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             u.phonenumber,
             u.avatar
         FROM
-            user_authentication ua
-            LEFT JOIN sys_user u ON ua.user_id = u.user_id
+            user_authentication ua JOIN sys_user u ON ua.user_id = u.user_id
         <where>
             <if test="realName != null and realName != ''">
                 AND ua.real_name LIKE concat('%', #{realName}, '%')
