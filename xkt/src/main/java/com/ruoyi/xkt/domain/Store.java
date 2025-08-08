@@ -76,12 +76,6 @@ public class Store extends XktBaseEntity {
     private String qqAccount;
 
     /**
-     * 支付宝账号
-     */
-    @Excel(name = "支付宝账号")
-    private String alipayAccount;
-
-    /**
      * 经营年限
      */
     @Excel(name = "经营年限")

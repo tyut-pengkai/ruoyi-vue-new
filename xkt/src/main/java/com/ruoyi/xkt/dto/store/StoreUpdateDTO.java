@@ -19,8 +19,6 @@ public class StoreUpdateDTO {
     private Long storeId;
     @ApiModelProperty(value = "档口名称", required = true)
     private String storeName;
-    @ApiModelProperty(value = "品牌名称", required = true)
-    private String brandName;
     @ApiModelProperty(value = "联系人", required = true)
     private String contactName;
     @ApiModelProperty(value = "联系电话", required = true)

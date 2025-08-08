@@ -25,9 +25,6 @@ public class StoreUpdateVO {
     @ApiModelProperty(value = "档口名称", required = true)
     @NotBlank(message = "档口名称不能为空")
     private String storeName;
-    @ApiModelProperty(value = "品牌名称", required = true)
-    @NotBlank(message = "品牌名称不能为空")
-    private String brandName;
     @ApiModelProperty(value = "联系人", required = true)
     @NotBlank(message = "联系人不能为空")
     private String contactName;

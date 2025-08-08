@@ -168,9 +168,15 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
                                 (Objects.equals(x.getId(), storeCert.getIdCardEmblemFileId())
                                         ? FileType.ID_CARD_EMBLEM.getValue() : FileType.BUSINESS_LICENSE.getValue())))
                 .collect(Collectors.toList());
-        return new StoreCertStepResDTO().setStoreCert(BeanUtil.toBean(storeCert, StoreCertStepResDTO.SCSStoreCertDTO.class)
-                        .setStoreCertId(storeCert.getId()).setFileList(fileDTOList))
+        StoreCertStepResDTO certStepDTO = new StoreCertStepResDTO()
+                .setStoreCert(BeanUtil.toBean(storeCert, StoreCertStepResDTO.SCSStoreCertDTO.class).setStoreCertId(storeCert.getId()).setFileList(fileDTOList))
                 .setStoreBasic(BeanUtil.toBean(store, StoreCertStepResDTO.SCSStoreBasicDTO.class));
+        // 设置档口LOGO
+        if (ObjectUtils.isNotEmpty(store.getStoreLogoId())) {
+            SysFile storeLogo = this.fileMapper.selectById(store.getStoreLogoId());
+            certStepDTO.getStoreBasic().setStoreLogo(BeanUtil.toBean(storeLogo, StoreCertStepResDTO.SCStoreFileDTO.class));
+        }
+        return certStepDTO;
     }
 
 
@@ -210,6 +216,10 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
         store.setUserId(SecurityUtils.getUserId());
         // 默认档口状态为：待审核
         store.setStoreStatus(StoreStatus.UN_AUDITED.getValue());
+        // 设置已使用空间为0
+        store.setStorageUsage(BigDecimal.ZERO);
+        // 默认使用第一个模板
+        store.setTemplateNum(1);
         // 当前时间往后推1年为试用期时间
         Date oneYearAfter = Date.from(LocalDate.now().plusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
         store.setTrialEndTime(oneYearAfter);

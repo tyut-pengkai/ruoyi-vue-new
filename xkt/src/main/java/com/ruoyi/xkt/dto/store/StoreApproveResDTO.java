@@ -4,6 +4,7 @@ import com.ruoyi.xkt.dto.storeCertificate.StoreCertResDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 /**
  * @author liujiang
@@ -12,6 +13,7 @@ import lombok.Data;
  */
 @ApiModel("档口基本信息")
 @Data
+@Accessors(chain = true)
 public class StoreApproveResDTO {
 
     @ApiModelProperty(value = "档口基本信息")

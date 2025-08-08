@@ -27,10 +27,10 @@ public class StoreResDTO {
     private String storeName;
     @ApiModelProperty(value = "档口负责人ID")
     private Long userId;
+    @ApiModelProperty(value = "档口logo")
+    private SFileDTO storeLogo;
     @ApiModelProperty(value = "档口负责人ID")
     private String userName;
-    @ApiModelProperty(value = "品牌名称")
-    private String brandName;
     @ApiModelProperty(value = "联系人")
     private String contactName;
     @ApiModelProperty(value = "联系电话")
@@ -62,5 +62,18 @@ public class StoreResDTO {
     private String rejectReason;
     @ApiModelProperty(value = "档口模板ID")
     private Integer templateNum;
+
+    @Data
+    @Accessors(chain = true)
+    public static class SFileDTO {
+        @ApiModelProperty(value = "文件名称")
+        private String fileName;
+        @ApiModelProperty(value = "文件路径")
+        private String fileUrl;
+        @ApiModelProperty(value = "文件类型")
+        private Integer fileType;
+        @ApiModelProperty(value = "文件大小")
+        private BigDecimal fileSize;
+    }
 
 }

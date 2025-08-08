@@ -26,6 +26,7 @@ import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.store.*;
 import com.ruoyi.xkt.dto.storeCertificate.StoreCertResDTO;
+import com.ruoyi.xkt.enums.FileType;
 import com.ruoyi.xkt.enums.StoreStatus;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IAssetService;
@@ -174,6 +175,10 @@ public class StoreServiceImpl implements IStoreService {
                 .eq(Store::getId, storeId))).orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
         StoreResDTO resDTO = BeanUtil.toBean(store, StoreResDTO.class);
         resDTO.setStoreId(storeId);
+        if (ObjectUtils.isNotEmpty(store.getStoreLogoId())) {
+            SysFile file = this.fileMapper.selectById(store.getStoreLogoId());
+            resDTO.setStoreLogo(BeanUtil.toBean(file, StoreResDTO.SFileDTO.class));
+        }
         // 获取用户登录账号
         SysUser user = this.userMapper.selectOne(new LambdaQueryWrapper<SysUser>()
                 .eq(SysUser::getUserId, store.getUserId()).eq(SysUser::getDelFlag, Constants.UNDELETED));
@@ -189,27 +194,13 @@ public class StoreServiceImpl implements IStoreService {
     @Override
     @Transactional(readOnly = true)
     public StoreApproveResDTO getApproveInfo(Long storeId) {
-        StoreApproveResDTO approveResDTO = new StoreApproveResDTO();
-        approveResDTO.setBasic(this.getInfo(storeId));
-        approveResDTO.setCertificate(this.getStoreCertificateInfo(storeId));
-        return approveResDTO;
+        return new StoreApproveResDTO()
+                // 档口基本信息
+                .setBasic(this.getInfo(storeId))
+                // 档口认证信息
+                .setCertificate(this.getStoreCertificateInfo(storeId));
     }
 
-    private StoreCertResDTO getStoreCertificateInfo(Long storeId) {
-        StoreCertificate storeCert = this.storeCertMapper.selectOne(new LambdaQueryWrapper<StoreCertificate>()
-                .eq(StoreCertificate::getStoreId, storeId).eq(StoreCertificate::getDelFlag, Constants.UNDELETED));
-        if (ObjectUtils.isEmpty(storeCert)) {
-            return new StoreCertResDTO();
-        }
-        List<SysFile> fileList = Optional.ofNullable(this.fileMapper.selectList(new LambdaQueryWrapper<SysFile>()
-                .in(SysFile::getId, Arrays.asList(storeCert.getIdCardFaceFileId(), storeCert.getIdCardEmblemFileId(), storeCert.getLicenseFileId()))
-                .eq(SysFile::getDelFlag, Constants.UNDELETED))).orElseThrow(() -> new ServiceException("文件不存在!", HttpStatus.ERROR));
-        List<StoreCertResDTO.StoreCertFileDTO> fileDTOList = fileList.stream().map(x -> BeanUtil.toBean(x, StoreCertResDTO.StoreCertFileDTO.class)
-                .setFileType(Objects.equals(x.getId(), storeCert.getIdCardFaceFileId()) ? 4 :
-                        (Objects.equals(x.getId(), storeCert.getIdCardEmblemFileId()) ? 5 : 6))).collect(Collectors.toList());
-        return BeanUtil.toBean(storeCert, StoreCertResDTO.class).setStoreCertId(storeCert.getId()).setFileList(fileDTOList);
-
-    }
 
     /**
      * 获取APP档口基本信息
@@ -539,6 +530,29 @@ public class StoreServiceImpl implements IStoreService {
             throw e; // 或者做其他补偿处理，比如异步重试
         }
         return count;
+    }
+
+    /**
+     * 设置 档口 认证基本信息
+     *
+     * @param storeId 档口ID
+     * @return StoreCertResDTO
+     */
+    private StoreCertResDTO getStoreCertificateInfo(Long storeId) {
+        StoreCertificate storeCert = this.storeCertMapper.selectOne(new LambdaQueryWrapper<StoreCertificate>()
+                .eq(StoreCertificate::getStoreId, storeId).eq(StoreCertificate::getDelFlag, Constants.UNDELETED));
+        if (ObjectUtils.isEmpty(storeCert)) {
+            return new StoreCertResDTO();
+        }
+        List<SysFile> fileList = Optional.ofNullable(this.fileMapper.selectList(new LambdaQueryWrapper<SysFile>()
+                .in(SysFile::getId, Arrays.asList(storeCert.getIdCardFaceFileId(), storeCert.getIdCardEmblemFileId(), storeCert.getLicenseFileId()))
+                .eq(SysFile::getDelFlag, Constants.UNDELETED))).orElseThrow(() -> new ServiceException("文件不存在!", HttpStatus.ERROR));
+        List<StoreCertResDTO.StoreCertFileDTO> fileDTOList = fileList.stream().map(x -> BeanUtil.toBean(x, StoreCertResDTO.StoreCertFileDTO.class)
+                        .setFileType(Objects.equals(x.getId(), storeCert.getIdCardFaceFileId()) ? FileType.ID_CARD_FACE.getValue() :
+                                (Objects.equals(x.getId(), storeCert.getIdCardEmblemFileId())
+                                        ? FileType.ID_CARD_EMBLEM.getValue() : FileType.BUSINESS_LICENSE.getValue())))
+                .collect(Collectors.toList());
+        return BeanUtil.toBean(storeCert, StoreCertResDTO.class).setStoreCertId(storeCert.getId()).setFileList(fileDTOList);
     }
 
 
