@@ -23,11 +23,14 @@ import com.ruoyi.system.service.ISysMenuService;
 import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.web.controller.system.vo.*;
+import com.ruoyi.xkt.domain.Store;
 import com.ruoyi.xkt.manager.TencentAuthManager;
+import com.ruoyi.xkt.mapper.StoreMapper;
 import com.ruoyi.xkt.service.IStoreService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -65,6 +68,8 @@ public class SysLoginController {
     private TencentAuthManager tencentAuthManager;
     @Autowired
     private SysPasswordService passwordService;
+    @Autowired
+    private StoreMapper storeMapper;
 
     /**
      * 登录方法
@@ -318,8 +323,10 @@ public class SysLoginController {
                 Long storeId = roleInfoVO.getRelStoreId();
                 vo.setCurrentStoreId(storeId);
                 if (storeId != null) {
+                    Store store = this.storeMapper.selectById(storeId);
+                    vo.setCurrentStoreName(ObjectUtils.isNotEmpty(store) ? store.getStoreName() : "");
                     //档口状态
-                    vo.setCurrentStoreStatus(storeService.getStoreStatus(storeId));
+                    vo.setCurrentStoreStatus(ObjectUtils.isNotEmpty(store) ? store.getStoreStatus() : null);
                 }
             }
         }
