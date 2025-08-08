@@ -2111,7 +2111,7 @@ insert into sys_config
 values (4, '账号自助-验证码开关', 'sys.account.captchaEnabled', 'true', 'Y', 'admin', sysdate(), '', null,
         '是否开启验证码功能（true开启，false关闭）');
 insert into sys_config
-values (5, '账号自助-是否开启用户注册功能', 'sys.account.registerUser', 'false', 'Y', 'admin', sysdate(), '', null,
+values (5, '账号自助-是否开启用户注册功能', 'sys.account.registerUser', 'true', 'Y', 'admin', sysdate(), '', null,
         '是否开启注册用户功能（true开启，false关闭）');
 insert into sys_config
 values (6, '用户登录-黑名单列表', 'sys.login.blackIPList', '', 'Y', 'admin', sysdate(), '', null,
@@ -2427,15 +2427,15 @@ CREATE TABLE `store_order`
     `express_id`                       bigint(20) DEFAULT NULL COMMENT '物流ID',
     `origin_contact_name`              varchar(32)    DEFAULT NULL COMMENT '发货人-名称',
     `origin_contact_phone_number`      varchar(32)    DEFAULT NULL COMMENT '发货人-电话',
-    `origin_province_code`             varchar(8)     DEFAULT NULL COMMENT '发货人-省编码',
-    `origin_city_code`                 varchar(8)     DEFAULT NULL COMMENT '发货人-市编码',
-    `origin_county_code`               varchar(8)     DEFAULT NULL COMMENT '发货人-区县编码',
+    `origin_province_code`             varchar(16)     DEFAULT NULL COMMENT '发货人-省编码',
+    `origin_city_code`                 varchar(16)     DEFAULT NULL COMMENT '发货人-市编码',
+    `origin_county_code`               varchar(16)     DEFAULT NULL COMMENT '发货人-区县编码',
     `origin_detail_address`            varchar(255)   DEFAULT NULL COMMENT '发货人-详细地址',
     `destination_contact_name`         varchar(32)    DEFAULT NULL COMMENT '收货人-名称',
     `destination_contact_phone_number` varchar(32)    DEFAULT NULL COMMENT '收货人-电话',
-    `destination_province_code`        varchar(8)     DEFAULT NULL COMMENT '收货人-省编码',
-    `destination_city_code`            varchar(8)     DEFAULT NULL COMMENT '收货人-市编码',
-    `destination_county_code`          varchar(8)     DEFAULT NULL COMMENT '收货人-区县编码',
+    `destination_province_code`        varchar(16)     DEFAULT NULL COMMENT '收货人-省编码',
+    `destination_city_code`            varchar(16)     DEFAULT NULL COMMENT '收货人-市编码',
+    `destination_county_code`          varchar(16)     DEFAULT NULL COMMENT '收货人-区县编码',
     `destination_detail_address`       varchar(255)   DEFAULT NULL COMMENT '收货人-详细地址',
     `delivery_type`                    tinyint(4) DEFAULT NULL COMMENT '发货方式[1:货其再发 2:有货先发]',
     `delivery_end_time`                datetime       DEFAULT NULL COMMENT '最晚发货时间',
@@ -2561,10 +2561,10 @@ DROP TABLE IF EXISTS `express_region`;
 CREATE TABLE `express_region`
 (
     `id`                 bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `region_code`        varchar(8)  NOT NULL COMMENT '地区编码，基于行政区划代码做扩展，唯一约束',
+    `region_code`        varchar(16)  NOT NULL COMMENT '地区编码，基于行政区划代码做扩展，唯一约束',
     `region_name`        varchar(32) NOT NULL COMMENT '地区名称',
     `region_level`       tinyint     NOT NULL COMMENT '地区级别[1:省 2:市 3:区县]',
-    `parent_region_code` varchar(8)  DEFAULT NULL COMMENT '上级地区编码，没有上级的默认空',
+    `parent_region_code` varchar(16)  DEFAULT NULL COMMENT '上级地区编码，没有上级的默认空',
     `parent_region_name` varchar(32) DEFAULT NULL COMMENT '上级地区名称，冗余',
     `del_flag`           char(1)     DEFAULT '0' COMMENT '删除标志（0代表存在 2代表删除）',
     `create_by`          varchar(64) DEFAULT '' COMMENT '创建者',
@@ -2581,8 +2581,8 @@ CREATE TABLE `express_fee_config`
 (
     `id`                 bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
     `express_id`         bigint(20) NOT NULL COMMENT '物流ID',
-    `region_code`        varchar(8)     NOT NULL COMMENT '地区编码，基于行政区划代码做扩展，唯一约束',
-    `parent_region_code` varchar(8)  DEFAULT NULL COMMENT '上级地区编码，没有上级的默认空',
+    `region_code`        varchar(16)     NOT NULL COMMENT '地区编码，基于行政区划代码做扩展，唯一约束',
+    `parent_region_code` varchar(16)  DEFAULT NULL COMMENT '上级地区编码，没有上级的默认空',
     `first_item_amount`  decimal(18, 2) NOT NULL COMMENT '首件运费',
     `next_item_amount`   decimal(18, 2) NOT NULL COMMENT '续费',
     `del_flag`           char(1)     DEFAULT '0' COMMENT '删除标志（0代表存在 2代表删除）',
