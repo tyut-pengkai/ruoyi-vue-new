@@ -120,10 +120,8 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
     @Override
     @Transactional
     public Integer update(StoreCertDTO certDTO) {
-        // 档口认证ID不能为空
-        Optional.ofNullable(certDTO.getStoreCert().getStoreCertId()).orElseThrow(() -> new ServiceException("档口认证ID不能为空!", HttpStatus.ERROR));
         StoreCertificate storeCert = Optional.ofNullable(this.storeCertMapper.selectOne(new LambdaQueryWrapper<StoreCertificate>()
-                        .eq(StoreCertificate::getId, certDTO.getStoreCert().getStoreCertId()).eq(StoreCertificate::getDelFlag, Constants.UNDELETED)
+                        .eq(StoreCertificate::getId, certDTO.getStoreCertId()).eq(StoreCertificate::getDelFlag, Constants.UNDELETED)
                         .eq(StoreCertificate::getStoreId, certDTO.getStoreId())))
                 .orElseThrow(() -> new ServiceException("档口认证不存在!", HttpStatus.ERROR));
         // 先将旧的档口认证相关文件置为无效

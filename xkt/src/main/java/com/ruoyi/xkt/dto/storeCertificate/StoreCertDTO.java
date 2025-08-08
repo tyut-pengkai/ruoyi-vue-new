@@ -21,6 +21,8 @@ public class StoreCertDTO {
 
     @ApiModelProperty(value = "档口ID", required = true)
     private Long storeId;
+    @ApiModelProperty(value = "档口认证ID（新增时不传，编辑必传）")
+    private Long storeCertId;
     @ApiModelProperty(value = "档口认证信息", required = true)
     private SCStoreCertDTO storeCert;
     @ApiModelProperty(value = "档口基础信息", required = true)
@@ -52,8 +54,6 @@ public class StoreCertDTO {
 
     @Data
     public static class SCStoreCertDTO {
-        @ApiModelProperty(value = "档口认证ID（新增时不传，编辑必传）")
-        private Long storeCertId;
         @ApiModelProperty(value = "真实姓名", required = true)
         private String realName;
         @ApiModelProperty(value = "联系电话", required = true)
