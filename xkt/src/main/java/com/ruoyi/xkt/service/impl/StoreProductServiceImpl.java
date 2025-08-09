@@ -592,6 +592,8 @@ public class StoreProductServiceImpl implements IStoreProductService {
         if (CollUtil.isEmpty(fileIds)) {
             return ListUtil.empty();
         }
+        // 商品下载量+1
+        redisCache.valueIncr(CacheConstants.PRODUCT_STATISTICS_DOWNLOAD_COUNT, storeProductId);
         List<SysFile> files = fileMapper.selectByIds(fileIds);
         return files.stream()
                 .filter(o -> UNDELETED.equals(o.getDelFlag()))
@@ -732,6 +734,8 @@ public class StoreProductServiceImpl implements IStoreProductService {
         // 将用户浏览足迹添加到redis中
         this.updateUserBrowsingToRedis(storeProdId, appResDTO.getStoreId(), appResDTO.getStoreName(), appResDTO.getProdArtNum(),
                 appResDTO.getProdTitle(), appResDTO.getMinPrice(), mainPicUrl);
+        // 商品浏览量+1
+        redisCache.valueIncr(CacheConstants.PRODUCT_STATISTICS_VIEW_COUNT, storeProdId);
         return appResDTO.setTags(StringUtils.isNotBlank(appResDTO.getTagStr()) ? StrUtil.split(appResDTO.getTagStr(), ",") : null)
                 // 拼接几色几码
                 .setSpecification((CollectionUtils.isNotEmpty(colorList) ? colorList.size() + "色" : "") +
@@ -853,6 +857,8 @@ public class StoreProductServiceImpl implements IStoreProductService {
                 .filter(x -> Objects.equals(x.getOrderNum(), ORDER_NUM_1)).map(StoreProdFileResDTO::getFileUrl).findAny().orElse("");
         // 将用户浏览足迹添加到redis中
         this.updateUserBrowsingToRedis(storeProdId, prodInfoDTO.getStoreId(), prodInfoDTO.getStoreName(), prodInfoDTO.getProdArtNum(), prodInfoDTO.getProdTitle(), minPrice, mainPicUrl);
+        // 商品浏览量+1
+        redisCache.valueIncr(CacheConstants.PRODUCT_STATISTICS_VIEW_COUNT, storeProdId);
         return prodInfoDTO.setColorList(colorList);
     }
 

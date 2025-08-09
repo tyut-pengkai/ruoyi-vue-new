@@ -2458,6 +2458,17 @@ ALTER TABLE `store_order`
     ADD COLUMN `platform_involve_reason` varchar (512) NULL COMMENT '平台介入原因' AFTER `refund_reject_reason`,
     ADD COLUMN `platform_involve_result` varchar (512) NULL COMMENT '平台介入结果' AFTER `platform_involve_reason`;
 
+ALTER TABLE `store_order`
+ADD COLUMN `pay_over_time` datetime NULL COMMENT '支付完成时间' AFTER `voucher_date`,
+ADD COLUMN `delivery_over_time` datetime NULL COMMENT '发货完成时间' AFTER `pay_over_time`;
+
+ALTER TABLE `store_order`
+ADD INDEX `idx_delivery_end_time`(`delivery_end_time`) USING BTREE,
+ADD INDEX `idx_delivery_over_time`(`delivery_over_time`) USING BTREE;
+
+ALTER TABLE `store_order`
+ADD INDEX `idx_pay_over_time`(`pay_over_time`) USING BTREE;
+
 DROP TABLE IF EXISTS `store_order_detail`;
 CREATE TABLE `store_order_detail`
 (

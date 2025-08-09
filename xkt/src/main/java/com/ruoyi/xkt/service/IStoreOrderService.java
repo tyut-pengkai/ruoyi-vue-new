@@ -207,6 +207,14 @@ public interface IStoreOrderService {
     StoreOrderRefund prepareRefundOrder(StoreOrderRefundConfirmDTO refundConfirmDTO);
 
     /**
+     * 准备退款
+     *
+     * @param storeOrderId
+     * @return
+     */
+    StoreOrderRefund prepareRefundByOriginOrder(Long storeOrderId);
+
+    /**
      * 退款成功
      *
      * @param storeOrderId
@@ -230,6 +238,23 @@ public interface IStoreOrderService {
      * @return
      */
     List<Long> listNeedAutoCloseOrder(Date beforeDate, Integer count);
+
+    /**
+     * 获取需要自动完成的订单
+     *
+     * @param beforeDate
+     * @param count
+     * @return
+     */
+    List<Long> listNeedAutoCompleteOrder(Date beforeDate, Integer count);
+
+    /**
+     * 获取需要自动退款的订单
+     *
+     * @param count
+     * @return
+     */
+    List<Long> listNeedAutoRefundOrder(Integer count);
 
     /**
      * 获取需要继续退款的订单信息

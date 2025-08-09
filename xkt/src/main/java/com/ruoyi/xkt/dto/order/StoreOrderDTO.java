@@ -154,6 +154,14 @@ public class StoreOrderDTO {
      */
     private Date voucherDate;
     /**
+     * 支付完成时间
+     */
+    private Date payOverTime;
+    /**
+     * 发货完成时间
+     */
+    private Date deliveryOverTime;
+    /**
      * 删除标志（0代表存在 2代表删除）
      */
     private String delFlag;

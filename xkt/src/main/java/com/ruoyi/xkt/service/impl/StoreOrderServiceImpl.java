@@ -663,6 +663,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         order.setPayStatus(EPayStatus.PAID.getValue());
         order.setPayTradeNo(payTradeNo);
         order.setRealTotalAmount(realTotalAmount);
+        order.setPayOverTime(new Date());
         int orderSuccess = storeOrderMapper.updateById(prepareUpdate(order));
         if (orderSuccess == 0) {
             throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
@@ -812,6 +813,10 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         }
         //订单 -> 代发货/已发货
         order.setOrderStatus(currentOrderStatus.getValue());
+        if (EOrderStatus.SHIPPED == currentOrderStatus) {
+            //发货完成时间
+            order.setDeliveryOverTime(new Date());
+        }
         int orderSuccess = storeOrderMapper.updateById(prepareUpdate(order));
         if (orderSuccess == 0) {
             throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
@@ -893,6 +898,10 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         }
         //订单 -> 代发货/已发货
         order.setOrderStatus(currentOrderStatus.getValue());
+        if (EOrderStatus.SHIPPED == currentOrderStatus) {
+            //发货完成时间
+            order.setDeliveryOverTime(new Date());
+        }
         int orderSuccess = storeOrderMapper.updateById(prepareUpdate(order));
         if (orderSuccess == 0) {
             throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
@@ -1376,6 +1385,52 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
+    public StoreOrderRefund prepareRefundByOriginOrder(Long storeOrderId) {
+        StoreOrder order = getAndBaseCheck(storeOrderId);
+        if (!EOrderStatus.PENDING_SHIPMENT.getValue().equals(order.getOrderStatus())) {
+            throw new ServiceException(CharSequenceUtil.format("订单[{}]当前状态无法自动退款",
+                    order.getOrderNo()));
+        }
+        boolean existsRefund = storeOrderMapper.exists(Wrappers.lambdaQuery(StoreOrder.class)
+                .eq(SimpleEntity::getDelFlag, Constants.UNDELETED)
+                .eq(StoreOrder::getOriginOrderId, storeOrderId));
+        if (existsRefund) {
+            throw new ServiceException(CharSequenceUtil.format("订单[{}]已存在售后订单，无法自动退款",
+                    order.getOrderNo()));
+        }
+        List<StoreOrderDetail> details = storeOrderDetailMapper.selectList(Wrappers.lambdaQuery(StoreOrderDetail.class)
+                .eq(StoreOrderDetail::getStoreOrderId, order.getId())
+                .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
+        for (StoreOrderDetail detail : details) {
+            if (!EOrderStatus.PENDING_SHIPMENT.getValue().equals(detail.getDetailStatus())) {
+                throw new ServiceException(CharSequenceUtil.format("订单[{}]存在非待发货状态明细，无法自动退款",
+                        order.getOrderNo()));
+            }
+            detail.setDetailStatus(EOrderStatus.CANCELLED.getValue());
+            int orderDetailSuccess = storeOrderDetailMapper.updateById(prepareUpdate(detail));
+            if (orderDetailSuccess == 0) {
+                throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
+            }
+        }
+        order.setOrderStatus(EOrderStatus.CANCELLED.getValue());
+        int orderSuccess = storeOrderMapper.updateById(prepareUpdate(order));
+        if (orderSuccess == 0) {
+            throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
+        }
+        StoreOrderAfterSaleDTO applyDTO = new StoreOrderAfterSaleDTO();
+        applyDTO.setStoreOrderId(storeOrderId);
+        applyDTO.setStoreOrderDetailIds(details.stream().map(SimpleEntity::getId).collect(Collectors.toList()));
+        applyDTO.setOperatorId(-1L);
+        applyDTO.setRefundReasonCode("超时未发货自动退款");
+        AfterSaleApplyResultDTO applyResult = createAfterSaleOrder(applyDTO);
+        StoreOrderRefundConfirmDTO confirmDTO = new StoreOrderRefundConfirmDTO();
+        confirmDTO.setStoreOrderId(applyResult.getStoreOrderId());
+        confirmDTO.setOperatorId(-1L);
+        return prepareRefundOrder(confirmDTO);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
     public void refundSuccess(Long storeOrderId, List<Long> storeOrderDetailIds, Long operatorId) {
         StoreOrder order = getAndBaseCheck(storeOrderId);
         Map<Long, StoreOrderDetail> orderDetailMap = storeOrderDetailMapper.selectList(Wrappers
@@ -1477,6 +1532,24 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                 .ne(StoreOrder::getPayStatus, EPayStatus.PAID.getValue())
                 .eq(SimpleEntity::getDelFlag, Constants.UNDELETED)
                 .le(SimpleEntity::getCreateTime, beforeDate));
+        return orders.stream().map(SimpleEntity::getId).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Long> listNeedAutoCompleteOrder(Date beforeDate, Integer count) {
+        if (count != null) {
+            PageHelper.startPage(1, count, false);
+        }
+        List<StoreOrder> orders = storeOrderMapper.listNeedAutoCompleteOrder(beforeDate);
+        return orders.stream().map(SimpleEntity::getId).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Long> listNeedAutoRefundOrder(Integer count) {
+        if (count != null) {
+            PageHelper.startPage(1, count, false);
+        }
+        List<StoreOrder> orders = storeOrderMapper.listNeedAutoRefundOrder();
         return orders.stream().map(SimpleEntity::getId).collect(Collectors.toList());
     }
 

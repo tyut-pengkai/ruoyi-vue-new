@@ -6,8 +6,10 @@ import com.ruoyi.xkt.dto.order.StoreOrderCountDTO;
 import com.ruoyi.xkt.dto.order.StoreOrderCountQueryDTO;
 import com.ruoyi.xkt.dto.order.StoreOrderPageItemDTO;
 import com.ruoyi.xkt.dto.order.StoreOrderQueryDTO;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -22,4 +24,8 @@ public interface StoreOrderMapper extends BaseMapper<StoreOrder> {
     List<StoreOrder> listNeedContinueRefundOrder();
 
     StoreOrderCountDTO countOrder(StoreOrderCountQueryDTO queryDTO);
+
+    List<StoreOrder> listNeedAutoCompleteOrder(@Param("deliveryBeforeTime") Date deliveryBeforeTime);
+
+    List<StoreOrder> listNeedAutoRefundOrder();
 }

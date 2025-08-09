@@ -805,11 +805,11 @@ public class XktTask {
         storeProdList.forEach(storeProd -> {
             // 构建部分文档更新请求
             list.add(new BulkOperation.Builder().update(u -> u
-                            .action(a -> a.doc(new HashMap<String, Object>() {{
-                                put("storeWeight", ObjectUtils.defaultIfNull(storeWeightMap.get(storeProd.getStoreId()), Constants.STORE_WEIGHT_DEFAULT_ZERO));
-                            }}))
-                            .id(String.valueOf(storeProd.getId()))
-                            .index(Constants.ES_IDX_PRODUCT_INFO))
+                    .action(a -> a.doc(new HashMap<String, Object>() {{
+                        put("storeWeight", ObjectUtils.defaultIfNull(storeWeightMap.get(storeProd.getStoreId()), Constants.STORE_WEIGHT_DEFAULT_ZERO));
+                    }}))
+                    .id(String.valueOf(storeProd.getId()))
+                    .index(Constants.ES_IDX_PRODUCT_INFO))
                     .build());
         });
         try {
@@ -873,11 +873,11 @@ public class XktTask {
                 .toMap(x -> x.getStoreProdId(), x -> x.getPrice()));
         // 档口商品的属性map
         Map<Long, StoreProductCategoryAttribute> cateAttrMap = this.cateAttrMapper.selectList(new LambdaQueryWrapper<StoreProductCategoryAttribute>()
-                        .eq(StoreProductCategoryAttribute::getDelFlag, Constants.UNDELETED).in(StoreProductCategoryAttribute::getStoreProdId, storeProdIdList))
+                .eq(StoreProductCategoryAttribute::getDelFlag, Constants.UNDELETED).in(StoreProductCategoryAttribute::getStoreProdId, storeProdIdList))
                 .stream().collect(Collectors.toMap(x -> x.getStoreProdId(), x -> x));
         // 档口商品对应的档口
         Map<Long, Store> storeMap = this.storeMapper.selectList(new LambdaQueryWrapper<Store>().eq(Store::getDelFlag, Constants.UNDELETED)
-                        .in(Store::getId, unpublicList.stream().map(x -> x.getStoreId()).collect(Collectors.toList())))
+                .in(Store::getId, unpublicList.stream().map(x -> x.getStoreId()).collect(Collectors.toList())))
                 .stream().collect(Collectors.toMap(x -> x.getId(), x -> x));
         // 构建批量操作请求
         List<BulkOperation> bulkOperations = new ArrayList<>();
@@ -959,6 +959,40 @@ public class XktTask {
         log.info("-------------自动关闭超时订单结束-------------");
     }
 
+    public void autoCompleteStoreOrder() {
+        log.info("-------------自动完成订单开始-------------");
+        Integer batchCount = 20;
+        Date beforeDate = DateUtil.offset(new Date(), DateField.DAY_OF_YEAR, 14);
+        List<Long> storeOrderIds = storeOrderService.listNeedAutoCompleteOrder(beforeDate, batchCount);
+        for (Long storeOrderId : storeOrderIds) {
+            log.info("开始处理: {}", storeOrderId);
+            try {
+                storeOrderService.completeOrder(storeOrderId, -1L);
+            } catch (Exception e) {
+                log.error("自动完成订单异常", e);
+                fsNotice.sendMsg2DefaultChat("自动完成订单异常", "订单ID:" + storeOrderId);
+            }
+        }
+        log.info("-------------自动完成订单结束-------------");
+    }
+
+    public void autoRefundStoreOrder() {
+        log.info("-------------自动订单退款开始-------------");
+        Integer batchCount = 20;
+        List<Long> storeOrderIds = storeOrderService.listNeedAutoRefundOrder(batchCount);
+        for (Long storeOrderId : storeOrderIds) {
+            log.info("开始处理: {}", storeOrderId);
+            try {
+                StoreOrderRefund storeOrderRefund = storeOrderService.prepareRefundByOriginOrder(storeOrderId);
+                callRefund(storeOrderRefund);
+            } catch (Exception e) {
+                log.error("自动完成订单异常", e);
+                fsNotice.sendMsg2DefaultChat("自动完成订单异常", "订单ID:" + storeOrderId);
+            }
+        }
+        log.info("-------------自动订单退款结束-------------");
+    }
+
     /**
      * 继续处理退款（异常中断补偿，非正常流程）
      */
@@ -968,46 +1002,50 @@ public class XktTask {
         List<StoreOrderRefund> storeOrderRefunds = storeOrderService.listNeedContinueRefundOrder(batchCount);
         for (StoreOrderRefund storeOrderRefund : storeOrderRefunds) {
             log.info("开始处理: {}", storeOrderRefund);
-            try {
-                //支付宝接口要求：同一笔交易的退款至少间隔3s后发起
-                String markKey = CacheConstants.STORE_ORDER_REFUND_PROCESSING_MARK +
-                        storeOrderRefund.getRefundOrder().getId();
-                boolean less3s = redisCache.hasKey(markKey);
-                if (less3s) {
-                    log.warn("订单[{}]退款间隔小于3s跳过执行", storeOrderRefund.getRefundOrder().getId());
-                    continue;
-                }
-                PaymentManager paymentManager = getPaymentManager(EPayChannel.of(storeOrderRefund.getRefundOrder().getPayChannel()));
-                //查询退款结果
-                ENetResult queryResult = paymentManager.queryStoreOrderRefundResult(
-                        storeOrderRefund.getRefundOrder().getOrderNo(),
-                        storeOrderRefund.getOriginOrder().getOrderNo());
-                if (ENetResult.SUCCESS == queryResult) {
-                    //退款成功
+            callRefund(storeOrderRefund);
+        }
+        log.info("-------------继续处理退款结束-------------");
+    }
+
+    private void callRefund(StoreOrderRefund storeOrderRefund) {
+        try {
+            //支付宝接口要求：同一笔交易的退款至少间隔3s后发起
+            String markKey = CacheConstants.STORE_ORDER_REFUND_PROCESSING_MARK +
+                    storeOrderRefund.getRefundOrder().getId();
+            boolean less3s = redisCache.hasKey(markKey);
+            if (less3s) {
+                log.warn("订单[{}]退款间隔小于3s跳过执行", storeOrderRefund.getRefundOrder().getId());
+                return;
+            }
+            PaymentManager paymentManager = getPaymentManager(EPayChannel.of(storeOrderRefund.getRefundOrder().getPayChannel()));
+            //查询退款结果
+            ENetResult queryResult = paymentManager.queryStoreOrderRefundResult(
+                    storeOrderRefund.getRefundOrder().getOrderNo(),
+                    storeOrderRefund.getOriginOrder().getOrderNo());
+            if (ENetResult.SUCCESS == queryResult) {
+                //退款成功
+                //支付状态->已支付，收款单到账
+                storeOrderService.refundSuccess(storeOrderRefund.getRefundOrder().getId(),
+                        storeOrderRefund.getRefundOrderDetails().stream().map(SimpleEntity::getId).collect(Collectors.toList()),
+                        null);
+            } else {
+                //可能是退款失败，也可能是退款处理中，重复调用支付宝接口时只要参数正确也不会重复退款
+                boolean success = paymentManager.refundStoreOrder(storeOrderRefund);
+                //标记
+                redisCache.setCacheObject(markKey, 1, 3, TimeUnit.SECONDS);
+                if (success) {
                     //支付状态->已支付，收款单到账
                     storeOrderService.refundSuccess(storeOrderRefund.getRefundOrder().getId(),
                             storeOrderRefund.getRefundOrderDetails().stream().map(SimpleEntity::getId).collect(Collectors.toList()),
                             null);
                 } else {
-                    //可能是退款失败，也可能是退款处理中，重复调用支付宝接口时只要参数正确也不会重复退款
-                    boolean success = paymentManager.refundStoreOrder(storeOrderRefund);
-                    //标记
-                    redisCache.setCacheObject(markKey, 1, 3, TimeUnit.SECONDS);
-                    if (success) {
-                        //支付状态->已支付，收款单到账
-                        storeOrderService.refundSuccess(storeOrderRefund.getRefundOrder().getId(),
-                                storeOrderRefund.getRefundOrderDetails().stream().map(SimpleEntity::getId).collect(Collectors.toList()),
-                                null);
-                    } else {
-                        fsNotice.sendMsg2DefaultChat("退款失败", "参数: " + JSON.toJSONString(storeOrderRefund));
-                    }
+                    fsNotice.sendMsg2DefaultChat("退款失败", "参数: " + JSON.toJSONString(storeOrderRefund));
                 }
-            } catch (Exception e) {
-                log.error("继续处理退款异常", e);
-                fsNotice.sendMsg2DefaultChat("退款异常", "参数: " + JSON.toJSONString(storeOrderRefund));
             }
+        } catch (Exception e) {
+            log.error("继续处理退款异常", e);
+            fsNotice.sendMsg2DefaultChat("退款异常", "参数: " + JSON.toJSONString(storeOrderRefund));
         }
-        log.info("-------------继续处理退款结束-------------");
     }
 
     /**
@@ -1276,7 +1314,7 @@ public class XktTask {
             return;
         }
         tagList.addAll(storeProdList.stream().map(x -> DailyProdTag.builder().storeId(x.getStoreId()).storeProdId(x.getId())
-                        .type(ProdTagType.SEVEN_DAY_NEW.getValue()).tag(ProdTagType.SEVEN_DAY_NEW.getLabel()).voucherDate(now).build())
+                .type(ProdTagType.SEVEN_DAY_NEW.getValue()).tag(ProdTagType.SEVEN_DAY_NEW.getLabel()).voucherDate(now).build())
                 .collect(Collectors.toList()));
     }
 
@@ -1319,7 +1357,7 @@ public class XktTask {
                         .collectingAndThen(Collectors.toList(), list -> list.stream().limit(20).collect(Collectors.toList()))));
         storeHotSaleMap.forEach((storeId, saleList) -> {
             tagList.addAll(saleList.stream().map(x -> DailyProdTag.builder().storeId(x.getStoreId()).storeProdId(x.getStoreProdId())
-                            .type(ProdTagType.STORE_HOT.getValue()).tag(ProdTagType.STORE_HOT.getLabel()).voucherDate(now).build())
+                    .type(ProdTagType.STORE_HOT.getValue()).tag(ProdTagType.STORE_HOT.getLabel()).voucherDate(now).build())
                     .collect(Collectors.toList()));
         });
     }
@@ -1338,7 +1376,7 @@ public class XktTask {
             return;
         }
         tagList.addAll(top50List.stream().map(x -> DailyProdTag.builder().storeId(x.getStoreId()).storeProdId(x.getStoreProdId())
-                        .tag(ProdTagType.MONTH_HOT.getLabel()).type(ProdTagType.MONTH_HOT.getValue()).voucherDate(now).build())
+                .tag(ProdTagType.MONTH_HOT.getLabel()).type(ProdTagType.MONTH_HOT.getValue()).voucherDate(now).build())
                 .collect(Collectors.toList()));
     }
 
@@ -1424,7 +1462,7 @@ public class XktTask {
             return;
         }
         tagList.addAll(thousandSaleList.stream().map(x -> DailyStoreTag.builder().storeId(x.getStoreId()).voucherDate(now)
-                        .type(StoreTagType.MONTH_SALES_THOUSAND.getValue()).tag(StoreTagType.MONTH_SALES_THOUSAND.getLabel()).build())
+                .type(StoreTagType.MONTH_SALES_THOUSAND.getValue()).tag(StoreTagType.MONTH_SALES_THOUSAND.getLabel()).build())
                 .collect(Collectors.toList()));
     }
 
@@ -1476,8 +1514,8 @@ public class XktTask {
             return;
         }
         tagList.addAll(top50List.stream().map(DailyStoreTagDTO::getStoreId).distinct().map(storeId -> DailyStoreTag.builder()
-                        .storeId(storeId).type(StoreTagType.HOT_RANK.getValue()).tag(StoreTagType.HOT_RANK.getLabel())
-                        .voucherDate(now).build())
+                .storeId(storeId).type(StoreTagType.HOT_RANK.getValue()).tag(StoreTagType.HOT_RANK.getLabel())
+                .voucherDate(now).build())
                 .collect(Collectors.toList()));
     }
 
@@ -1495,8 +1533,8 @@ public class XktTask {
             return;
         }
         tagList.addAll(top20List.stream().map(DailyStoreTagDTO::getStoreId).distinct().map(storeId -> DailyStoreTag.builder()
-                        .storeId(storeId).type(StoreTagType.NEW_PRODUCT.getValue()).tag(StoreTagType.NEW_PRODUCT.getLabel())
-                        .voucherDate(now).build())
+                .storeId(storeId).type(StoreTagType.NEW_PRODUCT.getValue()).tag(StoreTagType.NEW_PRODUCT.getLabel())
+                .voucherDate(now).build())
                 .collect(Collectors.toList()));
     }
 
@@ -1514,11 +1552,11 @@ public class XktTask {
                 .forEach((storeProdId, tags) -> {
                     // 构建部分文档更新请求
                     list.add(new BulkOperation.Builder().update(u -> u
-                                    .action(a -> a.doc(new HashMap<String, Object>() {{
-                                        put("tags", tags.stream().sorted(Comparator.comparing(x -> x.getType())).map(DailyProdTag::getTag).collect(Collectors.toList()));
-                                    }}))
-                                    .id(String.valueOf(storeProdId))
-                                    .index(Constants.ES_IDX_PRODUCT_INFO))
+                            .action(a -> a.doc(new HashMap<String, Object>() {{
+                                put("tags", tags.stream().sorted(Comparator.comparing(x -> x.getType())).map(DailyProdTag::getTag).collect(Collectors.toList()));
+                            }}))
+                            .id(String.valueOf(storeProdId))
+                            .index(Constants.ES_IDX_PRODUCT_INFO))
                             .build());
                 });
         // 调用bulk方法执行批量更新操作

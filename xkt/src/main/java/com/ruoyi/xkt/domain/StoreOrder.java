@@ -156,6 +156,14 @@ public class StoreOrder extends SimpleEntity {
      */
     private Date voucherDate;
     /**
+     * 支付完成时间
+     */
+    private Date payOverTime;
+    /**
+     * 发货完成时间
+     */
+    private Date deliveryOverTime;
+    /**
      * 平台介入原因
      */
     private String platformInvolveReason;

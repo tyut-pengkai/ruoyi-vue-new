@@ -42,10 +42,10 @@
                 AND so.delivery_type = #{deliveryType}
             </if>
             <if test="orderTimeBegin != null and orderTimeEnd != null">
-                AND EXISTS (SELECT 1 FROM store_order_operation_record r WHERE r.target_type = 1 AND r.target_id = so.id AND r.action = 1 AND r.operation_time BETWEEN #{orderTimeBegin} AND #{orderTimeEnd})
+                AND so.create_time BETWEEN #{orderTimeBegin} AND #{orderTimeEnd}
             </if>
             <if test="payTimeBegin != null and payTimeEnd != null">
-                AND EXISTS (SELECT 1 FROM store_order_operation_record r WHERE r.target_type = 1 AND r.target_id = so.id AND r.action = 4 AND r.operation_time BETWEEN #{payTimeBegin} AND #{payTimeEnd})
+                AND so.pay_over_time BETWEEN #{payTimeBegin} AND #{payTimeEnd}
             </if>
             <if test="expressWaybillNo != null and expressWaybillNo !=''">
                 AND EXISTS (SELECT 1 FROM store_order_detail sod WHERE sod.store_order_id = so.id AND sod.del_flag = '0' AND sod.express_waybill_no LIKE CONCAT('%', #{expressWaybillNo}, '%'))
@@ -100,5 +100,29 @@
                 AND create_time BETWEEN #{createTimeBegin} AND #{createTimeEnd}
             </if>
         </where>
+    </select>
+    <select id="listNeedAutoCompleteOrder" resultType="com.ruoyi.xkt.domain.StoreOrder">
+        SELECT
+            so.*
+        FROM
+            store_order so
+        <where>
+            so.del_flag = '0'
+            AND so.order_status = 13
+            AND so.delivery_over_time &lt;= #{deliveryBeforeTime}
+            AND NOT EXISTS (SELECT 1 FROM store_order rso WHERE rso.origin_order_id = so.id AND rso.del_flag = '0' AND rso.order_type = 2 AND rso.order_status != 24)
+        </where>
+    </select>
+    <select id="listNeedAutoRefundOrder" resultType="com.ruoyi.xkt.domain.StoreOrder">
+        SELECT
+            so.*
+        FROM
+            store_order so
+        WHERE
+            so.del_flag = '0'
+            AND so.order_status = 12
+            AND so.delivery_end_time &lt;= NOW()
+            AND NOT EXISTS (SELECT 1 FROM store_order rso WHERE rso.origin_order_id = so.id AND rso.del_flag = '0' AND rso.order_type = 2)
+            AND NOT EXISTS (SELECT 1 FROM store_order_detail sod WHERE so.id = sod.store_order_id AND sod.del_flag = '0' AND sod.detail_status != 12)
     </select>
 </mapper>
