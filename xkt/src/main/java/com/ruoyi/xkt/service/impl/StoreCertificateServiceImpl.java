@@ -239,7 +239,7 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
         // 档口用户绑定
         userService.refreshRelStore(store.getUserId(), ESystemRole.SUPPLIER.getId());
         // 放到redis中
-        redisCache.setCacheObject(CacheConstants.STORE_KEY + store.getId(), store.getId());
+        redisCache.setCacheObject(CacheConstants.STORE_KEY + store.getId(), store);
         return store;
     }
 
