@@ -34,7 +34,7 @@ public class SysUser extends BaseEntity
     private String userName;
 
     /** 用户昵称 */
-    @Excel(name = "用户名称")
+    @Excel(name = "登录账号")
     private String nickName;
 
     /** 用户邮箱 */
