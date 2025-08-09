@@ -408,7 +408,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
                         .setColorName(newColorPrice.getColorName()).setOrderNum(newColorPrice.getOrderNum()).setStoreId(storeId));
                 storeColorPriceList.add(new StoreProductColorPrice().setStoreColorId(storeColorId).setPrice(newColorPrice.getPrice()).setStoreProdId(storeProdId));
                 updateDTO.getSizeList().forEach(size -> storeColorSizeList.add(new StoreProductColorSize().setStoreColorId(storeColorId).setSize(size.getSize())
-                        .setStoreProdId(storeProdId).setStandard(size.getStandard())));
+                        .setStoreProdId(storeProdId).setStandard(size.getStandard()).setNextSn(0)));
             });
             this.storeProdColorMapper.insert(tempColorList);
             // 设置了档口商品全部优惠的客户，新增商品优惠
@@ -482,7 +482,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
             prodColorPriceList.add(new StoreProductColorPrice().setStoreProdId(storeProdId).setPrice(colorPrice.getPrice())
                     .setStoreColorId(storeColorMap.get(colorPrice.getColorName())));
             prodColorSizeList.addAll(createDTO.getSizeList().stream().map(x -> new StoreProductColorSize().setSize(x.getSize()).setStoreProdId(storeProdId)
-                            .setStandard(x.getStandard()).setStoreColorId(storeColorMap.get(colorPrice.getColorName())))
+                            .setStandard(x.getStandard()).setStoreColorId(storeColorMap.get(colorPrice.getColorName())).setNextSn(0))
                     .collect(Collectors.toList()));
         });
         this.storeProdColorPriceMapper.insert(prodColorPriceList);

@@ -36,20 +36,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             sp.prod_status AS prodStatus,
             spc.create_time AS createTime,
             sf.file_url AS mainPicUrl,
-            CONCAT(
-            ( SELECT MIN( size ) FROM store_product_color_size WHERE store_color_id = spc.store_color_id AND store_prod_id = spc.store_prod_id AND del_flag = 0 AND standard = 1 ),
-            '-',
-            ( SELECT MAX( size ) FROM store_product_color_size WHERE store_color_id = spc.store_color_id AND store_prod_id = spc.store_prod_id AND del_flag = 0 AND standard = 1 )
-            ) AS standard
+            ( SELECT GROUP_CONCAT( size SEPARATOR ',' ) FROM store_product_color_size WHERE  store_color_id = spc.store_color_id
+              AND store_prod_id = spc.store_prod_id AND del_flag = 0 AND standard = 1 ) AS standard
         FROM
             store_product_color spc
-            LEFT JOIN store_product sp ON spc.store_prod_id = sp.id
-            LEFT JOIN store_product_color_price spcp ON spc.store_color_id = spcp.store_color_id
+            JOIN store_product sp ON spc.store_prod_id = sp.id
+            JOIN store_product_color_price spcp ON spc.store_color_id = spcp.store_color_id
                 AND spc.store_prod_id = spcp.store_prod_id AND spc.store_color_id = spcp.store_color_id AND spcp.del_flag = 0
-            LEFT JOIN sys_product_category pc ON sp.prod_cate_id = pc.id
-            LEFT JOIN store_product_file spf ON sp.id = spf.store_prod_id
+            JOIN sys_product_category pc ON sp.prod_cate_id = pc.id
+            JOIN store_product_file spf ON sp.id = spf.store_prod_id
                 AND spf.file_type = 1 AND spf.order_num = 1 AND spf.del_flag = 0
-            LEFT JOIN sys_file sf ON spf.file_id = sf.id
+            JOIN sys_file sf ON spf.file_id = sf.id
         WHERE
             spc.del_flag = 0 AND spc.store_id = #{storeId} AND sp.prod_status = #{prodStatus}
             <if test="prodArtNum != null  and prodArtNum != ''"> and sp.prod_art_num like concat('%', #{prodArtNum}, '%')</if>
@@ -69,8 +66,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             sp.produce_price AS producePrice,
             spc.order_num AS orderNum
         FROM
-            store_product_color spc
-            LEFT JOIN store_product sp ON spc.store_prod_id = sp.id
+            store_product_color spc JOIN store_product sp ON spc.store_prod_id = sp.id
         WHERE
             spc.del_flag = 0
             AND spc.store_id = #{storeId}
