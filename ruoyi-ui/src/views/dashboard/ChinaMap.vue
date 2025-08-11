@@ -4,7 +4,7 @@
 
 <script>
 import * as echarts from "echarts";
-import "echarts/map/js/china.js";
+import "../../utils/china.js";
 import resize from "./mixins/resize";
 
 require("echarts/theme/macarons"); // echarts theme
