@@ -25,6 +25,8 @@ public class StoreProdSkuResDTO {
     private String prodName;
     @ApiModelProperty(value = "商品货号")
     private String prodArtNum;
+    @ApiModelProperty(value = "主图")
+    private String mainPicUrl;
     @ApiModelProperty(value = "颜色列表")
     private List<StoreProdSkuItemDTO> colorList;
 

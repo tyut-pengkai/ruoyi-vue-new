@@ -46,6 +46,7 @@ import com.ruoyi.xkt.dto.storeProdSvc.StoreProdSvcDTO;
 import com.ruoyi.xkt.dto.storeProduct.*;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO;
+import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
 import com.ruoyi.xkt.dto.userBrowsingHistory.UserBrowsingHisDTO;
 import com.ruoyi.xkt.dto.userNotice.UserFocusAndFavUserIdDTO;
 import com.ruoyi.xkt.enums.*;
@@ -760,10 +761,17 @@ public class StoreProductServiceImpl implements IStoreProductService {
         StoreProduct storeProd = Optional.ofNullable(this.storeProdMapper.selectOne(new LambdaQueryWrapper<StoreProduct>()
                         .eq(StoreProduct::getId, storeProdId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口商品不存在!", HttpStatus.ERROR));
+        StoreProdSkuResDTO skuDTO = BeanUtil.toBean(storeProd, StoreProdSkuResDTO.class);
+        // 获取商品主图
+        List<StoreProdMainPicDTO> prodFileList = this.storeProdFileMapper
+                .selectMainPicByStoreProdIdList(Collections.singletonList(storeProdId), FileType.MAIN_PIC.getValue(), ORDER_NUM_1);
+        if (CollectionUtils.isNotEmpty(prodFileList)) {
+            skuDTO.setMainPicUrl(prodFileList.get(0).getFileUrl());
+        }
         // 档口商品的sku列表
         List<StoreProdSkuDTO> prodSkuList = this.storeProdMapper.selectSkuList(storeProdId);
         if (CollectionUtils.isEmpty(prodSkuList)) {
-            return BeanUtil.toBean(storeProd, StoreProdSkuResDTO.class);
+            return skuDTO;
         }
         // 获取当前档口商品的sku列表
         Map<String, Integer> colorSizeStockMap = this.getProdStockList(storeProdId);
@@ -779,7 +787,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
                             .setStock(colorSizeStockMap.get(color.getStoreColorId() + ":" + size.getSize())))
                     .collect(Collectors.toList()));
         });
-        return BeanUtil.toBean(storeProd, StoreProdSkuResDTO.class).setStoreProdId(storeProdId).setColorList(colorList);
+        return skuDTO.setStoreProdId(storeProdId).setColorList(colorList);
     }
 
     @Transactional(rollbackFor = Exception.class)
