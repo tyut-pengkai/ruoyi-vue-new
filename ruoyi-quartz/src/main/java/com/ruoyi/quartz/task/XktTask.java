@@ -559,7 +559,7 @@ public class XktTask {
     }
 
     /**
-     * 凌晨1:10 更新档口权重数据
+     * 凌晨1:10 更新PC档口馆推荐列表权重数据
      */
     @Transactional
     public void dailyStoreWeight() {
@@ -608,7 +608,7 @@ public class XktTask {
     }
 
     /**
-     * 凌晨02:00 更新用户搜索历史入库
+     * 凌晨01:15 更新用户搜索历史入库
      */
     @Transactional
     public void dailyUpdateUserSearchHistory() {
@@ -645,7 +645,7 @@ public class XktTask {
     }
 
     /**
-     * 凌晨02:05 更新用户浏览记录入库
+     * 凌晨01:20 更新用户浏览记录入库
      */
     @Transactional
     public void dailyUpdateUserBrowsingHistory() {
@@ -680,7 +680,7 @@ public class XktTask {
     }
 
     /**
-     * 凌晨02:10 更新系统热搜到redis中
+     * 凌晨01:25 更新系统热搜到redis中
      */
     @Transactional
     public void dailyUpdateSearchHotToRedis() {
@@ -703,7 +703,7 @@ public class XktTask {
     }
 
     /**
-     * 凌晨02:30 更新统计图搜热款
+     * 凌晨01:30 更新统计图搜热款
      */
     public void imgSearchTopProductStatistics() {
         log.info("-------------统计图搜热款开始-------------");
@@ -712,14 +712,14 @@ public class XktTask {
     }
 
     /**
-     * 凌晨2:35 更新试用期过期档口
+     * 凌晨1:35 更新试用期过期档口
      */
     public void autoCloseTrialStore() {
 
     }
 
     /**
-     * 凌晨2:40 更新年费过期档口
+     * 凌晨1:40 更新年费过期档口
      */
     public void autoCloseTimeoutStore() {
 
@@ -730,7 +730,7 @@ public class XktTask {
     }
 
     /**
-     * 凌晨2:45 更新档口会员过期
+     * 凌晨1:45 更新档口会员过期
      */
     public void autoCloseExpireStoreMember() {
         final Date yesterday = java.sql.Date.valueOf(LocalDate.now().minusDays(1));
@@ -747,7 +747,7 @@ public class XktTask {
     }
 
     /**
-     * 将档口会员存到redis中
+     * 凌晨1:50 将档口会员存到redis中
      */
     public void saveStoreMemberToRedis() {
         List<StoreMember> memberList = this.storeMemberMapper.selectList(new LambdaQueryWrapper<StoreMember>()
@@ -759,7 +759,7 @@ public class XktTask {
     }
 
     /**
-     * 凌晨2:50 更新APP商品销量榜、分类商品销量榜
+     * 凌晨1:55 更新APP商品销量榜、分类商品销量榜
      */
     public void dailyProdTopSale() {
         final Date oneMonthAgo = java.sql.Date.valueOf(LocalDate.now().minusMonths(1));
@@ -779,7 +779,7 @@ public class XktTask {
     }
 
     /**
-     * 凌晨3:00更新档口权重到redis
+     * 凌晨2:00更新档口权重到redis
      */
     public void updateStoreWeightToES() throws IOException {
         // 找到昨天开通会员的所有档口
