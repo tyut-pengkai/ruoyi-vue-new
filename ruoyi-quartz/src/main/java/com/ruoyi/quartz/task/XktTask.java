@@ -39,6 +39,7 @@ import com.ruoyi.xkt.dto.order.StoreOrderCancelDTO;
 import com.ruoyi.xkt.dto.order.StoreOrderRefund;
 import com.ruoyi.xkt.dto.picture.ProductPicSyncDTO;
 import com.ruoyi.xkt.dto.picture.ProductPicSyncResultDTO;
+import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdMinPriceDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileLatestFourProdDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO;
 import com.ruoyi.xkt.dto.useSearchHistory.UserSearchHistoryDTO;
@@ -155,7 +156,7 @@ public class XktTask {
                 .eq(SysDictData::getStatus, "0"));
         // 当前最大排序
         final Long maxSort = dictDataList.stream().max(Comparator.comparingLong(SysDictData::getDictSort))
-                .map(x -> x.getDictSort()).orElse(100L);
+                .map(SysDictData::getDictSort).orElse(100L);
         // 往sys_dict_data表插入一条数据
         SysDictData dictData = new SysDictData();
         dictData.setDictLabel(seasonLabel);
@@ -670,7 +671,7 @@ public class XktTask {
         if (CollectionUtils.isEmpty(latestBrowsingList)) {
             return;
         }
-        latestBrowsingList.stream().collect(Collectors.groupingBy(x -> x.getUserId()))
+        latestBrowsingList.stream().collect(Collectors.groupingBy(UserBrowsingHistory::getUserId))
                 .forEach((userId, list) -> {
                     // 按照浏览时间升序排
                     list.sort(Comparator.comparing(UserBrowsingHistory::getBrowsingTime));
@@ -847,38 +848,38 @@ public class XktTask {
             return;
         }
         System.err.println(unpublicList);
-        final List<String> storeProdIdList = unpublicList.stream().map(x -> x.getId()).map(String::valueOf).collect(Collectors.toList());
+        final List<String> storeProdIdList = unpublicList.stream().map(StoreProduct::getId).map(String::valueOf).collect(Collectors.toList());
         // 获取所有的商品的第一张主图
         List<StoreProdFileResDTO> mainPicList = this.storeProdFileMapper.selectMainPic(storeProdIdList);
         // 所有的商品主图map
         Map<Long, List<String>> mainPicMap = mainPicList.stream().filter(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC.getValue()))
-                .collect(Collectors.groupingBy(x -> x.getStoreProdId(), Collectors.mapping(x -> x.getFileUrl(), Collectors.toList())));
+                .collect(Collectors.groupingBy(StoreProdFileResDTO::getStoreProdId, Collectors.mapping(StoreProdFileResDTO::getFileUrl, Collectors.toList())));
         // 第一张商品主图map
         Map<Long, StoreProdFileResDTO> firstMainPicMap = mainPicList.stream().filter(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC.getValue()))
                 .filter(x -> Objects.equals(x.getOrderNum(), Constants.ORDER_NUM_1)).collect(Collectors
-                        .toMap(x -> x.getStoreProdId(), x -> x));
+                        .toMap(StoreProdFileResDTO::getStoreProdId, x -> x));
         // 主图视频map
         Map<Long, Boolean> mainVideoMap = mainPicList.stream().filter(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC_VIDEO.getValue()))
-                .collect(Collectors.toMap(x -> x.getStoreProdId(), x -> true));
+                .collect(Collectors.toMap(StoreProdFileResDTO::getStoreProdId, x -> true));
         // 所有的分类
         List<SysProductCategory> prodCateList = this.prodCateMapper.selectList(new LambdaQueryWrapper<SysProductCategory>()
                 .eq(SysProductCategory::getDelFlag, Constants.UNDELETED));
-        Map<Long, SysProductCategory> prodCateMap = prodCateList.stream().collect(Collectors.toMap(x -> x.getId(), x -> x));
+        Map<Long, SysProductCategory> prodCateMap = prodCateList.stream().collect(Collectors.toMap(SysProductCategory::getId, x -> x));
         // 父级分类
-        Map<Long, Long> parProdCateMap = prodCateList.stream().collect(Collectors.toMap(x -> x.getParentId(), x -> x.getParentId(), (s1, s2) -> s2));
+        Map<Long, Long> parProdCateMap = prodCateList.stream().collect(Collectors.toMap(SysProductCategory::getParentId, SysProductCategory::getParentId, (s1, s2) -> s2));
         // 子分类
-        Map<Long, Long> childProdCateMap = prodCateList.stream().collect(Collectors.toMap(x -> x.getId(), x -> x.getId()));
+        Map<Long, Long> childProdCateMap = prodCateList.stream().collect(Collectors.toMap(SysProductCategory::getId, SysProductCategory::getId));
         // 获取当前商品最低价格
         Map<Long, BigDecimal> prodMinPriceMap = this.prodColorPriceMapper.selectStoreProdMinPriceList(storeProdIdList).stream().collect(Collectors
-                .toMap(x -> x.getStoreProdId(), x -> x.getPrice()));
+                .toMap(StoreProdMinPriceDTO::getStoreProdId, StoreProdMinPriceDTO::getPrice));
         // 档口商品的属性map
         Map<Long, StoreProductCategoryAttribute> cateAttrMap = this.cateAttrMapper.selectList(new LambdaQueryWrapper<StoreProductCategoryAttribute>()
                 .eq(StoreProductCategoryAttribute::getDelFlag, Constants.UNDELETED).in(StoreProductCategoryAttribute::getStoreProdId, storeProdIdList))
-                .stream().collect(Collectors.toMap(x -> x.getStoreProdId(), x -> x));
+                .stream().collect(Collectors.toMap(StoreProductCategoryAttribute::getStoreProdId, x -> x));
         // 档口商品对应的档口
         Map<Long, Store> storeMap = this.storeMapper.selectList(new LambdaQueryWrapper<Store>().eq(Store::getDelFlag, Constants.UNDELETED)
-                .in(Store::getId, unpublicList.stream().map(x -> x.getStoreId()).collect(Collectors.toList())))
-                .stream().collect(Collectors.toMap(x -> x.getId(), x -> x));
+                .in(Store::getId, unpublicList.stream().map(StoreProduct::getStoreId).collect(Collectors.toList())))
+                .stream().collect(Collectors.toMap(Store::getId, x -> x));
         // 构建批量操作请求
         List<BulkOperation> bulkOperations = new ArrayList<>();
         for (StoreProduct product : unpublicList) {

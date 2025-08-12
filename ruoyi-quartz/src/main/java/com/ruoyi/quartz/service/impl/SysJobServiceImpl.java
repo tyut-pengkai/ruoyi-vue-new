@@ -104,7 +104,7 @@ public class SysJobServiceImpl implements ISysJobService {
             throw new ServiceException("新增任务'" + createDTO.getJobName() + "'失败，目标字符串不在白名单内", HttpStatus.ERROR);
         }
         SysJob job = BeanUtil.toBean(createDTO, SysJob.class);
-        job.setStatus(ScheduleConstants.Status.PAUSE.getValue());
+        job.setStatus(ScheduleConstants.Status.NORMAL.getValue());
         job.setCreateBy(getUsername());
         int count = this.jobMapper.insert(job);
         ScheduleUtils.createScheduleJob(scheduler, job);
