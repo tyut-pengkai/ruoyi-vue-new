@@ -127,6 +127,8 @@ public class SysProductCategoryServiceImpl implements ISysProductCategoryService
     public List<ProdCateListResDTO> selectList(ProdCateListDTO listDTO) {
         LambdaQueryWrapper<SysProductCategory> queryWrapper = new LambdaQueryWrapper<SysProductCategory>()
                 .eq(SysProductCategory::getDelFlag, Constants.UNDELETED)
+                // 排除掉最顶层商品分类
+                .ne(SysProductCategory::getParentId, Constants.CATE_TOP_PARENT_ID)
                 .orderByAsc(Arrays.asList(SysProductCategory::getOrderNum, SysProductCategory::getId));
         if (StringUtils.isNotBlank(listDTO.getName())) {
             queryWrapper.like(SysProductCategory::getName, listDTO.getName());

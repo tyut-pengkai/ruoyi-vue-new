@@ -237,6 +237,8 @@ public class Constants
     public static final String VOUCHER_SEQ_STORE_ORDER_TYPE = "STORE_ORDER";
     // %04d
     public static final String VOUCHER_SEQ_FORMAT = "%04d";
+    // 商品分类最顶层parentId
+    public static final Long CATE_TOP_PARENT_ID = 0L;
 
     /**
      * 上市季节年份
