@@ -112,6 +112,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
     final UserSubscriptionsMapper userSubMapper;
     final OSSClientWrapper ossClient;
 
+
     /**
      * 查询档口商品
      *
@@ -742,12 +743,13 @@ public class StoreProductServiceImpl implements IStoreProductService {
                 .setSpecification((CollectionUtils.isNotEmpty(colorList) ? colorList.size() + "色" : "") +
                         (CollectionUtils.isNotEmpty(colorSizeList) ? colorSizeList.size() + "码" : ""))
                 // 获取商品的属性
-                .setCateAttr(BeanUtil.toBean(cateAttr, StoreProdCateAttrDTO.class))
+                .setCateAttrMap(this.getCateAttrMap(cateAttr))
                 // 获取商品的主图视频及主图
                 .setFileList(fileList)
                 // 获取商品的服务承诺
                 .setSvc(this.storeProdSvcMapper.selectSvc(storeProdId));
     }
+
 
     /**
      * 获取档口商品颜色及sku等
@@ -1305,6 +1307,101 @@ public class StoreProductServiceImpl implements IStoreProductService {
             log.error("向ES更新商品状态失败，商品ID: {}, 错误信息: {}", statusDTO.getStoreProdIdList(), e.getMessage());
             throw e; // 或者做其他补偿处理，比如异步重试
         }
+    }
+
+    /**
+     * 组装前端返回的map
+     * @param cateAttr 数据库类目属性
+     * @return Map
+     */
+    private Map<String, String> getCateAttrMap(StoreProductCategoryAttribute cateAttr) {
+        // 使用 LinkedHashMap 保持属性顺序
+        Map<String, String> cateAttrMap = new LinkedHashMap<>();
+        // 1. 帮面材质
+        if (ObjectUtils.isNotEmpty(cateAttr.getUpperMaterial())) {
+            cateAttrMap.put(Constants.CATE_RELATE_MAP.get(UPPER_MATERIAL), cateAttr.getUpperMaterial());
+        }
+        // 2. 内里材质
+        if (ObjectUtils.isNotEmpty(cateAttr.getLiningMaterial())) {
+            cateAttrMap.put(Constants.CATE_RELATE_MAP.get(LINING_MATERIAL), cateAttr.getLiningMaterial());
+        }
+        // 3. 鞋垫材质
+        if (ObjectUtils.isNotEmpty(cateAttr.getInsoleMaterial())) {
+            cateAttrMap.put(Constants.CATE_RELATE_MAP.get(INSOLE_MATERIAL), cateAttr.getInsoleMaterial());
+        }
+        // 4. 上市季节年份
+        if (ObjectUtils.isNotEmpty(cateAttr.getReleaseYearSeason())) {
+            cateAttrMap.put(Constants.CATE_RELATE_MAP.get(RELEASE_YEAR_SEASON), cateAttr.getReleaseYearSeason());
+        }
+        // 5. 后跟高
+        if (ObjectUtils.isNotEmpty(cateAttr.getHeelHeight())) {
+            cateAttrMap.put(Constants.CATE_RELATE_MAP.get(HEEL_HEIGHT), cateAttr.getHeelHeight());
+        }
+        // 6. 跟底款式
+        if (ObjectUtils.isNotEmpty(cateAttr.getHeelType())) {
+            cateAttrMap.put(Constants.CATE_RELATE_MAP.get(HEEL_TYPE), cateAttr.getHeelType());
+        }
+        // 7. 鞋头款式
+        if (ObjectUtils.isNotEmpty(cateAttr.getToeStyle())) {
+            cateAttrMap.put(Constants.CATE_RELATE_MAP.get(TOE_STYLE), cateAttr.getToeStyle());
+        }
+        // 8. 适合季节
+        if (ObjectUtils.isNotEmpty(cateAttr.getSuitableSeason())) {
+            cateAttrMap.put(Constants.CATE_RELATE_MAP.get(SUITABLE_SEASON), cateAttr.getSuitableSeason());
+        }
+        // 9. 开口深度
+        if (ObjectUtils.isNotEmpty(cateAttr.getCollarDepth())) {
+            cateAttrMap.put(Constants.CATE_RELATE_MAP.get(COLLAR_DEPTH), cateAttr.getCollarDepth());
+        }
+        // 10. 鞋底材质
+        if (ObjectUtils.isNotEmpty(cateAttr.getOutsoleMaterial())) {
+            cateAttrMap.put(Constants.CATE_RELATE_MAP.get(OUTSOLE_MATERIAL), cateAttr.getOutsoleMaterial());
+        }
+        // 11. 风格
+        if (ObjectUtils.isNotEmpty(cateAttr.getStyle())) {
+            cateAttrMap.put(Constants.CATE_RELATE_MAP.get(STYLE), cateAttr.getStyle());
+        }
+        // 12. 款式
+        if (ObjectUtils.isNotEmpty(cateAttr.getDesign())) {
+            cateAttrMap.put(Constants.CATE_RELATE_MAP.get(DESIGN), cateAttr.getDesign());
+        }
+        // 13. 皮质特征
+        if (ObjectUtils.isNotEmpty(cateAttr.getLeatherFeatures())) {
+            cateAttrMap.put(Constants.CATE_RELATE_MAP.get(LEATHER_FEATURES), cateAttr.getLeatherFeatures());
+        }
+        // 14. 制作工艺
+        if (ObjectUtils.isNotEmpty(cateAttr.getManufacturingProcess())) {
+            cateAttrMap.put(Constants.CATE_RELATE_MAP.get(MANUFACTURING_PROCESS), cateAttr.getManufacturingProcess());
+        }
+        // 15. 图案
+        if (ObjectUtils.isNotEmpty(cateAttr.getPattern())) {
+            cateAttrMap.put(Constants.CATE_RELATE_MAP.get(PATTERN), cateAttr.getPattern());
+        }
+        // 16. 闭合方式
+        if (ObjectUtils.isNotEmpty(cateAttr.getClosureType())) {
+            cateAttrMap.put(Constants.CATE_RELATE_MAP.get(CLOSURE_TYPE), cateAttr.getClosureType());
+        }
+        // 17. 适用场景
+        if (ObjectUtils.isNotEmpty(cateAttr.getOccasion())) {
+            cateAttrMap.put(Constants.CATE_RELATE_MAP.get(OCCASION), cateAttr.getOccasion());
+        }
+        // 18. 适用年龄
+        if (ObjectUtils.isNotEmpty(cateAttr.getSuitableAge())) {
+            cateAttrMap.put(Constants.CATE_RELATE_MAP.get(SUITABLE_AGE), cateAttr.getSuitableAge());
+        }
+        // 19. 厚薄
+        if (ObjectUtils.isNotEmpty(cateAttr.getThickness())) {
+            cateAttrMap.put(Constants.CATE_RELATE_MAP.get(THICKNESS), cateAttr.getThickness());
+        }
+        // 20. 流行元素
+        if (ObjectUtils.isNotEmpty(cateAttr.getFashionElements())) {
+            cateAttrMap.put(Constants.CATE_RELATE_MAP.get(FASHION_ELEMENTS), cateAttr.getFashionElements());
+        }
+        // 21. 适用对象
+        if (ObjectUtils.isNotEmpty(cateAttr.getSuitablePerson())) {
+            cateAttrMap.put(Constants.CATE_RELATE_MAP.get(SUITABLE_PERSON), cateAttr.getSuitablePerson());
+        }
+        return cateAttrMap;
     }
 
     /**

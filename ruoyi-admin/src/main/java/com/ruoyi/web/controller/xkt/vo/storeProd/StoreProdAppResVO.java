@@ -8,6 +8,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author liujiang
@@ -41,8 +42,8 @@ public class StoreProdAppResVO {
     private List<String> tags;
     @ApiModelProperty(value = "档口文件列表")
     private List<StoreProdFileVO> fileList;
-    @ApiModelProperty(value = "档口类目属性")
-    private StoreProdCateAttrVO cateAttr;
+    @ApiModelProperty(value = "档口类目属性map")
+    private Map<String, String> cateAttrMap;
     @ApiModelProperty(value = "档口服务承诺")
     private StoreProdSvcVO svc;
     @ApiModelProperty(value = "详情内容")

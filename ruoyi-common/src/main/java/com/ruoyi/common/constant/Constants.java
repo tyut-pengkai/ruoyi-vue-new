@@ -3,10 +3,8 @@ package com.ruoyi.common.constant;
 import io.jsonwebtoken.Claims;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 通用常量信息
@@ -243,7 +241,7 @@ public class Constants
     /**
      * 上市季节年份
      */
-    public static final String RELEASE_YEAR_SEASON = "release_year_season";
+    public static final String RELEASE_YEAR_SEASON_DICT = "release_year_season";
     /**
      * ES 索引 product_info
      */
@@ -295,5 +293,54 @@ public class Constants
     public static final BigDecimal ZERO_POINT_ONE = BigDecimal.valueOf(0.1);
 
     public static final BigDecimal ALI_SERVICE_FEE_RATE = BigDecimal.valueOf(0.006);
+
+    public static final String UPPER_MATERIAL = "upperMaterial";
+    public static final String LINING_MATERIAL = "liningMaterial";
+    public static final String INSOLE_MATERIAL = "insoleMaterial";
+    public static final String RELEASE_YEAR_SEASON = "releaseYearSeason";
+    public static final String HEEL_HEIGHT = "heelHeight";
+    public static final String HEEL_TYPE = "heelType";
+    public static final String TOE_STYLE = "toeStyle";
+    public static final String SUITABLE_SEASON = "suitableSeason";
+    public static final String COLLAR_DEPTH = "collarDepth";
+    public static final String OUTSOLE_MATERIAL = "outsoleMaterial";
+    public static final String STYLE = "style";
+    public static final String DESIGN = "design";
+    public static final String LEATHER_FEATURES = "leatherFeatures";
+    public static final String MANUFACTURING_PROCESS = "manufacturingProcess";
+    public static final String PATTERN = "pattern";
+    public static final String CLOSURE_TYPE = "closureType";
+    public static final String OCCASION = "occasion";
+    public static final String SUITABLE_AGE = "suitableAge";
+    public static final String THICKNESS = "thickness";
+    public static final String FASHION_ELEMENTS = "fashionElements";
+    public static final String SUITABLE_PERSON = "suitablePerson";
+
+    /**
+     * app 类目属性的key value匹配值
+     */
+    public static final Map<String, String> CATE_RELATE_MAP = new ConcurrentHashMap<String, String>() {{
+        put(UPPER_MATERIAL, "帮面材质");
+        put(LINING_MATERIAL, "内里材质");
+        put(INSOLE_MATERIAL, "鞋垫材质");
+        put(RELEASE_YEAR_SEASON, "上市季节年份");
+        put(HEEL_HEIGHT, "后跟高");
+        put(HEEL_TYPE, "跟底款式");
+        put(TOE_STYLE, "鞋头款式");
+        put(SUITABLE_SEASON, "适合季节");
+        put(COLLAR_DEPTH, "开口深度");
+        put(OUTSOLE_MATERIAL, "鞋底材质");
+        put(STYLE, "风格");
+        put(DESIGN, "款式");
+        put(LEATHER_FEATURES, "皮质特征");
+        put(MANUFACTURING_PROCESS, "制作工艺");
+        put(PATTERN, "图案");
+        put(CLOSURE_TYPE, "闭合方式");
+        put(OCCASION, "适用场景");
+        put(SUITABLE_AGE, "适用年龄");
+        put(THICKNESS, "厚薄");
+        put(FASHION_ELEMENTS, "流行元素");
+        put(SUITABLE_PERSON, "适用对象");
+    }};
 
 }

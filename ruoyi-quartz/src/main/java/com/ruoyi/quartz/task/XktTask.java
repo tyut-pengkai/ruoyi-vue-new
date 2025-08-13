@@ -152,7 +152,7 @@ public class XktTask {
         }
         log.info("生成季节标签：{}", seasonLabel);
         List<SysDictData> dictDataList = this.dictDataMapper.selectList(new LambdaQueryWrapper<SysDictData>()
-                .eq(SysDictData::getDictType, Constants.RELEASE_YEAR_SEASON).eq(SysDictData::getDelFlag, Constants.UNDELETED)
+                .eq(SysDictData::getDictType, Constants.RELEASE_YEAR_SEASON_DICT).eq(SysDictData::getDelFlag, Constants.UNDELETED)
                 .eq(SysDictData::getStatus, "0"));
         // 当前最大排序
         final Long maxSort = dictDataList.stream().max(Comparator.comparingLong(SysDictData::getDictSort))
@@ -161,7 +161,7 @@ public class XktTask {
         SysDictData dictData = new SysDictData();
         dictData.setDictLabel(seasonLabel);
         dictData.setDictValue(seasonLabel);
-        dictData.setDictType(Constants.RELEASE_YEAR_SEASON);
+        dictData.setDictType(Constants.RELEASE_YEAR_SEASON_DICT);
         dictData.setDictSort(maxSort + 1);
         dictData.setStatus("0");
         dictData.setCreateBy("admin");
