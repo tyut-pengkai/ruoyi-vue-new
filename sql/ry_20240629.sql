@@ -33,7 +33,47 @@ CREATE TABLE `advert`
     `update_by`           varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '更新者',
     `update_time`         datetime NULL DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 39 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '推广营销' ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 100 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '推广营销' ROW_FORMAT = Dynamic;
+
+INSERT INTO `advert` VALUES (39, 1, 'oCYTRg9Wpk', 1, 1, 1, 1, 1, 1, 300.00, 3, 4, '22:00:00', 5, 121, '840*470', '不超过5.00M', NULL, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 22:51:52', '', '2025-08-13 22:51:52');
+INSERT INTO `advert` VALUES (40, 2, 'tyuG0P6QEl', 4, 1, 2, 1, 1, 2, 300.00, 3, 4, '22:00:00', 4, NULL, '', '', 4, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 22:52:52', '', '2025-08-13 22:52:52');
+INSERT INTO `advert` VALUES (41, 2, 'cWsRqCVIC7', 2, 1, 3, 1, 1, 2, 300.00, 3, 4, '22:00:00', 3, NULL, '', '', 2, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 22:53:32', '', '2025-08-13 22:53:32');
+INSERT INTO `advert` VALUES (42, 2, 'WG7oSnTbTn', 2, 1, 4, 1, 1, 2, 300.00, 3, 4, '22:00:00', 2, NULL, '', '', 2, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 22:54:06', '', '2025-08-13 22:54:06');
+INSERT INTO `advert` VALUES (43, 2, 'CnZcnndkoz', 2, 1, 5, 1, 1, 2, 300.00, 3, 4, '22:00:00', 2, NULL, '', '', 2, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 22:54:33', '', '2025-08-13 22:54:33');
+INSERT INTO `advert` VALUES (44, 2, 'fNn28SYfJT', 2, 1, 6, 1, 1, 2, 300.00, 3, 4, '22:00:00', 2, NULL, '', '', 2, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 22:54:54', '', '2025-08-13 22:54:54');
+INSERT INTO `advert` VALUES (45, 1, 'ENYmwRr7T1', 1, 1, 7, 1, 1, 3, 300.00, 3, 4, '22:00:00', 4, 122, '840*470', '不超过5.00M', 4, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 22:55:39', '', '2025-08-13 22:55:39');
+INSERT INTO `advert` VALUES (46, 1, 'KIMSCC0h48', 1, 1, 8, 1, 1, 1, 300.00, 3, 4, '22:00:00', 5, 123, '840*470', '不超过5.00M', NULL, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 22:56:27', '', '2025-08-13 22:56:27');
+INSERT INTO `advert` VALUES (47, 1, 'iAHKrJlQSX', 1, 1, 9, 1, 1, 1, 300.00, 3, 4, '22:00:00', 2, 124, '840*470', '不超过5.00M', NULL, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 22:57:13', '', '2025-08-13 22:57:13');
+INSERT INTO `advert` VALUES (48, 2, '3I8CDuP3mZ', 2, 1, 10, 1, 1, 2, 300.00, 3, 4, '22:00:00', 2, NULL, '', '', 2, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 22:57:41', '', '2025-08-13 22:57:41');
+INSERT INTO `advert` VALUES (49, 1, 'xgDyZoXlfh', 1, 1, 11, 1, 1, 1, 300.00, 3, 4, '22:00:00', 1, 125, '840*470', '不超过5.00M', NULL, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 22:58:29', '', '2025-08-13 22:58:29');
+INSERT INTO `advert` VALUES (50, 1, 'cjHdgozRUw', 20, 1, 12, 1, 1, 2, 450.00, 3, 4, '22:00:00', 20, NULL, '', '', NULL, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 23:00:55', '', '2025-08-13 23:00:55');
+INSERT INTO `advert` VALUES (51, 1, 'RNsmF98eoy', 1, 1, 13, 1, 1, 1, 300.00, 3, 4, '22:00:00', 1, 126, '840*470', '不超过5.00M', NULL, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 23:01:31', '', '2025-08-13 23:01:31');
+INSERT INTO `advert` VALUES (52, 1, '1egXOizbf8', 1, 1, 14, 1, 1, 4, 750.00, 15, 4, '22:00:00', 10, NULL, '', '', NULL, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 23:04:07', '', '2025-08-13 23:04:07');
+INSERT INTO `advert` VALUES (53, 2, 'Pi7b4vnguS', 5, 1, 15, 1, 1, 2, 150.00, 3, 4, '22:00:00', 5, NULL, '', '', 5, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 23:04:47', '', '2025-08-13 23:04:47');
+INSERT INTO `advert` VALUES (54, 1, '5g4asEnvfn', 1, 1, 101, 1, 1, 1, 300.00, 3, 4, '22:00:00', 5, 127, '840*470', '不超过5.00M', NULL, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 23:05:31', '', '2025-08-13 23:05:31');
+INSERT INTO `advert` VALUES (55, 1, 'ZfROmE3ddo', 1, 1, 102, 1, 1, 1, 300.00, 3, 4, '22:00:00', 1, 128, '840*470', '不超过5.00M', NULL, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 23:06:05', '', '2025-08-13 23:06:05');
+INSERT INTO `advert` VALUES (56, 1, 'k4QlUkCnvw', 1, 1, 103, 2, 1, 1, 300.00, 3, 4, '22:00:00', 10, 129, '840*470', '不超过5.00M', NULL, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 23:07:05', '', '2025-08-13 23:07:05');
+INSERT INTO `advert` VALUES (57, 1, 'dM98LYYe6Z', 1, 1, 104, 2, 1, 1, 300.00, 3, 4, '22:00:00', 5, 130, '840*470', '不超过5.00M', NULL, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 23:08:43', '', '2025-08-13 23:08:43');
+INSERT INTO `advert` VALUES (58, 2, 'g2MFw171qs', 8, 1, 105, 2, 1, 2, 150.00, 3, 4, '22:00:00', 8, NULL, '', '', NULL, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 23:09:18', '', '2025-08-13 23:09:18');
+INSERT INTO `advert` VALUES (59, 1, '3aEm9h1ho3', 1, 1, 106, 2, 1, 1, 300.00, 3, 4, '22:00:00', 1, 131, '840*470', '不超过5.00M', NULL, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 23:09:52', '', '2025-08-13 23:09:52');
+INSERT INTO `advert` VALUES (60, 2, 'rsb1B3Nt3C', 20, 1, 107, 2, 1, 2, 450.00, 3, 4, '22:00:00', 20, NULL, '', '', NULL, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 23:10:35', '', '2025-08-13 23:10:35');
+INSERT INTO `advert` VALUES (61, 1, '61qRD0PX7D', 1, 1, 201, 1, 1, 3, 300.00, 3, 4, '22:00:00', 5, 132, '840*470', '不超过5.00M', NULL, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 23:11:18', '', '2025-08-13 23:11:18');
+INSERT INTO `advert` VALUES (62, 1, 'Fpn9UiUgWa', 1, 1, 202, 5, 1, 1, 300.00, 3, 4, '22:00:00', 1, 133, '840*470', '不超过5.00M', NULL, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 23:12:10', '', '2025-08-13 23:12:10');
+INSERT INTO `advert` VALUES (63, 2, 'Z6P15nhcMt', 1, 1, 203, 5, 1, 4, 300.00, 3, 4, '22:00:00', 5, NULL, '', '', NULL, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 23:13:11', '', '2025-08-13 23:13:11');
+INSERT INTO `advert` VALUES (64, 2, 'qlikk4dbHN', 10, 1, 300, 3, 1, 2, 300.00, 3, 4, '22:00:00', 10, NULL, '', '', NULL, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 23:15:06', '', '2025-08-13 23:15:06');
+INSERT INTO `advert` VALUES (65, 2, 'hahWvpAsj4', 15, 1, 401, 4, 1, 2, 150.00, 3, 4, '22:00:00', 15, NULL, '', '', NULL, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 23:15:50', '', '2025-08-13 23:15:50');
+INSERT INTO `advert` VALUES (66, 2, 'CzeHJMNe5x', 15, 1, 402, 4, 1, 2, 150.00, 3, 4, '22:00:00', 15, NULL, '', '', NULL, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 23:16:29', '', '2025-08-13 23:16:29');
+INSERT INTO `advert` VALUES (67, 2, 'lalX5WN3VK', 10, 1, 403, 4, 1, 2, 50.00, 1, 4, '22:00:00', 10, NULL, '', '', NULL, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 23:17:00', '', '2025-08-13 23:17:00');
+INSERT INTO `advert` VALUES (68, 1, 'NeKk8Ni9f4', 1, 2, 501, 7, 1, 1, 300.00, 3, 4, '22:00:00', 5, 134, '840*470', '不超过5.00M', NULL, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 23:18:08', '', '2025-08-13 23:18:08');
+INSERT INTO `advert` VALUES (69, 2, 'sNivhtSNKp', 5, 2, 502, 7, 1, 2, 150.00, 3, 4, '22:00:00', 5, NULL, '', '', NULL, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 23:18:29', '', '2025-08-13 23:18:29');
+INSERT INTO `advert` VALUES (70, 2, 'jbyM6b4aBT', 5, 2, 503, 7, 1, 2, 150.00, 3, 4, '22:00:00', 5, NULL, '', '', NULL, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 23:18:50', '', '2025-08-13 23:18:50');
+INSERT INTO `advert` VALUES (71, 2, 'oKZpPXqIkI', 5, 2, 504, 7, 1, 2, 150.00, 3, 4, '22:00:00', 5, NULL, '', '', NULL, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 23:19:13', '', '2025-08-13 23:19:13');
+INSERT INTO `advert` VALUES (72, 2, 'pP4a9ycW9Q', 5, 2, 505, 7, 1, 2, 150.00, 3, 4, '22:00:00', 5, NULL, '', '', NULL, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 23:19:32', '', '2025-08-13 23:19:32');
+INSERT INTO `advert` VALUES (73, 2, '6dpebpvCSg', 5, 2, 506, 7, 1, 2, 150.00, 3, 4, '22:00:00', 5, NULL, '', '', NULL, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 23:19:54', '', '2025-08-13 23:19:54');
+INSERT INTO `advert` VALUES (74, 2, 'AsMPO2AR87', 5, 2, 507, 7, 1, 2, 150.00, 3, 4, '22:00:00', 5, NULL, '', '', NULL, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 23:20:21', '', '2025-08-13 23:20:21');
+INSERT INTO `advert` VALUES (75, 1, 'mDbxt8mf4U', 1, 2, 601, 8, 1, 1, 150.00, 3, 4, '22:00:00', 5, 135, '840*470', '不超过5.00M', NULL, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 23:20:54', '', '2025-08-13 23:20:54');
+INSERT INTO `advert` VALUES (76, 2, 'AIBZ2bw1GG', 20, 2, 602, 10, 1, 2, 150.00, 3, 4, '22:00:00', 20, NULL, '', '', NULL, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 23:21:33', '', '2025-08-13 23:21:33');
+
 
 -- ----------------------------
 -- Table structure for advert_round
