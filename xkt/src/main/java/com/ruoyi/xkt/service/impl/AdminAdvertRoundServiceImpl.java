@@ -204,13 +204,8 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
         }
         // 若该推广位已投放
         if (Objects.equals(advertRound.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())) {
-            // 若该广告位 为时间范围 且 为档口正常购买（也有可能为系统拦截），则均不可拦截该推广位
-            if (Objects.equals(advertRound.getShowType(), AdShowType.TIME_RANGE.getValue()) && ObjectUtils.isNotEmpty(advertRound.getStoreId())) {
+            if (ObjectUtils.isNotEmpty(advertRound.getStoreId())) {
                 throw new ServiceException("该推广位为档口正常购买，已投放，不可拦截!", HttpStatus.ERROR);
-            }
-            // 若该广告位为位置枚举，则不可购买，因为位置枚举一般都是第二天播放
-            if (Objects.equals(advertRound.getShowType(), AdShowType.POSITION_ENUM.getValue())) {
-                throw new ServiceException("该推广位不可购买，因为正在播放!", HttpStatus.ERROR);
             }
             // 若为待投放推广
         } else {
