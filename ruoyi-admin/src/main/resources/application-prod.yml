@@ -260,11 +260,11 @@ zto:
 
 # 圆通配置
 yto:
-  appKey: K9991024989
-  appSecret: u2Z1F7Fh
-  appKey2: TEST
-  appSecret2: 123456
-  gatewayUrl: https://openuat.yto56test.com:6443/
+  appKey: K280280756
+  appSecret: iplud2s6
+  appKey2: K280280756
+  appSecret2: iplud2s6
+  gatewayUrl: https://openapi.yto.net.cn:11443/
 
 # 支付宝配置
 alipay:

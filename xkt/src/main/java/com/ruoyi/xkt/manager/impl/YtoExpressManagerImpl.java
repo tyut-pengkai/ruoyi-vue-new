@@ -99,62 +99,64 @@ public class YtoExpressManagerImpl implements ExpressManager {
 
     @Override
     public boolean cancelShip(ExpressCancelReqDTO cancelReqDTO) {
-        Assert.notNull(cancelReqDTO);
-        Assert.notEmpty(cancelReqDTO.getExpressReqNo());
-        YtoCancelOrderParam cancelOrderParam = new YtoCancelOrderParam();
-        cancelOrderParam.setLogisticsNo(cancelReqDTO.getExpressReqNo());
-        cancelOrderParam.setCancelDesc("订单取消");
-        try {
-            String param = JSONUtil.toJsonStr(cancelOrderParam);
-            String sign = YtoSignUtil.sign("korder_cancel_adapter", "v1", param, appSecret);
-            YtoPublicRequest request = YtoPublicRequest.builder()
-                    .timestamp(System.currentTimeMillis())
-                    .param(param)
-                    .format(YtoPublicRequest.EFormat.JSON)
-                    .sign(sign).build();
-            String rtnStr = HttpUtil.post(gatewayUrl + "open/korder_cancel_adapter/v1/N364gM/" + appKey,
-                    JSONUtil.toJsonStr(request));
-            log.info("圆通订单取消返回信息: {}", rtnStr);
-            JSONObject rtnJson = JSONUtil.parseObj(rtnStr);
-            String logisticsNo = rtnJson.getStr("logisticsNo");
-            if (StrUtil.isNotEmpty(logisticsNo)
-                    && logisticsNo.equals(cancelOrderParam.getLogisticsNo())) {
-                return true;
-            }
-        } catch (Exception e) {
-            log.error("圆通订单取消异常", e);
-        }
-        log.warn("圆通订单取消失败: {}", cancelReqDTO);
+        //取消订单，直接不发货不取件
+//        Assert.notNull(cancelReqDTO);
+//        Assert.notEmpty(cancelReqDTO.getExpressReqNo());
+//        YtoCancelOrderParam cancelOrderParam = new YtoCancelOrderParam();
+//        cancelOrderParam.setLogisticsNo(cancelReqDTO.getExpressReqNo());
+//        cancelOrderParam.setCancelDesc("订单取消");
+//        try {
+//            String param = JSONUtil.toJsonStr(cancelOrderParam);
+//            String sign = YtoSignUtil.sign("korder_cancel_adapter", "v1", param, appSecret);
+//            YtoPublicRequest request = YtoPublicRequest.builder()
+//                    .timestamp(System.currentTimeMillis())
+//                    .param(param)
+//                    .format(YtoPublicRequest.EFormat.JSON)
+//                    .sign(sign).build();
+//            String rtnStr = HttpUtil.post(gatewayUrl + "open/korder_cancel_adapter/v1/N364gM/" + appKey,
+//                    JSONUtil.toJsonStr(request));
+//            log.info("圆通订单取消返回信息: {}", rtnStr);
+//            JSONObject rtnJson = JSONUtil.parseObj(rtnStr);
+//            String logisticsNo = rtnJson.getStr("logisticsNo");
+//            if (StrUtil.isNotEmpty(logisticsNo)
+//                    && logisticsNo.equals(cancelOrderParam.getLogisticsNo())) {
+//                return true;
+//            }
+//        } catch (Exception e) {
+//            log.error("圆通订单取消异常", e);
+//        }
+//        log.warn("圆通订单取消失败: {}", cancelReqDTO);
         return false;
     }
 
     @Override
     public boolean interceptShip(ExpressInterceptReqDTO interceptReqDTO) {
-        Assert.notNull(interceptReqDTO);
-        Assert.notEmpty(interceptReqDTO.getExpressWaybillNo());
-        YtoInterceptReturnParam interceptReturnParam = new YtoInterceptReturnParam();
-        interceptReturnParam.setWaybillNo(interceptReqDTO.getExpressWaybillNo());
-        interceptReturnParam.setWantedDesc("拦截退回");
-        try {
-            String param = JSONUtil.toJsonStr(interceptReturnParam);
-            String sign = YtoSignUtil.sign("wanted_report_adapter", "v1", param, appSecret);
-            YtoPublicRequest request = YtoPublicRequest.builder()
-                    .timestamp(System.currentTimeMillis())
-                    .param(param)
-                    .format(YtoPublicRequest.EFormat.JSON)
-                    .sign(sign).build();
-            String rtnStr = HttpUtil.post(gatewayUrl + "open/wanted_report_adapter/v1/N364gM/" + appKey,
-                    JSONUtil.toJsonStr(request));
-            log.info("圆通订单拦截返回信息: {}", rtnStr);
-            JSONObject rtnJson = JSONUtil.parseObj(rtnStr);
-            Integer statusCode = rtnJson.getInt("statusCode");
-            if (statusCode != null && statusCode == 0) {
-                return true;
-            }
-        } catch (Exception e) {
-            log.error("圆通订单拦截异常", e);
-        }
-        log.warn("圆通订单拦截失败: {}", interceptReqDTO);
+        //TODO 未对接
+//        Assert.notNull(interceptReqDTO);
+//        Assert.notEmpty(interceptReqDTO.getExpressWaybillNo());
+//        YtoInterceptReturnParam interceptReturnParam = new YtoInterceptReturnParam();
+//        interceptReturnParam.setWaybillNo(interceptReqDTO.getExpressWaybillNo());
+//        interceptReturnParam.setWantedDesc("拦截退回");
+//        try {
+//            String param = JSONUtil.toJsonStr(interceptReturnParam);
+//            String sign = YtoSignUtil.sign("wanted_report_adapter", "v1", param, appSecret);
+//            YtoPublicRequest request = YtoPublicRequest.builder()
+//                    .timestamp(System.currentTimeMillis())
+//                    .param(param)
+//                    .format(YtoPublicRequest.EFormat.JSON)
+//                    .sign(sign).build();
+//            String rtnStr = HttpUtil.post(gatewayUrl + "open/wanted_report_adapter/v1/N364gM/" + appKey,
+//                    JSONUtil.toJsonStr(request));
+//            log.info("圆通订单拦截返回信息: {}", rtnStr);
+//            JSONObject rtnJson = JSONUtil.parseObj(rtnStr);
+//            Integer statusCode = rtnJson.getInt("statusCode");
+//            if (statusCode != null && statusCode == 0) {
+//                return true;
+//            }
+//        } catch (Exception e) {
+//            log.error("圆通订单拦截异常", e);
+//        }
+//        log.warn("圆通订单拦截失败: {}", interceptReqDTO);
         return false;
     }
 
@@ -191,35 +193,36 @@ public class YtoExpressManagerImpl implements ExpressManager {
 
     @Override
     public boolean subscribeTrack(ExpressTrackSubReqDTO trackSubReq) {
-        Assert.notNull(trackSubReq.getExpressWaybillNo());
-        YtoSubTrackParam.LogisticsInterface logisticsInterface = new YtoSubTrackParam.LogisticsInterface();
-        logisticsInterface.setClientId(appKey2);
-        logisticsInterface.setWaybillNo(trackSubReq.getExpressWaybillNo());
-        YtoSubTrackParam ytoSubTrackParam = new YtoSubTrackParam();
-        ytoSubTrackParam.setClient_id(appKey2);
-        ytoSubTrackParam.setMsg_type("online");
-        ytoSubTrackParam.setLogistics_interface(JSONUtil.toJsonStr(logisticsInterface));
-        try {
-            String param = JSONUtil.toJsonStr(ytoSubTrackParam);
-            String sign = YtoSignUtil.sign("subscribe_adapter", "v1", param, appSecret2);
-            YtoPublicRequest request = YtoPublicRequest.builder()
-                    .timestamp(System.currentTimeMillis())
-                    .param(param)
-                    .format(YtoPublicRequest.EFormat.JSON)
-                    .sign(sign).build();
-            String rtnStr = HttpUtil.post(gatewayUrl + "open/subscribe_adapter/v1/N364gM/" + appKey2,
-                    JSONUtil.toJsonStr(request));
-            log.info("圆通轨迹订阅返回信息: {}", rtnStr);
-            JSONObject rtnJson = JSONUtil.parseObj(rtnStr);
-            Boolean success = rtnJson.getBool("success");
-            if (BooleanUtil.isTrue(success)) {
-                return true;
-            }
-        } catch (Exception e) {
-            log.error("圆通轨迹订阅异常", e);
-        }
-        log.warn("圆通轨迹订阅失败: {}", trackSubReq);
-        return false;
+//        Assert.notNull(trackSubReq.getExpressWaybillNo());
+//        YtoSubTrackParam.LogisticsInterface logisticsInterface = new YtoSubTrackParam.LogisticsInterface();
+//        logisticsInterface.setClientId(appKey2);
+//        logisticsInterface.setWaybillNo(trackSubReq.getExpressWaybillNo());
+//        YtoSubTrackParam ytoSubTrackParam = new YtoSubTrackParam();
+//        ytoSubTrackParam.setClient_id(appKey2);
+//        ytoSubTrackParam.setMsg_type("online");
+//        ytoSubTrackParam.setLogistics_interface(JSONUtil.toJsonStr(logisticsInterface));
+//        try {
+//            String param = JSONUtil.toJsonStr(ytoSubTrackParam);
+//            String sign = YtoSignUtil.sign("subscribe_adapter", "v1", param, appSecret2);
+//            YtoPublicRequest request = YtoPublicRequest.builder()
+//                    .timestamp(System.currentTimeMillis())
+//                    .param(param)
+//                    .format(YtoPublicRequest.EFormat.JSON)
+//                    .sign(sign).build();
+//            String rtnStr = HttpUtil.post(gatewayUrl + "open/subscribe_adapter/v1/N364gM/" + appKey2,
+//                    JSONUtil.toJsonStr(request));
+//            log.info("圆通轨迹订阅返回信息: {}", rtnStr);
+//            JSONObject rtnJson = JSONUtil.parseObj(rtnStr);
+//            Boolean success = rtnJson.getBool("success");
+//            if (BooleanUtil.isTrue(success)) {
+//                return true;
+//            }
+//        } catch (Exception e) {
+//            log.error("圆通轨迹订阅异常", e);
+//        }
+//        log.warn("圆通轨迹订阅失败: {}", trackSubReq);
+//        return false;
+        return true;
     }
 
 
