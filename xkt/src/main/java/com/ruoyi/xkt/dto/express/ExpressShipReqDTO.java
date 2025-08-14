@@ -80,12 +80,28 @@ public class ExpressShipReqDTO {
      * 物品信息
      */
     private List<OrderItem> orderItems;
+    /**
+     * 备注
+     */
+    private String remark;
 
     @Data
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
     public static class OrderItem {
+        /**
+         * 商品货号
+         */
+        private String prodArtNum;
+        /**
+         * 颜色名称
+         */
+        private String colorName;
+        /**
+         * 商品尺码
+         */
+        private Integer prodSize;
         /**
          * 货品名称
          */
@@ -124,9 +140,15 @@ public class ExpressShipReqDTO {
         if (CollUtil.isEmpty(orderItems)) {
             return null;
         }
-        List<String> list = new ArrayList<>(orderItems.size());
-        for (OrderItem item : orderItems) {
-            list.add(StrUtil.emptyIfNull(item.getName()) + "*" + item.getQuantity());
+        List<String> list = new ArrayList<>(2);
+        for (int i = 0; i < orderItems.size(); i++) {
+            if (i > 1) {
+                list.add("...");
+                break;
+            }
+            OrderItem item = orderItems.get(i);
+            list.add(StrUtil.emptyIfNull(item.getProdArtNum()) + " " + item.getColorName() + " " + item.getProdSize() +
+                    "*" + item.getQuantity());
         }
         return StrUtil.join(";", list);
     }

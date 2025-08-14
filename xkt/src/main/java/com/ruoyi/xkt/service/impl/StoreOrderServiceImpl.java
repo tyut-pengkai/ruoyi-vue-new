@@ -1893,11 +1893,14 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         reqDTO.setOriginProvinceName(regionMap.get(order.getOriginProvinceCode()));
         reqDTO.setOriginCityName(regionMap.get(order.getOriginCityCode()));
         reqDTO.setOriginCountyName(regionMap.get(order.getOriginCountyCode()));
+        reqDTO.setRemark(order.getOrderRemark());
         //货物信息
         List<ExpressShipReqDTO.OrderItem> orderItems = CollUtil.emptyIfNull(orderDetails).stream()
                 .map(o -> ExpressShipReqDTO.OrderItem
                         .builder()
-                        //TODO 其他信息？
+                        .prodArtNum(o.getProdArtNum())
+                        .colorName(o.getColorName())
+                        .prodSize(o.getSize())
                         .name(o.getProdTitle())
                         .quantity(o.getGoodsQuantity())
                         .build())

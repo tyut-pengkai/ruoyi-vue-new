@@ -108,7 +108,7 @@ public class ZtoExpressManagerImpl implements ExpressManager, InitializingBean {
                     rtn.setLastPrintTime(new Date());
                     rtn.setPrintCount(1);
                     rtn.setGoodsInfo(shipReqDTO.getGoodsSummary());
-                    rtn.setRemark(rtn.getGoodsInfo());
+                    rtn.setRemark(shipReqDTO.getRemark());
                     return rtn;
                 }
             }

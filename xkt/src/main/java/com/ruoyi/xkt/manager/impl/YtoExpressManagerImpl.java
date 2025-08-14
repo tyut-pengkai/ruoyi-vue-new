@@ -88,7 +88,7 @@ public class YtoExpressManagerImpl implements ExpressManager {
                 rtn.setLastPrintTime(new Date());
                 rtn.setPrintCount(1);
                 rtn.setGoodsInfo(shipReqDTO.getGoodsSummary());
-                rtn.setRemark(rtn.getGoodsInfo());
+                rtn.setRemark(shipReqDTO.getRemark());
                 return rtn;
             }
         } catch (Exception e) {
