@@ -60,7 +60,7 @@ public class YtoExpressManagerImpl implements ExpressManager {
                     .param(param)
                     .format(YtoPublicRequest.EFormat.JSON)
                     .sign(sign).build();
-            String rtnStr = HttpUtil.post(gatewayUrl + "open/privacy_create_adapter/v1/N364gM/" + appKey,
+            String rtnStr = HttpUtil.post(gatewayUrl + "open/privacy_create_adapter/v1/av7bfQ/" + appKey,
                     JSONUtil.toJsonStr(request));
             log.info("圆通订单创建返回信息: {}", rtnStr);
             com.alibaba.fastjson2.JSONObject rtnJson = JSON.parseObject(rtnStr);
@@ -113,7 +113,7 @@ public class YtoExpressManagerImpl implements ExpressManager {
 //                    .param(param)
 //                    .format(YtoPublicRequest.EFormat.JSON)
 //                    .sign(sign).build();
-//            String rtnStr = HttpUtil.post(gatewayUrl + "open/korder_cancel_adapter/v1/N364gM/" + appKey,
+//            String rtnStr = HttpUtil.post(gatewayUrl + "open/korder_cancel_adapter/v1/av7bfQ/" + appKey,
 //                    JSONUtil.toJsonStr(request));
 //            log.info("圆通订单取消返回信息: {}", rtnStr);
 //            JSONObject rtnJson = JSONUtil.parseObj(rtnStr);
@@ -145,7 +145,7 @@ public class YtoExpressManagerImpl implements ExpressManager {
 //                    .param(param)
 //                    .format(YtoPublicRequest.EFormat.JSON)
 //                    .sign(sign).build();
-//            String rtnStr = HttpUtil.post(gatewayUrl + "open/wanted_report_adapter/v1/N364gM/" + appKey,
+//            String rtnStr = HttpUtil.post(gatewayUrl + "open/wanted_report_adapter/v1/av7bfQ/" + appKey,
 //                    JSONUtil.toJsonStr(request));
 //            log.info("圆通订单拦截返回信息: {}", rtnStr);
 //            JSONObject rtnJson = JSONUtil.parseObj(rtnStr);
@@ -174,7 +174,7 @@ public class YtoExpressManagerImpl implements ExpressManager {
                         .param(param)
                         .format(YtoPublicRequest.EFormat.JSON)
                         .sign(sign).build();
-                String rtnStr = HttpUtil.post(gatewayUrl + "open/waybill_print_adapter/v1/N364gM/" + appKey,
+                String rtnStr = HttpUtil.post(gatewayUrl + "open/waybill_print_adapter/v1/av7bfQ/" + appKey,
                         JSONUtil.toJsonStr(request));
                 log.info("圆通打印面单返回信息: {}", rtnStr);
                 JSONObject rtnJson = JSONUtil.parseObj(rtnStr);
@@ -209,7 +209,7 @@ public class YtoExpressManagerImpl implements ExpressManager {
 //                    .param(param)
 //                    .format(YtoPublicRequest.EFormat.JSON)
 //                    .sign(sign).build();
-//            String rtnStr = HttpUtil.post(gatewayUrl + "open/subscribe_adapter/v1/N364gM/" + appKey2,
+//            String rtnStr = HttpUtil.post(gatewayUrl + "open/subscribe_adapter/v1/av7bfQ/" + appKey2,
 //                    JSONUtil.toJsonStr(request));
 //            log.info("圆通轨迹订阅返回信息: {}", rtnStr);
 //            JSONObject rtnJson = JSONUtil.parseObj(rtnStr);
