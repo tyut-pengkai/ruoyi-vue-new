@@ -30,7 +30,7 @@ import javax.validation.Valid;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/rest/v1/ad-rounds/admin")
-public class AdminAdvertRoundController extends XktBaseController {
+public class AdvertRoundAdminController extends XktBaseController {
 
     final IAdminAdvertRoundService adminAdvertRoundService;
 

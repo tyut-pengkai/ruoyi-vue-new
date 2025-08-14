@@ -109,7 +109,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="roundId != null "> and ar.round_id = #{roundId}</if>
             <if test="sysIntercept != null "> and ar.sys_intercept = #{sysIntercept}</if>
         ORDER BY
-            ar.advert_id
+            ar.advert_id,
+            ar.portion
     </select>
 
 
