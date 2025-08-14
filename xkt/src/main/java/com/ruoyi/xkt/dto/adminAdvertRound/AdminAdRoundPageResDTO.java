@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.util.List;
+
 /**
  * @author liujiang
  * @version v1.0
@@ -71,5 +73,11 @@ public class AdminAdRoundPageResDTO {
     private String picPixel;
     @ApiModelProperty(value = "推广图片大小")
     private String picSize;
+    @ApiModelProperty(value = "推广图url")
+    private String advertPicUrl;
+    @ApiModelProperty(value = "推广商品id str")
+    private String prodIdStr;
+    @ApiModelProperty(value = "推广商品列表")
+    private List<String> prodArtNumList;
 
 }

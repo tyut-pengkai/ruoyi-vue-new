@@ -1,6 +1,7 @@
 package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -10,17 +11,11 @@ import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.AdType;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
-import com.ruoyi.xkt.domain.AdvertRound;
-import com.ruoyi.xkt.domain.AdvertRoundRecord;
-import com.ruoyi.xkt.domain.AdvertStoreFile;
-import com.ruoyi.xkt.domain.SysFile;
+import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.adminAdvertRound.*;
 import com.ruoyi.xkt.dto.advertRound.AdRoundUpdateDTO;
 import com.ruoyi.xkt.enums.*;
-import com.ruoyi.xkt.mapper.AdvertRoundMapper;
-import com.ruoyi.xkt.mapper.AdvertRoundRecordMapper;
-import com.ruoyi.xkt.mapper.AdvertStoreFileMapper;
-import com.ruoyi.xkt.mapper.SysFileMapper;
+import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IAdminAdvertRoundService;
 import com.ruoyi.xkt.service.IAssetService;
 import lombok.RequiredArgsConstructor;
@@ -36,10 +31,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * 推广营销轮次播放Service业务层处理
@@ -56,6 +50,7 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
     final SysFileMapper fileMapper;
     final AdvertStoreFileMapper advertStoreFileMapper;
     final AdvertRoundRecordMapper advertRoundRecordMapper;
+    final StoreProductMapper storeProdMapper;
 
     /**
      * 管理员查询推广营销分页
@@ -69,15 +64,25 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
         Optional.ofNullable(pageDTO.getLaunchStatus()).orElseThrow(() -> new ServiceException("投放状态launchStatus必传", HttpStatus.ERROR));
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
         List<AdminAdRoundPageResDTO> list = this.advertRoundMapper.selectAdminAdvertPage(pageDTO);
-        list.forEach(item -> item.setPlatformName(AdPlatformType.of(item.getPlatformId()).getLabel())
-                .setTypeName(AdType.of(item.getTypeId()).getLabel())
-                .setTabName(ObjectUtils.isNotEmpty(item.getTabId()) ? AdTab.of(item.getTabId()).getLabel() : "")
-                .setLaunchStatusName(ObjectUtils.isNotEmpty(item.getLaunchStatus()) ? AdLaunchStatus.of(item.getLaunchStatus()).getLabel() : "")
-                .setPicAuditStatusName(ObjectUtils.isNotEmpty(item.getPicAuditStatus()) ? AdPicAuditStatus.of(item.getPicAuditStatus()).getLabel() : "")
-                .setPicDesignTypeName(ObjectUtils.isNotEmpty(item.getPicDesignType()) ? AdDesignType.of(item.getPicDesignType()).getLabel() : "")
-                .setPicAuditStatusName(ObjectUtils.isNotEmpty(item.getPicAuditStatus()) ? AdPicAuditStatus.of(item.getPicAuditStatus()).getLabel() : "")
-                .setPicSetTypeName(ObjectUtils.isNotEmpty(item.getPicSetType()) ? AdPicSetType.of(item.getPicSetType()).getLabel() : "")
-                .setBiddingStatusName(ObjectUtils.isNotEmpty(item.getBiddingStatus()) ? AdBiddingStatus.of(item.getBiddingStatus()).getLabel() : ""));
+        // 所有的商品id列表
+        List<Long> prodIdList = list.stream().filter(x -> StringUtils.isNotEmpty(x.getProdIdStr()))
+                .flatMap(x -> StrUtil.split(x.getProdIdStr(), ",").stream()).map(Long::parseLong).collect(Collectors.toList());
+        Map<Long, String> storeProdMap = CollectionUtils.isEmpty(prodIdList) ? new ConcurrentHashMap<>()
+                : this.storeProdMapper.selectByIds(prodIdList).stream().collect(Collectors.toMap(StoreProduct::getId, StoreProduct::getProdArtNum));
+        list.forEach(item -> {
+            item.setPlatformName(AdPlatformType.of(item.getPlatformId()).getLabel())
+                    .setTypeName(AdType.of(item.getTypeId()).getLabel())
+                    .setTabName(ObjectUtils.isNotEmpty(item.getTabId()) ? AdTab.of(item.getTabId()).getLabel() : "")
+                    .setLaunchStatusName(ObjectUtils.isNotEmpty(item.getLaunchStatus()) ? AdLaunchStatus.of(item.getLaunchStatus()).getLabel() : "")
+                    .setPicAuditStatusName(ObjectUtils.isNotEmpty(item.getPicAuditStatus()) ? AdPicAuditStatus.of(item.getPicAuditStatus()).getLabel() : "")
+                    .setPicDesignTypeName(ObjectUtils.isNotEmpty(item.getPicDesignType()) ? AdDesignType.of(item.getPicDesignType()).getLabel() : "")
+                    .setPicAuditStatusName(ObjectUtils.isNotEmpty(item.getPicAuditStatus()) ? AdPicAuditStatus.of(item.getPicAuditStatus()).getLabel() : "")
+                    .setPicSetTypeName(ObjectUtils.isNotEmpty(item.getPicSetType()) ? AdPicSetType.of(item.getPicSetType()).getLabel() : "")
+                    .setBiddingStatusName(ObjectUtils.isNotEmpty(item.getBiddingStatus()) ? AdBiddingStatus.of(item.getBiddingStatus()).getLabel() : "");
+            if (StringUtils.isNotEmpty(item.getProdIdStr())) {
+                item.setProdArtNumList(StrUtil.split(item.getProdIdStr(), ",").stream().map(Long::parseLong).map(storeProdMap::get).collect(Collectors.toList()));
+            }
+        });
         return Page.convert(new PageInfo<>(list));
     }
 

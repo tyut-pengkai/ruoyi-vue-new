@@ -93,11 +93,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             ar.pic_audit_status,
             ar.sys_intercept,
             a.pic_pixel,
-            a.pic_size
+            a.pic_size,
+            sf.file_url AS advertPicUrl,
+            ar.prod_id_str
         FROM
             advert_round ar
             JOIN advert a ON ar.advert_id = a.id
             LEFT JOIN store s ON ar.store_id = s.id
+            LEFT JOIN sys_file sf ON ar.pic_id = sf.id
         WHERE
             ar.del_flag = 0
             AND ar.launch_status = #{launchStatus}
