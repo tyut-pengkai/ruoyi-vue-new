@@ -262,8 +262,8 @@ zto:
 yto:
   appKey: K280280756
   appSecret: iplud2s6
-  appKey2: K280280756
-  appSecret2: iplud2s6
+  appKey2: ZCBJ_STD
+  appSecret2: xJa1tc2A
   gatewayUrl: https://openapi.yto.net.cn:11443/
 
 # 支付宝配置

@@ -193,36 +193,35 @@ public class YtoExpressManagerImpl implements ExpressManager {
 
     @Override
     public boolean subscribeTrack(ExpressTrackSubReqDTO trackSubReq) {
-//        Assert.notNull(trackSubReq.getExpressWaybillNo());
-//        YtoSubTrackParam.LogisticsInterface logisticsInterface = new YtoSubTrackParam.LogisticsInterface();
-//        logisticsInterface.setClientId(appKey2);
-//        logisticsInterface.setWaybillNo(trackSubReq.getExpressWaybillNo());
-//        YtoSubTrackParam ytoSubTrackParam = new YtoSubTrackParam();
-//        ytoSubTrackParam.setClient_id(appKey2);
-//        ytoSubTrackParam.setMsg_type("online");
-//        ytoSubTrackParam.setLogistics_interface(JSONUtil.toJsonStr(logisticsInterface));
-//        try {
-//            String param = JSONUtil.toJsonStr(ytoSubTrackParam);
-//            String sign = YtoSignUtil.sign("subscribe_adapter", "v1", param, appSecret2);
-//            YtoPublicRequest request = YtoPublicRequest.builder()
-//                    .timestamp(System.currentTimeMillis())
-//                    .param(param)
-//                    .format(YtoPublicRequest.EFormat.JSON)
-//                    .sign(sign).build();
-//            String rtnStr = HttpUtil.post(gatewayUrl + "open/subscribe_adapter/v1/av7bfQ/" + appKey2,
-//                    JSONUtil.toJsonStr(request));
-//            log.info("圆通轨迹订阅返回信息: {}", rtnStr);
-//            JSONObject rtnJson = JSONUtil.parseObj(rtnStr);
-//            Boolean success = rtnJson.getBool("success");
-//            if (BooleanUtil.isTrue(success)) {
-//                return true;
-//            }
-//        } catch (Exception e) {
-//            log.error("圆通轨迹订阅异常", e);
-//        }
-//        log.warn("圆通轨迹订阅失败: {}", trackSubReq);
-//        return false;
-        return true;
+        Assert.notNull(trackSubReq.getExpressWaybillNo());
+        YtoSubTrackParam.LogisticsInterface logisticsInterface = new YtoSubTrackParam.LogisticsInterface();
+        logisticsInterface.setClientId(appKey2);
+        logisticsInterface.setWaybillNo(trackSubReq.getExpressWaybillNo());
+        YtoSubTrackParam ytoSubTrackParam = new YtoSubTrackParam();
+        ytoSubTrackParam.setClient_id(appKey2);
+        ytoSubTrackParam.setMsg_type("online");
+        ytoSubTrackParam.setLogistics_interface(JSONUtil.toJsonStr(logisticsInterface));
+        try {
+            String param = JSONUtil.toJsonStr(ytoSubTrackParam);
+            String sign = YtoSignUtil.sign("subscribe_adapter", "v1", param, appSecret2);
+            YtoPublicRequest request = YtoPublicRequest.builder()
+                    .timestamp(System.currentTimeMillis())
+                    .param(param)
+                    .format(YtoPublicRequest.EFormat.JSON)
+                    .sign(sign).build();
+            String rtnStr = HttpUtil.post(gatewayUrl + "open/subscribe_adapter/v1/av7bfQ/" + appKey2,
+                    JSONUtil.toJsonStr(request));
+            log.info("圆通轨迹订阅返回信息: {}", rtnStr);
+            JSONObject rtnJson = JSONUtil.parseObj(rtnStr);
+            Boolean success = rtnJson.getBool("success");
+            if (BooleanUtil.isTrue(success)) {
+                return true;
+            }
+        } catch (Exception e) {
+            log.error("圆通轨迹订阅异常", e);
+        }
+        log.warn("圆通轨迹订阅失败: {}", trackSubReq);
+        return false;
     }
 
 
