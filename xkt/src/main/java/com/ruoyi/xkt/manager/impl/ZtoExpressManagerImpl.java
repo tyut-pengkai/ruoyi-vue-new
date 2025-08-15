@@ -244,7 +244,7 @@ public class ZtoExpressManagerImpl implements ExpressManager, InitializingBean {
         }
         for (String waybillNo : waybillNos) {
             //从缓存中获取
-            String rtn = redisCache.getCacheObject("ZTO_" + waybillNo);
+            String rtn = redisCache.getCacheObject("ZTO-" + waybillNo);
             if (StrUtil.isEmpty(rtn)) {
                 throw new ServiceException("中通订单打印失败，未能获取面单");
             }
