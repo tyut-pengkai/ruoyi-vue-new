@@ -252,11 +252,11 @@ express:
 
 # 中通配置
 zto:
-  appKey: 95dc4ecf72fce1a2fbe79
-  appSecret: 694ea7e3ea89e3b6aa21aea1a0285d25
-  gatewayUrl: https://japi-test.zto.com/
-  accountId: test
-  accountPassword: ZTO123
+  appKey: 1907975e6c6eadc096284
+  appSecret: f67e08e72825d857495105c7ed78bf14
+  gatewayUrl: https://japi.zto.com/
+  accountId: ZTO761752114633049
+  accountPassword: AJXVWZMM
 
 # 圆通配置
 yto:

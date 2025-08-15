@@ -90,7 +90,7 @@ public class ZtoExpressManagerImpl implements ExpressManager, InitializingBean {
             if (success) {
                 com.alibaba.fastjson2.JSONObject resultJson = bodyJson.getJSONObject("result");
                 String billCode = resultJson.getString("billCode");
-                if (billCode != null){
+                if (billCode != null) {
                     ExpressShippingLabelDTO rtn = new ExpressShippingLabelDTO(shipReqDTO.getOriginContactName(),
                             shipReqDTO.getOriginContactPhoneNumber(), shipReqDTO.getOriginProvinceName(),
                             shipReqDTO.getOriginCityName(), shipReqDTO.getOriginCountyName(),
@@ -260,8 +260,7 @@ public class ZtoExpressManagerImpl implements ExpressManager, InitializingBean {
         Assert.notEmpty(trackSubReq.getDestinationContactPhoneNumber());
         ZtoSubTrackParam ztoSubTrackParam = new ZtoSubTrackParam();
         ztoSubTrackParam.setBillCode(trackSubReq.getExpressWaybillNo());
-        ztoSubTrackParam.setMobilePhone(StrUtil.sub(trackSubReq.getDestinationContactPhoneNumber(),
-                -1, 4));
+        ztoSubTrackParam.setMobilePhone(StrUtil.subSufByLength(trackSubReq.getDestinationContactPhoneNumber(), 4));
         ZopPublicRequest request = new ZopPublicRequest();
         request.setBody(JSONUtil.toJsonStr(ztoSubTrackParam));
         request.setUrl(gatewayUrl + TRACK_SUB_URI);
