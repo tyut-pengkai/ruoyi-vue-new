@@ -144,6 +144,35 @@ public class SysProductCategoryServiceImpl implements ISysProductCategoryService
     }
 
     /**
+     * 获取商品分类列表
+     *
+     * @param listDTO 查询入参
+     * @return List<ProdCateListDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProdCateListResDTO> selectAppList(ProdCateListDTO listDTO) {
+        LambdaQueryWrapper<SysProductCategory> queryWrapper = new LambdaQueryWrapper<SysProductCategory>()
+                .eq(SysProductCategory::getDelFlag, Constants.UNDELETED)
+                // 排除最顶层的父级分类
+                .ne(SysProductCategory::getParentId, 0)
+                .orderByAsc(Arrays.asList(SysProductCategory::getOrderNum, SysProductCategory::getId));
+        if (StringUtils.isNotBlank(listDTO.getName())) {
+            queryWrapper.like(SysProductCategory::getName, listDTO.getName());
+        }
+        if (StringUtils.isNotBlank(listDTO.getStatus())) {
+            queryWrapper.eq(SysProductCategory::getStatus, listDTO.getStatus());
+        }
+        List<SysProductCategory> prodCateList = this.prodCateMapper.selectList(queryWrapper);
+        if (CollectionUtils.isEmpty(prodCateList)) {
+            return new ArrayList<>();
+        }
+        List<ProdCateListResDTO> resList = prodCateList.stream()
+                .map(x -> BeanUtil.toBean(x, ProdCateListResDTO.class).setProdCateId(x.getId())).collect(Collectors.toList());
+        return this.buildCateTree(resList);
+    }
+
+    /**
      * 管理员获取商品分类树
      *
      * @param listDTO 查询入参

@@ -79,6 +79,12 @@ public class SysProductCategoryController extends XktBaseController {
         return R.ok(BeanUtil.copyToList(prodCateService.selectList(BeanUtil.toBean(listVO, ProdCateListDTO.class)), ProdCateListResVO.class));
     }
 
+    @ApiOperation(value = "获取商品分类列表", httpMethod = "POST", response = R.class)
+    @PostMapping("/app/list")
+    public R<List<ProdCateListResVO>> appList(@RequestBody ProdCateListVO listVO) {
+        return R.ok(BeanUtil.copyToList(prodCateService.selectAppList(BeanUtil.toBean(listVO, ProdCateListDTO.class)), ProdCateListResVO.class));
+    }
+
     @ApiOperation(value = "根据1级分类获取二级分类列表", httpMethod = "GET", response = R.class)
     @GetMapping("/sub/{parCateId}")
     public R<List<ProdCateVO>> getSubListByParCateId(@PathVariable Long parCateId) {

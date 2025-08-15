@@ -39,10 +39,10 @@ public class StoreProdVO {
     @NotBlank(message = "商品分类名称不能为空!")
     private String prodCateName;
     @ApiModelProperty(value = "工厂货号")
-    @Size(min = 0, max = 15, message = "工厂货号不能超过60个字!")
+    @Size(min = 0, max = 20, message = "工厂货号不能超过20个字!")
     private String factoryArtNum;
     @ApiModelProperty(value = "商品货号", required = true)
-    @Size(min = 0, max = 15, message = "商品货号不能超过60个字!")
+    @Size(min = 0, max = 20, message = "商品货号不能超过20个字!")
     @NotBlank(message = "商品货号不能为空!")
     private String prodArtNum;
     @ApiModelProperty(value = "商品标题", required = true)

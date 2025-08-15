@@ -55,6 +55,14 @@ public interface ISysProductCategoryService {
     List<ProdCateListResDTO> selectList(ProdCateListDTO listDTO);
 
     /**
+     * 获取商品分类列表
+     *
+     * @param listDTO 查询入参
+     * @return List<ProdCateListResDTO>
+     */
+    List<ProdCateListResDTO> selectAppList(ProdCateListDTO listDTO);
+
+    /**
      * 获取APP首页商品分类
      *
      * @return List<AppHomeProdCateListResDTO>
