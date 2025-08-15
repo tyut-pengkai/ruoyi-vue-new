@@ -48,7 +48,7 @@ public class YtoTrackObj {
         /**
          * 事件发生时间
          */
-        private Date acceptTime;
+        private String acceptTime;
         /**
          * 备注或失败原因（值为中文原因或备注）
          */

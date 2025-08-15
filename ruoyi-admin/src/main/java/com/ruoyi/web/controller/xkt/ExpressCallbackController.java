@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt;
 
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.core.util.XmlUtil;
 import cn.hutool.json.JSONUtil;
@@ -159,7 +158,7 @@ public class ExpressCallbackController extends XktBaseController {
         StoreOrderExpressTrackAddDTO dto = new StoreOrderExpressTrackAddDTO();
         dto.setExpressWaybillNo(ytTrack.getMailNo());
         dto.setAction(ytTrack.getInfoContent());
-        dto.setDescription(DateUtil.formatDateTime(ytTrack.getAcceptTime()) + " " + ytTrack.getRemark());
+        dto.setDescription(StrUtil.nullToEmpty(ytTrack.getAcceptTime()) + " " + ytTrack.getRemark());
         dto.setExpressId(EExpressChannel.YTO.getExpressId());
         switch (ytTrack.getInfoContent()) {
             case "GOT":
