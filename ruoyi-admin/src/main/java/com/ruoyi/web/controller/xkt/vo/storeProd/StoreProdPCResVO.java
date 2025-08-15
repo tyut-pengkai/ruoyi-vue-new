@@ -8,6 +8,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author liujiang
@@ -33,8 +34,8 @@ public class StoreProdPCResVO {
     private Integer overPrice;
     @ApiModelProperty(value = "颜色列表")
     private List<SPPCColorVO> colorList;
-    @ApiModelProperty(value = "档口类目属性")
-    private StoreProdCateAttrVO cateAttr;
+    @ApiModelProperty(value = "档口类目属性map")
+    private Map<String, String> cateAttrMap;
     @ApiModelProperty(value = "详情内容")
     private String detail;
     @ApiModelProperty(value = "商品主图视频及主图")

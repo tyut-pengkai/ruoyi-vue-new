@@ -439,7 +439,8 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         } else {
             topRightList = launchingList.stream().filter(x -> StringUtils.isNotBlank(x.getProdIdStr()))
                     .map(x -> new PCIndexTopRightBannerDTO().setDisplayType(x.getDisplayType()).setStoreProdId(Long.valueOf(x.getProdIdStr()))
-                            .setFileUrl(mainPicMap.get(Long.valueOf(x.getProdIdStr()))).setOrderNum(this.positionToNumber(x.getPosition())))
+                            .setFileUrl(mainPicMap.get(Long.valueOf(x.getProdIdStr())))
+                            .setOrderNum(this.positionToNumber(x.getPosition())).setStoreId(x.getStoreId()))
                     .collect(Collectors.toList());
             // 如果 launchingList 只有一个则还需要补充一个推广填空
             if (launchingList.size() < 2) {
@@ -1538,7 +1539,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                 .forEach((storeId, list) -> {
                     AdvertRound advertRound = list.get(0);
                     tempRightList.add(new PCIndexTopRightBannerDTO().setDisplayType(advertRound.getDisplayType()).setStoreProdId(Long.valueOf(advertRound.getProdIdStr()))
-                            .setFileUrl(mainPicMap.get(Long.valueOf(advertRound.getProdIdStr()))));
+                            .setFileUrl(mainPicMap.get(Long.valueOf(advertRound.getProdIdStr()))).setStoreId(advertRound.getStoreId()));
                 });
         return tempRightList.stream().limit(limitCount).collect(Collectors.toList());
     }

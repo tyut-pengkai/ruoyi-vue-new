@@ -840,7 +840,9 @@ public class StoreProductServiceImpl implements IStoreProductService {
         StoreProductCategoryAttribute cateAttr = this.storeProdCateAttrMapper.selectOne(new LambdaQueryWrapper<StoreProductCategoryAttribute>()
                 .eq(StoreProductCategoryAttribute::getStoreProdId, storeProdId).eq(StoreProductCategoryAttribute::getDelFlag, Constants.UNDELETED));
         List<StoreProdFileResDTO> fileList = this.storeProdFileMapper.selectVideoAndMainPicList(storeProdId);
-        prodInfoDTO.setCateAttr(BeanUtil.toBean(cateAttr, StoreProdPCResDTO.StoreProdCateAttrDTO.class))
+        prodInfoDTO
+                // 获取商品的属性
+                .setCateAttrMap(this.getCateAttrMap(cateAttr))
                 // 获取商品的主图视频及主图
                 .setFileList(fileList);
         // 档口商品的sku列表
@@ -1315,6 +1317,9 @@ public class StoreProductServiceImpl implements IStoreProductService {
      * @return Map
      */
     private Map<String, String> getCateAttrMap(StoreProductCategoryAttribute cateAttr) {
+        if (ObjectUtils.isEmpty(cateAttr)) {
+            return new HashMap<>();
+        }
         // 使用 LinkedHashMap 保持属性顺序
         Map<String, String> cateAttrMap = new LinkedHashMap<>();
         // 1. 帮面材质

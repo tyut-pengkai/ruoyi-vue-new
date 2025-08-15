@@ -21,5 +21,7 @@ public class PCIndexTopRightBannerVO {
     private Integer orderNum;
     @ApiModelProperty(value = "商品第一张主图路径")
     private String fileUrl;
+    @ApiModelProperty(value = "档口ID")
+    private Long storeId;
 
 }
