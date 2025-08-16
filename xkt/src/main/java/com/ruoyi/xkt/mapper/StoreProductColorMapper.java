@@ -7,6 +7,7 @@ import com.ruoyi.xkt.dto.storeProdColor.StoreProdColorResDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdPageDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdPageResDTO;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ import java.util.List;
  * @author ruoyi
  * @date 2025-03-26
  */
+@Repository
 public interface StoreProductColorMapper extends BaseMapper<StoreProductColor> {
 
     /**

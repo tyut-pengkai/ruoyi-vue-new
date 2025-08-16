@@ -9,6 +9,7 @@ import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author liangyq
@@ -19,6 +20,9 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class StoreOrderQueryVO extends BasePageVO {
+
+    @ApiModelProperty(value = "订单ID集合")
+    private List<Long> storeOrderIds;
     /**
      * 档口ID
      */

@@ -127,7 +127,7 @@ public class ExpressCallbackController extends XktBaseController {
         StoreOrderExpressTrackAddDTO dto = new StoreOrderExpressTrackAddDTO();
         dto.setExpressWaybillNo(ztTrack.getBillCode());
         dto.setAction(ztTrack.getAction());
-        dto.setDescription(ztTrack.getActionTime() + " " + ztTrack.getRemark());
+        dto.setDescription(ztTrack.getActionTime() + " " + ztTrack.getDesc());
         dto.setExpressId(EExpressChannel.ZTO.getExpressId());
         /**
          * 事件类型

@@ -14,6 +14,12 @@
             LEFT JOIN express e ON so.express_id = e.id
         <where>
             so.del_flag = '0'
+            <if test="storeOrderIds != null and !storeOrderIds.isEmpty()">
+                AND so.id IN
+                <foreach collection="storeOrderIds" item="obj" open="(" close=")" separator=",">
+                    #{obj}
+                </foreach>
+            </if>
             <if test="storeId != null">
                 AND so.store_id = #{storeId}
             </if>

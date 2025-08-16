@@ -69,6 +69,8 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
     @Autowired
     private StoreColorMapper storeColorMapper;
     @Autowired
+    private StoreProductColorMapper storeProductColorMapper;
+    @Autowired
     private StoreProductFileMapper storeProductFileMapper;
     @Autowired
     private SysUserMapper sysUserMapper;
@@ -1841,11 +1843,17 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             StoreProductColorSize spcs = spcsMap.get(detail.getStoreProdColorSizeId());
             Assert.isTrue(BeanValidators.exists(spcs), "商品颜色尺码不存在");
             StoreColor sc = scMap.get(spcs.getStoreColorId());
-            Assert.isTrue(BeanValidators.exists(sc), "商品颜色不存在");
+            Assert.isTrue(BeanValidators.exists(sc), "颜色不存在");
             StoreProduct sp = spMap.get(spcs.getStoreProdId());
             Assert.isTrue(BeanValidators.exists(sp), "商品不存在");
             Assert.isTrue(storeId.equals(sp.getStoreId()), "系统不支持跨档口下单");
             Assert.isTrue(EProductStatus.accessOrder(sp.getProdStatus()), "商品状态异常");
+            StoreProductColor spc = CollUtil.getFirst(storeProductColorMapper.selectList(Wrappers.lambdaQuery(StoreProductColor.class)
+                    .eq(StoreProductColor::getStoreProdId, spcs.getStoreProdId())
+                    .eq(StoreProductColor::getStoreColorId, spcs.getStoreColorId())
+                    .eq(XktBaseEntity::getDelFlag, Constants.UNDELETED)));
+            Assert.notNull(spc, "商品颜色不存在");
+            Assert.isTrue(EProductStatus.accessOrder(spc.getProdStatus()), "商品颜色状态异常");
             //相同商品颜色尺码只能存在一条明细
             Assert.isFalse(spcsIdCheckSet.contains(spcs.getId()), "商品明细异常");
             spcsIdCheckSet.add(spcs.getId());
