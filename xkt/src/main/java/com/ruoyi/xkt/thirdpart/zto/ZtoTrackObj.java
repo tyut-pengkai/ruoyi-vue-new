@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * @author liangyq
  * @date 2025-05-06 23:00
@@ -22,7 +24,7 @@ public class ZtoTrackObj {
         /**
          * 事件类型
          * <p>
-         *  GOT	                收件	    网点揽收
+         * GOT	                收件	    网点揽收
          *  DEPARTURE	        发件	    从网点或分拨中心发出
          *  ARRIVAL	            到件	    到达网点或分拨中心
          *  DISPATCH	        派件	    业务员派送
@@ -151,6 +153,8 @@ public class ZtoTrackObj {
     }
 
     @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class Request {
         /**
          * 消息内容
@@ -170,5 +174,12 @@ public class ZtoTrackObj {
          * 应用appKey
          */
         private String company_id;
+
+        public Request(HttpServletRequest servletRequest) {
+            this(servletRequest.getParameter("data"),
+                    servletRequest.getParameter("data_digest"),
+                    servletRequest.getParameter("msg_type"),
+                    servletRequest.getParameter("company_id"));
+        }
     }
 }

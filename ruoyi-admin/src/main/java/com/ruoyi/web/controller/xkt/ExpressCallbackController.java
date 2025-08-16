@@ -99,8 +99,9 @@ public class ExpressCallbackController extends XktBaseController {
     }
 
     @ApiOperation("中通-轨迹推送")
-    @PostMapping(value = "zto/track")
-    public String ztoTrack(@RequestBody ZtoTrackObj.Request request) {
+    @RequestMapping(value = "zto/track")
+    public String ztoTrack(HttpServletRequest servletRequest) {
+        ZtoTrackObj.Request request = new ZtoTrackObj.Request(servletRequest);
         if (StrUtil.isNotBlank(request.getData()) &&
                 //验签
                 ZopDigestUtil.verify(request.getData_digest(), request.getData(), ztoAppSecret)) {
@@ -158,7 +159,7 @@ public class ExpressCallbackController extends XktBaseController {
         StoreOrderExpressTrackAddDTO dto = new StoreOrderExpressTrackAddDTO();
         dto.setExpressWaybillNo(ytTrack.getMailNo());
         dto.setAction(ytTrack.getInfoContent());
-        dto.setDescription(StrUtil.nullToEmpty(ytTrack.getAcceptTime()) + " " + ytTrack.getRemark());
+        dto.setDescription(StrUtil.subPre(ytTrack.getAcceptTime(), 19) + " " + ytTrack.getRemark());
         dto.setExpressId(EExpressChannel.YTO.getExpressId());
         switch (ytTrack.getInfoContent()) {
             case "GOT":
