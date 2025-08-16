@@ -11,7 +11,6 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.SimpleEntity;
@@ -20,6 +19,8 @@ import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.bean.BeanValidators;
+import com.ruoyi.common.utils.poi.ExcelMergeRegion;
+import com.ruoyi.common.utils.poi.ExcelTemplateUtil;
 import com.ruoyi.common.utils.spring.SpringUtils;
 import com.ruoyi.system.mapper.SysUserMapper;
 import com.ruoyi.xkt.domain.*;
@@ -40,6 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Function;
@@ -549,12 +551,10 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
     }
 
     @Override
-    public Page<StoreOrderPageItemDTO> page(StoreOrderQueryDTO queryDTO) {
-        Page<StoreOrderPageItemDTO> page = PageHelper.startPage(queryDTO.getPageNum(), queryDTO.getPageSize(),
-                "so.create_time DESC");
-        storeOrderMapper.listStoreOrderPageItem(queryDTO);
-        if (CollUtil.isNotEmpty(page.getResult())) {
-            List<StoreOrderPageItemDTO> list = page.getResult();
+    public List<StoreOrderPageItemDTO> listPageItem(StoreOrderQueryDTO queryDTO) {
+        PageHelper.orderBy("so.create_time DESC");
+        List<StoreOrderPageItemDTO> list = storeOrderMapper.listStoreOrderPageItem(queryDTO);
+        if (CollUtil.isNotEmpty(list)) {
             Set<Long> soIds = list.stream().map(StoreOrderPageItemDTO::getId).collect(Collectors.toSet());
             List<StoreOrderDetailInfoDTO> orderDetailList = storeOrderDetailMapper.listInfoByStoreOrderIds(soIds);
             List<Long> spIds = orderDetailList.stream().map(StoreOrderDetailInfoDTO::getStoreProdId).distinct()
@@ -593,7 +593,65 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                 order.setExpressWaybillNoInfos(new ArrayList<>(expressWaybillNoInfos));
             }
         }
-        return page;
+        return list;
+    }
+
+    @Override
+    public void exportOrder(StoreOrderQueryDTO queryDTO, EOrderStatus detailStatus, String title, OutputStream os) {
+        PageHelper.orderBy("so.create_time DESC");
+        List<StoreOrderPageItemDTO> pageItems = storeOrderMapper.listStoreOrderPageItem(queryDTO);
+        Map<Long, List<StoreOrderDetailInfoDTO>> orderDetailGroup;
+        if (CollUtil.isNotEmpty(pageItems)) {
+            Set<Long> soIds = pageItems.stream().map(StoreOrderPageItemDTO::getId).collect(Collectors.toSet());
+            List<StoreOrderDetailInfoDTO> orderDetailList = storeOrderDetailMapper.listInfoByStoreOrderIds(soIds);
+            orderDetailGroup = orderDetailList
+                    .stream()
+                    .collect(Collectors.groupingBy(StoreOrderDetailDTO::getStoreOrderId));
+        } else {
+            orderDetailGroup = MapUtil.empty();
+        }
+        StoreOrderExportDTO exportDTO = new StoreOrderExportDTO();
+        exportDTO.setTitle(title);
+        List<StoreOrderExportDTO.Item> items = new ArrayList<>();
+        exportDTO.setItems(items);
+        List<ExcelMergeRegion> mergeRegions = new ArrayList<>();
+        int seqNo = 1;
+        int lineNo = 1;
+        for (StoreOrderPageItemDTO pageItem : pageItems) {
+            List<StoreOrderDetailInfoDTO> details = orderDetailGroup.get(pageItem.getId()).stream().filter(o -> {
+                if (detailStatus != null) {
+                    return detailStatus.getValue().equals(o.getDetailStatus());
+                }
+                return true;
+            }).collect(Collectors.toList());
+            int size = details.size();
+            if (size > 1) {
+                mergeRegions.add(new ExcelMergeRegion(lineNo + 1, lineNo + size, 0, 0));
+                mergeRegions.add(new ExcelMergeRegion(lineNo + 1, lineNo + size, 1, 1));
+                mergeRegions.add(new ExcelMergeRegion(lineNo + 1, lineNo + size, 2, 2));
+            }
+            for (StoreOrderDetailInfoDTO detail : details) {
+                StoreOrderExportDTO.Item item = new StoreOrderExportDTO.Item();
+                item.setSeqNo(seqNo);
+                item.setOrderNo(pageItem.getOrderNo());
+                item.setCreateTime(DateUtil.formatDateTime(pageItem.getCreateTime()));
+                item.setProdArtNum(detail.getProdArtNum());
+                item.setColorName(detail.getColorName());
+                item.setSize(detail.getSize());
+                item.setGoodsQuantity(detail.getGoodsQuantity());
+                item.setDetailStatus(EOrderStatus.of(detail.getDetailStatus()).getLabel());
+                items.add(item);
+                lineNo++;
+            }
+            seqNo++;
+        }
+        try {
+            ExcelTemplateUtil.export(exportDTO, ExcelTemplateUtil.getTemplate("order_export.xlsx"),
+                    os, null, 0, mergeRegions);
+        } catch (Exception e) {
+            log.error("订单导出异常", e);
+            throw new ServiceException("订单导出失败");
+        }
     }
 
     @Override

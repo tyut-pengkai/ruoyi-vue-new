@@ -4,8 +4,10 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
 import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.core.controller.XktBaseController;
@@ -17,6 +19,7 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.desensitization.DesensitizationUtil;
+import com.ruoyi.common.utils.file.FileUtils;
 import com.ruoyi.framework.notice.fs.FsNotice;
 import com.ruoyi.web.controller.xkt.vo.IdVO;
 import com.ruoyi.web.controller.xkt.vo.express.ExpressShippingLabelVO;
@@ -29,12 +32,14 @@ import com.ruoyi.xkt.dto.express.ExpressInterceptReqDTO;
 import com.ruoyi.xkt.dto.express.ExpressShippingLabelDTO;
 import com.ruoyi.xkt.dto.order.*;
 import com.ruoyi.xkt.enums.EExpressStatus;
+import com.ruoyi.xkt.enums.EOrderStatus;
 import com.ruoyi.xkt.enums.EPayChannel;
 import com.ruoyi.xkt.enums.EPayPage;
 import com.ruoyi.xkt.manager.ExpressManager;
 import com.ruoyi.xkt.manager.PaymentManager;
 import com.ruoyi.xkt.service.IExpressService;
 import com.ruoyi.xkt.service.IStoreOrderService;
+import com.ruoyi.xkt.service.IStoreService;
 import io.jsonwebtoken.lang.Assert;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -44,7 +49,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -62,6 +70,8 @@ public class StoreOrderController extends XktBaseController {
     private IStoreOrderService storeOrderService;
     @Autowired
     private IExpressService expressService;
+    @Autowired
+    private IStoreService storeService;
     @Autowired
     private List<PaymentManager> paymentManagers;
     @Autowired
@@ -162,7 +172,7 @@ public class StoreOrderController extends XktBaseController {
     @ApiOperation(value = "订单分页查询")
     @PostMapping("/page")
     @ResponseHeader
-    public R<PageVO<StoreOrderPageItemVO>> page(@Validated @RequestBody StoreOrderQueryVO vo) {
+    public R<PageVO<StoreOrderPageItemVO>> page(@Validated @RequestBody StoreOrderPageQueryVO vo) {
         StoreOrderQueryDTO queryDTO = BeanUtil.toBean(vo, StoreOrderQueryDTO.class);
         if (1 == vo.getSrcPage()) {
             queryDTO.setOrderUserId(SecurityUtils.getUserId());
@@ -174,12 +184,50 @@ public class StoreOrderController extends XktBaseController {
             }
             queryDTO.setStoreId(storeId);
         }
-        Page<StoreOrderPageItemDTO> pageDTO = storeOrderService.page(queryDTO);
+        Page<StoreOrderPageItemDTO> pageDTO = PageHelper.startPage(queryDTO.getPageNum(), queryDTO.getPageSize());
+        storeOrderService.listPageItem(queryDTO);
         return success(PageVO.of(pageDTO, StoreOrderPageItemVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @ApiOperation(value = "导出订单")
+    @PostMapping("/export")
+    @ResponseHeader
+    public void export(@Validated @RequestBody StoreOrderQueryVO vo, HttpServletResponse response) {
+        StoreOrderQueryDTO queryDTO = BeanUtil.toBean(vo, StoreOrderQueryDTO.class);
+        Long storeId = SecurityUtils.getStoreId();
+        queryDTO.setStoreId(storeId);
+        String storeName = storeService.getStoreNameByIds(Collections.singletonList(storeId)).get(storeId);
+        String title = StrUtil.emptyIfNull(storeName).concat("代发订单");
+        try (ServletOutputStream os = response.getOutputStream()) {
+            FileUtils.setAttachmentResponseHeader(response, title + ".xlsx");
+            storeOrderService.exportOrder(queryDTO, null, title, os);
+        } catch (IOException e) {
+            logger.error("导出异常", e);
+        }
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @ApiOperation(value = "导出备货单")
+    @PostMapping("/exportPendingShipment")
+    @ResponseHeader
+    public void exportPendingShipment(@Validated @RequestBody StoreOrderQueryVO vo, HttpServletResponse response) {
+        StoreOrderQueryDTO queryDTO = BeanUtil.toBean(vo, StoreOrderQueryDTO.class);
+        Long storeId = SecurityUtils.getStoreId();
+        queryDTO.setStoreId(storeId);
+        queryDTO.setOrderStatus(EOrderStatus.PENDING_SHIPMENT.getValue());
+        String storeName = storeService.getStoreNameByIds(Collections.singletonList(storeId)).get(storeId);
+        String title = StrUtil.emptyIfNull(storeName).concat("代发备货单");
+        try (ServletOutputStream os = response.getOutputStream()) {
+            FileUtils.setAttachmentResponseHeader(response, title + ".xlsx");
+            storeOrderService.exportOrder(queryDTO, EOrderStatus.PENDING_SHIPMENT, title, os);
+        } catch (IOException e) {
+            logger.error("导出异常", e);
+        }
+    }
+
     @PreAuthorize("@ss.hasAnyRoles('store,seller,agent')||@ss.hasSupplierSubRole()")
-    @ApiOperation(value = "订单物流信息")
+    @ApiOperation(value = "订单统计信息")
     @GetMapping(value = "/count/{srcPage}")
     public R<StoreOrderCountVO> count(@PathVariable("srcPage") Integer srcPage) {
         StoreOrderCountQueryDTO queryDTO = new StoreOrderCountQueryDTO();

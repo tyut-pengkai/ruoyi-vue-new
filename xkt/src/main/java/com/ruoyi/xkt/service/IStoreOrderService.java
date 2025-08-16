@@ -1,13 +1,14 @@
 package com.ruoyi.xkt.service;
 
-import com.github.pagehelper.Page;
 import com.ruoyi.xkt.domain.StoreOrder;
 import com.ruoyi.xkt.dto.express.ExpressShippingLabelDTO;
 import com.ruoyi.xkt.dto.express.ExpressTrackDTO;
 import com.ruoyi.xkt.dto.order.*;
+import com.ruoyi.xkt.enums.EOrderStatus;
 import com.ruoyi.xkt.enums.EPayChannel;
 import com.ruoyi.xkt.enums.EPayPage;
 
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
@@ -92,7 +93,17 @@ public interface IStoreOrderService {
      * @param queryDTO
      * @return
      */
-    Page<StoreOrderPageItemDTO> page(StoreOrderQueryDTO queryDTO);
+    List<StoreOrderPageItemDTO> listPageItem(StoreOrderQueryDTO queryDTO);
+
+    /**
+     * 导出订单
+     *
+     * @param queryDTO
+     * @param detailStatus
+     * @param title
+     * @param os
+     */
+    void exportOrder(StoreOrderQueryDTO queryDTO, EOrderStatus detailStatus, String title, OutputStream os);
 
     /**
      * 订单统计
