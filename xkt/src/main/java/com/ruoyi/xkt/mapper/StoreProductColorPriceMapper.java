@@ -23,6 +23,11 @@ import java.util.List;
 public interface StoreProductColorPriceMapper extends BaseMapper<StoreProductColorPrice> {
 
 
+    /**
+     * 商品列表编辑商品时 获取颜色列表
+     * @param storeProdId 档口商品ID
+     * @return List<StoreProdColorPriceSimpleDTO>
+     */
     List<StoreProdColorPriceSimpleDTO> selectListByStoreProdId(Long storeProdId);
 
     /**

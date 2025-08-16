@@ -15,6 +15,7 @@ import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
 import com.ruoyi.xkt.dto.userShoppingCart.*;
+import com.ruoyi.xkt.enums.EProductStatus;
 import com.ruoyi.xkt.enums.FileType;
 import com.ruoyi.xkt.enums.ProductSizeStatus;
 import com.ruoyi.xkt.mapper.*;
@@ -170,7 +171,8 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
                 .groupingBy(x -> x.getStoreProdId().toString() + x.getStoreColorId().toString()));
         // 获取商品颜色列表
         List<StoreProductColor> colorList = this.prodColorMapper.selectList(new LambdaQueryWrapper<StoreProductColor>()
-                .eq(StoreProductColor::getStoreProdId, shoppingCart.getStoreProdId()).eq(StoreProductColor::getDelFlag, Constants.UNDELETED));
+                .eq(StoreProductColor::getStoreProdId, shoppingCart.getStoreProdId()).eq(StoreProductColor::getDelFlag, Constants.UNDELETED)
+                .in(StoreProductColor::getProdStatus, Arrays.asList(EProductStatus.ON_SALE.getValue(), EProductStatus.TAIL_GOODS.getValue())));
         // 档口商品颜色价格列表
         List<StoreProductColorPrice> colorPriceList = this.prodColorPriceMapper.selectList(new LambdaQueryWrapper<StoreProductColorPrice>()
                 .eq(StoreProductColorPrice::getStoreProdId, shoppingCart.getStoreProdId()).eq(StoreProductColorPrice::getDelFlag, Constants.UNDELETED));

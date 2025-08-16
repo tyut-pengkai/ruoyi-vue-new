@@ -113,19 +113,11 @@ public class StoreProductController extends XktBaseController {
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
-    @Log(title = "修改档口商品状态", businessType = BusinessType.UPDATE)
-    @ApiOperation(value = "修改档口商品状态", httpMethod = "PUT", response = R.class)
+    @Log(title = "商品上架、下架、设为尾货、删除", businessType = BusinessType.UPDATE)
+    @ApiOperation(value = "商品上架、下架、设为尾货、删除", httpMethod = "PUT", response = R.class)
     @PutMapping("/prod-status")
     public R<Integer> editProdStatus(@Validated @RequestBody StoreProdStatusVO prodStatusVO) throws IOException {
         return R.ok(storeProdService.updateStoreProductStatus(BeanUtil.toBean(prodStatusVO, StoreProdStatusDTO.class)));
-    }
-
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
-    @Log(title = "删除商品", businessType = BusinessType.DELETE)
-    @ApiOperation(value = "删除商品", httpMethod = "DELETE", response = R.class)
-    @DeleteMapping()
-    public R<Integer> batchDelete(@Validated @RequestBody StoreProdDeleteVO deleteVO) throws IOException {
-        return R.ok(storeProdService.batchDelete(BeanUtil.toBean(deleteVO, StoreProdDeleteDTO.class)));
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")

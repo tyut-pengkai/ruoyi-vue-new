@@ -18,6 +18,10 @@ import java.util.List;
  */
 public interface StoreProductColorMapper extends BaseMapper<StoreProductColor> {
 
+    /**
+     * 将商品颜色置为无效
+     * @param storeProdId 档口商品ID
+     */
     void updateDelFlagByStoreProdId(Long storeProdId);
 
     /**

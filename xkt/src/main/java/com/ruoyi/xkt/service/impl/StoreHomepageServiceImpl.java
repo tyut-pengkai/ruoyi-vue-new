@@ -23,7 +23,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -45,7 +44,6 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
     final StoreMapper storeMapper;
     final StoreProductMapper storeProdMapper;
     final StoreProductDetailMapper prodDetailMapper;
-    final StoreProductColorMapper prodColorMapper;
     final StoreProductColorSizeMapper prodColorSizeMapper;
     final StoreProductStockMapper prodStockMapper;
     final StoreProductColorPriceMapper prodColorPriceMapper;

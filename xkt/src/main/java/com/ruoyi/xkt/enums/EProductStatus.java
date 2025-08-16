@@ -17,7 +17,9 @@ public enum EProductStatus {
     ON_SALE(2, "在售"),
     TAIL_GOODS(3, "尾货"),
     OFF_SALE(4, "已下架"),
-    REMOVED(5, "已删除");
+    REMOVED(5, "已删除"),
+
+    ;
 
     private final Integer value;
     private final String label;

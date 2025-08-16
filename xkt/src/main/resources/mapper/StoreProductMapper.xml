@@ -80,8 +80,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             LEFT JOIN store_product_color_size spcs ON spc.store_color_id = spcs.store_color_id AND spc.store_prod_id = spcs.store_prod_id AND spcs.del_flag = 0
         WHERE
             spc.del_flag = 0
-          AND spcs.standard = 1
-          AND spc.store_prod_id = #{storeProdId}
+            AND spc.prod_status IN (2,3)
+            AND spcs.standard = 1
+            AND spc.store_prod_id = #{storeProdId}
     </select>
 
     <select id="selectPriceAndMainPicList"  resultType="com.ruoyi.xkt.dto.storeProduct.StoreProdPriceAndMainPicDTO">

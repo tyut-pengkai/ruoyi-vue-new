@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -17,9 +18,9 @@ public class StoreProdStatusDTO {
 
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
-    @ApiModelProperty("档口商品名称")
-    private List<Long> storeProdIdList;
-    @ApiModelProperty("档口商品状态")
+    @ApiModelProperty(value = "档口商品颜色ID")
+    private List<Long> storeProdColorIdList;
+    @ApiModelProperty(value = "档口商品状态")
     private Integer prodStatus;
 
 }

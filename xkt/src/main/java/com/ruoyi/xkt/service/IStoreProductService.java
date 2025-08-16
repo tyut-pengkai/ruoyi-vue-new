@@ -59,7 +59,7 @@ public interface IStoreProductService {
     int update(Long storeProdId, StoreProdDTO storeProdDTO) throws IOException;
 
     /**
-     * 更新档口商品状态
+     * 更新档口商品状态 更新档口商品颜色的状态 2在售 3尾货 4下架
      *
      * @param prodStatusDTO 更新状态入参
      */
@@ -141,14 +141,6 @@ public interface IStoreProductService {
      * @return StoreProdStatusCateCountResDTO
      */
     List<StoreProdStatusCateCountResDTO> getStatusCateNum(StoreProdStatusCateNumDTO dto);
-
-    /**
-     * 删除商品
-     *
-     * @param deleteDTO 删除商品入参
-     * @return Integer
-     */
-    Integer batchDelete(StoreProdDeleteDTO deleteDTO) throws IOException;
 
     /**
      * 推广营销查询最近30天上新商品

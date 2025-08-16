@@ -56,6 +56,7 @@ import com.ruoyi.xkt.service.IStoreProductService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -407,7 +408,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
             newColorPriceList.forEach(newColorPrice -> {
                 Long storeColorId = storeColorMap.get(newColorPrice.getColorName());
                 tempColorList.add(new StoreProductColor().setStoreProdId(storeProdId).setStoreColorId(storeColorMap.get(newColorPrice.getColorName()))
-                        .setColorName(newColorPrice.getColorName()).setOrderNum(newColorPrice.getOrderNum()).setStoreId(storeId));
+                        .setColorName(newColorPrice.getColorName()).setOrderNum(newColorPrice.getOrderNum()).setStoreId(storeId).setProdStatus(EProductStatus.ON_SALE.getValue()));
                 storeColorPriceList.add(new StoreProductColorPrice().setStoreColorId(storeColorId).setPrice(newColorPrice.getPrice()).setStoreProdId(storeProdId));
                 updateDTO.getSizeList().forEach(size -> storeColorSizeList.add(new StoreProductColorSize().setStoreColorId(storeColorId).setSize(size.getSize())
                         .setStoreProdId(storeProdId).setStandard(size.getStandard()).setNextSn(0)));
@@ -480,7 +481,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
         List<StoreProductColor> prodColorList = new ArrayList<>();
         createDTO.getColorPriceList().forEach(colorPrice -> {
             prodColorList.add(new StoreProductColor().setStoreProdId(storeProdId).setStoreColorId(storeColorMap.get(colorPrice.getColorName()))
-                    .setColorName(colorPrice.getColorName()).setOrderNum(colorPrice.getOrderNum()).setStoreId(storeId));
+                    .setColorName(colorPrice.getColorName()).setOrderNum(colorPrice.getOrderNum()).setStoreId(storeId).setProdStatus(EProductStatus.ON_SALE.getValue()));
             prodColorPriceList.add(new StoreProductColorPrice().setStoreProdId(storeProdId).setPrice(colorPrice.getPrice())
                     .setStoreColorId(storeColorMap.get(colorPrice.getColorName())));
             prodColorSizeList.addAll(createDTO.getSizeList().stream().map(x -> new StoreProductColorSize().setSize(x.getSize()).setStoreProdId(storeProdId)
@@ -498,7 +499,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
     }
 
     /**
-     * 更新档口商品的状态
+     * 更新档口商品颜色的状态 2在售 3尾货 4下架
      *
      * @param prodStatusDTO 入参
      */
@@ -511,45 +512,78 @@ public class StoreProductServiceImpl implements IStoreProductService {
         }
         // 判断商品状态是否不存在
         EProductStatus.of(prodStatusDTO.getProdStatus());
-        // 根据商品ID列表查询数据库中的商品信息
-        List<StoreProduct> storeProdList = Optional.ofNullable(this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
-                        .in(StoreProduct::getId, prodStatusDTO.getStoreProdIdList()).eq(StoreProduct::getDelFlag, Constants.UNDELETED)))
-                .orElseThrow(() -> new ServiceException("商品不存在!", HttpStatus.ERROR));
-        storeProdList.forEach(x -> x.setProdStatus(prodStatusDTO.getProdStatus()));
-        int count = this.storeProdMapper.updateById(storeProdList).size();
-        // 更新ES中商品状态
-        this.updateESProdStatus(prodStatusDTO);
-        return count;
-    }
-
-
-    /**
-     * 删除商品
-     *
-     * @param deleteDTO 删除商品入参
-     * @return Integer
-     */
-    @Override
-    @Transactional
-    public Integer batchDelete(StoreProdDeleteDTO deleteDTO) throws IOException {
-        // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(deleteDTO.getStoreId())) {
-            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        // 查询所有的商品颜色
+        List<StoreProductColor> storeProdColorList = this.storeProdColorMapper.selectList(new LambdaQueryWrapper<StoreProductColor>()
+                .in(StoreProductColor::getId, prodStatusDTO.getStoreProdColorIdList()).eq(StoreProductColor::getDelFlag, Constants.UNDELETED)
+                .eq(StoreProductColor::getStoreId, prodStatusDTO.getStoreId()));
+        if (CollectionUtils.isEmpty(storeProdColorList)) {
+            throw new ServiceException("商品颜色不存在!", HttpStatus.ERROR);
         }
+        storeProdColorList.forEach(x -> {
+            x.setProdStatus(prodStatusDTO.getProdStatus());
+            // 删除颜色
+            if (Objects.equals(prodStatusDTO.getProdStatus(), EProductStatus.REMOVED.getValue())) {
+                x.setDelFlag(DELETED);
+            }
+        });
+        int count = this.storeProdColorMapper.updateById(storeProdColorList).size();
+        final List<Long> storeProdIdList = storeProdColorList.stream().map(StoreProductColor::getStoreProdId).collect(Collectors.toList());
         List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
-                .eq(StoreProduct::getDelFlag, Constants.UNDELETED).eq(StoreProduct::getStoreId, deleteDTO.getStoreId())
-                .in(StoreProduct::getId, deleteDTO.getStoreProdIdList()));
-        if (CollectionUtils.isEmpty(storeProdList)) {
-            return 0;
+                .in(StoreProduct::getId, storeProdIdList).eq(StoreProduct::getDelFlag, Constants.UNDELETED)
+                .eq(StoreProduct::getStoreId, prodStatusDTO.getStoreId()));
+        Map<Long, StoreProduct> storeProdMap = storeProdList.stream().collect(Collectors.toMap(StoreProduct::getId, Function.identity()));
+        // 旧的商品状态map
+        final Map<Long, Integer> storeProdStatusMap = storeProdList.stream().collect(Collectors.toMap(StoreProduct::getId, StoreProduct::getProdStatus));
+        // 筛选所有的商品，判断商品的状态
+        List<StoreProductColor> curProdColorList = this.storeProdColorMapper.selectList(new LambdaQueryWrapper<StoreProductColor>()
+                .in(StoreProductColor::getStoreProdId, storeProdIdList).eq(StoreProductColor::getDelFlag, Constants.UNDELETED)
+                .eq(StoreProductColor::getStoreId, prodStatusDTO.getStoreId()));
+        Map<Long, List<StoreProductColor>> prodColorMap = curProdColorList.stream().collect(Collectors.groupingBy(StoreProductColor::getStoreProdId));
+        List<StoreProduct> updateProdList = new ArrayList<>();
+        prodColorMap.forEach((storeProdId, prodColorList) -> {
+            StoreProduct storeProduct = Optional.ofNullable(storeProdMap.get(storeProdId)).orElseThrow(() -> new ServiceException("商品不存在!", HttpStatus.ERROR));
+            // 商品颜色中只要有一个为在售，则商品状态为在售
+            if (prodColorList.stream().anyMatch(x -> Objects.equals(x.getProdStatus(), EProductStatus.ON_SALE.getValue()))) {
+                storeProduct.setProdStatus(EProductStatus.ON_SALE.getValue());
+                // 商品颜色中只要有一个为尾货，则商品状态为尾货
+            } else if (prodColorList.stream().anyMatch(x -> Objects.equals(x.getProdStatus(), EProductStatus.TAIL_GOODS.getValue()))) {
+                storeProduct.setProdStatus(EProductStatus.TAIL_GOODS.getValue());
+                // 商品颜色只有一个为下架，则商品状态为下架
+            } else if (prodColorList.stream().anyMatch(x -> Objects.equals(x.getProdStatus(), EProductStatus.OFF_SALE.getValue()))) {
+                storeProduct.setProdStatus(EProductStatus.OFF_SALE.getValue());
+                // 商品颜色必须全部为已删除，则商品状态为已删除
+            } else {
+                storeProduct.setDelFlag(DELETED);
+                storeProduct.setProdStatus(EProductStatus.REMOVED.getValue());
+            }
+            updateProdList.add(storeProduct);
+        });
+        this.storeProdMapper.updateById(updateProdList);
+        // 非删除商品颜色，则更新ES
+        if (!Objects.equals(prodStatusDTO.getProdStatus(), EProductStatus.REMOVED.getValue())) {
+            // 需要更新状态的商品
+            Map<Long, Integer> updateESProdStatusMap = updateProdList.stream().filter(x -> !Objects.equals(storeProdStatusMap.get(x.getId()), x.getProdStatus()))
+                    .collect(Collectors.toMap(StoreProduct::getId, StoreProduct::getProdStatus));
+            // 没有需要更新商品状态的商品
+            if (MapUtils.isEmpty(updateESProdStatusMap)) {
+                return count;
+            }
+            // 更新ES中商品状态
+            this.updateESProdStatus(updateESProdStatusMap);
+        } else {
+            // 需要删除的商品
+            List<StoreProduct> deleteESProdList = updateProdList.stream().filter(x -> !Objects.equals(storeProdStatusMap.get(x.getId()), x.getProdStatus())).collect(Collectors.toList());
+            List<Long> updateESProdIdList = deleteESProdList.stream().map(StoreProduct::getId).collect(Collectors.toList());
+            if (CollectionUtils.isEmpty(updateESProdIdList)) {
+                return count;
+            }
+            // 删除ES中商品
+            this.deleteESDoc(updateESProdIdList);
+            // 搜图服务同步
+            updateESProdIdList.forEach(spId -> sync2ImgSearchServer(spId, ListUtil.empty()));
+            // 新增消息通知
+            this.offSaleOrReSaleProd(deleteESProdList, Boolean.TRUE, prodStatusDTO.getStoreId());
         }
-        storeProdList.forEach(x -> x.setDelFlag(Constants.DELETED));
-        int count = this.storeProdMapper.updateById(storeProdList).size();
-        // 删除ES中商品
-        this.deleteESDoc(deleteDTO.getStoreProdIdList());
-        // 搜图服务同步
-        deleteDTO.getStoreProdIdList().forEach(spId -> sync2ImgSearchServer(spId, ListUtil.empty()));
-        // 新增消息通知
-        this.offSaleOrReSaleProd(storeProdList, Boolean.TRUE, deleteDTO.getStoreId());
         return count;
     }
 
@@ -1284,17 +1318,17 @@ public class StoreProductServiceImpl implements IStoreProductService {
     }
 
     /**
-     * @param statusDTO 商品状态更新DTO
+     * @param updateProdStatusMap 商品状态更新map
      * @throws IOException
      */
-    private void updateESProdStatus(StoreProdStatusDTO statusDTO) throws IOException {
+    private void updateESProdStatus(Map<Long, Integer> updateProdStatusMap) throws IOException {
         // 构建一个批量数据集合
         List<BulkOperation> list = new ArrayList<>();
-        statusDTO.getStoreProdIdList().forEach(storeProdId -> {
+        updateProdStatusMap.forEach((storeProdId, prodStatus) -> {
             // 构建部分文档更新请求
             list.add(new BulkOperation.Builder().update(u -> u
                             .action(a -> a.doc(new HashMap<String, Object>() {{
-                                put("prodStatus", statusDTO.getProdStatus());
+                                put("prodStatus", prodStatus);
                             }}))
                             .id(String.valueOf(storeProdId))
                             .index(Constants.ES_IDX_PRODUCT_INFO))
@@ -1306,13 +1340,14 @@ public class StoreProductServiceImpl implements IStoreProductService {
             log.info("bulkResponse.result() = {}", bulkResponse.items());
         } catch (IOException | RuntimeException e) {
             // 记录日志并抛出或处理异常
-            log.error("向ES更新商品状态失败，商品ID: {}, 错误信息: {}", statusDTO.getStoreProdIdList(), e.getMessage());
+            log.error("向ES更新商品状态失败，商品ID: {}, 错误信息: {}", updateProdStatusMap.keySet(), e.getMessage());
             throw e; // 或者做其他补偿处理，比如异步重试
         }
     }
 
     /**
      * 组装前端返回的map
+     *
      * @param cateAttr 数据库类目属性
      * @return Map
      */
