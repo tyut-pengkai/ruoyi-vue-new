@@ -72,6 +72,11 @@ public class SysProductCategoryController extends XktBaseController {
         return R.ok(BeanUtil.copyToList(prodCateService.tree(BeanUtil.toBean(listVO, ProdCateListDTO.class)), ProdCateListResVO.class));
     }
 
+    @ApiOperation(value = "商品管理列表获取所有商品二级分类及没有二级分类的一级分类", httpMethod = "POST", response = R.class)
+    @GetMapping("/leaf-node/list")
+    public R<List<ProdCateVO>> leafNodeList() {
+        return R.ok(BeanUtil.copyToList(prodCateService.leafNodeList(), ProdCateVO.class));
+    }
 
     @ApiOperation(value = "获取商品分类列表", httpMethod = "POST", response = R.class)
     @PostMapping("/list")
@@ -79,7 +84,7 @@ public class SysProductCategoryController extends XktBaseController {
         return R.ok(BeanUtil.copyToList(prodCateService.selectList(BeanUtil.toBean(listVO, ProdCateListDTO.class)), ProdCateListResVO.class));
     }
 
-    @ApiOperation(value = "获取商品分类列表", httpMethod = "POST", response = R.class)
+    @ApiOperation(value = "app搜索框下商品分类列表", httpMethod = "POST", response = R.class)
     @PostMapping("/app/list")
     public R<List<ProdCateListResVO>> appList(@RequestBody ProdCateListVO listVO) {
         return R.ok(BeanUtil.copyToList(prodCateService.selectAppList(BeanUtil.toBean(listVO, ProdCateListDTO.class)), ProdCateListResVO.class));

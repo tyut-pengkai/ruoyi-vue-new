@@ -92,6 +92,13 @@ public interface ISysProductCategoryService {
     List<ProdCateDTO> getAllSubList();
 
     /**
+     * 商品管理列表获取所有商品二级分类及没有二级分类的一级分类
+     *
+     * @return List<ProdCateDTO>
+     */
+    List<ProdCateDTO> leafNodeList();
+
+    /**
      * 管理员获取商品分类树
      *
      * @param listDTO 查询入参

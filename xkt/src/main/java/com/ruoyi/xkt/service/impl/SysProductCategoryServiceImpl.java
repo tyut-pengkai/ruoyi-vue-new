@@ -269,6 +269,32 @@ public class SysProductCategoryServiceImpl implements ISysProductCategoryService
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 商品管理列表获取所有商品二级分类及没有二级分类的一级分类
+     * @return List<ProdCateDTO>
+     */
+    @Override
+    public List<ProdCateDTO> leafNodeList() {
+        List<SysProductCategory> cateList = this.prodCateMapper.selectList(new LambdaQueryWrapper<SysProductCategory>()
+                .eq(SysProductCategory::getDelFlag, Constants.UNDELETED)
+                // 排除最顶层的商品分类
+                .ne(SysProductCategory::getParentId, 0));
+        if (CollectionUtils.isEmpty(cateList)) {
+            return new ArrayList<>();
+        }
+        // 不是最顶层的商品分类
+        List<ProdCateDTO> leafNodeList = cateList.stream().filter(x -> !Objects.equals(x.getParentId(), TOPMOST_PRODUCT_CATEGORY_ID))
+                .map(x -> BeanUtil.toBean(x, ProdCateDTO.class).setProdCateId(x.getId())).collect(Collectors.toList());
+        final List<Long> hasSubCateIdList = leafNodeList.stream().map(ProdCateDTO::getParentId).distinct().collect(Collectors.toList());
+        List<ProdCateDTO> noSubCateList = cateList.stream()
+                .filter(x -> Objects.equals(x.getParentId(), TOPMOST_PRODUCT_CATEGORY_ID) && !hasSubCateIdList.contains(x.getId()))
+                .map(x -> BeanUtil.toBean(x, ProdCateDTO.class).setProdCateId(x.getId()))
+                .collect(Collectors.toList());
+        // 最顶层的商品分类（没有二级分类的）
+        CollectionUtils.addAll(leafNodeList, noSubCateList);
+        return leafNodeList;
+    }
+
 
     /**
      * 组装商品分类树

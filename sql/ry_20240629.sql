@@ -3172,8 +3172,6 @@ INSERT INTO `sys_product_category`
 VALUES (49, '其他拖鞋', 8, 5, '0',
         'https://pics1.baidu.com/feed/6609c93d70cf3bc758366c966adb10aecc112a85.png@f_auto?token=89fe04971fb0579147e9ccc52683a013',
         '', 0, '0', '', '2025-04-15 19:57:12', '', '2025-04-15 19:57:12');
-INSERT INTO `sys_product_category`
-VALUES (50, '123', 1, 123, '1', NULL, '', 1, '0', '', '2025-06-28 17:36:35', 'admin', '2025-06-28 17:36:35');
 
 SET
 FOREIGN_KEY_CHECKS = 1;
