@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.xkt;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.github.pagehelper.Page;
@@ -9,7 +10,6 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.PageVO;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.notice.fs.FsNotice;
-import com.ruoyi.web.controller.xkt.vo.BasePageVO;
 import com.ruoyi.web.controller.xkt.vo.PhoneNumberVO;
 import com.ruoyi.web.controller.xkt.vo.account.*;
 import com.ruoyi.xkt.dto.account.*;
@@ -139,9 +139,16 @@ public class AssetController extends XktBaseController {
     @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "档口交易明细")
     @PostMapping("store/trans-detail/page")
-    public R<PageVO<TransDetailStorePageItemVO>> pageStoreTransDetail(@Validated @RequestBody BasePageVO vo) {
+    public R<PageVO<TransDetailStorePageItemVO>> pageStoreTransDetail(@Validated @RequestBody TransDetailPageQueryVO vo) {
         TransDetailStoreQueryDTO queryDTO = BeanUtil.toBean(vo, TransDetailStoreQueryDTO.class);
         queryDTO.setStoreId(SecurityUtils.getStoreId());
+        //日期转时间
+        if (queryDTO.getTransTimeBegin() != null) {
+            queryDTO.setTransTimeBegin(DateUtil.beginOfDay(queryDTO.getTransTimeBegin()));
+        }
+        if (queryDTO.getTransTimeEnd() != null) {
+            queryDTO.setTransTimeEnd(DateUtil.endOfDay(queryDTO.getTransTimeEnd()));
+        }
         Page<TransDetailStorePageItemDTO> pageDTO = assetService.pageStoreTransDetail(queryDTO);
         return success(PageVO.of(pageDTO, TransDetailStorePageItemVO.class));
     }
@@ -149,9 +156,16 @@ public class AssetController extends XktBaseController {
     @PreAuthorize("@ss.hasAnyRoles('seller,agent')")
     @ApiOperation(value = "卖家交易明细")
     @PostMapping("user/trans-detail/page")
-    public R<PageVO<TransDetailUserPageItemVO>> pageUserTransDetail(@Validated @RequestBody BasePageVO vo) {
+    public R<PageVO<TransDetailUserPageItemVO>> pageUserTransDetail(@Validated @RequestBody TransDetailPageQueryVO vo) {
         TransDetailUserQueryDTO queryDTO = BeanUtil.toBean(vo, TransDetailUserQueryDTO.class);
         queryDTO.setUserId(SecurityUtils.getUserId());
+        //日期转时间
+        if (queryDTO.getTransTimeBegin() != null) {
+            queryDTO.setTransTimeBegin(DateUtil.beginOfDay(queryDTO.getTransTimeBegin()));
+        }
+        if (queryDTO.getTransTimeEnd() != null) {
+            queryDTO.setTransTimeEnd(DateUtil.endOfDay(queryDTO.getTransTimeEnd()));
+        }
         Page<TransDetailUserPageItemDTO> pageDTO = assetService.pageUserTransDetail(queryDTO);
         return success(PageVO.of(pageDTO, TransDetailUserPageItemVO.class));
     }

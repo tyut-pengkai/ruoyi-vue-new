@@ -2,6 +2,7 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.InternalAccount;
+import com.ruoyi.xkt.dto.account.TransDetailQueryDTO;
 import com.ruoyi.xkt.dto.account.TransDetailStorePageItemDTO;
 import com.ruoyi.xkt.dto.account.TransDetailUserPageItemDTO;
 import org.apache.ibatis.annotations.Param;
@@ -35,16 +36,16 @@ public interface InternalAccountMapper extends BaseMapper<InternalAccount> {
     /**
      * 档口交易明细
      *
-     * @param id
+     * @param queryDTO
      * @return
      */
-    List<TransDetailStorePageItemDTO> listStoreTransDetailPageItem(@Param("id")Long id);
+    List<TransDetailStorePageItemDTO> listStoreTransDetailPageItem(TransDetailQueryDTO queryDTO);
 
     /**
      * 卖家交易明细
      *
-     * @param userId
+     * @param queryDTO
      * @return
      */
-    List<TransDetailUserPageItemDTO> listUserTransDetailPageItem(@Param("userId")Long userId);
+    List<TransDetailUserPageItemDTO> listUserTransDetailPageItem(TransDetailQueryDTO queryDTO);
 }

@@ -174,6 +174,8 @@ public class StoreOrderController extends XktBaseController {
     @ResponseHeader
     public R<PageVO<StoreOrderPageItemVO>> page(@Validated @RequestBody StoreOrderPageQueryVO vo) {
         StoreOrderQueryDTO queryDTO = BeanUtil.toBean(vo, StoreOrderQueryDTO.class);
+        //日期转时间
+        date2Time(queryDTO);
         if (1 == vo.getSrcPage()) {
             queryDTO.setOrderUserId(SecurityUtils.getUserId());
         } else {
@@ -195,6 +197,8 @@ public class StoreOrderController extends XktBaseController {
     @ResponseHeader
     public void export(@Validated @RequestBody StoreOrderQueryVO vo, HttpServletResponse response) {
         StoreOrderQueryDTO queryDTO = BeanUtil.toBean(vo, StoreOrderQueryDTO.class);
+        //日期转时间
+        date2Time(queryDTO);
         Long storeId = SecurityUtils.getStoreId();
         queryDTO.setStoreId(storeId);
         String storeName = storeService.getStoreNameByIds(Collections.singletonList(storeId)).get(storeId);
@@ -213,6 +217,8 @@ public class StoreOrderController extends XktBaseController {
     @ResponseHeader
     public void exportPendingShipment(@Validated @RequestBody StoreOrderQueryVO vo, HttpServletResponse response) {
         StoreOrderQueryDTO queryDTO = BeanUtil.toBean(vo, StoreOrderQueryDTO.class);
+        //日期转时间
+        date2Time(queryDTO);
         Long storeId = SecurityUtils.getStoreId();
         queryDTO.setStoreId(storeId);
         queryDTO.setOrderStatus(EOrderStatus.PENDING_SHIPMENT.getValue());
@@ -472,5 +478,20 @@ public class StoreOrderController extends XktBaseController {
             }
         }
         throw new ServiceException("未知支付渠道");
+    }
+
+    private void date2Time(StoreOrderQueryDTO queryDTO) {
+        if (queryDTO.getOrderTimeBegin() != null) {
+            queryDTO.setOrderTimeBegin(DateUtil.beginOfDay(queryDTO.getOrderTimeBegin()));
+        }
+        if (queryDTO.getOrderTimeEnd() != null) {
+            queryDTO.setOrderTimeEnd(DateUtil.endOfDay(queryDTO.getOrderTimeEnd()));
+        }
+        if (queryDTO.getPayTimeBegin() != null) {
+            queryDTO.setPayTimeBegin(DateUtil.beginOfDay(queryDTO.getPayTimeBegin()));
+        }
+        if (queryDTO.getPayTimeEnd() != null) {
+            queryDTO.setPayTimeEnd(DateUtil.endOfDay(queryDTO.getPayTimeEnd()));
+        }
     }
 }

@@ -217,7 +217,9 @@ public class AssetServiceImpl implements IAssetService {
                 EAccountOwnerType.STORE);
         Assert.notNull(internalAccount);
         Page<TransDetailStorePageItemDTO> page = PageHelper.startPage(queryDTO.getPageNum(), queryDTO.getPageSize());
-        internalAccountService.listStoreTransDetailPageItem(internalAccount.getId());
+        TransDetailQueryDTO tdq = BeanUtil.toBean(queryDTO,TransDetailQueryDTO.class);
+        tdq.setInternalAccountId(internalAccount.getId());
+        internalAccountService.listStoreTransDetailPageItem(tdq);
         return page;
     }
 
@@ -225,7 +227,9 @@ public class AssetServiceImpl implements IAssetService {
     public Page<TransDetailUserPageItemDTO> pageUserTransDetail(TransDetailUserQueryDTO queryDTO) {
         Assert.notNull(queryDTO.getUserId());
         Page<TransDetailUserPageItemDTO> page = PageHelper.startPage(queryDTO.getPageNum(), queryDTO.getPageSize());
-        internalAccountService.listUserTransDetailPageItem(queryDTO.getUserId());
+        TransDetailQueryDTO tdq = BeanUtil.toBean(queryDTO,TransDetailQueryDTO.class);
+        tdq.setUserId(queryDTO.getUserId());
+        internalAccountService.listUserTransDetailPageItem(tdq);
         return page;
     }
 

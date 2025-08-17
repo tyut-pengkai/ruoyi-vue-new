@@ -2,6 +2,7 @@ package com.ruoyi.xkt.service;
 
 import com.ruoyi.xkt.domain.InternalAccount;
 import com.ruoyi.xkt.dto.account.InternalAccountAddDTO;
+import com.ruoyi.xkt.dto.account.TransDetailQueryDTO;
 import com.ruoyi.xkt.dto.account.TransDetailStorePageItemDTO;
 import com.ruoyi.xkt.dto.account.TransDetailUserPageItemDTO;
 import com.ruoyi.xkt.dto.finance.TransInfo;
@@ -84,16 +85,16 @@ public interface IInternalAccountService {
     /**
      * 档口交易明细
      *
-     * @param internalAccountId
+     * @param queryDTO
      * @return
      */
-    List<TransDetailStorePageItemDTO> listStoreTransDetailPageItem(Long internalAccountId);
+    List<TransDetailStorePageItemDTO> listStoreTransDetailPageItem(TransDetailQueryDTO queryDTO);
 
     /**
      * 卖家交易明细
      *
-     * @param userId
+     * @param queryDTO
      * @return
      */
-    List<TransDetailUserPageItemDTO> listUserTransDetailPageItem(Long userId);
+    List<TransDetailUserPageItemDTO> listUserTransDetailPageItem(TransDetailQueryDTO queryDTO);
 }
