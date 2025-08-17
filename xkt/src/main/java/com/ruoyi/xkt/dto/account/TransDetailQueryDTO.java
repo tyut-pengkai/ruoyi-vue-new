@@ -1,24 +1,23 @@
 package com.ruoyi.xkt.dto.account;
 
-import com.ruoyi.xkt.dto.BasePageDTO;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 import java.util.Date;
 
 /**
  * @author liangyq
- * @date 2025-04-28 18:59
+ * @date 2025-08-17
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
-public class TransDetailStoreQueryDTO extends BasePageDTO {
+public class TransDetailQueryDTO {
     /**
-     * 档口ID
+     * 账户ID: 查询档口明细
      */
-    private Long storeId;
+    private Long internalAccountId;
+    /**
+     * 用户ID: 查询卖家明细
+     */
+    private Long userId;
     /**
      * 交易开始时间
      */

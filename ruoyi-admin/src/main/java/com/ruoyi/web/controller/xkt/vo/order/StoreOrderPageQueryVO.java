@@ -1,8 +1,11 @@
 package com.ruoyi.web.controller.xkt.vo.order;
 
+import com.ruoyi.web.controller.xkt.vo.BasePageVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.validation.constraints.NotNull;
 import java.util.Date;
@@ -14,7 +17,9 @@ import java.util.List;
  */
 @ApiModel
 @Data
-public class StoreOrderQueryVO {
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+public class StoreOrderPageQueryVO extends BasePageVO {
 
     @ApiModelProperty(value = "订单ID集合")
     private List<Long> storeOrderIds;
