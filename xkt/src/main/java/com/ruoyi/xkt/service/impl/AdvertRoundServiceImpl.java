@@ -1043,7 +1043,8 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
     public static String getDayOfWeek(Date date) {
         LocalDateTime localDateTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         DayOfWeek dayOfWeek = localDateTime.getDayOfWeek();
-        return dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault());
+        // 强制中文，如 "星期一"
+        return dayOfWeek.getDisplayName(TextStyle.FULL, Locale.CHINA);
     }
 
     /**
