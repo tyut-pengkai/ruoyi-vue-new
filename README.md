@@ -23,13 +23,13 @@
 git clone https://github.com/yangzongzhuan/RuoYi-Vue3.git
 
 # 进入项目目录
-cd RuoYi-Vue3
+cd RuoYi-Vue
 
 # 安装依赖
-yarn --registry=https://registry.npmmirror.com
+npm install
 
 # 启动服务
-yarn dev
+npm run dev
 
 # 构建测试环境 yarn build:stage
 # 构建生产环境 yarn build:prod
