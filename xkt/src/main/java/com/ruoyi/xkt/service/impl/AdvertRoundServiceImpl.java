@@ -230,9 +230,12 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                             .setShowType(advertRound.getShowType()).setPosition(advertRound.getPosition()).setDurationDay(durationDay);
                     // 如果是播放论，则播放开始时间展示为当天，因为有可能是播放的中间某一天
                     if (Objects.equals(advertRound.getRoundId(), AdRoundType.PLAY_ROUND.getValue())) {
-                        typeRoundResDTO.setStartTime(new Date())
+                        Date tomorrow = Date.from(LocalDate.now().plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
+                        typeRoundResDTO.setStartTime(tomorrow)
+                                // 计算最
+                                .setStartWeekDay(getDayOfWeek(tomorrow))
                                 // 计算最新的间隔时间（如果为最新播放论，则展示第一轮正在播放时间与最后一天的差距）
-                                .setDurationDay(calculateDurationDay(new Date(), advertRound.getEndTime(), Boolean.FALSE));
+                                .setDurationDay(calculateDurationDay(tomorrow, advertRound.getEndTime(), Boolean.TRUE));
                     }
                     // 展示类型 为时间范围 则，修改价格并显示每一轮竞价状态
                     if (Objects.equals(advertRound.getShowType(), AdShowType.TIME_RANGE.getValue())) {
@@ -241,9 +244,9 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                         // 只有播放轮才按照时间计算折扣价
                         if (Objects.equals(advertRound.getRoundId(), AdRoundType.PLAY_ROUND.getValue())) {
                             // 根据当前日期与截止日期的占比修改推广价格
-                            final BigDecimal curStartPrice = BigDecimal.valueOf(calculateDurationDay(date, advertRound.getEndTime(), Boolean.FALSE))
-                                    .divide(BigDecimal.valueOf(durationDay), 10, RoundingMode.DOWN).multiply(advertRound.getStartPrice())
-                                    .setScale(0, RoundingMode.DOWN);
+                            BigDecimal numerator = BigDecimal.valueOf(calculateDurationDay(date, advertRound.getEndTime(), Boolean.FALSE));
+                            BigDecimal curStartPrice = numerator.multiply(advertRound.getStartPrice())
+                                    .divide(BigDecimal.valueOf(durationDay), 0, RoundingMode.HALF_UP);
                             typeRoundResDTO.setStartPrice(curStartPrice);
                         }
                         // 当前档口购买的轮次
