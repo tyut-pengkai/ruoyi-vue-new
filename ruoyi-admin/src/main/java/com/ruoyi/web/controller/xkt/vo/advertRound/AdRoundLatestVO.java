@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -33,5 +34,11 @@ public class AdRoundLatestVO {
     private Integer showType;
     @ApiModelProperty(value = "位置 A B C D E")
     private String position;
+    @NotBlank(message = "对象锁符号不能为空!")
+    @ApiModelProperty(value = "对象锁符号")
+    private String symbol;
+    @NotNull(message = "当前播放状态不能为空!")
+    @ApiModelProperty(value = "当前播放状态")
+    private Integer launchStatus;
 
 }

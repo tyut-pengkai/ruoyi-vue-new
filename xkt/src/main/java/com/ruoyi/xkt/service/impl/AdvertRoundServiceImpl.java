@@ -838,12 +838,14 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         if (Objects.equals(latestDTO.getShowType(), AdShowType.TIME_RANGE.getValue())) {
             advertRound = this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
                     .eq(AdvertRound::getAdvertId, latestDTO.getAdvertId()).eq(AdvertRound::getRoundId, latestDTO.getRoundId())
+                    .eq(AdvertRound::getLaunchStatus, latestDTO.getLaunchStatus()).eq(AdvertRound::getSymbol, latestDTO.getSymbol())
                     .eq(AdvertRound::getDelFlag, Constants.UNDELETED).orderByDesc(AdvertRound::getPayPrice, AdvertRound::getCreateTime)
                     .last("LIMIT 1"));
         } else {
             Optional.ofNullable(latestDTO.getPosition()).orElseThrow(() -> new ServiceException("位置枚举类型：position必传", HttpStatus.ERROR));
             advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
                             .eq(AdvertRound::getAdvertId, latestDTO.getAdvertId()).eq(AdvertRound::getRoundId, latestDTO.getRoundId())
+                            .eq(AdvertRound::getLaunchStatus, latestDTO.getLaunchStatus()).eq(AdvertRound::getSymbol, latestDTO.getSymbol())
                             .eq(AdvertRound::getPosition, latestDTO.getPosition()).eq(AdvertRound::getDelFlag, Constants.UNDELETED)))
                     .orElseThrow(() -> new ServiceException("推广位不存在!", HttpStatus.ERROR));
         }

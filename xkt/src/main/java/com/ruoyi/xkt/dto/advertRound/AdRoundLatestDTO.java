@@ -27,5 +27,9 @@ public class AdRoundLatestDTO {
     private Integer showType;
     @ApiModelProperty(value = "位置 A B C D E")
     private String position;
+    @ApiModelProperty(value = "对象锁符号")
+    private String symbol;
+    @ApiModelProperty(value = "当前播放状态")
+    private Integer launchStatus;
 
 }
