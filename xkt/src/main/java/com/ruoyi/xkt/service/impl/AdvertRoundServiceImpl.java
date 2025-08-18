@@ -227,7 +227,13 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                     AdRoundTypeRoundResDTO typeRoundResDTO = new AdRoundTypeRoundResDTO().setAdvertId(advertRound.getAdvertId()).setRoundId(advertRound.getRoundId())
                             .setSymbol(advertRound.getSymbol()).setStartTime(advertRound.getStartTime()).setEndTime(advertRound.getEndTime())
                             .setStartWeekDay(getDayOfWeek(advertRound.getStartTime())).setEndWeekDay(getDayOfWeek(advertRound.getEndTime()))
-                            .setDurationDay(durationDay).setShowType(advertRound.getShowType()).setPosition(advertRound.getPosition());
+                            .setShowType(advertRound.getShowType()).setPosition(advertRound.getPosition()).setDurationDay(durationDay);
+                    // 如果是播放论，则播放开始时间展示为当天，因为有可能是播放的中间某一天
+                    if (Objects.equals(advertRound.getRoundId(), AdRoundType.PLAY_ROUND.getValue())) {
+                        typeRoundResDTO.setStartTime(new Date())
+                                // 计算最新的间隔时间（如果为最新播放论，则展示第一轮正在播放时间与最后一天的差距）
+                                .setDurationDay(calculateDurationDay(new Date(), advertRound.getEndTime(), Boolean.FALSE));
+                    }
                     // 展示类型 为时间范围 则，修改价格并显示每一轮竞价状态
                     if (Objects.equals(advertRound.getShowType(), AdShowType.TIME_RANGE.getValue())) {
                         // 只有时间范围类型才显示起始价格
