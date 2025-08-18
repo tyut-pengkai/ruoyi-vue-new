@@ -3,6 +3,7 @@ package com.ruoyi.xkt.dto.userShoppingCart;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 
@@ -12,13 +13,15 @@ import java.math.BigDecimal;
  * @date 2025/3/27 15:12
  */
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@Accessors(chain = true)
 public class ShopCartPageDetailResDTO {
 
     @ApiModelProperty(value = "进货车明细ID")
     private Long shoppingCartDetailId;
     @ApiModelProperty(value = "进货单ID")
     private Long shoppingCartId;
+    @ApiModelProperty(value = "档口商品颜色尺寸ID")
+    private Long storeProdColorSizeId;
     @ApiModelProperty(value = "档口商品颜色ID")
     private Long storeProdColorId;
     @ApiModelProperty(value = "尺码")

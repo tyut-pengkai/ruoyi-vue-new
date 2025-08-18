@@ -1,7 +1,6 @@
 package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -10,7 +9,6 @@ import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
@@ -114,6 +112,14 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
                 .map(ShopCartPageResDTO::getStoreProdId).collect(Collectors.toList()), FileType.MAIN_PIC.getValue(), ORDER_NUM_1);
         Map<Long, String> mainPicMap = CollectionUtils.isEmpty(mainPicList) ? new HashMap<>() : mainPicList.stream()
                 .collect(Collectors.toMap(StoreProdMainPicDTO::getStoreProdId, StoreProdMainPicDTO::getFileUrl));
+        // 获取商品价格尺码
+        List<StoreProductColorSize> priceSizeList = this.prodColorSizeMapper.selectList(new LambdaQueryWrapper<StoreProductColorSize>()
+                .in(StoreProductColorSize::getStoreProdId, shoppingCartList.stream().map(ShopCartPageResDTO::getStoreProdId).collect(Collectors.toList()))
+                .in(StoreProductColorSize::getStoreColorId, detailList.stream().map(ShopCartPageDetailResDTO::getStoreColorId).collect(Collectors.toList()))
+                .eq(StoreProductColorSize::getDelFlag, Constants.UNDELETED));
+        // 商品价格尺码map
+        Map<String, Long> priceSizeMap = priceSizeList.stream().collect(Collectors
+                .toMap(x -> x.getStoreProdId().toString() + x.getStoreColorId().toString() + x.getSize(), StoreProductColorSize::getId));
         // 获取所有标准尺码
         List<StoreProductColorSize> standardSizeList = this.prodColorSizeMapper.selectList(new LambdaQueryWrapper<StoreProductColorSize>()
                 .in(StoreProductColorSize::getStoreProdId, shoppingCartList.stream().map(ShopCartPageResDTO::getStoreProdId).collect(Collectors.toList()))
@@ -138,7 +144,8 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
         shoppingCartList.forEach(x -> {
             x.setMainPicUrl(mainPicMap.getOrDefault(x.getStoreProdId(), null));
             x.getDetailList()
-                    .forEach(detail -> detail.setStandardSize(minAndMaxSizeMap.getOrDefault(x.getStoreProdId(), "")));
+                    .forEach(detail -> detail.setStandardSize(minAndMaxSizeMap.getOrDefault(x.getStoreProdId(), ""))
+                            .setStoreProdColorSizeId(priceSizeMap.get(x.getStoreProdId().toString() + detail.getStoreColorId().toString() + detail.getSize())));
         });
         return Page.convert(new PageInfo<>(shoppingCartList));
     }
