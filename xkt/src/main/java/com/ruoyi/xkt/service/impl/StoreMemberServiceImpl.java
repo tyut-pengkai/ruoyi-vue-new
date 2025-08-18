@@ -76,7 +76,7 @@ public class StoreMemberServiceImpl implements IStoreMemberService {
         this.noticeService.createSingleNotice(SecurityUtils.getUserId(), "购买会员成功!", NoticeType.NOTICE.getValue(), NoticeOwnerType.SYSTEM.getValue(),
                 createDTO.getStoreId(), UserNoticeType.SYSTEM_MSG.getValue(), "恭喜您！购买:实力质造 会员成功!");
         // 扣除会员费
-        assetService.payAdvertFee(createDTO.getStoreId(), createDTO.getPayPrice(), createDTO.getTransactionPassword());
+        assetService.payVipFee(createDTO.getStoreId(), createDTO.getPayPrice(), createDTO.getTransactionPassword());
         return count;
     }
 

@@ -216,7 +216,8 @@ public class AssetServiceImpl implements IAssetService {
         InternalAccount internalAccount = internalAccountService.getAccount(queryDTO.getStoreId(),
                 EAccountOwnerType.STORE);
         Assert.notNull(internalAccount);
-        Page<TransDetailStorePageItemDTO> page = PageHelper.startPage(queryDTO.getPageNum(), queryDTO.getPageSize());
+        Page<TransDetailStorePageItemDTO> page = PageHelper.startPage(queryDTO.getPageNum(), queryDTO.getPageSize(),
+                "iatd.trans_time DESC");
         TransDetailQueryDTO tdq = BeanUtil.toBean(queryDTO,TransDetailQueryDTO.class);
         tdq.setInternalAccountId(internalAccount.getId());
         internalAccountService.listStoreTransDetailPageItem(tdq);
@@ -226,7 +227,8 @@ public class AssetServiceImpl implements IAssetService {
     @Override
     public Page<TransDetailUserPageItemDTO> pageUserTransDetail(TransDetailUserQueryDTO queryDTO) {
         Assert.notNull(queryDTO.getUserId());
-        Page<TransDetailUserPageItemDTO> page = PageHelper.startPage(queryDTO.getPageNum(), queryDTO.getPageSize());
+        Page<TransDetailUserPageItemDTO> page = PageHelper.startPage(queryDTO.getPageNum(), queryDTO.getPageSize(),
+                "fb.create_time DESC");
         TransDetailQueryDTO tdq = BeanUtil.toBean(queryDTO,TransDetailQueryDTO.class);
         tdq.setUserId(queryDTO.getUserId());
         internalAccountService.listUserTransDetailPageItem(tdq);
