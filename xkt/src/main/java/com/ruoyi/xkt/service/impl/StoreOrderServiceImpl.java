@@ -1270,6 +1270,8 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             orderDetails.add(orderDetail);
             orderDetail.setId(null);
             orderDetail.setStoreOrderId(null);
+            orderDetail.setCreateTime(null);
+            orderDetail.setUpdateTime(null);
             orderDetail.setDetailStatus(EOrderStatus.AFTER_SALE_IN_PROGRESS.getValue());
             orderDetail.setPayStatus(EPayStatus.INIT.getValue());
             orderDetail.setExpressId(afterSaleDTO.getExpressId());
@@ -1299,6 +1301,12 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         }
         StoreOrder order = BeanUtil.toBean(originOrder, StoreOrder.class);
         order.setId(null);
+        order.setCreateTime(null);
+        order.setUpdateTime(null);
+//        order.setPayTradeNo(null);
+//        order.setPayOverTime(null);
+//        order.setDeliveryOverTime(null);
+        order.setVoucherDate(new Date());
         //生成订单号
         String orderNo = voucherSequenceService.generateCode(order.getStoreId(),
                 EVoucherSequenceType.STORE_ORDER.getValue(), DateUtil.today());
