@@ -253,9 +253,24 @@ public class AssetServiceImpl implements IAssetService {
                 && EFinBillStatus.SUCCESS.getValue().equals(financeBill.getBillStatus());
     }
 
+    @Override
+    public boolean checkTransactionPassword(Long storeId, String transactionPassword) {
+        if (storeId == null || transactionPassword == null) {
+            return false;
+        }
+        InternalAccount internalAccount = internalAccountService.getAccountAndCheck(storeId, EAccountOwnerType.STORE);
+        if (internalAccount == null) {
+            throw new ServiceException("档口账户未创建");
+        }
+        if (StrUtil.isEmpty(internalAccount.getTransactionPassword())) {
+            throw new ServiceException("请先设置支付密码");
+        }
+        return StrUtil.equals(SecureUtil.md5(transactionPassword), internalAccount.getTransactionPassword());
+    }
+
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void payAdvertFee(Long storeId, BigDecimal amount, String transactionPassword) {
+    public void payAdvertFee(Long storeId, BigDecimal amount) {
         Assert.notNull(storeId);
         Assert.notNull(amount);
         InternalAccount internalAccount = internalAccountService.getAccountAndCheck(storeId, EAccountOwnerType.STORE);
@@ -264,9 +279,6 @@ public class AssetServiceImpl implements IAssetService {
         }
         if (StrUtil.isEmpty(internalAccount.getTransactionPassword())) {
             throw new ServiceException("请先设置支付密码");
-        }
-        if (!StrUtil.equals(SecureUtil.md5(transactionPassword), internalAccount.getTransactionPassword())) {
-            throw new ServiceException("支付密码错误");
         }
         financeBillService.createInternalTransferBill(Constants.PLATFORM_INTERNAL_ACCOUNT_ID, internalAccount.getId(),
                 amount, EFinBillSrcType.ADVERT_PAID.getValue(), null, null, null, "推广费");
@@ -286,7 +298,7 @@ public class AssetServiceImpl implements IAssetService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void payVipFee(Long storeId, BigDecimal amount, String transactionPassword) {
+    public void payVipFee(Long storeId, BigDecimal amount) {
         Assert.notNull(storeId);
         Assert.notNull(amount);
         InternalAccount internalAccount = internalAccountService.getAccountAndCheck(storeId, EAccountOwnerType.STORE);
@@ -295,9 +307,6 @@ public class AssetServiceImpl implements IAssetService {
         }
         if (StrUtil.isEmpty(internalAccount.getTransactionPassword())) {
             throw new ServiceException("请先设置支付密码");
-        }
-        if (!StrUtil.equals(SecureUtil.md5(transactionPassword), internalAccount.getTransactionPassword())) {
-            throw new ServiceException("支付密码错误");
         }
         financeBillService.createInternalTransferBill(Constants.PLATFORM_INTERNAL_ACCOUNT_ID, internalAccount.getId(),
                 amount, EFinBillSrcType.VIP_PAID.getValue(), null, null, null, "会员费");

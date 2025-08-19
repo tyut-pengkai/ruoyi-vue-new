@@ -107,13 +107,21 @@ public interface IAssetService {
     boolean isRechargeSuccess(String finBillNo);
 
     /**
+     * 校验支付密码
+     *
+     * @param storeId
+     * @param transactionPassword
+     * @return
+     */
+    boolean checkTransactionPassword(Long storeId, String transactionPassword);
+
+    /**
      * 支付推广费
      *
      * @param storeId
      * @param amount
-     * @param transactionPassword
      */
-    void payAdvertFee(Long storeId, BigDecimal amount, String transactionPassword);
+    void payAdvertFee(Long storeId, BigDecimal amount);
 
     /**
      * 退回推广费
@@ -128,9 +136,8 @@ public interface IAssetService {
      *
      * @param storeId
      * @param amount
-     * @param transactionPassword
      */
-    void payVipFee(Long storeId, BigDecimal amount, String transactionPassword);
+    void payVipFee(Long storeId, BigDecimal amount);
 
     /**
      * 退回会员费

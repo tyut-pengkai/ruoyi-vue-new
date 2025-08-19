@@ -683,7 +683,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
             this.noticeService.createSingleNotice(SecurityUtils.getUserId(), successTitle, NoticeType.NOTICE.getValue(), NoticeOwnerType.SYSTEM.getValue(),
                     minPriceAdvert.getStoreId(), UserNoticeType.ADVERT.getValue(), successContent);
             // 扣除推广费
-            assetService.payAdvertFee(createDTO.getStoreId(), createDTO.getPayPrice(), createDTO.getTransactionPassword());
+            assetService.payAdvertFee(createDTO.getStoreId(), createDTO.getPayPrice());
         }
         return 1;
     }
