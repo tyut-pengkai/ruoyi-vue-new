@@ -46,6 +46,10 @@ public class Kuaidi100Client {
             String fullUrl = StrUtil.indexedFormat(url, waybillNum, key);
             HttpRequest httpRequest = HttpUtil.createGet(fullUrl);
             String result = httpRequest.execute().body();
+            if (result.startsWith("{")) {
+                //{"returnCode":"201","message":"不是有效的快递单号","result":false}
+                return null;
+            }
             JSONArray array = JSON.parseArray(result);
             if (!array.isEmpty()) {
                 return array.getJSONObject(0).getString("comCode");
