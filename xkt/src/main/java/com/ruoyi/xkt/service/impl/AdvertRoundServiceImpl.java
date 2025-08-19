@@ -297,7 +297,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         List<AdRoundTypeRoundBoughtResDTO> resList = advertRoundList.stream().map(advertRound -> {
             AdRoundTypeRoundBoughtResDTO bought = new AdRoundTypeRoundBoughtResDTO().setTypeId(advertRound.getTypeId()).setAdvertRoundId(advertRound.getId())
                     .setAdvertId(advertRound.getAdvertId()).setRoundId(advertRound.getRoundId()).setPosition(advertRound.getPosition())
-                    .setStartPrice(advertRound.getStartPrice()).setPayPrice(advertRound.getPayPrice()).setStoreId(storeId)
+                    .setStartPrice(advertRound.getStartPrice()).setPayPrice(advertRound.getPayPrice()).setStoreId(storeId).setLaunchStatus(advertRound.getLaunchStatus())
                     .setStartTime(advertRound.getStartTime()).setEndTime(advertRound.getEndTime()).setSymbol(advertRound.getSymbol());
             // 如果当前位置没有档口购买，且为第一轮 则需按照剩余时间比例进行减价
             if (ObjectUtils.isEmpty(advertRound.getStoreId()) && Objects.equals(advertRound.getRoundId(), AdRoundType.PLAY_ROUND.getValue())) {
