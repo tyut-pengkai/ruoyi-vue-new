@@ -237,7 +237,6 @@ public class ZtoExpressManagerImpl implements ExpressManager, InitializingBean {
         }
         //等待推送
         try {
-            //TODO 等待时间？
             TimeUnit.SECONDS.sleep(3);
         } catch (InterruptedException e) {
             throw new ServiceException("系统异常");

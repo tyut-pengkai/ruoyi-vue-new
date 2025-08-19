@@ -1303,7 +1303,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         order.setId(null);
         order.setCreateTime(null);
         order.setUpdateTime(null);
-//        order.setPayTradeNo(null);
+        order.setPayTradeNo(null);
 //        order.setPayOverTime(null);
 //        order.setDeliveryOverTime(null);
         order.setVoucherDate(new Date());

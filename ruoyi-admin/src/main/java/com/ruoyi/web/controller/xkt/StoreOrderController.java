@@ -191,7 +191,7 @@ public class StoreOrderController extends XktBaseController {
         return success(PageVO.of(pageDTO, StoreOrderPageItemVO.class));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('store,seller,agent')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "导出订单")
     @PostMapping("/export")
     @ResponseHeader
@@ -199,10 +199,17 @@ public class StoreOrderController extends XktBaseController {
         StoreOrderQueryDTO queryDTO = BeanUtil.toBean(vo, StoreOrderQueryDTO.class);
         //日期转时间
         date2Time(queryDTO);
-        Long storeId = SecurityUtils.getStoreId();
-        queryDTO.setStoreId(storeId);
-        String storeName = storeService.getStoreNameByIds(Collections.singletonList(storeId)).get(storeId);
-        String title = StrUtil.emptyIfNull(storeName).concat("代发订单");
+        String title = "代发订单";
+        if (!SecurityUtils.isAdmin()) {
+            Long storeId = SecurityUtils.getStoreId();
+            if (storeId != null) {
+                queryDTO.setStoreId(storeId);
+                String storeName = storeService.getStoreNameByIds(Collections.singletonList(storeId)).get(storeId);
+                title = StrUtil.emptyIfNull(storeName).concat("代发订单");
+            } else {
+                queryDTO.setOrderUserId(SecurityUtils.getUserId());
+            }
+        }
         try (ServletOutputStream os = response.getOutputStream()) {
             FileUtils.setAttachmentResponseHeader(response, title + ".xlsx");
             storeOrderService.exportOrder(queryDTO, null, title, os);
