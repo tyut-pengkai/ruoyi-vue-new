@@ -37,7 +37,7 @@ CREATE TABLE `advert`
 
 INSERT INTO `advert` VALUES (39, 1, 'oCYTRg9Wpk', 1, 1, 1, 1, 1, 1, 300.00, 3, 4, '22:00:00', 5, 121, '840*470', '不超过5.00M', NULL, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 22:51:52', '', '2025-08-13 22:51:52');
 INSERT INTO `advert` VALUES (40, 2, 'tyuG0P6QEl', 4, 1, 2, 1, 1, 2, 300.00, 3, 4, '22:00:00', 4, NULL, '', '', 4, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 22:52:52', '', '2025-08-13 22:52:52');
-INSERT INTO `advert` VALUES (41, 2, 'cWsRqCVIC7', 2, 1, 3, 1, 1, 2, 300.00, 3, 4, '22:00:00', 3, NULL, '', '', 2, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 22:53:32', '', '2025-08-13 22:53:32');
+INSERT INTO `advert` VALUES (41, 2, 'cWsRqCVIC7', 2, 1, 3, 1, 1, 2, 300.00, 3, 4, '22:00:00', 2, NULL, '', '', 2, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 22:53:32', '', '2025-08-13 22:53:32');
 INSERT INTO `advert` VALUES (42, 2, 'WG7oSnTbTn', 2, 1, 4, 1, 1, 2, 300.00, 3, 4, '22:00:00', 2, NULL, '', '', 2, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 22:54:06', '', '2025-08-13 22:54:06');
 INSERT INTO `advert` VALUES (43, 2, 'CnZcnndkoz', 2, 1, 5, 1, 1, 2, 300.00, 3, 4, '22:00:00', 2, NULL, '', '', 2, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 22:54:33', '', '2025-08-13 22:54:33');
 INSERT INTO `advert` VALUES (44, 2, 'fNn28SYfJT', 2, 1, 6, 1, 1, 2, 300.00, 3, 4, '22:00:00', 2, NULL, '', '', 2, NULL, NULL, NULL, NULL, 0, '0', '', '2025-08-13 22:54:54', '', '2025-08-13 22:54:54');
