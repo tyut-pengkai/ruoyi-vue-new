@@ -33,7 +33,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             sp.prod_cate_id AS prodCateId,
             pc.`name` AS prodCateName,
             spcp.price,
-            sp.prod_status AS prodStatus,
+            spc.prod_status AS prodStatus,
             spc.create_time AS createTime,
             sf.file_url AS mainPicUrl,
             ( SELECT GROUP_CONCAT( size SEPARATOR ',' ) FROM store_product_color_size WHERE  store_color_id = spc.store_color_id
