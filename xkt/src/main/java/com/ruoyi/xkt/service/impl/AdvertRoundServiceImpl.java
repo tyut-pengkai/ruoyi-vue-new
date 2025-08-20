@@ -623,6 +623,13 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(createDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
+        //校验推广支付方式是否存在
+        AdPayWay.of(createDTO.getPayWay());
+        // 校验使用余额情况下，密码是否正确
+        if (Objects.equals(createDTO.getPayWay(), AdPayWay.BALANCE.getValue())
+                && !assetService.checkTransactionPassword(createDTO.getStoreId(), createDTO.getTransactionPassword())) {
+            throw new ServiceException("支付密码错误!请重新输入", HttpStatus.ERROR);
+        }
         // 当前营销推广位的锁
         Object lockObj = Optional.ofNullable(advertLockMap.get(createDTO.getSymbol())).orElseThrow(() -> new ServiceException("symbol不存在!", HttpStatus.ERROR));
         synchronized (lockObj) {

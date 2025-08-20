@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 /**
@@ -35,6 +36,8 @@ public class AdRoundStoreCreateDTO {
     private String prodIdStr;
     @ApiModelProperty(value = "对象锁符号")
     private String symbol;
+    @ApiModelProperty(value = "支付方式")
+    private Integer payWay;
     @ApiModelProperty(value = "交易密码")
     private String transactionPassword;
 
