@@ -25,6 +25,12 @@ public class AdminAdRoundSysInterceptVO {
     @NotNull(message = "推广轮次ID不能为空")
     @ApiModelProperty(value = "推广轮次ID", required = true)
     private Long advertRoundId;
+    @NotBlank(message = "对象锁符号不能为空")
+    @ApiModelProperty(value = "对象锁符号", required = true)
+    private String symbol;
+    @NotNull(message = "投放状态不能为空")
+    @ApiModelProperty(value = "投放状态", required = true)
+    private Integer launchStatus;
     @NotNull(message = "档口ID不能为空")
     @ApiModelProperty(value = "档口ID", required = true)
     private Long storeId;

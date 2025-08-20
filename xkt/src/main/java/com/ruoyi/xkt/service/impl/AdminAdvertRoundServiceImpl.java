@@ -197,6 +197,7 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
         // 判断要给档口购买的推广位，该档口是否自己已购买
         LambdaQueryWrapper<AdvertRound> queryWrapper = new LambdaQueryWrapper<AdvertRound>()
                 .eq(AdvertRound::getAdvertId, advertRound.getAdvertId()).eq(AdvertRound::getRoundId, advertRound.getRoundId())
+                .eq(AdvertRound::getSymbol, interceptDTO.getSymbol()).eq(AdvertRound::getLaunchStatus, interceptDTO.getLaunchStatus())
                 .eq(AdvertRound::getStoreId, interceptDTO.getStoreId()).eq(AdvertRound::getDelFlag, Constants.UNDELETED);
         // 如果是位置枚举类型，则要加上具体的位置
         if (Objects.equals(advertRound.getShowType(), AdShowType.POSITION_ENUM.getValue())) {

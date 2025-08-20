@@ -6,6 +6,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -24,6 +26,10 @@ public class AdminAdRoundSysInterceptDTO {
     private Long advertRoundId;
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
+    @ApiModelProperty(value = "对象锁符号")
+    private String symbol;
+    @ApiModelProperty(value = "投放状态")
+    private Integer launchStatus;
     @ApiModelProperty(value = "档口名称")
     private String storeName;
     @ApiModelProperty(value = "管理员上传推广图")
