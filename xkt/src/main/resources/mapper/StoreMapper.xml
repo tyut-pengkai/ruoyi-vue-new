@@ -32,7 +32,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             s.qq_account,
             s.store_address,
             sc.legal_name,
-            sc.license_name
+            sc.license_name,
+            s.store_logo_id
         FROM
             store s JOIN store_certificate sc ON s.id = sc.store_id
          WHERE

@@ -457,7 +457,13 @@ public class StoreServiceImpl implements IStoreService {
                 .eq(UserSubscriptions::getUserId, SecurityUtils.getUserId())
                 .eq(UserSubscriptions::getStoreId, storeId)
                 .eq(UserSubscriptions::getDelFlag, Constants.UNDELETED));
-        return simpleDTO.setFocus(ObjectUtils.isNotEmpty(userSub) ? Boolean.TRUE : Boolean.FALSE);
+        simpleDTO.setFocus(ObjectUtils.isNotEmpty(userSub) ? Boolean.TRUE : Boolean.FALSE);
+        // 获取档口LOGO
+        if (ObjectUtils.isNotEmpty(simpleDTO.getStoreLogoId())) {
+            SysFile logo = this.fileMapper.selectById(simpleDTO.getStoreLogoId());
+            simpleDTO.setLogo(BeanUtil.toBean(logo, StoreSimpleResDTO.SSFileDTO.class));
+        }
+        return simpleDTO;
     }
 
     @Override

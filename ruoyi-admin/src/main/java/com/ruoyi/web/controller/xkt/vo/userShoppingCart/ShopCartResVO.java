@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -18,21 +19,21 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ShopCartResVO {
 
-    @ApiModelProperty(value = "进货车ID")
-    private Long shoppingCartId;
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
     @ApiModelProperty(value = "档口名称")
     private String storeName;
-    @ApiModelProperty(value = "商品货号")
-    private String prodArtNum;
     @ApiModelProperty(value = "档口商品ID")
     private Long storeProdId;
+    @ApiModelProperty(value = "商品货号")
+    private String prodArtNum;
+    @ApiModelProperty(value = "商品主图")
+    private String mainPicUrl;
     @ApiModelProperty(value = "进货车明细列表")
     List<SCDetailVO> detailList;
 
     @Data
-    @ApiModel
+    @Accessors(chain = true)
     public static class SCDetailVO {
         @ApiModelProperty(value = "档口商品颜色尺寸ID")
         private Long storeProdColorSizeId;
