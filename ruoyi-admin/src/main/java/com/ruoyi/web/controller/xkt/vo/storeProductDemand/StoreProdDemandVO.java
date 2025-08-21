@@ -7,6 +7,7 @@ import lombok.Data;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 /**
@@ -24,6 +25,9 @@ public class StoreProdDemandVO {
     @NotNull(message = "档口工厂ID不能为空")
     @ApiModelProperty(value = "档口工厂ID", required = true)
     private Long storeFactoryId;
+    @Size(min = 0, max = 100, message = "备注长度不能超过100个字符")
+    @ApiModelProperty(value = "备注", required = true)
+    private String remark;
     @NotNull(message = "需求列表不能为空")
     @Valid
     @ApiModelProperty(value = "新增需求列表", required = true)

@@ -19,6 +19,8 @@ public class StoreProdDemandDTO {
     private Long storeId;
     @ApiModelProperty(value = "档口工厂ID")
     private Long storeFactoryId;
+    @ApiModelProperty(value = "备注")
+    private String remark;
     @ApiModelProperty(value = "需求列表")
     private List<DetailDTO> detailList;
 

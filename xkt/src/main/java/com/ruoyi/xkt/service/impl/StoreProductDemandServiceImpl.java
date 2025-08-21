@@ -160,8 +160,10 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
         }
         StoreProductDemand demand = new StoreProductDemand();
         // 生成code
-        demand.setCode(this.sequenceService.generateCode(demandDTO.getStoreId(), EVoucherSequenceType.DEMAND.getValue(), DateUtils.parseDateToStr(DateUtils.YYYYMMDD, new Date())))
-                .setDemandStatus(1).setStoreId(demandDTO.getStoreId()).setStoreFactoryId(demandDTO.getStoreFactoryId()).setCreateBy(SecurityUtils.getUsername());
+        demand.setCode(this.sequenceService.generateCode(demandDTO.getStoreId(), EVoucherSequenceType.DEMAND.getValue(),
+                        DateUtils.parseDateToStr(DateUtils.YYYYMMDD, new Date())))
+                .setDemandStatus(1).setStoreId(demandDTO.getStoreId()).setStoreFactoryId(demandDTO.getStoreFactoryId())
+                .setRemark(demandDTO.getRemark()).setCreateBy(SecurityUtils.getUsername());
         int count = this.storeProdDemandMapper.insert(demand);
         // 生产需求详情
         List<StoreProductDemandDetail> detailList = demandDTO.getDetailList().stream().map(x -> {

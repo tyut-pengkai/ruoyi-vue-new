@@ -249,9 +249,9 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
         if (ObjectUtils.isNotEmpty(interceptDTO.getStoreProdIdList())) {
             advertRound.setProdIdStr(StringUtils.join(interceptDTO.getStoreProdIdList(), ","));
         }
-        // 如果是位置枚举，则设置一个很高的价格（200 - 400）范围，有其它档口愿意出更高价格拿下就随他去
+        // 如果是位置枚举，则设置一个很高的价格（100 - 200）范围，有其它档口愿意出更高价格拿下就随他去
         if (Objects.equals(advertRound.getShowType(), AdShowType.POSITION_ENUM.getValue())) {
-            advertRound.setPayPrice(BigDecimal.valueOf(RandomUtils.nextLong(20, 40 + 1) * 10));
+            advertRound.setPayPrice(BigDecimal.valueOf(RandomUtils.nextLong(10, 20 + 1) * 10));
         }
         return this.advertRoundMapper.updateById(advertRound);
     }
