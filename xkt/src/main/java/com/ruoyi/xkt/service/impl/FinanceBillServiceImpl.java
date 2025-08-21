@@ -6,6 +6,7 @@ import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.text.CharSequenceUtil;
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.NumberUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -125,7 +126,6 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public FinanceBillExt createOrderCompletedTransferBill(StoreOrderExt orderExt) {
-        //TODO 需要先批量获取内部账户避免出现死锁？
         Assert.notNull(orderExt);
         FinanceBill bill = new FinanceBill();
         bill.setBillNo(generateBillNo(EFinBillType.TRANSFER));
@@ -172,9 +172,11 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
                 .remark("订单完成")
                 .build();
         //内部账户
-        internalAccountService.addTransDetail(Constants.PLATFORM_INTERNAL_ACCOUNT_ID, transInfo,
+        Map<Long, InternalAccount> accountMap = getInternalAccountMapForUpdate(Constants.PLATFORM_INTERNAL_ACCOUNT_ID,
+                inputInternalAccountId);
+        internalAccountService.addTransDetail(accountMap.get(Constants.PLATFORM_INTERNAL_ACCOUNT_ID), transInfo,
                 ELoanDirection.CREDIT, EEntryStatus.FINISH);
-        internalAccountService.addTransDetail(inputInternalAccountId, transInfo,
+        internalAccountService.addTransDetail(accountMap.get(inputInternalAccountId), transInfo,
                 ELoanDirection.DEBIT, EEntryStatus.FINISH);
         return new FinanceBillExt(bill, billDetails);
     }
@@ -183,7 +185,6 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
     @Override
     public FinanceBillExt createOrderCompletedTransferBill(StoreOrderExt orderExt,
                                                            List<StoreOrderExt> afterSaleOrderExts) {
-        //TODO 需要先批量获取内部账户避免出现死锁？
         Assert.notNull(orderExt);
         FinanceBill bill = new FinanceBill();
         bill.setBillNo(generateBillNo(EFinBillType.TRANSFER));
@@ -294,9 +295,11 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
                 .remark("订单完成")
                 .build();
         //内部账户
-        internalAccountService.addTransDetail(Constants.PLATFORM_INTERNAL_ACCOUNT_ID, transInfo,
+        Map<Long, InternalAccount> accountMap = getInternalAccountMapForUpdate(Constants.PLATFORM_INTERNAL_ACCOUNT_ID,
+                inputInternalAccountId);
+        internalAccountService.addTransDetail(accountMap.get(Constants.PLATFORM_INTERNAL_ACCOUNT_ID), transInfo,
                 ELoanDirection.CREDIT, EEntryStatus.FINISH);
-        internalAccountService.addTransDetail(inputInternalAccountId, transInfo,
+        internalAccountService.addTransDetail(accountMap.get(inputInternalAccountId), transInfo,
                 ELoanDirection.DEBIT, EEntryStatus.FINISH);
         return new FinanceBillExt(bill, billDetails);
     }
@@ -541,7 +544,6 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
     public FinanceBillExt createInternalTransferBill(Long inputAccountId, Long outputAccountId, BigDecimal amount,
                                                      Integer srcType, Long srcId, Integer relType, Long relId,
                                                      String remark) {
-        //TODO 需要先批量获取内部账户避免出现死锁？
         Assert.notNull(inputAccountId);
         Assert.notNull(outputAccountId);
         Assert.notNull(amount);
@@ -574,9 +576,11 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
                 .remark(remark)
                 .build();
         //内部账户
-        internalAccountService.addTransDetail(outputAccountId, transInfo,
+        Map<Long, InternalAccount> accountMap = getInternalAccountMapForUpdate(outputAccountId,
+                inputAccountId);
+        internalAccountService.addTransDetail(accountMap.get(outputAccountId), transInfo,
                 ELoanDirection.CREDIT, EEntryStatus.FINISH);
-        internalAccountService.addTransDetail(inputAccountId, transInfo,
+        internalAccountService.addTransDetail(accountMap.get(inputAccountId), transInfo,
                 ELoanDirection.DEBIT, EEntryStatus.FINISH);
         return new FinanceBillExt(bill, ListUtil.empty());
     }
@@ -605,6 +609,15 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
     public String generateBillNo(EFinBillType billType) {
         //未确定规则，暂时用UUID代替
         return IdUtil.simpleUUID();
+    }
+
+    private Map<Long, InternalAccount> getInternalAccountMapForUpdate(Long... ids) {
+        if (ArrayUtil.isEmpty(ids)) {
+            return MapUtil.empty();
+        }
+        return internalAccountService.listByIdsForUpdate(CollUtil.toList(ids))
+                .stream()
+                .collect(Collectors.toMap(SimpleEntity::getId, Function.identity()));
     }
 
     private <T extends SimpleEntity> T prepareInsert(T obj) {

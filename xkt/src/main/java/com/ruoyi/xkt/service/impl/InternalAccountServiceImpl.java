@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -48,6 +49,13 @@ public class InternalAccountServiceImpl implements IInternalAccountService {
     public InternalAccount getById(Long id) {
         Assert.notNull(id);
         return internalAccountMapper.selectById(id);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public List<InternalAccount> listByIdsForUpdate(Collection<Long> ids) {
+        Assert.notEmpty(ids);
+        return internalAccountMapper.listForUpdate(ids);
     }
 
     @Override
@@ -80,6 +88,13 @@ public class InternalAccountServiceImpl implements IInternalAccountService {
                               EEntryStatus entryStatus) {
         Assert.notNull(internalAccountId);
         InternalAccount internalAccount = internalAccountMapper.getForUpdate(internalAccountId);
+        return addTransDetail(internalAccount, transInfo, loanDirection, entryStatus);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public int addTransDetail(InternalAccount internalAccount, TransInfo transInfo, ELoanDirection loanDirection,
+                              EEntryStatus entryStatus) {
         checkAccountStatus(internalAccount);
         InternalAccountTransDetail transDetail = new InternalAccountTransDetail();
         transDetail.setInternalAccountId(internalAccount.getId());

@@ -11,6 +11,7 @@ import com.ruoyi.xkt.enums.EEntryStatus;
 import com.ruoyi.xkt.enums.EFinBillType;
 import com.ruoyi.xkt.enums.ELoanDirection;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -25,6 +26,14 @@ public interface IInternalAccountService {
      * @return
      */
     InternalAccount getById(Long id);
+
+    /**
+     * 通过ids获取内部账户（锁）
+     *
+     * @param ids
+     * @return
+     */
+    List<InternalAccount> listByIdsForUpdate(Collection<Long> ids);
 
     /**
      * 获取内部账户
@@ -54,6 +63,18 @@ public interface IInternalAccountService {
      * @return
      */
     int addTransDetail(Long internalAccountId, TransInfo transInfo, ELoanDirection loanDirection,
+                       EEntryStatus entryStatus);
+
+    /**
+     * 添加交易明细
+     *
+     * @param internalAccount
+     * @param transInfo
+     * @param loanDirection
+     * @param entryStatus
+     * @return
+     */
+    int addTransDetail(InternalAccount internalAccount, TransInfo transInfo, ELoanDirection loanDirection,
                        EEntryStatus entryStatus);
 
     /**
