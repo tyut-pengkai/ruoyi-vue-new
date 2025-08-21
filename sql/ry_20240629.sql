@@ -2818,6 +2818,7 @@ CREATE TABLE `finance_bill`
     `business_amount`            decimal(18, 2) NOT NULL COMMENT '业务金额',
     `trans_amount`               decimal(18, 2) NOT NULL COMMENT '交易金额',
     `remark`                     varchar(255) DEFAULT NULL COMMENT '备注',
+    `ext_info`                   varchar(2048) DEFAULT NULL COMMENT '扩展信息',
     `del_flag`                   char(1)      DEFAULT '0' COMMENT '删除标志（0代表存在 2代表删除）',
     `create_by`                  varchar(64)  DEFAULT '' COMMENT '创建者',
     `create_time`                datetime     DEFAULT NULL COMMENT '创建时间',
@@ -4252,6 +4253,11 @@ CREATE TABLE `user_subscriptions`
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户关注u档口' ROW_FORMAT = DYNAMIC;
 
+-- 快递费用初始化（测试，上线前根据实际费用调整）
+INSERT INTO express_fee_config ( express_id, region_code, first_item_amount, next_item_amount )
+SELECT 1, region_code, 5, 5 FROM express_region WHERE region_level = 1;
+INSERT INTO express_fee_config ( express_id, region_code, first_item_amount, next_item_amount )
+SELECT 2, region_code, 5, 5 FROM express_region WHERE region_level = 1;
 
 
 

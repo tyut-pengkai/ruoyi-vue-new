@@ -16,12 +16,10 @@ import com.ruoyi.common.core.domain.SimpleEntity;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.bean.BeanValidators;
-import com.ruoyi.xkt.domain.FinanceBill;
-import com.ruoyi.xkt.domain.FinanceBillDetail;
-import com.ruoyi.xkt.domain.InternalAccount;
-import com.ruoyi.xkt.domain.StoreOrderDetail;
+import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.finance.FinanceBillDTO;
 import com.ruoyi.xkt.dto.finance.FinanceBillExt;
+import com.ruoyi.xkt.dto.finance.FinanceBillExtInfo;
 import com.ruoyi.xkt.dto.finance.TransInfo;
 import com.ruoyi.xkt.dto.order.StoreOrderExt;
 import com.ruoyi.xkt.enums.*;
@@ -408,13 +406,18 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
         bill.setBusinessUniqueKey(businessUniqueKey);
         Long outputInternalAccountId = internalAccountService.getAccountAndCheck(storeId, EAccountOwnerType.STORE)
                 .getId();
-        Long inputExternalAccountId = externalAccountService.getAccountAndCheck(storeId, EAccountOwnerType.STORE,
-                EAccountType.getByChannel(payChannel)).getId();
+        ExternalAccount inputExternalAccount = externalAccountService.getAccountAndCheck(storeId,
+                EAccountOwnerType.STORE, EAccountType.getByChannel(payChannel));
+        FinanceBillExtInfo.PaymentWithdraw extInfo = new FinanceBillExtInfo.PaymentWithdraw(payChannel.getValue(),
+                inputExternalAccount.getAccountOwnerNumber(), inputExternalAccount.getAccountOwnerName(),
+                inputExternalAccount.getAccountOwnerPhoneNumber());
+        bill.setExtInfo(extInfo.toJsonStr());
+        Long inputExternalAccountId = inputExternalAccount.getId();
         bill.setOutputInternalAccountId(outputInternalAccountId);
         bill.setInputExternalAccountId(inputExternalAccountId);
         bill.setOutputExternalAccountId(payChannel.getPlatformExternalAccountId());
         bill.setBusinessAmount(amount);
-        //支付宝服务费 TODO 再次确认
+        //支付宝服务费
         BigDecimal aliServiceFee = NumberUtil.mul(amount, Constants.ALI_SERVICE_FEE_RATE)
                 .setScale(2, RoundingMode.HALF_UP);
         bill.setTransAmount(NumberUtil.sub(amount, aliServiceFee));

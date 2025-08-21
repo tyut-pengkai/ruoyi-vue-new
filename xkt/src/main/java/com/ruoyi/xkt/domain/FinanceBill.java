@@ -79,6 +79,10 @@ public class FinanceBill extends SimpleEntity {
      */
     private String remark;
     /**
+     * 扩展信息
+     */
+    private String extInfo;
+    /**
      * 版本号
      */
     @Version

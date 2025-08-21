@@ -25,10 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -116,34 +113,28 @@ public class ExpressServiceImpl implements IExpressService {
         Assert.notEmpty(provinceCode);
         Assert.notEmpty(cityCode);
         Assert.notEmpty(countyCode);
-        //TODO mock
-//        Map<String, ExpressFeeConfig> map = expressFeeConfigMapper.selectList(Wrappers.lambdaQuery(ExpressFeeConfig.class)
-//                .eq(ExpressFeeConfig::getExpressId, expressId)
-//                .in(ExpressFeeConfig::getRegionCode, Arrays.asList(provinceCode, cityCode, countyCode)))
-//                .stream()
-//                //过滤掉已被删除的配置
-//                .filter(BeanValidators::exists)
-//                .collect(Collectors.toMap(o -> o.getRegionCode(), o -> o, (n, o) -> n));
-//        ExpressFeeConfig expressFeeConfig = null;
-//        if (CollUtil.isNotEmpty(map)) {
-//            if (map.size() == 1) {
-//                expressFeeConfig = CollUtil.getFirst(map.values());
-//            } else {
-//                expressFeeConfig = map.get(countyCode);
-//                //按区市省从小到大去匹配
-//                if (expressFeeConfig == null) {
-//                    expressFeeConfig = map.get(cityCode);
-//                    if (expressFeeConfig == null) {
-//                        expressFeeConfig = map.get(provinceCode);
-//                    }
-//                }
-//            }
-//        }
-        ExpressFeeConfig expressFeeConfig = new ExpressFeeConfig();
-        expressFeeConfig.setExpressId(expressId);
-        expressFeeConfig.setFirstItemAmount(BigDecimal.valueOf(5));
-        expressFeeConfig.setNextItemAmount(BigDecimal.valueOf(5));
-        expressFeeConfig.setDelFlag(Constants.UNDELETED);
+        Map<String, ExpressFeeConfig> map = expressFeeConfigMapper.selectList(Wrappers.lambdaQuery(ExpressFeeConfig.class)
+                .eq(ExpressFeeConfig::getExpressId, expressId)
+                .in(ExpressFeeConfig::getRegionCode, Arrays.asList(provinceCode, cityCode, countyCode)))
+                .stream()
+                //过滤掉已被删除的配置
+                .filter(BeanValidators::exists)
+                .collect(Collectors.toMap(ExpressFeeConfig::getRegionCode, o -> o, (o, n) -> n));
+        ExpressFeeConfig expressFeeConfig = null;
+        if (CollUtil.isNotEmpty(map)) {
+            if (map.size() == 1) {
+                expressFeeConfig = CollUtil.getFirst(map.values());
+            } else {
+                expressFeeConfig = map.get(countyCode);
+                //按区市省从小到大去匹配
+                if (expressFeeConfig == null) {
+                    expressFeeConfig = map.get(cityCode);
+                    if (expressFeeConfig == null) {
+                        expressFeeConfig = map.get(provinceCode);
+                    }
+                }
+            }
+        }
         return expressFeeConfig;
     }
 

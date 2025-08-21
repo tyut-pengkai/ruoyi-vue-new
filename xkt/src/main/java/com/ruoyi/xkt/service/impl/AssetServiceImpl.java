@@ -6,6 +6,7 @@ import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
+import cn.hutool.json.JSONUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.ruoyi.common.constant.CacheConstants;
@@ -21,10 +22,7 @@ import com.ruoyi.xkt.domain.FinanceBill;
 import com.ruoyi.xkt.domain.InternalAccount;
 import com.ruoyi.xkt.domain.Store;
 import com.ruoyi.xkt.dto.account.*;
-import com.ruoyi.xkt.dto.finance.FinanceBillDTO;
-import com.ruoyi.xkt.dto.finance.FinanceBillExt;
-import com.ruoyi.xkt.dto.finance.RechargeAddDTO;
-import com.ruoyi.xkt.dto.finance.RechargeAddResult;
+import com.ruoyi.xkt.dto.finance.*;
 import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.manager.PaymentManager;
 import com.ruoyi.xkt.mapper.StoreMapper;
@@ -90,12 +88,14 @@ public class AssetServiceImpl implements IAssetService {
             throw new ServiceException("支付密码错误");
         }
         FinanceBillExt financeBillExt = financeBillService.createWithdrawPaymentBill(storeId, amount, payChannel);
+        FinanceBillExtInfo.PaymentWithdraw extInfo = FinanceBillExtInfo.PaymentWithdraw
+                .parse(financeBillExt.getFinanceBill().getExtInfo());
         return new WithdrawPrepareResult(financeBillExt.getFinanceBill().getId(),
                 financeBillExt.getFinanceBill().getBillNo(),
                 financeBillExt.getFinanceBill().getTransAmount(),
-                externalAccount.getAccountOwnerNumber(),
-                externalAccount.getAccountOwnerName(),
-                externalAccount.getAccountOwnerPhoneNumber());
+                extInfo.getAccountOwnerNumber(),
+                extInfo.getAccountOwnerName(),
+                extInfo.getAccountOwnerPhoneNumber());
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -218,7 +218,7 @@ public class AssetServiceImpl implements IAssetService {
         Assert.notNull(internalAccount);
         Page<TransDetailStorePageItemDTO> page = PageHelper.startPage(queryDTO.getPageNum(), queryDTO.getPageSize(),
                 "iatd.trans_time DESC");
-        TransDetailQueryDTO tdq = BeanUtil.toBean(queryDTO,TransDetailQueryDTO.class);
+        TransDetailQueryDTO tdq = BeanUtil.toBean(queryDTO, TransDetailQueryDTO.class);
         tdq.setInternalAccountId(internalAccount.getId());
         internalAccountService.listStoreTransDetailPageItem(tdq);
         return page;
@@ -229,7 +229,7 @@ public class AssetServiceImpl implements IAssetService {
         Assert.notNull(queryDTO.getUserId());
         Page<TransDetailUserPageItemDTO> page = PageHelper.startPage(queryDTO.getPageNum(), queryDTO.getPageSize(),
                 "fb.create_time DESC");
-        TransDetailQueryDTO tdq = BeanUtil.toBean(queryDTO,TransDetailQueryDTO.class);
+        TransDetailQueryDTO tdq = BeanUtil.toBean(queryDTO, TransDetailQueryDTO.class);
         tdq.setUserId(queryDTO.getUserId());
         internalAccountService.listUserTransDetailPageItem(tdq);
         return page;
@@ -325,23 +325,24 @@ public class AssetServiceImpl implements IAssetService {
 
     @Override
     public Map<EPayChannel, List<WithdrawPrepareResult>> getNeedContinueWithdrawGroupMap(Integer count) {
-        //TODO 付款单据没有支付渠道和账户快照
+        Map<EPayChannel, List<WithdrawPrepareResult>> rtn = new HashMap<>(EPayChannel.values().length);
         List<FinanceBillDTO> bills = financeBillService.listByStatus(EFinBillStatus.PROCESSING,
                 EFinBillType.PAYMENT, EFinBillSrcType.WITHDRAW, count);
-        List<WithdrawPrepareResult> results = new ArrayList<>(bills.size());
         for (FinanceBillDTO bill : bills) {
-            Long storeId = bill.getSrcId();
-            ExternalAccount externalAccount = externalAccountService.getAccountAndCheck(storeId,
-                    EAccountOwnerType.STORE, EAccountType.ALI_PAY);
-            results.add(new WithdrawPrepareResult(bill.getId(),
-                    bill.getBillNo(),
-                    bill.getTransAmount(),
-                    externalAccount.getAccountOwnerNumber(),
-                    externalAccount.getAccountOwnerName(),
-                    externalAccount.getAccountOwnerPhoneNumber()));
+            if (StrUtil.isEmpty(bill.getExtInfo())) {
+                continue;
+            }
+            FinanceBillExtInfo.PaymentWithdraw withdrawInfo = FinanceBillExtInfo.PaymentWithdraw
+                    .parse(bill.getExtInfo());
+            EPayChannel payChannel = EPayChannel.of(withdrawInfo.getPayChannel());
+            rtn.computeIfAbsent(payChannel, k -> new ArrayList<>())
+                    .add(new WithdrawPrepareResult(bill.getId(),
+                            bill.getBillNo(),
+                            bill.getTransAmount(),
+                            withdrawInfo.getAccountOwnerNumber(),
+                            withdrawInfo.getAccountOwnerName(),
+                            withdrawInfo.getAccountOwnerPhoneNumber()));
         }
-        Map<EPayChannel, List<WithdrawPrepareResult>> rtn = new HashMap<>(1);
-        rtn.put(EPayChannel.ALI_PAY, results);
         return rtn;
     }
 
