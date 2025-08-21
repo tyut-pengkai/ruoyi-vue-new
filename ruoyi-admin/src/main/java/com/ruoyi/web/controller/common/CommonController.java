@@ -180,6 +180,7 @@ public class CommonController {
             response.setDir(uploadDir);
             response.setHost(generateHost(bucket, ossProperties.isHttps()));
             response.setCallback(base64CallbackBody);
+            response.setAccessKeyId(ossProperties.getAccessKeyId());
             // 返回带有状态码 200 (OK) 的 ResponseEntity，返回给Web端，进行PostObject操作
             return R.ok(response);
         } catch (Exception e) {

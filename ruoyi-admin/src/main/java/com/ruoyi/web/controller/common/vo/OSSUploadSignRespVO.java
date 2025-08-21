@@ -39,4 +39,7 @@ public class OSSUploadSignRespVO {
     @ApiModelProperty(value = "callback")
     private String callback;
 
+    @ApiModelProperty(value = "accessKeyId")
+    private String accessKeyId;
+
 }
