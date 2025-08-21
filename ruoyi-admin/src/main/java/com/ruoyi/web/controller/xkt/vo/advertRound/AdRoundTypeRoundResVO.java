@@ -41,6 +41,8 @@ public class AdRoundTypeRoundResVO {
     private BigDecimal startPrice;
     @ApiModelProperty(value = "对象锁符号")
     private String symbol;
+    @ApiModelProperty(value = "当前播放状态")
+    private Integer launchStatus;
     @ApiModelProperty(value = "竞价状态")
     private Integer biddingStatus;
     @ApiModelProperty(value = "竞价状态名称")

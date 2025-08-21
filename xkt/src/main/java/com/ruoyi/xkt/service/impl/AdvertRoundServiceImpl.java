@@ -225,9 +225,9 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                     AdvertRound advertRound = list.get(0);
                     Integer durationDay = calculateDurationDay(advertRound.getStartTime(), advertRound.getEndTime(), Boolean.TRUE);
                     AdRoundTypeRoundResDTO typeRoundResDTO = new AdRoundTypeRoundResDTO().setAdvertId(advertRound.getAdvertId()).setRoundId(advertRound.getRoundId())
-                            .setSymbol(advertRound.getSymbol()).setStartTime(advertRound.getStartTime()).setEndTime(advertRound.getEndTime())
-                            .setStartWeekDay(getDayOfWeek(advertRound.getStartTime())).setEndWeekDay(getDayOfWeek(advertRound.getEndTime()))
-                            .setShowType(advertRound.getShowType()).setPosition(advertRound.getPosition()).setDurationDay(durationDay);
+                            .setSymbol(advertRound.getSymbol()).setLaunchStatus(advertRound.getLaunchStatus()).setStartTime(advertRound.getStartTime())
+                            .setEndTime(advertRound.getEndTime()).setStartWeekDay(getDayOfWeek(advertRound.getStartTime())).setDurationDay(durationDay)
+                            .setEndWeekDay(getDayOfWeek(advertRound.getEndTime())).setShowType(advertRound.getShowType()).setPosition(advertRound.getPosition());
                     // 如果是播放论，则播放开始时间展示为当天，因为有可能是播放的中间某一天
                     if (Objects.equals(advertRound.getRoundId(), AdRoundType.PLAY_ROUND.getValue())) {
                         Date tomorrow = Date.from(LocalDate.now().plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
