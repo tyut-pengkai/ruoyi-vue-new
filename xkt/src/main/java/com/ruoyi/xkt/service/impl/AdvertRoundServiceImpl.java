@@ -359,8 +359,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         // 当天
         final Date voucherDate = java.sql.Date.valueOf(LocalDate.now());
         // 获取当前所有 正在投放 和 待投放的推广轮次
-        List<AdvertRound> allRoundList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
-                .eq(AdvertRound::getDelFlag, Constants.UNDELETED)
+        List<AdvertRound> allRoundList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>().eq(AdvertRound::getDelFlag, Constants.UNDELETED)
                 .in(AdvertRound::getLaunchStatus, Arrays.asList(AdLaunchStatus.LAUNCHING.getValue(), AdLaunchStatus.UN_LAUNCH.getValue())));
         if (CollectionUtils.isEmpty(allRoundList)) {
             return new ArrayList<>();
@@ -368,8 +367,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         // 当前 档口 在所有 待投放  及 投放中 的推广轮次竞价失败记录
         List<AdvertRoundRecord> allRecordList = this.advertRoundRecordMapper.selectList(new LambdaQueryWrapper<AdvertRoundRecord>()
                 .eq(AdvertRoundRecord::getDelFlag, Constants.UNDELETED).eq(AdvertRoundRecord::getStoreId, storeId)
-                .eq(AdvertRoundRecord::getVoucherDate, voucherDate)
-                .in(AdvertRoundRecord::getAdvertRoundId, allRoundList.stream().map(AdvertRound::getId).collect(Collectors.toList())));
+                .eq(AdvertRoundRecord::getVoucherDate, voucherDate));
         // 按照advertId进行分组，取最小的roundId列表
         Map<Long, Optional<Integer>> minRoundIdMap = allRoundList.stream().collect(Collectors.groupingBy(AdvertRound::getAdvertId,
                 Collectors.mapping(AdvertRound::getRoundId, Collectors.minBy(Comparator.comparing(Integer::intValue)))));
