@@ -1,8 +1,10 @@
 package com.ruoyi.xkt.enums;
 
-import com.ruoyi.common.exception.ServiceException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author liangyq
@@ -35,5 +37,15 @@ public enum EOrderStatus {
             }
         }
         return null;
+    }
+
+    public static List<Integer> storeDisplayOrderStatusValues() {
+        return Arrays.asList(PENDING_SHIPMENT.getValue(),
+                SHIPPED.getValue(),
+                COMPLETED.getValue(),
+                AFTER_SALE_IN_PROGRESS.getValue(),
+                AFTER_SALE_REJECTED.getValue(),
+                PLATFORM_INTERVENED.getValue(),
+                AFTER_SALE_COMPLETED.getValue());
     }
 }

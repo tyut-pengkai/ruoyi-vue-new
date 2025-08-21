@@ -180,6 +180,10 @@ public class StoreOrderController extends XktBaseController {
             queryDTO.setOrderUserId(SecurityUtils.getUserId());
         } else {
             Long storeId = SecurityUtils.getStoreId();
+            if (storeId != null) {
+                //不显示已取消、未支付的订单
+                queryDTO.setOrderStatusList(EOrderStatus.storeDisplayOrderStatusValues());
+            }
             if (storeId == null && !SecurityUtils.isAdmin()) {
                 //没有权限
                 return success();
@@ -204,6 +208,8 @@ public class StoreOrderController extends XktBaseController {
             Long storeId = SecurityUtils.getStoreId();
             if (storeId != null) {
                 queryDTO.setStoreId(storeId);
+                //不显示已取消、未支付的订单
+                queryDTO.setOrderStatusList(EOrderStatus.storeDisplayOrderStatusValues());
                 String storeName = storeService.getStoreNameByIds(Collections.singletonList(storeId)).get(storeId);
                 title = StrUtil.emptyIfNull(storeName).concat("代发订单");
             } else {
@@ -248,6 +254,10 @@ public class StoreOrderController extends XktBaseController {
             queryDTO.setOrderUserId(SecurityUtils.getUserId());
         } else {
             Long storeId = SecurityUtils.getStoreId();
+            if (storeId != null) {
+                //不显示已取消、未支付的订单
+                queryDTO.setOrderStatusList(EOrderStatus.storeDisplayOrderStatusValues());
+            }
             if (storeId == null && !SecurityUtils.isAdmin()) {
                 //没有权限
                 return R.fail();

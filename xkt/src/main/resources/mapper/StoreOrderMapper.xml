@@ -38,6 +38,12 @@
             <if test="orderStatus != null">
                 AND so.order_status = #{orderStatus}
             </if>
+            <if test="orderStatusList != null and !orderStatusList.isEmpty()">
+                AND so.order_status IN
+                <foreach collection="orderStatusList" item="obj" open="(" close=")" separator=",">
+                    #{obj}
+                </foreach>
+            </if>
             <if test="destinationContactName != null and destinationContactName !=''">
                 AND so.destination_contact_name LIKE CONCAT('%', #{destinationContactName}, '%')
             </if>
@@ -104,6 +110,12 @@
             </if>
             <if test="createTimeBegin != null and createTimeEnd != null">
                 AND create_time BETWEEN #{createTimeBegin} AND #{createTimeEnd}
+            </if>
+            <if test="orderStatusList != null and !orderStatusList.isEmpty()">
+                AND order_status IN
+                <foreach collection="orderStatusList" item="obj" open="(" close=")" separator=",">
+                    #{obj}
+                </foreach>
             </if>
         </where>
     </select>
