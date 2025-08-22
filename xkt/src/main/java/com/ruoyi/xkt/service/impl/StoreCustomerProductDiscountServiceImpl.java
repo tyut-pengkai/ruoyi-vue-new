@@ -147,7 +147,7 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
         if (CollectionUtils.isEmpty(updateList)) {
             return 0;
         }
-        return this.cusProdDiscMapper.updateById(updateList).size();
+        return this.cusProdDiscMapper.insertOrUpdate(updateList).size();
     }
 
     /**
