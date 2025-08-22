@@ -18,9 +18,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             spf.file_size AS fileSize,
             spf.order_num AS orderNum
         FROM
-            store_product_file spf
-                LEFT JOIN sys_file sf ON spf.file_id = sf.id AND spf.del_flag = 0
-        WHERE spf.store_prod_id = #{storeProdId}
+            store_product_file spf JOIN sys_file sf ON spf.file_id = sf.id
+        WHERE
+            spf.del_flag = 0 AND spf.file_type IN (1,2,3) AND spf.store_prod_id = #{storeProdId}
     </select>
 
 
