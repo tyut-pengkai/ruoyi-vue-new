@@ -6,7 +6,6 @@ import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
-import cn.hutool.json.JSONUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.ruoyi.common.constant.CacheConstants;
@@ -40,6 +39,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author liangyq
@@ -238,12 +238,15 @@ public class AssetServiceImpl implements IAssetService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public RechargeAddResult rechargeByStore(RechargeAddDTO rechargeAddDTO) {
-        FinanceBillExt financeBillExt = financeBillService.createRechargeCollectionBill(rechargeAddDTO.getStoreId(),
-                rechargeAddDTO.getAmount(), rechargeAddDTO.getPayChannel());
+        String billNo = financeBillService.generateBillNo(EFinBillType.COLLECTION);
+        //缓存7天
+        redisCache.setCacheObject(CacheConstants.RECHARGE_BILL_NO_CACHE.concat(billNo),
+                new RechargeCacheDTO(rechargeAddDTO.getStoreId(), rechargeAddDTO.getAmount()),
+                7, TimeUnit.DAYS);
         PaymentManager paymentManager = getPaymentManager(rechargeAddDTO.getPayChannel());
-        String payRtnStr = paymentManager.pay(financeBillExt.getFinanceBill().getBillNo(), rechargeAddDTO.getAmount(),
+        String payRtnStr = paymentManager.pay(billNo, rechargeAddDTO.getAmount(),
                 "档口充值", rechargeAddDTO.getPayPage(), null);
-        return new RechargeAddResult(financeBillExt, payRtnStr);
+        return new RechargeAddResult(billNo, payRtnStr);
     }
 
     @Override

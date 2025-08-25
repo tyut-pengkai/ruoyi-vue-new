@@ -5,10 +5,12 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.internal.util.AlipaySignature;
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.core.controller.XktBaseController;
+import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.xkt.domain.AlipayCallback;
-import com.ruoyi.xkt.domain.FinanceBill;
 import com.ruoyi.xkt.domain.StoreOrder;
+import com.ruoyi.xkt.dto.finance.RechargeCacheDTO;
 import com.ruoyi.xkt.enums.EAlipayCallbackBizType;
 import com.ruoyi.xkt.enums.EProcessStatus;
 import com.ruoyi.xkt.manager.impl.AliPaymentMangerImpl;
@@ -47,6 +49,8 @@ public class AlipayCallbackController extends XktBaseController {
     private IAlipayCallbackService alipayCallbackService;
     @Autowired
     private AliPaymentMangerImpl paymentManger;
+    @Autowired
+    private RedisCache redisCache;
 
     /**
      * 支付宝服务器异步通知
@@ -100,7 +104,7 @@ public class AlipayCallbackController extends XktBaseController {
                     info = alipayCallback;
                     alipayCallbackService.insertAlipayCallback(info);
                 }
-                if (EProcessStatus.isSkip(info.getProcessStatus())){
+                if (EProcessStatus.isSkip(info.getProcessStatus())) {
                     logger.warn("支付回调重复请求处理: {}", info);
                     return SUCCESS;
                 }
@@ -118,13 +122,14 @@ public class AlipayCallbackController extends XktBaseController {
                 alipayCallbackService.processOrderPaid(info);
                 return SUCCESS;
             } else {
-                //充值业务
-                alipayCallback.setBizType(EAlipayCallbackBizType.RECHARGE.getValue());
                 //1. 商家需要验证该通知数据中的 out_trade_no 是否为商家系统中创建的订单号。
-                FinanceBill bill = financeBillService.getByBillNo(alipayCallback.getOutTradeNo());
-                if (bill != null) {
+                RechargeCacheDTO rechargeCache = redisCache.getCacheObject(CacheConstants.RECHARGE_BILL_NO_CACHE
+                        .concat(alipayCallback.getOutTradeNo()));
+                if (rechargeCache != null) {
+                    //充值业务
+                    alipayCallback.setBizType(EAlipayCallbackBizType.RECHARGE.getValue());
                     //2. 判断 total_amount 是否确实为该订单的实际金额（即商家订单创建时的金额）。
-                    if (!NumberUtil.equals(bill.getBusinessAmount(), alipayCallback.getTotalAmount())) {
+                    if (!NumberUtil.equals(rechargeCache.getAmount(), alipayCallback.getTotalAmount())) {
                         logger.warn("支付宝回调订单金额匹配失败:{}", params);
                         return FAILURE;
                     }
@@ -135,7 +140,7 @@ public class AlipayCallbackController extends XktBaseController {
                         info = alipayCallback;
                         alipayCallbackService.insertAlipayCallback(info);
                     }
-                    if (EProcessStatus.isSkip(info.getProcessStatus())){
+                    if (EProcessStatus.isSkip(info.getProcessStatus())) {
                         logger.warn("支付回调重复请求处理: {}", info);
                         return SUCCESS;
                     }
@@ -152,10 +157,20 @@ public class AlipayCallbackController extends XktBaseController {
                     //更新回调状态，收款单到账
                     alipayCallbackService.processRecharge(info);
                     return SUCCESS;
+                } else {
+                    //未知业务
+                    alipayCallback.setBizType(EAlipayCallbackBizType.UNKNOWN.getValue());
+                    //5. 处理支付宝回调信息
+                    AlipayCallback info = alipayCallbackService.getByNotifyId(alipayCallback.getNotifyId());
+                    if (info == null) {
+                        //保存到数据库
+                        alipayCallback.setProcessStatus(EProcessStatus.NO_PROCESSING.getValue());
+                        alipayCallbackService.insertAlipayCallback(alipayCallback);
+                    }
+                    logger.warn("支付宝回调匹配失败:{}", params);
+                    return SUCCESS;
                 }
             }
-            logger.warn("支付宝回调订单匹配失败:{}", params);
-            return SUCCESS;
         }
         logger.warn("支付宝验签未通过:{}", params);
         return FAILURE;

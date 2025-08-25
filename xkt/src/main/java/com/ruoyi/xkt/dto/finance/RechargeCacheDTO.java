@@ -4,21 +4,23 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+import java.math.BigDecimal;
+
 /**
  * @author liangyq
- * @date 2025-05-09
+ * @date 2025-08-25
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RechargeAddResult {
+public class RechargeCacheDTO implements Serializable {
     /**
-     * 收款单号
+     * 档口ID
      */
-    private String billNo;
+    private Long storeId;
     /**
-     * 三方支付返回信息
+     * 金额
      */
-    private String payRtnStr;
-
+    private BigDecimal amount;
 }

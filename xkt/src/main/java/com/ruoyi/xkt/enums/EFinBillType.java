@@ -11,12 +11,13 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum EFinBillType {
 
-    COLLECTION(1, "收款单"),
-    PAYMENT(2, "付款单"),
-    TRANSFER(3, "转移单");
+    COLLECTION(1, "收款单","REC_"),
+    PAYMENT(2, "付款单","PAY_"),
+    TRANSFER(3, "转移单","ATR_");
 
     private final Integer value;
     private final String label;
+    private final String prefix;
 
     public static EFinBillType of(Integer value) {
         for (EFinBillType e : EFinBillType.values()) {

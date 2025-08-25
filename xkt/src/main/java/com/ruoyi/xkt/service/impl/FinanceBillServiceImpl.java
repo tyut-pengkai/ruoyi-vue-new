@@ -475,16 +475,23 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public FinanceBillExt createRechargeCollectionBill(Long storeId, BigDecimal amount, EPayChannel payChannel) {
+    public FinanceBillExt createRechargeCollectionBill(Long storeId, BigDecimal amount, EPayChannel payChannel,
+                                                       String billNo, boolean entry) {
         Assert.notNull(storeId);
         Assert.notNull(amount);
         Assert.notNull(payChannel);
         FinanceBill bill = new FinanceBill();
-        String billNo = generateBillNo(EFinBillType.COLLECTION);
         bill.setBillNo(billNo);
         bill.setBillType(EFinBillType.COLLECTION.getValue());
-        //直接标记成功
-        bill.setBillStatus(EFinBillStatus.PROCESSING.getValue());
+        EEntryStatus entryStatus;
+        if (entry) {
+            //直接标记成功
+            entryStatus = EEntryStatus.FINISH;
+            bill.setBillStatus(EFinBillStatus.SUCCESS.getValue());
+        } else {
+            entryStatus = EEntryStatus.WAITING;
+            bill.setBillStatus(EFinBillStatus.PROCESSING.getValue());
+        }
         bill.setSrcType(EFinBillSrcType.RECHARGE.getValue());
         bill.setBusinessUniqueKey(billNo);
         InternalAccount inputInternalAccount = internalAccountService.getAccount(storeId, EAccountOwnerType.STORE);
@@ -507,10 +514,10 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
                 .build();
         //内部账户
         internalAccountService.addTransDetail(inputInternalAccount.getId(), transInfo,
-                ELoanDirection.DEBIT, EEntryStatus.WAITING);
+                ELoanDirection.DEBIT, entryStatus);
         //外部账户
         externalAccountService.addTransDetail(payChannel.getPlatformExternalAccountId(), transInfo,
-                ELoanDirection.DEBIT, EEntryStatus.WAITING);
+                ELoanDirection.DEBIT, entryStatus);
         return new FinanceBillExt(bill, ListUtil.empty());
     }
 
@@ -609,9 +616,11 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
      * @param billType
      * @return
      */
+    @Override
     public String generateBillNo(EFinBillType billType) {
+        Assert.notNull(billType);
         //未确定规则，暂时用UUID代替
-        return IdUtil.simpleUUID();
+        return billType.getPrefix().concat(IdUtil.simpleUUID());
     }
 
     private Map<Long, InternalAccount> getInternalAccountMapForUpdate(Long... ids) {

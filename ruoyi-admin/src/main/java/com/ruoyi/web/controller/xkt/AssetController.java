@@ -180,8 +180,7 @@ public class AssetController extends XktBaseController {
         rechargeAddDTO.setPayChannel(EPayChannel.of(vo.getPayChannel()));
         rechargeAddDTO.setPayPage(EPayPage.of(vo.getPayPage()));
         RechargeAddResult result = assetService.rechargeByStore(rechargeAddDTO);
-        return success(new StoreRechargeRespVO(result.getFinanceBillExt().getFinanceBill().getBillNo(),
-                result.getPayRtnStr()));
+        return success(new StoreRechargeRespVO(result.getBillNo(), result.getPayRtnStr()));
     }
 
     @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")

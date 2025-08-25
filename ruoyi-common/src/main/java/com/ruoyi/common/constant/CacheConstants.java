@@ -283,6 +283,10 @@ public class CacheConstants {
      * 图包用户请求次数缓存
      */
     public static final String PIC_PACK_USER_REQ_COUNT_CACHE = "pic_pack_user_req_count_cache:";
+    /**
+     * 充值单号缓存
+     */
+    public static final String RECHARGE_BILL_NO_CACHE = "recharge_bill_no_cache:";
 
 
 }

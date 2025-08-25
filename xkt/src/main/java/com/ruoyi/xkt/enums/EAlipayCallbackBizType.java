@@ -13,6 +13,7 @@ public enum EAlipayCallbackBizType {
 
     ORDER_PAY(1, "订单支付"),
     RECHARGE(2, "充值"),
+    UNKNOWN(3, "未知"),
     ;
 
     private final Integer value;

@@ -85,14 +85,17 @@ public interface IFinanceBillService {
     void entryWithdrawPaymentBill(Long financeBillId);
 
     /**
-     * 充值创建收款单（未入账）
+     * 充值创建收款单
      *
      * @param storeId
      * @param amount
      * @param payChannel
+     * @param billNo
+     * @param entry      是否入账
      * @return
      */
-    FinanceBillExt createRechargeCollectionBill(Long storeId, BigDecimal amount, EPayChannel payChannel);
+    FinanceBillExt createRechargeCollectionBill(Long storeId, BigDecimal amount, EPayChannel payChannel, String billNo,
+                                                boolean entry);
 
     /**
      * 充值收款单入账
@@ -128,6 +131,14 @@ public interface IFinanceBillService {
      */
     List<FinanceBillDTO> listByStatus(EFinBillStatus billStatus, EFinBillType billType, EFinBillSrcType billSrcType,
                                       Integer count);
+
+    /**
+     * 生产单号
+     *
+     * @param billType
+     * @return
+     */
+    String generateBillNo(EFinBillType billType);
 
 
 }
