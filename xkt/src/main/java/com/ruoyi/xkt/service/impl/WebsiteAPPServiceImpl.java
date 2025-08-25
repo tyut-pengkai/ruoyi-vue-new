@@ -50,6 +50,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -593,17 +594,20 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                     .forEach((storeId, list) -> {
                         AdvertRound advertRound = list.get(0);
                         tempList.add(new APPIndexTopBannerDTO().setDisplayType(AdDisplayType.PICTURE.getValue()).setStoreId(storeId)
+                                .setPayPrice(ObjectUtils.defaultIfNull(advertRound.getPayPrice(), BigDecimal.ZERO))
                                 .setFileUrl(ObjectUtils.isNotEmpty(fileMap.get(advertRound.getPicId())) ? fileMap.get(advertRound.getPicId()).getFileUrl() : ""));
                     });
             appIndexTopBannerList = tempList.stream().limit(5).collect(Collectors.toList());
-            for (int i = 0; i < appIndexTopBannerList.size(); i++) {
-                appIndexTopBannerList.get(i).setOrderNum(i + 1);
-            }
         } else {
             appIndexTopBannerList = launchingList.stream().map(x -> new APPIndexTopBannerDTO().setDisplayType(AdDisplayType.PICTURE.getValue())
-                            .setStoreId(x.getStoreId()).setOrderNum(this.positionToNumber(x.getPosition()))
+                            .setStoreId(x.getStoreId()).setPayPrice(ObjectUtils.defaultIfNull(x.getPayPrice(), BigDecimal.ZERO))
                             .setFileUrl(ObjectUtils.isNotEmpty(fileMap.get(x.getPicId())) ? fileMap.get(x.getPicId()).getFileUrl() : ""))
                     .collect(Collectors.toList());
+        }
+        // 按照价格由高到低进行排序，价格高的排1，其次按照价格排 2 3 4 5
+        appIndexTopBannerList.sort(Comparator.comparing(APPIndexTopBannerDTO::getPayPrice).reversed());
+        for (int i = 0; i < appIndexTopBannerList.size(); i++) {
+            appIndexTopBannerList.get(i).setOrderNum(i + 1);
         }
         // 放到redis 中 过期时间1天
         redisCache.setCacheObject(CacheConstants.APP_ADVERT + CacheConstants.APP_INDEX_TOP_BANNER, appIndexTopBannerList, 1, TimeUnit.DAYS);
@@ -691,18 +695,21 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
             appIndexHotSaleRightFixList = expiredList.stream().filter(x -> StringUtils.isNotBlank(x.getProdIdStr())).map(x -> {
                 Long storeProdId = Long.parseLong(x.getProdIdStr());
                 return new APPIndexHotSaleRightFixDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreProdId(storeProdId).setStoreId(x.getStoreId())
+                        .setPayPrice(ObjectUtils.defaultIfNull(x.getPayPrice(), BigDecimal.ZERO))
                         .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMainPicUrl() : "");
             }).limit(5).collect(Collectors.toList());
-            for (int i = 0; i < appIndexHotSaleRightFixList.size(); i++) {
-                appIndexHotSaleRightFixList.get(i).setOrderNum(i + 1);
-            }
         } else {
             appIndexHotSaleRightFixList = launchingList.stream().filter(x -> StringUtils.isNotBlank(x.getProdIdStr())).map(x -> {
                 Long storeProdId = Long.parseLong(x.getProdIdStr());
                 return new APPIndexHotSaleRightFixDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreProdId(storeProdId)
-                        .setOrderNum(this.positionToNumber(x.getPosition())).setStoreId(x.getStoreId())
+                        .setStoreId(x.getStoreId()).setPayPrice(ObjectUtils.defaultIfNull(x.getPayPrice(), BigDecimal.ZERO))
                         .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMainPicUrl() : "");
             }).limit(5).collect(Collectors.toList());
+        }
+        // 按照价格由高到低进行排序，价格高的排1，其次按照价格排 2 3 4 5
+        appIndexHotSaleRightFixList.sort(Comparator.comparing(APPIndexHotSaleRightFixDTO::getPayPrice).reversed());
+        for (int i = 0; i < appIndexHotSaleRightFixList.size(); i++) {
+            appIndexHotSaleRightFixList.get(i).setOrderNum(i + 1);
         }
         // 放到redis中，有效期1天
         redisCache.setCacheObject(CacheConstants.APP_ADVERT + CacheConstants.APP_INDEX_HOT_SALE_RIGHT_FIX, appIndexHotSaleRightFixList, 1, TimeUnit.DAYS);
@@ -739,17 +746,20 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                     .forEach((storeId, list) -> {
                         AdvertRound advertRound = list.get(0);
                         tempList.add(new APPCateDTO().setDisplayType(AdDisplayType.PICTURE.getValue()).setStoreId(advertRound.getStoreId())
+                                .setPayPrice(ObjectUtils.defaultIfNull(advertRound.getPayPrice(), BigDecimal.ZERO))
                                 .setFileUrl(ObjectUtils.isNotEmpty(fileMap.get(advertRound.getPicId())) ? fileMap.get(advertRound.getPicId()).getFileUrl() : ""));
                     });
             appCateList = tempList.stream().limit(5).collect(Collectors.toList());
-            for (int i = 0; i < appCateList.size(); i++) {
-                appCateList.get(i).setOrderNum(i + 1);
-            }
         } else {
             appCateList = launchingList.stream().map(x -> new APPCateDTO().setDisplayType(AdDisplayType.PICTURE.getValue())
-                            .setStoreId(x.getStoreId()).setOrderNum(this.positionToNumber(x.getPosition()))
+                            .setStoreId(x.getStoreId()).setPayPrice(ObjectUtils.defaultIfNull(x.getPayPrice(), BigDecimal.ZERO))
                             .setFileUrl(ObjectUtils.isNotEmpty(fileMap.get(x.getPicId())) ? fileMap.get(x.getPicId()).getFileUrl() : ""))
                     .collect(Collectors.toList());
+        }
+        // 按照价格由高到低进行排序，价格高的排1，其次按照价格排 2 3 4 5
+        appCateList.sort(Comparator.comparing(APPCateDTO::getPayPrice).reversed());
+        for (int i = 0; i < appCateList.size(); i++) {
+            appCateList.get(i).setOrderNum(i + 1);
         }
         // 放到redis中，有效期1天
         redisCache.setCacheObject(CacheConstants.APP_ADVERT + CacheConstants.APP_CATE, appCateList, 1, TimeUnit.DAYS);

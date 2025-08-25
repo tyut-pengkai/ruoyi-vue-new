@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.math.BigDecimal;
+
 /**
  * @author liujiang
  * @version v1.0
@@ -21,5 +23,7 @@ public class PCIndexSearchUnderlineStoreNameDTO {
     private Long storeId;
     @ApiModelProperty(value = "档口名称")
     private String storeName;
+    @ApiModelProperty(value = "档口出的推广价格")
+    private BigDecimal payPrice;
 
 }

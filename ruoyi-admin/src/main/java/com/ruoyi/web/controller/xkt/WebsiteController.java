@@ -118,7 +118,7 @@ public class WebsiteController extends XktBaseController {
         return R.ok(BeanUtil.toBean(websitePCService.getPcIndexFixedEar(), PCIndexFixedEarVO.class));
     }
 
-    @ApiOperation(value = "PC 搜索框中推荐店铺", httpMethod = "GET", response = R.class)
+    @ApiOperation(value = "PC 搜索框下方推荐档口名称", httpMethod = "GET", response = R.class)
     @GetMapping("/pc/index/search-underline-store-name")
     public R<List<PCIndexSearchUnderlineStoreNameVO>> getPcIndexSearchUnderlineStoreName() {
         return R.ok(BeanUtil.copyToList(websitePCService.getPcIndexSearchUnderlineStoreName(), PCIndexSearchUnderlineStoreNameVO.class));

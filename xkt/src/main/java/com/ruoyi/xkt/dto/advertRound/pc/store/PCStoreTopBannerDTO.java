@@ -27,6 +27,8 @@ public class PCStoreTopBannerDTO {
     private Long storeId;
     @ApiModelProperty(value = "推广图路径")
     private String fileUrl;
+    @ApiModelProperty(value = "档口出的推广价格")
+    private BigDecimal payPrice;
     @ApiModelProperty(value = "商品列表")
     List<PCSTBProdDTO> prodList;
 

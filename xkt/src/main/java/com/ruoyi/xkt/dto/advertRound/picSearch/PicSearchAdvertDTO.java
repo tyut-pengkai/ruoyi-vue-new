@@ -42,7 +42,5 @@ public class PicSearchAdvertDTO {
     private Long storeId;
     @ApiModelProperty(value = "档口名称")
     private String storeName;
-//    @ApiModelProperty(value = "档口标签列表")
-//    private List<String> storeTagList;
 
 }

@@ -52,6 +52,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -337,6 +338,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                 advertRoundList.stream().filter(x -> StringUtils.isNotBlank(x.getProdIdStr())).forEach(x -> {
                     Store store = storeMap.get(x.getStoreId());
                     PCStoreRecommendDTO storeRecommend = new PCStoreRecommendDTO().setAdvert(Boolean.TRUE).setStoreId(x.getStoreId())
+                            .setPayPrice(ObjectUtils.defaultIfNull(x.getPayPrice(), BigDecimal.ZERO))
                             .setStoreName(ObjectUtils.isNotEmpty(store) ? store.getStoreName() : "").setAdvert(Boolean.TRUE)
                             .setTags(storeTagMap.getOrDefault(x.getStoreId(), new ArrayList<>()))
                             .setContactPhone(ObjectUtils.isNotEmpty(store) ? store.getContactPhone() : "")
@@ -352,6 +354,11 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                     }).collect(Collectors.toList()));
                     storeRecommendList.add(storeRecommend);
                 });
+                // 按照价格由高到低进行排序，价格高的排1，其次按照价格排 2 3 4 5
+                storeRecommendList.sort(Comparator.comparing(PCStoreRecommendDTO::getPayPrice).reversed());
+                for (int i = 0; i < storeRecommendList.size(); i++) {
+                    storeRecommendList.get(i).setOrderNum(i + 1);
+                }
                 // 放到redis中，过期时间为1天
                 this.redisCache.setCacheObject(CacheConstants.PC_STORE_RECOMMEND_ADVERT, storeRecommendList, 1, TimeUnit.DAYS);
                 // 添加广告的数据
@@ -391,19 +398,22 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                     .forEach((storeId, list) -> {
                         AdvertRound advertRound = list.get(0);
                         tempLeftList.add(new PCIndexTopLeftBannerDTO().setDisplayType(advertRound.getDisplayType()).setStoreId(advertRound.getStoreId())
+                                .setPayPrice(ObjectUtils.defaultIfNull(advertRound.getPayPrice(), BigDecimal.ZERO))
                                 .setFileUrl(ObjectUtils.isNotEmpty(advertRound.getPicId()) ? fileMap.get(advertRound.getPicId()).getFileUrl() : null));
                     });
-            // 给topLeftList 中的 orderNum 设置值，1 2 3 4 5，并只取5条数据
-            topLeftList = tempLeftList.stream().limit(5).collect(Collectors.toList()); // 先限制为前5条数据.collect(Collectors.toList());
-            for (int i = 0; i < topLeftList.size(); i++) {
-                topLeftList.get(i).setOrderNum(i + 1);
-            }
+            // 只取5条数据
+            topLeftList = tempLeftList.stream().limit(5).collect(Collectors.toList());
         } else {
             // 顶部轮播图只要有一张即可
             topLeftList = launchingList.stream().map(x -> new PCIndexTopLeftBannerDTO().setDisplayType(x.getDisplayType())
-                            .setStoreId(x.getStoreId()).setOrderNum(this.positionToNumber(x.getPosition()))
+                            .setStoreId(x.getStoreId()).setPayPrice(ObjectUtils.defaultIfNull(x.getPayPrice(), BigDecimal.ZERO))
                             .setFileUrl(ObjectUtils.isNotEmpty(x.getPicId()) ? fileMap.get(x.getPicId()).getFileUrl() : null))
                     .collect(Collectors.toList());
+        }
+        // 按照价格由高到低进行排序，价格高的排1，其次按照价格排 2 3 4 5
+        topLeftList.sort(Comparator.comparing(PCIndexTopLeftBannerDTO::getPayPrice).reversed());
+        for (int i = 0; i < topLeftList.size(); i++) {
+            topLeftList.get(i).setOrderNum(i + 1);
         }
         // 存放到redis中，过期时间为1天
         redisCache.setCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_ADVERT_INDEX_TOP_LEFT, topLeftList, 1, TimeUnit.DAYS);
@@ -549,18 +559,17 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         // 顶部 中部 风格轮播图
         if (CollectionUtils.isEmpty(launchingList)) {
             midStyleList = this.fillMidStyleFromExpired(expiredList, prodPriceAndMainPicMap, fileMap, storeMap, 4);
-            for (int i = 0; i < midStyleList.size(); i++) {
-                midStyleList.get(i).setOrderNum(i + 1);
-            }
         } else {
             midStyleList = this.fillMidStyleFromExpired(launchingList, prodPriceAndMainPicMap, fileMap, storeMap, 4);
             // 轮播图不足4个，则从过期的广告轮播图补充
             if (launchingList.size() < 4) {
                 midStyleList.addAll(this.fillMidStyleFromExpired(expiredList, prodPriceAndMainPicMap, fileMap, storeMap, 4 - launchingList.size()));
-                for (int i = 0; i < midStyleList.size(); i++) {
-                    midStyleList.get(i).setOrderNum(i + 1);
-                }
             }
+        }
+        // 按照价格由高到低进行排序，价格高的排1，其次按照价格排 2 3 4 5
+        midStyleList.sort(Comparator.comparing(PCIndexMidStyleDTO::getPayPrice).reversed());
+        for (int i = 0; i < midStyleList.size(); i++) {
+            midStyleList.get(i).setOrderNum(i + 1);
         }
         // 存放到redis中，过期时间为1天
         redisCache.setCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_ADVERT_INDEX_MID_STYLE, midStyleList, 1, TimeUnit.DAYS);
@@ -623,50 +632,47 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                     .forEach((storeId, list) -> {
                         AdvertRound advertRound = list.get(0);
                         tempLeftList.add(new PCIndexBottomPopularDTO.PCIBPPopularLeftDTO().setDisplayType(AdDisplayType.PICTURE.getValue()).setStoreId(storeId)
+                                .setPayPrice(ObjectUtils.defaultIfNull(advertRound.getPayPrice(), BigDecimal.ZERO))
                                 .setFileUrl(ObjectUtils.isNotEmpty(fileMap.get(advertRound.getPicId())) ? fileMap.get(advertRound.getPicId()).getFileUrl() : ""));
                     });
             bottomLeftList = tempLeftList.stream().limit(5).collect(Collectors.toList());
-            for (int i = 0; i < bottomLeftList.size(); i++) {
-                bottomLeftList.get(i).setOrderNum(i + 1);
-            }
         } else {
             // 人气榜底部左侧轮播图只要有一张即可
             bottomLeftList = leftLaunchingList.stream().map(x -> new PCIndexBottomPopularDTO.PCIBPPopularLeftDTO().setDisplayType(AdDisplayType.PICTURE.getValue())
-                            .setStoreId(x.getStoreId()).setOrderNum(this.positionToNumber(x.getPosition()))
+                            .setStoreId(x.getStoreId()).setPayPrice(ObjectUtils.defaultIfNull(x.getPayPrice(), BigDecimal.ZERO))
                             .setFileUrl(ObjectUtils.isNotEmpty(x.getPicId()) ? fileMap.get(x.getPicId()).getFileUrl() : null))
                     .collect(Collectors.toList());
         }
+        // 按照价格由高到低进行排序，价格高的排1，其次按照价格排 2 3 4 5
+        bottomLeftList.sort(Comparator.comparing(PCIndexBottomPopularDTO.PCIBPPopularLeftDTO::getPayPrice).reversed());
+        for (int i = 0; i < bottomLeftList.size(); i++) {
+            bottomLeftList.get(i).setOrderNum(i + 1);
+        }
         popularDTO.setLeftList(bottomLeftList);
-
         // 处理中间广告列表
         List<PCIndexBottomPopularDTO.PCIBPPopularMidDTO> bottomMidList;
         // 处理中间广告列表
         if (CollectionUtils.isEmpty(midLaunchingList)) {
             bottomMidList = this.fillPopMidFromExpired(midExpiredList, fileMap, 2);
-            for (int i = 0; i < bottomMidList.size(); i++) {
-                bottomMidList.get(i).setOrderNum(i + 1);
-            }
         } else {
             bottomMidList = midLaunchingList.stream().map(x -> new PCIndexBottomPopularDTO.PCIBPPopularMidDTO().setDisplayType(AdDisplayType.PICTURE.getValue())
-                            .setStoreId(x.getStoreId()).setOrderNum(this.positionToNumber(x.getPosition()))
+                            .setStoreId(x.getStoreId()).setPayPrice(ObjectUtils.defaultIfNull(x.getPayPrice(), BigDecimal.ZERO))
                             .setFileUrl(ObjectUtils.isNotEmpty(x.getPicId()) ? fileMap.get(x.getPicId()).getFileUrl() : null))
                     .collect(Collectors.toList());
             if (bottomMidList.size() < 2) {
                 bottomMidList.addAll(this.fillPopMidFromExpired(midExpiredList, fileMap, 1));
-                for (int i = 0; i < bottomMidList.size(); i++) {
-                    bottomMidList.get(i).setOrderNum(i + 1);
-                }
             }
         }
+        // 按照价格由高到低进行排序，价格高的排1，其次按照价格排 2 3 4 5
+        bottomMidList.sort(Comparator.comparing(PCIndexBottomPopularDTO.PCIBPPopularMidDTO::getPayPrice).reversed());
+        for (int i = 0; i < bottomMidList.size(); i++) {
+            bottomMidList.get(i).setOrderNum(i + 1);
+        }
         popularDTO.setMidList(bottomMidList);
-
         // 处理右侧广告商品
         List<PCIndexBottomPopularDTO.PCIBPPopularRightDTO> bottomRightList;
         if (CollectionUtils.isEmpty(rightLaunchingList)) {
             bottomRightList = this.fillBottomRightFromExpired(rightExpiredList, prodPriceAndMainPicMap, 2);
-            for (int i = 0; i < bottomRightList.size(); i++) {
-                bottomRightList.get(i).setOrderNum(i + 1);
-            }
         } else {
             bottomRightList = rightLaunchingList.stream().filter(x -> StringUtils.isNotBlank(x.getProdIdStr())).map(x -> {
                 final Long storeProdId = Long.parseLong(x.getProdIdStr());
@@ -678,10 +684,10 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
             }).collect(Collectors.toList());
             if (bottomRightList.size() < 2) {
                 bottomRightList.addAll(this.fillBottomRightFromExpired(rightExpiredList, prodPriceAndMainPicMap, 1));
-                for (int i = 0; i < bottomRightList.size(); i++) {
-                    bottomRightList.get(i).setOrderNum(i + 1);
-                }
             }
+        }
+        for (int i = 0; i < bottomRightList.size(); i++) {
+            bottomRightList.get(i).setOrderNum(i + 1);
         }
         popularDTO.setRightList(bottomRightList);
         // 存放到redis中，过期时间为1天
@@ -756,16 +762,22 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(launchingList)) {
             // 随机选择10个档口
-            searchStoreNameList = expiredList.stream().map(AdvertRound::getStoreId).distinct().limit(10)
-                    .map(x -> new PCIndexSearchUnderlineStoreNameDTO()
-                            .setStoreId(x).setDisplayType(AdDisplayType.STORE_NAME.getValue()).setOrderNum(1)
-                            .setStoreName(ObjectUtils.isNotEmpty(storeMap.get(x)) ? storeMap.get(x).getStoreName() : ""))
+            searchStoreNameList = expiredList.stream().distinct().limit(10)
+                    .map(advertRound -> new PCIndexSearchUnderlineStoreNameDTO().setPayPrice(ObjectUtils.defaultIfNull(advertRound.getPayPrice(), BigDecimal.ZERO))
+                            .setStoreId(advertRound.getStoreId()).setDisplayType(AdDisplayType.STORE_NAME.getValue())
+                            .setStoreName(ObjectUtils.isNotEmpty(storeMap.get(advertRound.getStoreId())) ? storeMap.get(advertRound.getStoreId()).getStoreName() : ""))
                     .collect(Collectors.toList());
         } else {
-            searchStoreNameList = launchingList.stream().map(AdvertRound::getStoreId).map(x -> new PCIndexSearchUnderlineStoreNameDTO()
-                            .setStoreId(x).setDisplayType(AdDisplayType.STORE_NAME.getValue()).setOrderNum(1)
-                            .setStoreName(ObjectUtils.isNotEmpty(storeMap.get(x)) ? storeMap.get(x).getStoreName() : ""))
+            searchStoreNameList = launchingList.stream().map(advertRound -> new PCIndexSearchUnderlineStoreNameDTO()
+                            .setPayPrice(ObjectUtils.defaultIfNull(advertRound.getPayPrice(), BigDecimal.ZERO))
+                            .setStoreId(advertRound.getStoreId()).setDisplayType(AdDisplayType.STORE_NAME.getValue())
+                            .setStoreName(ObjectUtils.isNotEmpty(storeMap.get(advertRound.getStoreId())) ? storeMap.get(advertRound.getStoreId()).getStoreName() : ""))
                     .collect(Collectors.toList());
+        }
+        // 按照价格由高到低进行排序，价格高的排1，其次按照价格排 2 3 4 5
+        searchStoreNameList.sort(Comparator.comparing(PCIndexSearchUnderlineStoreNameDTO::getPayPrice).reversed());
+        for (int i = 0; i < searchStoreNameList.size(); i++) {
+            searchStoreNameList.get(i).setOrderNum(i + 1);
         }
         // 放到redis中，过期时间为1天
         redisCache.setCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_ADVERT_INDEX_SEARCH_UNDERLINE_STORE_NAME, searchStoreNameList, 1, TimeUnit.DAYS);
@@ -860,17 +872,21 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                     .forEach((storeId, list) -> {
                         AdvertRound advertRound = list.get(0);
                         tempList.add(new PCNewTopLeftBannerDTO().setDisplayType(AdDisplayType.PICTURE.getValue()).setStoreId(advertRound.getStoreId())
+                                .setPayPrice(ObjectUtils.defaultIfNull(advertRound.getPayPrice(), BigDecimal.ZERO))
                                 .setFileUrl(ObjectUtils.isNotEmpty(fileMap.get(advertRound.getPicId())) ? fileMap.get(advertRound.getPicId()).getFileUrl() : ""));
                     });
             newTopLeftList = tempList.stream().limit(5).collect(Collectors.toList());
-            for (int i = 0; i < newTopLeftList.size(); i++) {
-                newTopLeftList.get(i).setOrderNum(i + 1);
-            }
         } else {
             newTopLeftList = launchingList.stream().map(advertRound -> new PCNewTopLeftBannerDTO().setDisplayType(AdDisplayType.PICTURE.getValue())
-                            .setStoreId(advertRound.getStoreId()).setOrderNum(this.positionToNumber(advertRound.getPosition()))
+                            .setStoreId(advertRound.getStoreId()).setPayPrice(ObjectUtils.defaultIfNull(advertRound.getPayPrice(), BigDecimal.ZERO))
                             .setFileUrl(ObjectUtils.isNotEmpty(fileMap.get(advertRound.getPicId())) ? fileMap.get(advertRound.getPicId()).getFileUrl() : ""))
                     .collect(Collectors.toList());
+        }
+
+        // 按照价格由高到低进行排序，价格高的排1，其次按照价格排 2 3 4 5
+        newTopLeftList.sort(Comparator.comparing(PCNewTopLeftBannerDTO::getPayPrice).reversed());
+        for (int i = 0; i < newTopLeftList.size(); i++) {
+            newTopLeftList.get(i).setOrderNum(i + 1);
         }
         // 放到redis中，过期时间为1天
         redisCache.setCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_ADVERT_NEW_TOP_LEFT, newTopLeftList, 1, TimeUnit.DAYS);
@@ -944,22 +960,21 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(launchingList)) {
             newMidBrandList = this.fillNewMidBrandList(expiredList, storeMap, fileMap, new ArrayList<>(), 10);
-            for (int i = 0; i < newMidBrandList.size(); i++) {
-                newMidBrandList.get(i).setOrderNum(i + 1);
-            }
         } else {
             newMidBrandList = launchingList.stream().map(x -> new PCNewMidBrandDTO().setDisplayType(AdDisplayType.PICTURE.getValue())
-                            .setOrderNum(this.positionToNumber(x.getPosition())).setStoreId(x.getStoreId())
+                            .setStoreId(x.getStoreId()).setPayPrice(ObjectUtils.defaultIfNull(x.getPayPrice(), BigDecimal.ZERO))
                             .setStoreName(ObjectUtils.isNotEmpty(storeMap.get(x.getStoreId())) ? storeMap.get(x.getStoreId()).getStoreName() : "")
                             .setFileUrl(ObjectUtils.isNotEmpty(fileMap.get(x.getPicId())) ? fileMap.get(x.getPicId()).getFileUrl() : ""))
                     .collect(Collectors.toList());
             if (newMidBrandList.size() < 10) {
                 final List<Long> existStoreIdList = newMidBrandList.stream().map(PCNewMidBrandDTO::getStoreId).distinct().collect(Collectors.toList());
                 newMidBrandList.addAll(this.fillNewMidBrandList(expiredList, storeMap, fileMap, existStoreIdList, 10 - newMidBrandList.size()));
-                for (int i = 0; i < newMidBrandList.size(); i++) {
-                    newMidBrandList.get(i).setOrderNum(i + 1);
-                }
             }
+        }
+        // 按照价格由高到低进行排序，价格高的排1，其次按照价格排 2 3 4 5
+        newMidBrandList.sort(Comparator.comparing(PCNewMidBrandDTO::getPayPrice).reversed());
+        for (int i = 0; i < newMidBrandList.size(); i++) {
+            newMidBrandList.get(i).setOrderNum(i + 1);
         }
         // 放到redis中，过期时间为1天
         redisCache.setCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_ADVERT_NEW_MID_BRAND, newMidBrandList, 1, TimeUnit.DAYS);
@@ -996,17 +1011,20 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                     .forEach((storeId, list) -> {
                         AdvertRound advertRound = list.get(0);
                         tempList.add(new PCNewMidHotLeftDTO().setDisplayType(AdDisplayType.PICTURE.getValue()).setStoreId(storeId)
+                                .setPayPrice(ObjectUtils.defaultIfNull(advertRound.getPayPrice(), BigDecimal.ZERO))
                                 .setFileUrl(ObjectUtils.isNotEmpty(fileMap.get(advertRound.getPicId())) ? fileMap.get(advertRound.getPicId()).getFileUrl() : ""));
                     });
             newMidHotLeftList = tempList.stream().limit(5).collect(Collectors.toList());
-            for (int i = 0; i < newMidHotLeftList.size(); i++) {
-                newMidHotLeftList.get(i).setOrderNum(i + 1);
-            }
         } else {
             newMidHotLeftList = launchingList.stream().map(x -> new PCNewMidHotLeftDTO().setDisplayType(AdDisplayType.PICTURE.getValue())
-                            .setOrderNum(this.positionToNumber(x.getPosition())).setStoreId(x.getStoreId())
+                            .setStoreId(x.getStoreId()).setPayPrice(ObjectUtils.defaultIfNull(x.getPayPrice(), BigDecimal.ZERO))
                             .setFileUrl(ObjectUtils.isNotEmpty(fileMap.get(x.getPicId())) ? fileMap.get(x.getPicId()).getFileUrl() : ""))
                     .collect(Collectors.toList());
+        }
+        // 按照价格由高到低进行排序，价格高的排1，其次按照价格排 2 3 4 5
+        newMidHotLeftList.sort(Comparator.comparing(PCNewMidHotLeftDTO::getPayPrice).reversed());
+        for (int i = 0; i < newMidHotLeftList.size(); i++) {
+            newMidHotLeftList.get(i).setOrderNum(i + 1);
         }
         // 放到redis中，过期时间为1天
         redisCache.setCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_ADVERT_NEW_MID_HOT_LEFT, newMidHotLeftList, 1, TimeUnit.DAYS);
@@ -1149,12 +1167,14 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                         tempList.add(this.getStoreTopBanner(advertRound, fileMap, prodPriceAndMainPicMap));
                     });
             pcStoreTopBannerList = tempList.stream().limit(1).collect(Collectors.toList());
-            for (int i = 0; i < pcStoreTopBannerList.size(); i++) {
-                pcStoreTopBannerList.get(i).setOrderNum(i + 1);
-            }
         } else {
-            pcStoreTopBannerList = launchingList.stream().map(advertRound -> this.getStoreTopBanner(advertRound, fileMap, prodPriceAndMainPicMap)
-                    .setOrderNum(this.positionToNumber(advertRound.getPosition()))).collect(Collectors.toList());
+            pcStoreTopBannerList = launchingList.stream().map(advertRound -> this
+                    .getStoreTopBanner(advertRound, fileMap, prodPriceAndMainPicMap)).collect(Collectors.toList());
+        }
+        // 按照价格由高到低进行排序，价格高的排1，其次按照价格排 2 3 4 5
+        pcStoreTopBannerList.sort(Comparator.comparing(PCStoreTopBannerDTO::getPayPrice).reversed());
+        for (int i = 0; i < pcStoreTopBannerList.size(); i++) {
+            pcStoreTopBannerList.get(i).setOrderNum(i + 1);
         }
         // 放到redis中，过期时间为1天
         redisCache.setCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_ADVERT_STORE_TOP_BANNER, pcStoreTopBannerList, 1, TimeUnit.DAYS);
@@ -1191,17 +1211,20 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                     .forEach((storeId, list) -> {
                         AdvertRound advertRound = list.get(0);
                         tempList.add(new PCStoreMidBannerDTO().setStoreId(storeId).setDisplayType(AdDisplayType.PICTURE.getValue())
+                                .setPayPrice(ObjectUtils.defaultIfNull(advertRound.getPayPrice(), BigDecimal.ZERO))
                                 .setFileUrl(ObjectUtils.isNotEmpty(fileMap.get(advertRound.getPicId())) ? fileMap.get(advertRound.getPicId()).getFileUrl() : ""));
                     });
             pcStoreMidBannerList = tempList.stream().limit(1).collect(Collectors.toList());
-            for (int i = 0; i < pcStoreMidBannerList.size(); i++) {
-                pcStoreMidBannerList.get(i).setOrderNum(i + 1);
-            }
         } else {
             pcStoreMidBannerList = launchingList.stream().map(advertRound -> new PCStoreMidBannerDTO().setStoreId(advertRound.getStoreId())
-                            .setDisplayType(AdDisplayType.PICTURE.getValue()).setOrderNum(this.positionToNumber(advertRound.getPosition()))
+                            .setDisplayType(AdDisplayType.PICTURE.getValue()).setPayPrice(ObjectUtils.defaultIfNull(advertRound.getPayPrice(), BigDecimal.ZERO))
                             .setFileUrl(ObjectUtils.isNotEmpty(fileMap.get(advertRound.getPicId())) ? fileMap.get(advertRound.getPicId()).getFileUrl() : ""))
                     .collect(Collectors.toList());
+        }
+        // 按照价格由高到低进行排序，价格高的排1，其次按照价格排 2 3 4 5
+        pcStoreMidBannerList.sort(Comparator.comparing(PCStoreMidBannerDTO::getPayPrice).reversed());
+        for (int i = 0; i < pcStoreMidBannerList.size(); i++) {
+            pcStoreMidBannerList.get(i).setOrderNum(i + 1);
         }
         // 放到redis 中 过期时间1天
         redisCache.setCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_ADVERT_STORE_MID_BANNER, pcStoreMidBannerList, 1, TimeUnit.DAYS);
@@ -1442,7 +1465,8 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                         .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(tempStoreProdId)) ? prodPriceAndMainPicMap.get(tempStoreProdId).getMainPicUrl() : ""));
             }
         }
-        return new PCStoreTopBannerDTO().setDisplayType(AdDisplayType.PICTURE.getValue()).setStoreId(advertRound.getStoreId()).setProdList(prodList)
+        return new PCStoreTopBannerDTO().setDisplayType(AdDisplayType.PICTURE.getValue()).setStoreId(advertRound.getStoreId())
+                .setProdList(prodList).setPayPrice(ObjectUtils.defaultIfNull(advertRound.getPayPrice(), BigDecimal.ZERO))
                 .setFileUrl(ObjectUtils.isNotEmpty(fileMap.get(advertRound.getPicId())) ? fileMap.get(advertRound.getPicId()).getFileUrl() : "");
     }
 
@@ -1485,6 +1509,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                 .forEach((storeId, list) -> {
                     AdvertRound advertRound = list.get(0);
                     tempMidList.add(new PCIndexBottomPopularDTO.PCIBPPopularMidDTO().setDisplayType(AdDisplayType.PICTURE.getValue()).setStoreId(storeId)
+                            .setPayPrice(ObjectUtils.defaultIfNull(advertRound.getPayPrice(), BigDecimal.ZERO))
                             .setFileUrl(ObjectUtils.isNotEmpty(fileMap.get(advertRound.getPicId())) ? fileMap.get(advertRound.getPicId()).getFileUrl() : ""));
                 });
         return tempMidList.stream().limit(limitCount).collect(Collectors.toList());
@@ -1518,6 +1543,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                     StoreMember storeMember = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + storeId);
                     midStyleList.add(new PCIndexMidStyleDTO().setStoreId(storeId).setStoreName(storeMap.get(storeId).getStoreName())
                             .setDisplayType(AdDisplayType.PICTURE.getValue()).setStyleList(styleList)
+                            .setPayPrice(ObjectUtils.defaultIfNull(advertRound.getPayPrice(), BigDecimal.ZERO))
                             .setMemberLevel(ObjectUtils.isNotEmpty(storeMember) ? storeMember.getLevel() : null)
                             .setPicUrl(ObjectUtils.isNotEmpty(fileMap.get(advertRound.getPicId())) ? fileMap.get(advertRound.getPicId()).getFileUrl() : ""));
                 });
@@ -1563,7 +1589,9 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                         return;
                     }
                     AdvertRound advertRound = list.get(0);
-                    tempList.add(new PCNewMidBrandDTO().setDisplayType(AdDisplayType.PICTURE.getValue()).setStoreId(storeId).setStoreName(storeMap.get(storeId).getStoreName())
+                    tempList.add(new PCNewMidBrandDTO().setDisplayType(AdDisplayType.PICTURE.getValue()).setStoreId(storeId)
+                            .setStoreName(storeMap.get(storeId).getStoreName())
+                            .setPayPrice(ObjectUtils.defaultIfNull(advertRound.getPayPrice(), BigDecimal.ZERO))
                             .setFileUrl(ObjectUtils.isNotEmpty(fileMap.get(advertRound.getPicId())) ? fileMap.get(advertRound.getPicId()).getFileUrl() : ""));
                 });
         return tempList.stream().limit(limitCount).collect(Collectors.toList());

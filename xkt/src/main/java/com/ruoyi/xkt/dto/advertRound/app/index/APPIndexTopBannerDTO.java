@@ -6,6 +6,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.math.BigDecimal;
+
 /**
  * @author liujiang
  * @version v1.0
@@ -25,5 +27,7 @@ public class APPIndexTopBannerDTO {
     private Long storeId;
     @ApiModelProperty(value = "推广图路径")
     private String fileUrl;
+    @ApiModelProperty(value = "档口出的推广价格")
+    private BigDecimal payPrice;
 
 }

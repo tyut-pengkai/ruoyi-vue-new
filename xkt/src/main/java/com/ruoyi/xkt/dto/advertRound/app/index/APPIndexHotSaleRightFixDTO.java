@@ -29,5 +29,7 @@ public class APPIndexHotSaleRightFixDTO {
     private BigDecimal price;
     @ApiModelProperty(value = "商品第一张主图路径")
     private String mainPicUrl;
+    @ApiModelProperty(value = "档口出的推广价格")
+    private BigDecimal payPrice;
 
 }

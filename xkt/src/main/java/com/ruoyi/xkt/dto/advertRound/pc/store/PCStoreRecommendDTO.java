@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -35,8 +36,12 @@ public class PCStoreRecommendDTO {
     private String qqAccount;
     @ApiModelProperty(value = "档口地址")
     private String storeAddress;
+    @ApiModelProperty(value = "档口出的推广价格")
+    private BigDecimal payPrice;
+    @ApiModelProperty(value = "排序")
+    private Integer orderNum;
     @ApiModelProperty(value = "最新上新列表")
-    List<PCSRNewProdDTO> prodList;
+    private List<PCSRNewProdDTO> prodList;
 
     @Data
     public static class PCSRNewProdDTO {

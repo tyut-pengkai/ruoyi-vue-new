@@ -31,6 +31,8 @@ public class PCIndexMidStyleDTO {
     private Integer displayType;
     @ApiModelProperty(value = "排序")
     private Integer orderNum;
+    @ApiModelProperty(value = "档口出的推广价格")
+    private BigDecimal payPrice;
     @ApiModelProperty(value = "风格榜列表")
     private List<PCIMSStyleDTO> styleList;
 

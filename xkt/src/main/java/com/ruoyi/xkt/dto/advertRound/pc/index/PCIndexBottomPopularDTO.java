@@ -38,6 +38,8 @@ public class PCIndexBottomPopularDTO {
         private Long storeId;
         @ApiModelProperty(value = "推广图路径")
         private String fileUrl;
+        @ApiModelProperty(value = "档口出的推广价格")
+        private BigDecimal payPrice;
     }
 
     @Data
@@ -52,6 +54,8 @@ public class PCIndexBottomPopularDTO {
         private Long storeId;
         @ApiModelProperty(value = "推广图路径")
         private String fileUrl;
+        @ApiModelProperty(value = "档口出的推广价格")
+        private BigDecimal payPrice;
     }
 
     @Data
