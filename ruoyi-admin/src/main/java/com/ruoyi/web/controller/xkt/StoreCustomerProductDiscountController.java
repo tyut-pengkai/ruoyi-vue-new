@@ -6,10 +6,7 @@ import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.web.controller.xkt.vo.storeCusProdDiscount.StoreCusProdBatchDiscountVO;
-import com.ruoyi.web.controller.xkt.vo.storeCusProdDiscount.StoreCusProdDiscExistVO;
-import com.ruoyi.web.controller.xkt.vo.storeCusProdDiscount.StoreCusProdDiscPageVO;
-import com.ruoyi.web.controller.xkt.vo.storeCusProdDiscount.StoreCusProdDiscountVO;
+import com.ruoyi.web.controller.xkt.vo.storeCusProdDiscount.*;
 import com.ruoyi.web.controller.xkt.vo.storeProd.StoreProdSkuResVO;
 import com.ruoyi.xkt.dto.storeCusProdDiscount.*;
 import com.ruoyi.xkt.service.IStoreCustomerProductDiscountService;
@@ -50,6 +47,14 @@ public class StoreCustomerProductDiscountController extends XktBaseController {
     @PutMapping("/batch")
     public R<Integer> batchDiscount(@Validated @RequestBody StoreCusProdBatchDiscountVO batchDiscVO) {
         return R.ok(storeCusProdDiscService.batchDiscount(BeanUtil.toBean(batchDiscVO, StoreCusProdBatchDiscountDTO.class)));
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
+    @ApiOperation(value = "客户销售管理 批量删除", httpMethod = "PUT", response = R.class)
+    @Log(title = "客户销售管理 批量删除", businessType = BusinessType.UPDATE)
+    @DeleteMapping("/batch")
+    public R<Integer> batchDiscountDelete(@Validated @RequestBody StoreCusProdBatchDiscountDeleteVO batchDiscDeleteVO) {
+        return R.ok(storeCusProdDiscService.batchDiscountDelete(BeanUtil.toBean(batchDiscDeleteVO, StoreCusProdBatchDiscountDeleteDTO.class)));
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")

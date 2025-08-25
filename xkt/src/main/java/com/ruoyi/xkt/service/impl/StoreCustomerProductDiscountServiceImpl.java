@@ -210,6 +210,24 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
     }
 
     /**
+     * 批量删除客户优惠
+     * @param deleteDTO 删除优惠入参
+     * @return
+     */
+    @Override
+    @Transactional
+    public Integer batchDiscountDelete(StoreCusProdBatchDiscountDeleteDTO deleteDTO) {
+        List<StoreCustomerProductDiscount> discList = this.cusProdDiscMapper.selectList(new LambdaQueryWrapper<StoreCustomerProductDiscount>()
+                .in(StoreCustomerProductDiscount::getId, deleteDTO.getStoreCusProdDiscIdList())
+                .eq(StoreCustomerProductDiscount::getDelFlag, Constants.UNDELETED));
+        if (CollectionUtils.isEmpty(discList)) {
+            return 0;
+        }
+        discList.forEach(x -> x.setDelFlag(Constants.DELETED));
+        return this.cusProdDiscMapper.updateById(discList).size();
+    }
+
+    /**
      * 新增档口客户
      *
      * @param cusProdDisDTO 新增档口客户入参

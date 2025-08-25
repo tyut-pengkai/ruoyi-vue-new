@@ -39,9 +39,18 @@ public interface IStoreCustomerProductDiscountService {
 
     /**
      * 客户销售管理，新增客户优惠时，判断是否已存在优惠
+     *
      * @param existDTO 优惠是否存在DTO
      * @return StoreCusProdDiscExistResDTO
      */
     List<StoreCusProdDiscExistResDTO> discountExist(StoreCusProdDiscExistDTO existDTO);
+
+    /**
+     * 批量优惠删除
+     *
+     * @param deleteDTO 删除优惠入参
+     * @return Integer
+     */
+    Integer batchDiscountDelete(StoreCusProdBatchDiscountDeleteDTO deleteDTO);
 
 }
