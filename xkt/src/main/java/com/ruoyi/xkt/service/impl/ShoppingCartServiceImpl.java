@@ -51,6 +51,7 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
     final StoreProductFileMapper prodFileMapper;
     final StoreProductCategoryAttributeMapper prodCateAttrMapper;
     final StoreMapper storeMapper;
+    final StoreProductMapper storeProdMapper;
 
 
     /**
@@ -299,11 +300,16 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
                 .in(StoreProductColorSize::getStoreProdId, shoppingCartList.stream().map(ShoppingCart::getStoreProdId).collect(Collectors.toList()))
                 .in(StoreProductColorSize::getStoreColorId, detailList.stream().map(ShoppingCartDetail::getStoreColorId).collect(Collectors.toList()))
                 .eq(StoreProductColorSize::getDelFlag, Constants.UNDELETED));
+        List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+                .in(StoreProduct::getId, shoppingCartList.stream().map(ShoppingCart::getStoreProdId).collect(Collectors.toList()))
+                .eq(StoreProduct::getDelFlag, Constants.UNDELETED));
+        Map<Long, StoreProduct> storeProdMap = storeProdList.stream().collect(Collectors.toMap(StoreProduct::getId, Function.identity()));
         // 商品价格尺码map
         Map<String, Long> priceSizeMap = priceSizeList.stream().collect(Collectors
                 .toMap(x -> x.getStoreProdId().toString() + x.getStoreColorId().toString() + x.getSize(), StoreProductColorSize::getId));
         return shoppingCartList.stream().map(x -> {
             ShoppingCartDTO shopCartDTO = BeanUtil.toBean(x, ShoppingCartDTO.class).setMainPicUrl(mainPicMap.get(x.getStoreProdId()))
+                    .setProdTitle(ObjectUtils.isNotEmpty(storeProdMap.get(x.getStoreProdId())) ? storeProdMap.get(x.getStoreProdId()).getProdTitle() : "")
                     .setStoreName(ObjectUtils.isNotEmpty(storeMap.get(x.getStoreId())) ? storeMap.get(x.getStoreId()).getStoreName() : "");
             List<ShoppingCartDTO.SCDetailDTO> shopCartDetailList = detailMap.get(x.getId()).stream().map(detail -> {
                 final BigDecimal price = ObjectUtils.defaultIfNull(priceMap.get(x.getStoreProdId().toString() + detail.getStoreColorId().toString()), BigDecimal.ZERO);
