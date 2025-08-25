@@ -2553,7 +2553,7 @@ CREATE TABLE `store_order_detail`
     `express_type`             tinyint(4) DEFAULT NULL COMMENT '物流类型[1:平台物流 2:档口物流]',
     `express_status`           tinyint(4) NOT NULL COMMENT '物流状态[1:初始 2:下单中 3:已下单 4:取消中 5:已揽件 6:拦截中 99:已结束]',
     `express_req_no`           varchar(32)    DEFAULT NULL COMMENT '物流请求单号',
-    `express_waybill_no`       varchar(255)   DEFAULT NULL COMMENT '物流运单号（快递单号），档口/用户自己填写时可能存在多个，使用“,”分割',
+    `express_waybill_no`       varchar(512)   DEFAULT NULL COMMENT '物流运单号（快递单号），档口/用户自己填写时可能存在多个，使用“,”分割',
     `goods_price`              decimal(18, 2) NOT NULL COMMENT '商品单价',
     `goods_quantity`           int(11) NOT NULL COMMENT '商品数量',
     `goods_amount`             decimal(18, 2) NOT NULL COMMENT '商品金额（商品单价*商品数量）',
@@ -2562,7 +2562,7 @@ CREATE TABLE `store_order_detail`
     `real_total_amount`        decimal(18, 2) DEFAULT NULL COMMENT '实际总金额（总金额-支付渠道服务费）',
     `origin_order_detail_id`   bigint(20) DEFAULT NULL COMMENT '退货原订单明细ID',
     `refund_reason_code`       varchar(255)   DEFAULT NULL COMMENT '退货原因',
-    `refund_reject_reason`     varchar(255)   DEFAULT NULL COMMENT '退货拒绝原因',
+    `refund_reject_reason`     varchar(512)   DEFAULT NULL COMMENT '退货拒绝原因',
     `del_flag`                 char(1)        DEFAULT '0' COMMENT '删除标志（0代表存在 2代表删除）',
     `create_by`                varchar(64)    DEFAULT '' COMMENT '创建者',
     `create_time`              datetime       DEFAULT NULL COMMENT '创建时间',
@@ -2803,7 +2803,7 @@ DROP TABLE IF EXISTS `finance_bill`;
 CREATE TABLE `finance_bill`
 (
     `id`                         bigint(20) NOT NULL AUTO_INCREMENT COMMENT '支付单据ID',
-    `bill_no`                    varchar(32)    NOT NULL COMMENT '单号',
+    `bill_no`                    varchar(64)    NOT NULL COMMENT '单号',
     `bill_type`                  tinyint(4) NOT NULL COMMENT '单据类型[1:收款 2:付款 3:转移]',
     `bill_status`                tinyint(4) NOT NULL COMMENT '单据状态[1:初始 2:执行中 3:执行成功 4:执行失败]',
     `src_type`                   tinyint(4) DEFAULT NULL COMMENT '来源类型[1:代发订单支付 2:代发订单完成 3:提现]',
