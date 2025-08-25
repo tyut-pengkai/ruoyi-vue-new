@@ -10,7 +10,7 @@
           <b>当前版本:</b> <span>v{{ version }}</span>
         </p>
         <p>
-          <el-tag type="danger">&yen;免费开</el-tag>
+          <el-tag type="danger">&yen;免费开源</el-tag>
         </p>
         <p>
           <el-button
