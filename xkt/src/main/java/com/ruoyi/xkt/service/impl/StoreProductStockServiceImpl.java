@@ -65,10 +65,10 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
         if (CollectionUtils.isEmpty(stockList)) {
             return Page.empty(pageDTO.getPageSize(), pageDTO.getPageNum());
         }
-        // 提取查询结果中的商店产品ID列表
+        // 提取查询结果中的商品ID列表
         List<Long> storeProdIdList = stockList.stream().map(StoreProdStockAppPageResDTO::getStoreProdId).collect(Collectors.toList());
         // 查找排名第一个商品主图列表
-        List<StoreProdMainPicDTO> mainPicList = this.storeProdFileMapper.selectMainPicByStoreProdIdList(storeProdIdList, FileType.MAIN_PIC.getValue(), 1);
+        List<StoreProdMainPicDTO> mainPicList = this.storeProdFileMapper.selectMainPicByStoreProdIdList(storeProdIdList, FileType.MAIN_PIC.getValue(), ORDER_NUM_1);
         Map<Long, String> mainPicMap = CollectionUtils.isEmpty(mainPicList) ? new HashMap<>() : mainPicList.stream()
                 .collect(Collectors.toMap(StoreProdMainPicDTO::getStoreProdId, StoreProdMainPicDTO::getFileUrl));
         // 为每个产品设置主图URL和标准尺码列表
