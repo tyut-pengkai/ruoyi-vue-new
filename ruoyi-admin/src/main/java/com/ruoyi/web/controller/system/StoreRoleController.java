@@ -124,6 +124,8 @@ public class StoreRoleController extends XktBaseController {
         RoleInfoEdit dto = BeanUtil.toBean(vo, RoleInfoEdit.class);
         //档口的roleKey不变
         dto.setRoleKey(info.getRoleKey());
+        //档口默认启用
+        dto.setStatus(Constants.SYS_NORMAL_STATUS);
         Set<Long> usableMenuIds = sysMenuService.storeUsableMenuIds();
         CollUtil.emptyIfNull(dto.getMenuIds())
                 .forEach(menuId -> Assert.isTrue(usableMenuIds.contains(menuId), "菜单不可用"));
