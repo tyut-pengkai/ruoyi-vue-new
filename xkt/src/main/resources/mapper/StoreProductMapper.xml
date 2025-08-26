@@ -54,12 +54,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 
     <select id="getStyleList" >
-        SELECT DISTINCT
+        SELECT
             style
         FROM
             store_product_category_attribute
         WHERE
-            del_flag = 0
+            del_flag = 0 AND style != ''
+        GROUP BY
+            style
+        ORDER BY
+            COUNT( 1 ) DESC
     </select>
 
 
