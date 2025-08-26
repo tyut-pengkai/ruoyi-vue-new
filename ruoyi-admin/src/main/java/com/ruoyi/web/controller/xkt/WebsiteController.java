@@ -12,6 +12,7 @@ import com.ruoyi.web.controller.xkt.vo.advertRound.app.index.APPIndexMidBrandVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.app.index.APPIndexTopBannerVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.app.own.APPOwnGuessLikeVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.pc.PCDownloadVO;
+import com.ruoyi.web.controller.xkt.vo.advertRound.pc.PCSearchResultAdvertVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.pc.PCUserCenterVO;
 import com.ruoyi.web.controller.xkt.vo.advertRound.pc.index.*;
 import com.ruoyi.web.controller.xkt.vo.advertRound.pc.newProd.*;
@@ -76,10 +77,22 @@ public class WebsiteController extends XktBaseController {
         return R.ok(websitePCService.pcNewProdRecommendPage(BeanUtil.toBean(searchVO, IndexSearchDTO.class)));
     }
 
-    @ApiOperation(value = "PC 搜索结果", httpMethod = "POST", response = R.class)
+    @ApiOperation(value = "PC 搜索", httpMethod = "POST", response = R.class)
     @PostMapping("/pc/search")
     public R<Page<PCSearchDTO>> psSearchPage(@Validated @RequestBody IndexSearchVO searchVO) throws IOException {
         return R.ok(websitePCService.psSearchPage(BeanUtil.toBean(searchVO, IndexSearchDTO.class)));
+    }
+
+    @ApiOperation(value = "PC 首页 顶部通栏", httpMethod = "GET", response = R.class)
+    @GetMapping("/pc/index/top")
+    public R<List<PCIndexTopBannerVO>> getPcIndexTop() {
+        return R.ok(BeanUtil.copyToList(websitePCService.getPcIndexTop(), PCIndexTopBannerVO.class));
+    }
+
+    @ApiOperation(value = "PC 搜索结果广告", httpMethod = "GET", response = R.class)
+    @GetMapping("/pc/search/advert")
+    public R<List<PCSearchResultAdvertVO>> getPcSearchAdvertList() {
+        return R.ok(BeanUtil.copyToList(websitePCService.getPcSearchAdvertList(), PCSearchResultAdvertVO.class));
     }
 
     @ApiOperation(value = "PC 首页 顶部横向轮播图", httpMethod = "GET", response = R.class)

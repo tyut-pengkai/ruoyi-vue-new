@@ -3,6 +3,7 @@ package com.ruoyi.xkt.service;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.xkt.dto.advertRound.pc.PCDownloadDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.PCSearchDTO;
+import com.ruoyi.xkt.dto.advertRound.pc.PCSearchResultAdvertDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.PCUserCenterDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.index.*;
 import com.ruoyi.xkt.dto.advertRound.pc.newProd.*;
@@ -15,7 +16,6 @@ import com.ruoyi.xkt.dto.website.IndexSearchDTO;
 import com.ruoyi.xkt.dto.website.StoreSearchDTO;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -198,4 +198,17 @@ public interface IWebsitePCService {
      */
     Page<PCStoreRecommendDTO> pcStoreRecommendPage(StoreSearchDTO searchDTO);
 
+    /**
+     * PC 首页顶部通栏
+     *
+     * @return PCIndexTopBannerDTO
+     */
+    List<PCIndexTopBannerDTO> getPcIndexTop();
+
+    /**
+     * PC 搜索结果广告列表
+     *
+     * @return List<PCSearchResultAdvertDTO>
+     */
+    List<PCSearchResultAdvertDTO> getPcSearchAdvertList();
 }

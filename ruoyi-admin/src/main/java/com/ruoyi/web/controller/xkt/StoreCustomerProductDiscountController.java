@@ -50,8 +50,8 @@ public class StoreCustomerProductDiscountController extends XktBaseController {
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
-    @ApiOperation(value = "客户销售管理 批量删除", httpMethod = "PUT", response = R.class)
-    @Log(title = "客户销售管理 批量删除", businessType = BusinessType.UPDATE)
+    @ApiOperation(value = "客户销售管理 批量删除", httpMethod = "DELETE", response = R.class)
+    @Log(title = "客户销售管理 批量删除", businessType = BusinessType.DELETE)
     @DeleteMapping("/batch")
     public R<Integer> batchDiscountDelete(@Validated @RequestBody StoreCusProdBatchDiscountDeleteVO batchDiscDeleteVO) {
         return R.ok(storeCusProdDiscService.batchDiscountDelete(BeanUtil.toBean(batchDiscDeleteVO, StoreCusProdBatchDiscountDeleteDTO.class)));

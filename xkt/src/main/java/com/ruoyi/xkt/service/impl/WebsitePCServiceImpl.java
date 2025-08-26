@@ -20,6 +20,7 @@ import com.ruoyi.framework.es.EsClientWrapper;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.advertRound.pc.PCDownloadDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.PCSearchDTO;
+import com.ruoyi.xkt.dto.advertRound.pc.PCSearchResultAdvertDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.PCUserCenterDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.index.*;
 import com.ruoyi.xkt.dto.advertRound.pc.newProd.*;
@@ -85,6 +86,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
     final StoreMapper storeMapper;
     final StoreProductStatisticsMapper prodStatsMapper;
     final IPictureService pictureService;
+    final UserSubscriptionsMapper userSubsMapper;
 
     /**
      * PC 首页 为你推荐
@@ -367,6 +369,104 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
             }
         }
         return new Page<>(searchDTO.getPageNum(), searchDTO.getPageSize(), pages, redisList.size(), realDataList);
+    }
+
+    /***
+     * PC 首页 顶部通栏
+     * @return
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<PCIndexTopBannerDTO> getPcIndexTop() {
+        // 从redis 中获取 PC 首页 顶部通栏
+        List<PCIndexTopBannerDTO> topBannerList = redisCache.getCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_ADVERT_INDEX_TOP);
+        if (ObjectUtils.isNotEmpty(topBannerList)) {
+            return topBannerList;
+        }
+        // 正在播放的首页顶部通栏
+        List<AdvertRound> indexTopList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
+                .isNotNull(AdvertRound::getStoreId).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
+                .eq(AdvertRound::getTypeId, AdType.PC_HOME_TOPMOST_BANNER.getValue())
+                .eq(AdvertRound::getLaunchStatus, AdLaunchStatus.LAUNCHING.getValue()));
+        if (CollectionUtils.isEmpty(indexTopList)) {
+            return Collections.emptyList();
+        }
+        Map<Long, SysFile> fileMap = fileMapper.selectList(new LambdaQueryWrapper<SysFile>().eq(SysFile::getDelFlag, Constants.UNDELETED)
+                        .in(SysFile::getId, indexTopList.stream().map(AdvertRound::getPicId).filter(ObjectUtils::isNotEmpty).collect(Collectors.toList())))
+                .stream().collect(Collectors.toMap(SysFile::getId, Function.identity()));
+        // 顶部通栏数据
+        List<PCIndexTopBannerDTO> topList = indexTopList.stream().map(x -> new PCIndexTopBannerDTO().setDisplayType(x.getDisplayType())
+                        .setStoreId(x.getStoreId()).setPayPrice(ObjectUtils.defaultIfNull(x.getPayPrice(), BigDecimal.ZERO))
+                        .setFileUrl(ObjectUtils.isNotEmpty(x.getPicId()) ? fileMap.get(x.getPicId()).getFileUrl() : null))
+                .sorted(Comparator.comparing(PCIndexTopBannerDTO::getPayPrice).reversed())
+                .collect(Collectors.toList());
+        // 按照价格由高到低进行排序，价格高的排1，其次按照价格排 2 3 4 5
+        for (int i = 0; i < topList.size(); i++) {
+            topList.get(i).setOrderNum(i + 1);
+        }
+        // 存放到redis中，过期时间为1天
+        redisCache.setCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_ADVERT_INDEX_TOP, topList, 1, TimeUnit.DAYS);
+        return topList;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PCSearchResultAdvertDTO> getPcSearchAdvertList() {
+        // 从redis 中获取 PC 搜索结果广告列表
+        List<PCSearchResultAdvertDTO> searchResultAdvertList = redisCache.getCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_SEARCH_RESULT_ADVERT);
+        if (ObjectUtils.isNotEmpty(searchResultAdvertList)) {
+            return searchResultAdvertList;
+        }
+        List<AdvertRound> oneMonthList = this.getOneMonthAdvertList(Collections.singletonList(AdType.PC_SEARCH_RESULT.getValue()));
+        if (CollectionUtils.isEmpty(oneMonthList)) {
+            return new ArrayList<>();
+        }
+        // 获取档口
+        final List<Long> storeIdList = oneMonthList.stream().filter(x -> ObjectUtils.isNotEmpty(x.getStoreId())).map(AdvertRound::getStoreId).collect(Collectors.toList());
+        List<Store> storeList = storeMapper.selectList(new LambdaQueryWrapper<Store>().eq(Store::getDelFlag, Constants.UNDELETED).in(Store::getId, storeIdList));
+        Map<Long, Store> storeMap = storeList.stream().collect(Collectors.toMap(Store::getId, Function.identity()));
+        List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue()))
+                .filter(x -> Objects.equals(x.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue())).collect(Collectors.toList());
+        List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
+        final List<Long> storeProdIdList = oneMonthList.stream()
+                .filter(x -> StringUtils.isNotBlank(x.getProdIdStr())).map(x -> Long.parseLong(x.getProdIdStr())).distinct().collect(Collectors.toList());
+        // 档口商品的价格及商品主图map
+        Map<Long, StoreProdPriceAndMainPicDTO> prodPriceAndMainPicMap = CollectionUtils.isEmpty(storeProdIdList) ? new ConcurrentHashMap<>()
+                : this.storeProdMapper.selectPriceAndMainPicList(storeProdIdList).stream().collect(Collectors
+                .toMap(StoreProdPriceAndMainPicDTO::getStoreProdId, Function.identity()));
+        List<PCSearchResultAdvertDTO> pcSearchResAdvertList;
+        if (CollectionUtils.isEmpty(launchingList)) {
+            pcSearchResAdvertList = this.fillPcSearchResultAdvertList(expiredList, prodPriceAndMainPicMap, storeMap, new ArrayList<>(), 15);
+            pcSearchResAdvertList.sort(Comparator.comparing(PCSearchResultAdvertDTO::getPayPrice).reversed());
+            // 按照价格由高到低进行排序，价格高的排1，其次按照价格排 2 3 4 5
+            for (int i = 0; i < pcSearchResAdvertList.size(); i++) {
+                pcSearchResAdvertList.get(i).setOrderNum(i + 1);
+            }
+        } else {
+            pcSearchResAdvertList = launchingList.stream().filter(x -> StringUtils.isNotBlank(x.getProdIdStr())).map(x -> {
+                final Long storeProdId = Long.parseLong(x.getProdIdStr());
+                return new PCSearchResultAdvertDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreId(x.getStoreId())
+                        .setStoreName(ObjectUtils.isNotEmpty(storeMap.get(x.getStoreId())) ? storeMap.get(x.getStoreId()).getStoreName() : "")
+                        .setOrderNum(this.positionToNumber(x.getPosition())).setStoreProdId(storeProdId).setFocus(Boolean.FALSE)
+                        .setPrice(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMinPrice() : null)
+                        .setProdArtNum(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getProdArtNum() : "")
+                        .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMainPicUrl() : "");
+            }).collect(Collectors.toList());
+        }
+        // 获取当前登录用户
+        Long userId = SecurityUtils.getUserIdSafe();
+        if (ObjectUtils.isNotEmpty(userId)) {
+            // 获取当前用户关注档口
+            List<UserSubscriptions> subsList = this.userSubsMapper.selectList(new LambdaQueryWrapper<UserSubscriptions>()
+                    .eq(UserSubscriptions::getDelFlag, Constants.UNDELETED).eq(UserSubscriptions::getUserId, userId));
+            if (CollectionUtils.isNotEmpty(subsList)) {
+                final List<Long> focusStoreIdList = subsList.stream().map(UserSubscriptions::getStoreId).collect(Collectors.toList());
+                pcSearchResAdvertList.forEach(x -> x.setFocus(focusStoreIdList.contains(x.getStoreId()) ? Boolean.TRUE : Boolean.FALSE));
+            }
+        }
+        // 放到redis中，过期时间为1天
+        redisCache.setCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_SEARCH_RESULT_ADVERT, pcSearchResAdvertList, 1, TimeUnit.DAYS);
+        return pcSearchResAdvertList;
     }
 
     /**
@@ -1652,6 +1752,34 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                     if (ObjectUtils.isNotEmpty(advertRound)) {
                         final Long storeProdId = Long.parseLong(advertRound.getProdIdStr());
                         tempList.add(new PCNewMidHotRightDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreProdId(storeProdId)
+                                .setPrice(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMinPrice() : null)
+                                .setProdArtNum(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getProdArtNum() : "")
+                                .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMainPicUrl() : ""));
+                    }
+                });
+        return tempList.stream().limit(limitCount).collect(Collectors.toList());
+    }
+
+    /**
+     *
+     * @param advertRoundList 广告列表
+     * @param prodPriceAndMainPicMap  商品价格及主图map
+     * @param existProdIdList 已存在的商品ID列表
+     * @param limitCount 返回的 数量
+     * @return
+     */
+    private List<PCSearchResultAdvertDTO> fillPcSearchResultAdvertList(List<AdvertRound> advertRoundList, Map<Long, StoreProdPriceAndMainPicDTO> prodPriceAndMainPicMap,
+                                                             Map<Long, Store> storeMap, List<Long> existProdIdList, int limitCount) {
+        List<PCSearchResultAdvertDTO> tempList = new ArrayList<>();
+        advertRoundList.stream().collect(Collectors.groupingBy(AdvertRound::getStoreId))
+                .forEach((storeId, list) -> {
+                    AdvertRound advertRound = list.stream().filter(x -> StringUtils.isNotBlank(x.getProdIdStr()))
+                            .filter(x -> CollectionUtils.isEmpty(existProdIdList) || !existProdIdList.contains(Long.parseLong(x.getProdIdStr()))).findAny().orElse(null);
+                    if (ObjectUtils.isNotEmpty(advertRound)) {
+                        final Long storeProdId = Long.parseLong(advertRound.getProdIdStr());
+                        tempList.add(new PCSearchResultAdvertDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreProdId(storeProdId).setStoreId(storeId)
+                                .setStoreName(ObjectUtils.isNotEmpty(storeMap.get(storeId)) ? storeMap.get(storeId).getStoreName() : "").setFocus(Boolean.FALSE)
+                                .setPayPrice(ObjectUtils.isNotEmpty(advertRound.getPayPrice()) ? advertRound.getPayPrice() : BigDecimal.ZERO)
                                 .setPrice(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMinPrice() : null)
                                 .setProdArtNum(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getProdArtNum() : "")
                                 .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMainPicUrl() : ""));

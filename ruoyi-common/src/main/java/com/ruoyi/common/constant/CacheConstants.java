@@ -95,6 +95,14 @@ public class CacheConstants {
     public static final String PC_ADVERT = "pc_advert:";
 
     /**
+     * PC 首页 顶部通栏
+     */
+    public static final String PC_ADVERT_INDEX_TOP = "pc_index_top";
+    /**
+     * PC 搜索结果 广告列表
+     */
+    public static final String PC_SEARCH_RESULT_ADVERT = "pc_search_result_advert";
+    /**
      * PC 首页 顶部左侧轮播图
      */
     public static final String PC_ADVERT_INDEX_TOP_LEFT = "pc_index_top_left";

@@ -45,6 +45,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -254,6 +256,14 @@ public class StoreServiceImpl implements IStoreService {
     @Override
     @Transactional
     public int updateStore(StoreUpdateDTO storeUpdateDTO) {
+        if (StringUtils.isNotBlank(storeUpdateDTO.getContactBackPhone())) {
+            final String PHONE_REGEX = "^1[3-9]\\d{9}$";
+            final Pattern pattern = Pattern.compile(PHONE_REGEX);
+            Matcher matcher = pattern.matcher(storeUpdateDTO.getContactBackPhone().trim());
+            if (!matcher.matches()) {
+                throw new ServiceException("备选手机号格式错误，请重新输入!", HttpStatus.ERROR);
+            }
+        }
         Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
                         .eq(Store::getId, storeUpdateDTO.getStoreId()).eq(Store::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
