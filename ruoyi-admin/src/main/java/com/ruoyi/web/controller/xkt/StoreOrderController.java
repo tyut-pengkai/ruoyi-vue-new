@@ -370,28 +370,27 @@ public class StoreOrderController extends XktBaseController {
         //创建售后订单
         AfterSaleApplyResultDTO afterSaleApplyResult = storeOrderService.createAfterSaleOrder(dto);
         //取消/拦截物流
-        //TODO 调用失败如何补偿？
-        Set<ExpressSimpleDTO> stopExpresses = afterSaleApplyResult.getNeedStopExpresses();
-        for (ExpressSimpleDTO express : stopExpresses) {
-            boolean cancelSuccess = true;
-            ExpressManager expressManager = expressService.getExpressManager(express.getExpressId());
-            if (EExpressStatus.PLACING.getValue().equals(express.getExpressStatus())
-                    || EExpressStatus.PLACED.getValue().equals(express.getExpressStatus())) {
-                cancelSuccess = expressManager.cancelShip(new ExpressCancelReqDTO(
-                        express.getExpressReqNo(),
-                        express.getExpressWaybillNo()
-                ));
-                logger.info("物流订单取消：waybillNo={},result={}", express.getExpressWaybillNo(), cancelSuccess);
-            }
-            if (!cancelSuccess ||
-                    EExpressStatus.PICKED_UP.getValue().equals(express.getExpressStatus())) {
-                boolean interceptSuccess = expressManager.interceptShip(new ExpressInterceptReqDTO(
-                        express.getExpressReqNo(),
-                        express.getExpressWaybillNo()
-                ));
-                logger.info("物流订单拦截：waybillNo={},result={}", express.getExpressWaybillNo(), interceptSuccess);
-            }
-        }
+//        Set<ExpressSimpleDTO> stopExpresses = afterSaleApplyResult.getNeedStopExpresses();
+//        for (ExpressSimpleDTO express : stopExpresses) {
+//            boolean cancelSuccess = true;
+//            ExpressManager expressManager = expressService.getExpressManager(express.getExpressId());
+//            if (EExpressStatus.PLACING.getValue().equals(express.getExpressStatus())
+//                    || EExpressStatus.PLACED.getValue().equals(express.getExpressStatus())) {
+//                cancelSuccess = expressManager.cancelShip(new ExpressCancelReqDTO(
+//                        express.getExpressReqNo(),
+//                        express.getExpressWaybillNo()
+//                ));
+//                logger.info("物流订单取消：waybillNo={},result={}", express.getExpressWaybillNo(), cancelSuccess);
+//            }
+//            if (!cancelSuccess ||
+//                    EExpressStatus.PICKED_UP.getValue().equals(express.getExpressStatus())) {
+//                boolean interceptSuccess = expressManager.interceptShip(new ExpressInterceptReqDTO(
+//                        express.getExpressReqNo(),
+//                        express.getExpressWaybillNo()
+//                ));
+//                logger.info("物流订单拦截：waybillNo={},result={}", express.getExpressWaybillNo(), interceptSuccess);
+//            }
+//        }
         return success(afterSaleApplyResult.getStoreOrderId());
     }
 
