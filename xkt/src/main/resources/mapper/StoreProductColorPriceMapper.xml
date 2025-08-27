@@ -29,7 +29,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 JOIN store_product sp ON spc.store_prod_id = sp.id
                 JOIN store_product_color_price spcp ON spc.store_prod_id = spcp.store_prod_id AND spc.store_color_id = spcp.store_color_id
         WHERE
-            AND spc.prod_status IN ( 2, 3 )
+            spc.prod_status IN ( 2, 3 )
             AND spc.store_prod_id = #{storeProdId}
             AND spc.store_id = #{storeId}
     </select>
