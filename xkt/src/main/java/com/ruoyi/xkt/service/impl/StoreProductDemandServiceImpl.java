@@ -450,6 +450,21 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
         if (CollectionUtils.isEmpty(demandDetailList)) {
             throw new ServiceException("需求单明细不存在!", HttpStatus.ERROR);
         }
+        // 已完成的需求明细有哪些
+        List<StoreProductDemandDetail> finishedDemandDetailList = demandDetailList.stream().filter(x -> DemandStatus.PRODUCTION_COMPLETE.getValue().equals(x.getDetailStatus()))
+                .collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(finishedDemandDetailList)) {
+            List<StoreProductDemand> finishDemandList = this.storeProdDemandMapper.selectList(new LambdaQueryWrapper<StoreProductDemand>()
+                    .in(StoreProductDemand::getId, finishedDemandDetailList.stream().map(StoreProductDemandDetail::getStoreProdDemandId).collect(Collectors.toList())));
+            Map<Long, StoreProductDemand> demandMap = finishDemandList.stream().collect(Collectors.toMap(StoreProductDemand::getId, x -> x));
+            Map<Long, List<StoreProductDemandDetail>> demandDetailMap = finishedDemandDetailList.stream().collect(Collectors.groupingBy(StoreProductDemandDetail::getStoreProdDemandId));
+            List<String> errorList = new ArrayList<>();
+            demandDetailMap.forEach((demandId, tempDetailList) -> {
+                final String demandCode = demandMap.containsKey(demandId) ? demandMap.get(demandId).getCode() : "";
+                errorList.add(demandCode + ":" + tempDetailList.stream().map(StoreProductDemandDetail::getProdArtNum).collect(Collectors.joining(",")));
+            });
+            throw new ServiceException(errorList + " 等需求明细已完成，不可删除!", HttpStatus.ERROR);
+        }
         // 根据需求明细ID能否找到对应的入库与需求抵扣关系数据
         List<StoreProductStorageDemandDeduct> deductList = this.storageDemandDeductMapper.selectList(new LambdaQueryWrapper<StoreProductStorageDemandDeduct>()
                 .in(StoreProductStorageDemandDeduct::getStoreProdDemandDetailId, deleteDTO.getStoreProdDemandDetailIdList())
