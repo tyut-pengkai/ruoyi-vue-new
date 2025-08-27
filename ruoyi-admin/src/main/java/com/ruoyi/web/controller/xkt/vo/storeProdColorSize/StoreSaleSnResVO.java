@@ -39,6 +39,8 @@ public class StoreSaleSnResVO {
     private BigDecimal overPrice;
     @ApiModelProperty(value = "标准尺码")
     private Integer standard;
+    @ApiModelProperty(value = "[退货扫码时才有]销售时间")
+    private String soldTime;
     @ApiModelProperty(value = "[退货扫码时才有]优惠后销售单价")
     private BigDecimal discountedPrice;
     @ApiModelProperty(value = "[退货扫码时才有]销售金额")

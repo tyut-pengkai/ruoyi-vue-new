@@ -106,8 +106,9 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
                 .in(SysFile::getId, Arrays.asList(storeCert.getIdCardFaceFileId(), storeCert.getIdCardEmblemFileId(), storeCert.getLicenseFileId()))
                 .eq(SysFile::getDelFlag, Constants.UNDELETED))).orElseThrow(() -> new ServiceException("文件不存在!", HttpStatus.ERROR));
         List<StoreCertResDTO.StoreCertFileDTO> fileDTOList = fileList.stream().map(x -> BeanUtil.toBean(x, StoreCertResDTO.StoreCertFileDTO.class)
-                .setFileType(Objects.equals(x.getId(), storeCert.getIdCardFaceFileId()) ? 4 :
-                        (Objects.equals(x.getId(), storeCert.getIdCardEmblemFileId()) ? 5 : 6))).collect(Collectors.toList());
+                        .setFileType(Objects.equals(x.getId(), storeCert.getIdCardFaceFileId()) ? FileType.ID_CARD_FACE.getValue() :
+                                (Objects.equals(x.getId(), storeCert.getIdCardEmblemFileId()) ? FileType.ID_CARD_EMBLEM.getValue() : FileType.BUSINESS_LICENSE.getValue())))
+                .collect(Collectors.toList());
         return BeanUtil.toBean(storeCert, StoreCertResDTO.class).setStoreCertId(storeCert.getId()).setFileList(fileDTOList);
     }
 
