@@ -23,6 +23,7 @@ import com.ruoyi.system.service.ISysMenuService;
 import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.web.controller.system.vo.*;
+import com.ruoyi.web.controller.xkt.vo.PhoneNumberVO;
 import com.ruoyi.xkt.domain.Store;
 import com.ruoyi.xkt.manager.TencentAuthManager;
 import com.ruoyi.xkt.mapper.StoreMapper;
@@ -111,13 +112,21 @@ public class SysLoginController {
         return ajax;
     }
 
-    @ApiOperation(value = "发送登录短信验证码")
+    @ApiOperation(value = "发送短信验证码(未登录)")
     @PostMapping("/sendSmsVerificationCode")
     public R sendSmsVerificationCode(@Validated @RequestBody LoginSmsReqVO vo) {
         boolean captchaPass = tencentAuthManager.validate(vo.getTicket(), vo.getRandstr());
         if (!captchaPass) {
             return R.fail("验证失败");
         }
+        loginService.sendSmsVerificationCode(vo.getPhoneNumber(),
+                CacheConstants.SMS_LOGIN_CAPTCHA_CODE_CD_PHONE_NUM_KEY, false, null, null);
+        return R.ok();
+    }
+
+    @ApiOperation(value = "发送短信验证码(已登录)")
+    @PostMapping("/sendSmsVerificationCodeByUser")
+    public R sendSmsVerificationCode(@Validated @RequestBody PhoneNumberVO vo) {
         loginService.sendSmsVerificationCode(vo.getPhoneNumber(),
                 CacheConstants.SMS_LOGIN_CAPTCHA_CODE_CD_PHONE_NUM_KEY, false, null, null);
         return R.ok();
