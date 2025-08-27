@@ -409,7 +409,21 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
                         .setProdArtNum(x.getProdArtNum()).setColorName(x.getColorName()).setSize30Quantity(x.getSize30()).setSize31Quantity(x.getSize31())
                         .setSize32Quantity(x.getSize32()).setSize33Quantity(x.getSize33()).setSize34Quantity(x.getSize34()).setSize35Quantity(x.getSize35())
                         .setSize36Quantity(x.getSize36()).setSize37Quantity(x.getSize37()).setSize38Quantity(x.getSize38()).setSize39Quantity(x.getSize39())
-                        .setSize40Quantity(x.getSize40()).setSize41Quantity(x.getSize41()).setSize42Quantity(x.getSize42()).setSize43Quantity(x.getSize43()))
+                        .setSize40Quantity(x.getSize40()).setSize41Quantity(x.getSize41()).setSize42Quantity(x.getSize42()).setSize43Quantity(x.getSize43())
+                        .setTotalQuantity(ObjectUtils.defaultIfNull(x.getSize30(), 0) +
+                                ObjectUtils.defaultIfNull(x.getSize31(), 0) +
+                                ObjectUtils.defaultIfNull(x.getSize32(), 0) +
+                                ObjectUtils.defaultIfNull(x.getSize33(), 0) +
+                                ObjectUtils.defaultIfNull(x.getSize34(), 0) +
+                                ObjectUtils.defaultIfNull(x.getSize35(), 0) +
+                                ObjectUtils.defaultIfNull(x.getSize36(), 0) +
+                                ObjectUtils.defaultIfNull(x.getSize37(), 0) +
+                                ObjectUtils.defaultIfNull(x.getSize38(), 0) +
+                                ObjectUtils.defaultIfNull(x.getSize39(), 0) +
+                                ObjectUtils.defaultIfNull(x.getSize40(), 0) +
+                                ObjectUtils.defaultIfNull(x.getSize41(), 0) +
+                                ObjectUtils.defaultIfNull(x.getSize42(), 0) +
+                                ObjectUtils.defaultIfNull(x.getSize43(), 0)))
                 .collect(Collectors.toList());
         for (int i = 0; i < downLoadList.size(); i++) {
             downLoadList.get(i).setOrderNum(i + 1);
