@@ -42,6 +42,9 @@ public class StoreProdDemandVO {
         @NotNull(message = "档口商品颜色ID不能为空")
         @ApiModelProperty(value = "档口商品颜色ID", required = true)
         private Long storeProdColorId;
+        @NotNull(message = "档口颜色ID不能为空")
+        @ApiModelProperty(value = "档口颜色ID")
+        private Long storeColorId;
         @NotBlank(message = "货号不能为空")
         @ApiModelProperty(value = "货号", required = true)
         private String prodArtNum;

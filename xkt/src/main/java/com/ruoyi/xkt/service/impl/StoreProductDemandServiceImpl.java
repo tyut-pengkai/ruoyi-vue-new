@@ -136,7 +136,7 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
             List<Integer> size42List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize42()) ? stock.getSize42() : 0, size42Demand);
             List<Integer> size43List = Arrays.asList(ObjectUtils.isNotEmpty(stock) && ObjectUtils.isNotEmpty(stock.getSize43()) ? stock.getSize43() : 0, size43Demand);
             return StoreProdDemandQuantityDTO.builder().storeId(storeId).storeProdId(storeProd.getId()).storeProdColorId(prodColor.getId())
-                    .prodArtNum(storeProd.getProdArtNum()).colorName(prodColor.getColorName()).compareStrList(compareStrList)
+                    .storeColorId(prodColor.getStoreColorId()).prodArtNum(storeProd.getProdArtNum()).colorName(prodColor.getColorName()).compareStrList(compareStrList)
                     // 判断 demandDetailList 中是否有 createTime 为当天的对象
                     .todaySubmitted(demandDetailList.stream().anyMatch(detail -> DateUtils.isSameDay(detail.getCreateTime(), new Date())))
                     .size30List(size30List).size31List(size31List).size32List(size32List).size33List(size33List).size34List(size34List).size35List(size35List)
@@ -168,7 +168,7 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
         // 生产需求详情
         List<StoreProductDemandDetail> detailList = demandDTO.getDetailList().stream().map(x -> {
             StoreProductDemandDetail detail = BeanUtil.toBean(x, StoreProductDemandDetail.class).setStoreId(demandDTO.getStoreId())
-                    .setStoreProdDemandId(demand.getId()).setDetailStatus(1);
+                    .setStoreProdDemandId(demand.getId()).setDetailStatus(DemandStatus.PENDING_PRODUCTION.getValue());
             detail.setCreateBy(SecurityUtils.getUsername());
             return detail;
         }).collect(Collectors.toList());

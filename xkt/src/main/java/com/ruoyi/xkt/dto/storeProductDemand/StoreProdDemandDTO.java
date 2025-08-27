@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -30,6 +31,8 @@ public class StoreProdDemandDTO {
         private Long storeProdId;
         @ApiModelProperty(value = "档口商品颜色ID")
         private Long storeProdColorId;
+        @ApiModelProperty(value = "档口颜色ID")
+        private Long storeColorId;
         @ApiModelProperty(value = "货号")
         private String prodArtNum;
         @ApiModelProperty(value = "颜色")

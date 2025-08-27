@@ -1,6 +1,7 @@
 package com.ruoyi.xkt.dto.storeProductDemand;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ruoyi.common.annotation.Excel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -33,6 +34,12 @@ public class StoreProdDemandPageResDTO {
     private String prodArtNum;
     @ApiModelProperty(value = "颜色")
     private String colorName;
+    @ApiModelProperty(value = "档口商品颜色ID")
+    private Long storeProdColorId;
+    @ApiModelProperty(value = "档口颜色ID")
+    private Long storeColorId;
+    @ApiModelProperty(value = "档口商品ID")
+    private Long storeProdId;
     @ApiModelProperty(value = "生产状态")
     private Integer detailStatus;
     @ApiModelProperty(value = "紧急单还是正常单")

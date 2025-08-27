@@ -46,6 +46,11 @@ public class StoreProductDemandDetail extends XktBaseEntity {
     private Long storeProdColorId;
 
     /**
+     * 档口颜色ID
+     */
+    private Long storeColorId;
+
+    /**
      * 档口商品货号
      */
     private String prodArtNum;
