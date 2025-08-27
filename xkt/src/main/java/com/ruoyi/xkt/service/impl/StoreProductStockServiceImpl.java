@@ -10,9 +10,7 @@ import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.StoreProductColorSize;
-import com.ruoyi.xkt.domain.StoreProductFile;
 import com.ruoyi.xkt.domain.StoreProductStock;
-import com.ruoyi.xkt.domain.SysFile;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
 import com.ruoyi.xkt.dto.storeProductStock.*;
 import com.ruoyi.xkt.enums.FileType;
@@ -408,18 +406,27 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
                         .eq(StoreProductStock::getId, storeProdStockId).eq(StoreProductStock::getStoreId, storeId)
                         .eq(StoreProductStock::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口商品库存不存在!", HttpStatus.ERROR));
-        // 档口商品第一张主图
-        StoreProductFile mainPic = Optional.ofNullable(this.storeProdFileMapper.selectOne(new LambdaQueryWrapper<StoreProductFile>()
-                        .eq(StoreProductFile::getStoreProdId, stock.getStoreProdId()).eq(StoreProductFile::getStoreId, storeId)
-                        .eq(StoreProductFile::getDelFlag, Constants.UNDELETED).eq(StoreProductFile::getFileType, FileType.MAIN_PIC.getValue())
-                        .eq(StoreProductFile::getOrderNum, ORDER_NUM_1)))
-                .orElseThrow(() -> new ServiceException("商品主图不存在!", HttpStatus.ERROR));
-        // 图片
-        SysFile file = Optional.ofNullable(this.fileMapper.selectOne(new LambdaQueryWrapper<SysFile>()
-                        .eq(SysFile::getId, mainPic.getFileId()).eq(SysFile::getDelFlag, Constants.UNDELETED)))
-                .orElseThrow(() -> new ServiceException("商品主图不存在!", HttpStatus.ERROR));
-        return BeanUtil.toBean(stock, StoreProdStockResDTO.class)
-                .setStoreProdStockId(stock.getId()).setMainPicUrl(file.getFileUrl());
+        // 商品第一张主图
+        List<StoreProdMainPicDTO> mainPicList = this.storeProdFileMapper
+                .selectMainPicByStoreProdIdList(Collections.singletonList(stock.getStoreProdId()), FileType.MAIN_PIC.getValue(), ORDER_NUM_1);
+        Map<Long, String> mainPicMap = CollectionUtils.isEmpty(mainPicList) ? new HashMap<>() : mainPicList.stream()
+                .collect(Collectors.toMap(StoreProdMainPicDTO::getStoreProdId, StoreProdMainPicDTO::getFileUrl));
+        final Integer totalStock = ObjectUtils.defaultIfNull(stock.getSize30(), 0) +
+                ObjectUtils.defaultIfNull(stock.getSize31(), 0) +
+                ObjectUtils.defaultIfNull(stock.getSize32(), 0) +
+                ObjectUtils.defaultIfNull(stock.getSize33(), 0) +
+                ObjectUtils.defaultIfNull(stock.getSize34(), 0) +
+                ObjectUtils.defaultIfNull(stock.getSize35(), 0) +
+                ObjectUtils.defaultIfNull(stock.getSize36(), 0) +
+                ObjectUtils.defaultIfNull(stock.getSize37(), 0) +
+                ObjectUtils.defaultIfNull(stock.getSize38(), 0) +
+                ObjectUtils.defaultIfNull(stock.getSize39(), 0) +
+                ObjectUtils.defaultIfNull(stock.getSize40(), 0) +
+                ObjectUtils.defaultIfNull(stock.getSize41(), 0) +
+                ObjectUtils.defaultIfNull(stock.getSize42(), 0) +
+                ObjectUtils.defaultIfNull(stock.getSize43(), 0);
+        return BeanUtil.toBean(stock, StoreProdStockResDTO.class).setTotalStock(totalStock)
+                .setStoreProdStockId(stock.getId()).setMainPicUrl(mainPicMap.get(stock.getStoreProdId()));
     }
 
     /**
