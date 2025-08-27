@@ -36,6 +36,8 @@ public class StoreStockTakingSnResVO {
         private String prodArtNum;
         @ApiModelProperty(value = "尺码")
         private Integer size;
+        @ApiModelProperty(value = "已存在库存")
+        private Integer existStock;
         @ApiModelProperty(value = "盘点库存")
         private Long stock;
     }

@@ -7,8 +7,10 @@ import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.StoreProductColorSize;
+import com.ruoyi.xkt.domain.StoreProductStock;
 import com.ruoyi.xkt.dto.storeProdColorSize.*;
 import com.ruoyi.xkt.mapper.StoreProductColorSizeMapper;
+import com.ruoyi.xkt.mapper.StoreProductStockMapper;
 import com.ruoyi.xkt.mapper.StoreSaleDetailMapper;
 import com.ruoyi.xkt.service.IStoreProductColorSizeService;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +37,7 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
 
     final StoreProductColorSizeMapper prodColorSizeMapper;
     final StoreSaleDetailMapper saleDetailMapper;
+    final StoreProductStockMapper prodStockMapper;
 
     // 纯数字
     private static final Pattern POSITIVE_PATTERN = Pattern.compile("^\\d+$");
@@ -91,6 +94,7 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
         }
         List<String> snList = snDTO.getSnList().stream().filter(s -> POSITIVE_PATTERN.matcher(s).matches()).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(snList)) {
+            // 全部都是错误条码
             return new StoreStorageSnResDTO().setFailList(snDTO.getSnList());
         }
         // 非纯数字的条码
@@ -107,6 +111,10 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
         } else if (CollectionUtils.isNotEmpty(otherPrefixSnSet)) {
             List<StoreStorageSnDTO.SSSDetailDTO> otherExistList = this.prodColorSizeMapper.selectStorageOtherSnList(snDTO.getStoreId(), new ArrayList<>(otherPrefixSnSet));
             CollectionUtils.addAll(existList, otherExistList);
+        }
+        if (CollectionUtils.isEmpty(existList)) {
+            // 全部都是错误条码
+            return new StoreStorageSnResDTO().setFailList(snDTO.getSnList());
         }
         // 数据库前缀对应的商品数量
         Map<String, StoreStorageSnDTO.SSSDetailDTO> existMap = existList.stream().collect(Collectors.toMap(StoreStorageSnDTO.SSSDetailDTO::getPrefixPart, x -> x));
@@ -150,6 +158,7 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
         }
         List<String> snList = snDTO.getSnList().stream().filter(s -> POSITIVE_PATTERN.matcher(s).matches()).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(snList)) {
+            // 全部都是错误条码
             return new StoreStockTakingSnResDTO().setFailList(snDTO.getSnList());
         }
         // 非纯数字的条码
@@ -167,6 +176,10 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
             List<StoreStockTakingSnTempDTO.SSTSTDetailDTO> otherExistList = this.prodColorSizeMapper.selectStockOtherSnList(snDTO.getStoreId(), new ArrayList<>(otherPrefixSnSet));
             CollectionUtils.addAll(existList, otherExistList);
         }
+        if (CollectionUtils.isEmpty(existList)) {
+            // 全部都是错误条码
+            return new StoreStockTakingSnResDTO().setFailList(snDTO.getSnList());
+        }
         Map<String, StoreStockTakingSnTempDTO.SSTSTDetailDTO> existMap = existList.stream().collect(Collectors.toMap(StoreStockTakingSnTempDTO.SSTSTDetailDTO::getPrefixPart, x -> x));
         // 唯一的 storeProdColorId + size
         Set<StoreStockTakingSnResDTO.SSTSDetailDTO> stockSet = new HashSet<>();
@@ -182,10 +195,51 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
                 failList.add(sn);
             }
         });
+        // 获取数据库该货号 颜色 已存在的库存数量
+        List<StoreProductStock> existsStockList = this.prodStockMapper.selectList(new LambdaQueryWrapper<StoreProductStock>()
+                .eq(StoreProductStock::getDelFlag, Constants.UNDELETED).in(StoreProductStock::getStoreProdColorId, tempList.stream()
+                        .map(StoreStockTakingSnTempDTO.SSTSTDetailDTO::getStoreProdColorId).distinct().collect(Collectors.toList())));
+        Map<Long, StoreProductStock> existsStockMap = CollectionUtils.isEmpty(existsStockList) ? new HashMap<>()
+                : existsStockList.stream().collect(Collectors.toMap(StoreProductStock::getStoreProdColorId, x -> x));
         // 每个颜色对应的尺码数量map
         Map<Long, Map<Integer, Long>> prodSizeQuantityMap = tempList.stream().collect(Collectors.groupingBy(StoreStockTakingSnTempDTO.SSTSTDetailDTO::getStoreProdColorId,
                 Collectors.groupingBy(StoreStockTakingSnTempDTO.SSTSTDetailDTO::getSize, Collectors.counting())));
         List<StoreStockTakingSnResDTO.SSTSDetailDTO> successList = stockSet.stream().map(stock -> {
+            StoreProductStock existStock = existsStockMap.get(stock.getStoreProdColorId());
+            if (ObjectUtils.isEmpty(existStock)) {
+                // 初始化为0
+                stock.setExistStock(0);
+            } else {
+                if (Objects.equals(stock.getSize(), Constants.SIZE_30)) {
+                    stock.setExistStock(ObjectUtils.defaultIfNull(existStock.getSize30(), 0));
+                } else if (Objects.equals(stock.getSize(), Constants.SIZE_31)) {
+                    stock.setExistStock(ObjectUtils.defaultIfNull(existStock.getSize31(), 0));
+                } else if (Objects.equals(stock.getSize(), Constants.SIZE_32)) {
+                    stock.setExistStock(ObjectUtils.defaultIfNull(existStock.getSize32(), 0));
+                } else if (Objects.equals(stock.getSize(), Constants.SIZE_33)) {
+                    stock.setExistStock(ObjectUtils.defaultIfNull(existStock.getSize33(), 0));
+                } else if (Objects.equals(stock.getSize(), Constants.SIZE_34)) {
+                    stock.setExistStock(ObjectUtils.defaultIfNull(existStock.getSize34(), 0));
+                } else if (Objects.equals(stock.getSize(), Constants.SIZE_35)) {
+                    stock.setExistStock(ObjectUtils.defaultIfNull(existStock.getSize35(), 0));
+                } else if (Objects.equals(stock.getSize(), Constants.SIZE_36)) {
+                    stock.setExistStock(ObjectUtils.defaultIfNull(existStock.getSize36(), 0));
+                } else if (Objects.equals(stock.getSize(), Constants.SIZE_37)) {
+                    stock.setExistStock(ObjectUtils.defaultIfNull(existStock.getSize37(), 0));
+                } else if (Objects.equals(stock.getSize(), Constants.SIZE_38)) {
+                    stock.setExistStock(ObjectUtils.defaultIfNull(existStock.getSize38(), 0));
+                } else if (Objects.equals(stock.getSize(), Constants.SIZE_39)) {
+                    stock.setExistStock(ObjectUtils.defaultIfNull(existStock.getSize39(), 0));
+                } else if (Objects.equals(stock.getSize(), Constants.SIZE_40)) {
+                    stock.setExistStock(ObjectUtils.defaultIfNull(existStock.getSize40(), 0));
+                } else if (Objects.equals(stock.getSize(), Constants.SIZE_41)) {
+                    stock.setExistStock(ObjectUtils.defaultIfNull(existStock.getSize41(), 0));
+                } else if (Objects.equals(stock.getSize(), Constants.SIZE_42)) {
+                    stock.setExistStock(ObjectUtils.defaultIfNull(existStock.getSize42(), 0));
+                } else if (Objects.equals(stock.getSize(), Constants.SIZE_43)) {
+                    stock.setExistStock(ObjectUtils.defaultIfNull(existStock.getSize43(), 0));
+                }
+            }
             // 商品颜色对应的尺码数量
             Map<Integer, Long> sizeQuantityMap = prodSizeQuantityMap.get(stock.getStoreProdColorId());
             return MapUtils.isEmpty(sizeQuantityMap) ? stock : stock.setStock(sizeQuantityMap.get(stock.getSize()));
