@@ -206,18 +206,18 @@ public class XktTask {
             // 如果没有 投放中 或 待投放的推广轮次，则 一次性创建所有的轮次
             if (CollectionUtils.isEmpty(roundList)) {
                 // 播放的轮次
-                for (int i = 0; i < advert.getPlayRound(); i++) {
+                for (int playRound = 0; playRound < advert.getPlayRound(); playRound++) {
                     // 如果i = 0 则表明从未创建过推广位，直接新建所有
-                    final Integer launchStatus = i == 0 ? AdLaunchStatus.LAUNCHING.getValue() : AdLaunchStatus.UN_LAUNCH.getValue();
-                    final LocalDate now = i == 0 ? LocalDate.now() : LocalDate.now().plusDays((long) advert.getPlayInterval() * i);
+                    final Integer launchStatus = playRound == 0 ? AdLaunchStatus.LAUNCHING.getValue() : AdLaunchStatus.UN_LAUNCH.getValue();
+                    final LocalDate now = playRound == 0 ? LocalDate.now() : LocalDate.now().plusDays((long) advert.getPlayInterval() * playRound);
                     // 间隔时间
                     final LocalDate endDate = now.plusDays(advert.getPlayInterval() - 1);
                     // 按照播放数量依次生成下一轮播放的推广位
-                    for (int j = 0; j < advert.getPlayNum(); j++) {
+                    for (int playNum = 0; playNum < advert.getPlayNum(); playNum++) {
                         // 依次按照26个字母顺序 如果i == 0 则A i == 1 则B i==2则C
-                        final String position = String.valueOf((char) ('A' + j));
+                        final String position = String.valueOf((char) ('A' + playNum));
                         // 当前播放轮次id
-                        final int roundId = i + 1;
+                        final int roundId = playRound + 1;
                         updateList.add(new AdvertRound().setAdvertId(advert.getId()).setTypeId(advert.getTypeId()).setRoundId(roundId).setLaunchStatus(launchStatus)
                                 .setStartTime(java.sql.Date.valueOf(now)).setEndTime(java.sql.Date.valueOf(endDate)).setPosition(position).setStartPrice(advert.getStartPrice())
                                 .setSysIntercept(AdSysInterceptType.UN_INTERCEPT.getValue()).setShowType(advert.getShowType())
@@ -229,9 +229,12 @@ public class XktTask {
                 }
             } else {
                 // 判断当天是否为播放轮次最小结束时间的下一天 最小结束时间为：yyyy-MM-dd格式
-                final Date compareDate = java.sql.Date.valueOf(LocalDate.now().minusDays(1));
-                final Date minEndTime = roundList.stream().min(Comparator.comparing(AdvertRound::getEndTime)).get().getEndTime();
-                if (Objects.equals(minEndTime, compareDate)) {
+                final String compareDateStr = DateTimeFormatter.ofPattern(DateUtils.YYYY_MM_DD).format(LocalDate.now().minusDays(1));
+                final Date minEndTime = roundList.stream().min(Comparator.comparing(AdvertRound::getEndTime)).map(AdvertRound::getEndTime).orElse(null);
+                final String minEndTimeStr = ObjectUtils.isNotEmpty(minEndTime) ? DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, minEndTime) : null;
+                if (Objects.equals(compareDateStr, minEndTimeStr)) {
+                    // 当前所有播放轮次，用于判断是否修改了配置。必须在这里直接获取才行
+                    final Integer currentRoundNum = roundList.stream().map(AdvertRound::getRoundId).max(Comparator.comparingInt(x -> x)).orElse(0);
                     // 将播放轮次为1的推广轮置为：已过期
                     roundList.stream().filter(x -> Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue())).forEach(x -> x.setLaunchStatus(AdLaunchStatus.EXPIRED.getValue()));
                     // 将播放轮次 大于 1 的推广轮 依次减1
@@ -239,44 +242,20 @@ public class XktTask {
                     // 将播放轮次为1 且 投放状态为：待投放的 置为投放中
                     roundList.stream().filter(x -> Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue())
                             && Objects.equals(x.getLaunchStatus(), AdLaunchStatus.UN_LAUNCH.getValue())).forEach(x -> x.setLaunchStatus(AdLaunchStatus.LAUNCHING.getValue()));
-                    // 重新生成每一轮的symbol
-                    roundList.forEach(x -> x.setSymbol(Objects.equals(advert.getShowType(), AdShowType.POSITION_ENUM.getValue())
-                            // 如果是位置枚举的推广位，则需要精确到某一个position的推广位，反之，若是时间范围，则直接精确到播放轮次即可
-                            ? advert.getBasicSymbol() + x.getRoundId() + x.getPosition() : advert.getBasicSymbol() + x.getRoundId()));
+                    // 非 “已过期”的播放轮次 重新生成每一轮的symbol
+                    roundList.stream()
+                            .filter(x -> !Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue()))
+                            .forEach(x -> x.setSymbol(Objects.equals(advert.getShowType(), AdShowType.POSITION_ENUM.getValue())
+                                    // 如果是位置枚举的推广位，则需要精确到某一个position的推广位，反之，若是时间范围，则直接精确到播放轮次即可
+                                    ? advert.getBasicSymbol() + x.getRoundId() + x.getPosition() : advert.getBasicSymbol() + x.getRoundId()));
                     updateList.addAll(roundList);
+                    // 需要新增最后一个待播放轮次的推广（固定增加最后一个播放轮次）
+                    this.createAdvertRound(roundList, 1, advert, updateList);
                     // 如果播放轮次有更新，则需重新判断
-                    int diff = advert.getPlayRound() - roundList.stream().mapToInt(AdvertRound::getRoundId).max().getAsInt();
-                    // 当前最大轮次
-                    int maxRoundId = roundList.stream().mapToInt(AdvertRound::getRoundId).max().getAsInt();
+                    final int diffRound = advert.getPlayRound() - currentRoundNum;
                     // diff < 0 代表轮次有减少，则不新增播放轮， diff == 0 则代表播放轮次不增不减，不做调整
-                    if (diff > 0) {
-                        // 最大轮次的结束时间
-                        final LocalDate maxEndTime = roundList.stream().max(Comparator.comparing(AdvertRound::getEndTime))
-                                .map(round -> round.getEndTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
-                                .orElseThrow(() -> new ServiceException("获取推广轮次最大结束时间失败", HttpStatus.ERROR));
-                        LocalDate maxEndTimeNextDay = maxEndTime.plusDays(1);
-                        // 根据轮次差来判断当前需要补多少播放轮
-                        for (int j = 0; j < diff; j++) {
-                            // 推广轮次 + 1
-                            maxRoundId += 1;
-                            final LocalDate startDate = j == 0 ? maxEndTimeNextDay : maxEndTimeNextDay.plusDays((long) advert.getPlayInterval() * j);
-                            // 间隔时间
-                            final LocalDate endDate = startDate.plusDays(advert.getPlayInterval() - 1);
-                            // 每一轮的播放数量
-                            for (int i = 0; i < advert.getPlayNum(); i++) {
-                                // 依次按照26个字母顺序 如果i == 0 则A i == 1 则B i==2则C
-                                final String position = String.valueOf((char) ('A' + j));
-                                // 生成最新的下一轮推广位
-                                updateList.add(new AdvertRound().setAdvertId(advert.getId()).setTypeId(advert.getTypeId()).setRoundId(maxRoundId)
-                                        .setLaunchStatus(AdLaunchStatus.UN_LAUNCH.getValue()).setPosition(position).setStartPrice(advert.getStartPrice())
-                                        .setSysIntercept(AdSysInterceptType.UN_INTERCEPT.getValue()).setShowType(advert.getShowType()).setDisplayType(advert.getDisplayType())
-                                        // java.sql.Date 直接转化成yyyy-MM-dd格式
-                                        .setStartTime(java.sql.Date.valueOf(startDate)).setEndTime(java.sql.Date.valueOf(endDate)).setDeadline(advert.getDeadline())
-                                        .setSymbol(Objects.equals(advert.getShowType(), AdShowType.POSITION_ENUM.getValue())
-                                                // 如果是位置枚举的推广位，则需要精确到某一个position的推广位，反之，若是时间范围，则直接精确到播放轮次即可
-                                                ? advert.getBasicSymbol() + maxRoundId + position : advert.getBasicSymbol() + maxRoundId));
-                            }
-                        }
+                    if (diffRound > 0) {
+                        this.createAdvertRound(roundList, diffRound, advert, updateList);
                     }
                 }
             }
@@ -285,6 +264,7 @@ public class XktTask {
             this.advertRoundMapper.insertOrUpdate(updateList);
         }
     }
+
 
     /**
      * 凌晨00:04更新symbol对应的锁资源到redis中
@@ -806,11 +786,11 @@ public class XktTask {
         storeProdList.forEach(storeProd -> {
             // 构建部分文档更新请求
             list.add(new BulkOperation.Builder().update(u -> u
-                    .action(a -> a.doc(new HashMap<String, Object>() {{
-                        put("storeWeight", ObjectUtils.defaultIfNull(storeWeightMap.get(storeProd.getStoreId()), Constants.STORE_WEIGHT_DEFAULT_ZERO));
-                    }}))
-                    .id(String.valueOf(storeProd.getId()))
-                    .index(Constants.ES_IDX_PRODUCT_INFO))
+                            .action(a -> a.doc(new HashMap<String, Object>() {{
+                                put("storeWeight", ObjectUtils.defaultIfNull(storeWeightMap.get(storeProd.getStoreId()), Constants.STORE_WEIGHT_DEFAULT_ZERO));
+                            }}))
+                            .id(String.valueOf(storeProd.getId()))
+                            .index(Constants.ES_IDX_PRODUCT_INFO))
                     .build());
         });
         try {
@@ -874,11 +854,11 @@ public class XktTask {
                 .toMap(StoreProdMinPriceDTO::getStoreProdId, StoreProdMinPriceDTO::getPrice));
         // 档口商品的属性map
         Map<Long, StoreProductCategoryAttribute> cateAttrMap = this.cateAttrMapper.selectList(new LambdaQueryWrapper<StoreProductCategoryAttribute>()
-                .eq(StoreProductCategoryAttribute::getDelFlag, Constants.UNDELETED).in(StoreProductCategoryAttribute::getStoreProdId, storeProdIdList))
+                        .eq(StoreProductCategoryAttribute::getDelFlag, Constants.UNDELETED).in(StoreProductCategoryAttribute::getStoreProdId, storeProdIdList))
                 .stream().collect(Collectors.toMap(StoreProductCategoryAttribute::getStoreProdId, x -> x));
         // 档口商品对应的档口
         Map<Long, Store> storeMap = this.storeMapper.selectList(new LambdaQueryWrapper<Store>().eq(Store::getDelFlag, Constants.UNDELETED)
-                .in(Store::getId, unpublicList.stream().map(StoreProduct::getStoreId).collect(Collectors.toList())))
+                        .in(Store::getId, unpublicList.stream().map(StoreProduct::getStoreId).collect(Collectors.toList())))
                 .stream().collect(Collectors.toMap(Store::getId, x -> x));
         // 构建批量操作请求
         List<BulkOperation> bulkOperations = new ArrayList<>();
@@ -1315,7 +1295,7 @@ public class XktTask {
             return;
         }
         tagList.addAll(storeProdList.stream().map(x -> DailyProdTag.builder().storeId(x.getStoreId()).storeProdId(x.getId())
-                .type(ProdTagType.SEVEN_DAY_NEW.getValue()).tag(ProdTagType.SEVEN_DAY_NEW.getLabel()).voucherDate(now).build())
+                        .type(ProdTagType.SEVEN_DAY_NEW.getValue()).tag(ProdTagType.SEVEN_DAY_NEW.getLabel()).voucherDate(now).build())
                 .collect(Collectors.toList()));
     }
 
@@ -1358,7 +1338,7 @@ public class XktTask {
                         .collectingAndThen(Collectors.toList(), list -> list.stream().limit(20).collect(Collectors.toList()))));
         storeHotSaleMap.forEach((storeId, saleList) -> {
             tagList.addAll(saleList.stream().map(x -> DailyProdTag.builder().storeId(x.getStoreId()).storeProdId(x.getStoreProdId())
-                    .type(ProdTagType.STORE_HOT.getValue()).tag(ProdTagType.STORE_HOT.getLabel()).voucherDate(now).build())
+                            .type(ProdTagType.STORE_HOT.getValue()).tag(ProdTagType.STORE_HOT.getLabel()).voucherDate(now).build())
                     .collect(Collectors.toList()));
         });
     }
@@ -1377,7 +1357,7 @@ public class XktTask {
             return;
         }
         tagList.addAll(top50List.stream().map(x -> DailyProdTag.builder().storeId(x.getStoreId()).storeProdId(x.getStoreProdId())
-                .tag(ProdTagType.MONTH_HOT.getLabel()).type(ProdTagType.MONTH_HOT.getValue()).voucherDate(now).build())
+                        .tag(ProdTagType.MONTH_HOT.getLabel()).type(ProdTagType.MONTH_HOT.getValue()).voucherDate(now).build())
                 .collect(Collectors.toList()));
     }
 
@@ -1463,7 +1443,7 @@ public class XktTask {
             return;
         }
         tagList.addAll(thousandSaleList.stream().map(x -> DailyStoreTag.builder().storeId(x.getStoreId()).voucherDate(now)
-                .type(StoreTagType.MONTH_SALES_THOUSAND.getValue()).tag(StoreTagType.MONTH_SALES_THOUSAND.getLabel()).build())
+                        .type(StoreTagType.MONTH_SALES_THOUSAND.getValue()).tag(StoreTagType.MONTH_SALES_THOUSAND.getLabel()).build())
                 .collect(Collectors.toList()));
     }
 
@@ -1515,8 +1495,8 @@ public class XktTask {
             return;
         }
         tagList.addAll(top50List.stream().map(DailyStoreTagDTO::getStoreId).distinct().map(storeId -> DailyStoreTag.builder()
-                .storeId(storeId).type(StoreTagType.HOT_RANK.getValue()).tag(StoreTagType.HOT_RANK.getLabel())
-                .voucherDate(now).build())
+                        .storeId(storeId).type(StoreTagType.HOT_RANK.getValue()).tag(StoreTagType.HOT_RANK.getLabel())
+                        .voucherDate(now).build())
                 .collect(Collectors.toList()));
     }
 
@@ -1534,8 +1514,8 @@ public class XktTask {
             return;
         }
         tagList.addAll(top20List.stream().map(DailyStoreTagDTO::getStoreId).distinct().map(storeId -> DailyStoreTag.builder()
-                .storeId(storeId).type(StoreTagType.NEW_PRODUCT.getValue()).tag(StoreTagType.NEW_PRODUCT.getLabel())
-                .voucherDate(now).build())
+                        .storeId(storeId).type(StoreTagType.NEW_PRODUCT.getValue()).tag(StoreTagType.NEW_PRODUCT.getLabel())
+                        .voucherDate(now).build())
                 .collect(Collectors.toList()));
     }
 
@@ -1553,11 +1533,11 @@ public class XktTask {
                 .forEach((storeProdId, tags) -> {
                     // 构建部分文档更新请求
                     list.add(new BulkOperation.Builder().update(u -> u
-                            .action(a -> a.doc(new HashMap<String, Object>() {{
-                                put("tags", tags.stream().sorted(Comparator.comparing(x -> x.getType())).map(DailyProdTag::getTag).collect(Collectors.toList()));
-                            }}))
-                            .id(String.valueOf(storeProdId))
-                            .index(Constants.ES_IDX_PRODUCT_INFO))
+                                    .action(a -> a.doc(new HashMap<String, Object>() {{
+                                        put("tags", tags.stream().sorted(Comparator.comparing(x -> x.getType())).map(DailyProdTag::getTag).collect(Collectors.toList()));
+                                    }}))
+                                    .id(String.valueOf(storeProdId))
+                                    .index(Constants.ES_IDX_PRODUCT_INFO))
                             .build());
                 });
         // 调用bulk方法执行批量更新操作
@@ -1585,7 +1565,8 @@ public class XktTask {
      * 搜图服务同步商品
      *
      * @param storeProductId
-     * @param storeProdFiles
+     * @param picKeys
+     * @param async
      */
     private void sync2ImgSearchServer(Long storeProductId, List<String> picKeys, boolean async) {
         if (async) {
@@ -1673,6 +1654,51 @@ public class XktTask {
             fsNotice.sendMsg2DefaultChat("同步行政区划异常", StrUtil.emptyIfNull(e.getMessage()));
         }
         log.info("-------------同步行政区划结束-------------");
+    }
+
+    /**
+     * 创建推广轮次
+     *
+     * @param roundList  当前所有的推广轮次
+     * @param diffRound  需要创建多少轮
+     * @param advert     当前推广数据
+     * @param updateList 待更新列表
+     * @return
+     */
+    private void createAdvertRound(List<AdvertRound> roundList, int diffRound, Advert advert, List<AdvertRound> updateList) {
+        // 当前最大轮次
+        int maxRoundId = roundList.stream().mapToInt(AdvertRound::getRoundId).max().getAsInt();
+        // 最大轮次的结束时间
+        LocalDate maxEndTime = roundList.stream().max(Comparator.comparing(AdvertRound::getEndTime))
+                .map(round -> round.getEndTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
+                .orElseThrow(() -> new ServiceException("获取推广轮次最大结束时间失败", HttpStatus.ERROR));
+        LocalDate maxEndTimeNextDay = maxEndTime.plusDays(1);
+        // 根据轮次差来判断当前需要补多少播放轮
+        for (int diff = 0; diff < diffRound; diff++) {
+            // 推广轮次 + 1
+            maxRoundId += 1;
+            final LocalDate startDate = diff == 0 ? maxEndTimeNextDay : maxEndTimeNextDay.plusDays((long) advert.getPlayInterval() * diff);
+            // 间隔时间
+            final LocalDate endDate = startDate.plusDays(advert.getPlayInterval() - 1);
+            // 每一轮的播放数量
+            for (int playNum = 0; playNum < advert.getPlayNum(); playNum++) {
+                // 依次按照26个字母顺序 如果i == 0 则A i == 1 则B i==2则C
+                final String position = String.valueOf((char) ('A' + playNum));
+                AdvertRound advertRound = new AdvertRound().setAdvertId(advert.getId()).setTypeId(advert.getTypeId()).setRoundId(maxRoundId)
+                        .setLaunchStatus(AdLaunchStatus.UN_LAUNCH.getValue()).setPosition(position).setStartPrice(advert.getStartPrice())
+                        .setSysIntercept(AdSysInterceptType.UN_INTERCEPT.getValue()).setShowType(advert.getShowType()).setDisplayType(advert.getDisplayType())
+                        .setStartTime(Date.from(startDate.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+                        .setEndTime(Date.from(endDate.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+                        .setDeadline(advert.getDeadline())
+                        .setSymbol(Objects.equals(advert.getShowType(), AdShowType.POSITION_ENUM.getValue())
+                                // 如果是位置枚举的推广位，则需要精确到某一个position的推广位，反之，若是时间范围，则直接精确到播放轮次即可
+                                ? advert.getBasicSymbol() + maxRoundId + position : advert.getBasicSymbol() + maxRoundId);
+                // 添加到推广轮次列表，如果playNum有调整，后续会用到roundList
+                roundList.add(advertRound);
+                // 生成最新的下一轮推广位
+                updateList.add(advertRound);
+            }
+        }
     }
 
 }
