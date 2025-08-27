@@ -4,9 +4,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.xkt.mapper.StoreProductDemandDetailMapper">
 
-    <select id="selectDemandPage" parameterType="com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandPageDTO" resultType="com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandPageResDTO">
+    <select id="selectDemandPage" parameterType="com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandPageDTO"
+            resultType="com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandPageResDTO">
         SELECT spdd.store_id, spdd.id AS storeProdDemandDetailId, spdd.store_prod_demand_id AS storeProdDemandId, sf.fac_name, spdd.create_time, spd.`code`, spdd.prod_art_num,
-               spdd.color_name, spdd.quantity, spd.remark, spdd.detail_status, spdd.emergency,
+               spdd.color_name, spdd.quantity, spd.remark, spdd.detail_status, spdd.emergency, spdd.store_prod_id AS storeProdId, spdd.store_prod_color_id AS storeProdColorId,
+               spdd.store_color_id AS storeColorId,
                spdd.size_30 AS size30, spdd.size_31 AS size33, spdd.size_32 AS size32, spdd.size_33 AS size33, spdd.size_34 AS size34, spdd.size_35 AS size35, spdd.size_36 AS size36,
                spdd.size_37 AS size37, spdd.size_38 AS size38, spdd.size_39 AS size39, spdd.size_40 AS size40, spdd.size_41 AS size41, spdd.size_42 AS size42, spdd.size_43 AS size43
         FROM
