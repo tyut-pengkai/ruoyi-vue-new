@@ -269,7 +269,7 @@ public class UserFavoritesServiceImpl implements IUserFavoritesService {
         }
         final Date now = java.sql.Date.valueOf(LocalDate.now().plusDays(1));
         final Date sixMonthAgo = java.sql.Date.valueOf(LocalDate.now().minusMonths(6));
-        return this.userFavMapper.getStatusNum(userId, sixMonthAgo,  now);
+        return this.userFavMapper.getStatusNum(userId, sixMonthAgo, now);
     }
 
 

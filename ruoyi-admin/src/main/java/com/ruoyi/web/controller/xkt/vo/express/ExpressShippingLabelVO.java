@@ -4,9 +4,7 @@ import com.ruoyi.common.utils.desensitization.Desensitization;
 import com.ruoyi.common.utils.desensitization.SensitiveTypeEnum;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.Date;
 

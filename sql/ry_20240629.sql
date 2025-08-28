@@ -2267,47 +2267,6 @@ CREATE TABLE `picture_search`
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 73 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '以图搜款' ROW_FORMAT = DYNAMIC;
 
--- ----------------------------
--- Table structure for picture_search_hot
--- ----------------------------
-DROP TABLE IF EXISTS `picture_search_hot`;
-CREATE TABLE `picture_search_hot`
-(
-    `id`                 bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '图搜热款ID',
-    `store_prod_file_id` bigint UNSIGNED NOT NULL COMMENT 'store_prod_file.id',
-    `file_id`            bigint UNSIGNED NOT NULL COMMENT 'sys_file.id',
-    `store_id`           bigint UNSIGNED NOT NULL COMMENT 'store.id',
-    `search_count`       int UNSIGNED NULL DEFAULT NULL COMMENT '搜索次数（包括主动搜索和搜索结果）',
-    `version`            bigint UNSIGNED NOT NULL COMMENT '版本号',
-    `del_flag`           char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '删除标志（0代表存在 2代表删除）',
-    `create_by`          varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '创建者',
-    `create_time`        datetime NULL DEFAULT NULL COMMENT '创建时间',
-    `update_by`          varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '更新者',
-    `update_time`        datetime NULL DEFAULT NULL COMMENT '更新时间',
-    PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '图搜热款' ROW_FORMAT = DYNAMIC;
-
--- ----------------------------
--- Table structure for picture_search_result
--- ----------------------------
-DROP TABLE IF EXISTS `picture_search_result`;
-CREATE TABLE `picture_search_result`
-(
-    `id`               bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '文件搜索结果ID',
-    `pic_search_id`    bigint UNSIGNED NOT NULL COMMENT '搜索的文件ID',
-    `file_id`          bigint UNSIGNED NOT NULL COMMENT '搜索结果的文件ID',
-    `category_id`      int UNSIGNED NULL DEFAULT NULL COMMENT '搜索结果分类ID',
-    `score`            decimal(6, 4) UNSIGNED NULL DEFAULT NULL COMMENT '搜索结果评分',
-    `sort_expr_values` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '排序描述',
-    `version`          bigint UNSIGNED NOT NULL COMMENT '版本号',
-    `del_flag`         char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '删除标志（0代表存在 2代表删除）',
-    `create_by`        varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '创建者',
-    `create_time`      datetime NULL DEFAULT NULL COMMENT '创建时间',
-    `update_by`        varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '更新者',
-    `update_time`      datetime NULL DEFAULT NULL COMMENT '更新时间',
-    PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '以图搜款结果' ROW_FORMAT = DYNAMIC;
-
 
 -- ----------------------------
 -- Table structure for quick_function

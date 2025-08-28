@@ -6,7 +6,6 @@ import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.web.controller.xkt.vo.storeProd.StoreProdStatusCountResVO;
 import com.ruoyi.web.controller.xkt.vo.userFavorite.*;
 import com.ruoyi.xkt.dto.userFavorite.*;
 import com.ruoyi.xkt.service.IUserFavoritesService;

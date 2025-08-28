@@ -43,7 +43,7 @@ public class StoreProductStorageDemandDeducteServiceImpl implements IStoreProduc
     /**
      * 入库单列表获取抵扣需求明细列表
      *
-     * @param storeId 档口ID
+     * @param storeId     档口ID
      * @param storageCode 入库单号
      * @return List<StoreProdStorageDemandDeductDTO>
      */
@@ -56,8 +56,8 @@ public class StoreProductStorageDemandDeducteServiceImpl implements IStoreProduc
         }
         // 根据storageCode找到入库单
         StoreProductStorage storage = Optional.ofNullable(this.prodStorageMapper.selectOne(new LambdaQueryWrapper<StoreProductStorage>()
-                .eq(StoreProductStorage::getCode, storageCode).eq(StoreProductStorage::getStoreId, storeId)
-                .eq(StoreProductStorage::getDelFlag, Constants.UNDELETED)))
+                        .eq(StoreProductStorage::getCode, storageCode).eq(StoreProductStorage::getStoreId, storeId)
+                        .eq(StoreProductStorage::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口商品入库不存在!", HttpStatus.ERROR));
         List<StoreProductStorageDetail> storageDetailList = this.productStorageDetailMapper.selectList(new LambdaQueryWrapper<StoreProductStorageDetail>()
                 .eq(StoreProductStorageDetail::getStoreProdStorId, storage.getId()).eq(StoreProductStorageDetail::getDelFlag, Constants.UNDELETED));
@@ -78,13 +78,13 @@ public class StoreProductStorageDemandDeducteServiceImpl implements IStoreProduc
             // 抵扣的需求明细列表 再按照code进行分类
             Map<String, List<StoreProductStorageDemandDeduct>> demandSizeMap = demandDetailList.stream().collect(Collectors.groupingBy(StoreProductStorageDemandDeduct::getDemandCode));
             // 生产需求单号列
-            final List<String> demandCodeList = new ArrayList<String>(){{
+            final List<String> demandCodeList = new ArrayList<String>() {{
                 add("");
                 // 生产需求单号列表
                 demandDetailList.stream().map(StoreProductStorageDemandDeduct::getDemandCode).distinct().sorted(Comparator.comparing(x -> x)).forEach(this::add);
             }};
             // 初始化数量对比 列
-            List<String> compareNumStrList = new ArrayList<String>(){{
+            List<String> compareNumStrList = new ArrayList<String>() {{
                 add("入库数量");
                 // 根据生产需求单号数量 生成 对应的 抵扣数量
                 demandDetailList.stream().map(StoreProductStorageDemandDeduct::getDemandCode).distinct().forEach(x -> this.add("抵扣需求数量"));
@@ -112,7 +112,6 @@ public class StoreProductStorageDemandDeducteServiceImpl implements IStoreProduc
     }
 
 
-
     private List<Integer> getSizeQuantityList(List<String> demandCodeList, Map<String, List<StoreProductStorageDemandDeduct>> demandSizeMap, Integer size) {
         // 每一个尺码的数量对比明细
         return demandCodeList.stream().map(demandCode -> {
@@ -122,7 +121,6 @@ public class StoreProductStorageDemandDeducteServiceImpl implements IStoreProduc
                     .map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
         }).collect(Collectors.toList());
     }
-
 
 
 }

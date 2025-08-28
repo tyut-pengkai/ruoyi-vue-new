@@ -108,7 +108,6 @@ public class StoreProductServiceImpl implements IStoreProductService {
     final StoreHomepageMapper storeHomepageMapper;
     final RedisCache redisCache;
     final NoticeMapper noticeMapper;
-    final UserNoticeSettingMapper userNoticeSetMapper;
     final UserNoticeMapper userNoticeMapper;
     final UserSubscriptionsMapper userSubMapper;
     final OSSClientWrapper ossClient;

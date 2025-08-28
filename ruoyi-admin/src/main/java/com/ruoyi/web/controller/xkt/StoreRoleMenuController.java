@@ -22,6 +22,18 @@ import java.util.List;
  *
  * @author ruoyi
  * @date 2025-03-26
+ * <p>
+ * 查询档口子角色菜单列表
+ * <p>
+ * 导出档口子角色菜单列表
+ * <p>
+ * 获取档口子角色菜单详细信息
+ * <p>
+ * 新增档口子角色菜单
+ * <p>
+ * 修改档口子角色菜单
+ * <p>
+ * 删除档口子角色菜单
  *//*
 
 @RestController
@@ -32,8 +44,8 @@ public class StoreRoleMenuController extends XktBaseController {
 
     */
 /**
-     * 查询档口子角色菜单列表
-     *//*
+ * 查询档口子角色菜单列表
+ *//*
 
 //    // @PreAuthorize("@ss.hasPermi('system:menu:list')")
     @GetMapping("/list")
@@ -45,8 +57,8 @@ public class StoreRoleMenuController extends XktBaseController {
 
     */
 /**
-     * 导出档口子角色菜单列表
-     *//*
+ * 导出档口子角色菜单列表
+ *//*
 
 //    // @PreAuthorize("@ss.hasPermi('system:menu:export')")
     @Log(title = "档口子角色菜单", businessType = BusinessType.EXPORT)
@@ -59,8 +71,8 @@ public class StoreRoleMenuController extends XktBaseController {
 
     */
 /**
-     * 获取档口子角色菜单详细信息
-     *//*
+ * 获取档口子角色菜单详细信息
+ *//*
 
 //    // @PreAuthorize("@ss.hasPermi('system:menu:query')")
     @GetMapping(value = "/{storeRoleMenuId}")
@@ -70,8 +82,8 @@ public class StoreRoleMenuController extends XktBaseController {
 
     */
 /**
-     * 新增档口子角色菜单
-     *//*
+ * 新增档口子角色菜单
+ *//*
 
 //    // @PreAuthorize("@ss.hasPermi('system:menu:add')")
     @Log(title = "档口子角色菜单", businessType = BusinessType.INSERT)
@@ -82,8 +94,8 @@ public class StoreRoleMenuController extends XktBaseController {
 
     */
 /**
-     * 修改档口子角色菜单
-     *//*
+ * 修改档口子角色菜单
+ *//*
 
 //    // @PreAuthorize("@ss.hasPermi('system:menu:edit')")
     @Log(title = "档口子角色菜单", businessType = BusinessType.UPDATE)
@@ -94,8 +106,8 @@ public class StoreRoleMenuController extends XktBaseController {
 
     */
 /**
-     * 删除档口子角色菜单
-     *//*
+ * 删除档口子角色菜单
+ *//*
 
 //    // @PreAuthorize("@ss.hasPermi('system:menu:remove')")
     @Log(title = "档口子角色菜单", businessType = BusinessType.DELETE)

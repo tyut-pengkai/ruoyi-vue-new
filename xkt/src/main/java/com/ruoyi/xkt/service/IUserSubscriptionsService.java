@@ -1,14 +1,10 @@
 package com.ruoyi.xkt.service;
 
 import com.ruoyi.common.core.page.Page;
-import com.ruoyi.xkt.domain.UserSubscriptions;
-import com.ruoyi.xkt.dto.userFavorite.UserFavoritePageDTO;
 import com.ruoyi.xkt.dto.userSubscriptions.UserSubscDTO;
 import com.ruoyi.xkt.dto.userSubscriptions.UserSubscDeleteDTO;
 import com.ruoyi.xkt.dto.userSubscriptions.UserSubscPageDTO;
 import com.ruoyi.xkt.dto.userSubscriptions.UserSubscPageResDTO;
-
-import java.util.List;
 
 /**
  * 用户关注档口Service接口
@@ -20,6 +16,7 @@ public interface IUserSubscriptionsService {
 
     /**
      * 新增用户关注档口
+     *
      * @param subscDTO 新增用户关注档口入参
      * @return Integer
      */
@@ -27,6 +24,7 @@ public interface IUserSubscriptionsService {
 
     /**
      * 用户批量取消关注档口
+     *
      * @param deleteDTO 取消关注档口入参
      * @return Integer
      */
@@ -34,8 +32,9 @@ public interface IUserSubscriptionsService {
 
     /**
      * 用户关注档口列表
+     *
      * @param pageDTO 查询入参
-     * @return  Page<UserSubscPageResDTO>
+     * @return Page<UserSubscPageResDTO>
      */
     Page<UserSubscPageResDTO> page(UserSubscPageDTO pageDTO);
 

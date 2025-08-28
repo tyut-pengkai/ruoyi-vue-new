@@ -169,6 +169,7 @@ public interface IStoreService {
 
     /**
      * 获取今日商品销售额前5
+     *
      * @param storeId 档口ID
      * @return StoreIndexTodaySaleResDTO
      */

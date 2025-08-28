@@ -6,16 +6,12 @@ import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.web.controller.xkt.vo.storeProdStorage.StoreProdStoragePageVO;
 import com.ruoyi.web.controller.xkt.vo.storeProdStorage.StoreProdStorageResVO;
 import com.ruoyi.web.controller.xkt.vo.storeProdStorage.StoreProdStorageVO;
-import com.ruoyi.web.controller.xkt.vo.storeSale.StoreSaleExportVO;
 import com.ruoyi.xkt.dto.storeProdStorage.StoreProdStorageDTO;
 import com.ruoyi.xkt.dto.storeProdStorage.StoreProdStoragePageDTO;
 import com.ruoyi.xkt.dto.storeProdStorage.StoreProdStoragePageResDTO;
-import com.ruoyi.xkt.dto.storeSale.StoreSaleDownloadDTO;
-import com.ruoyi.xkt.dto.storeSale.StoreSaleExportDTO;
 import com.ruoyi.xkt.service.IStoreProductStorageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -23,9 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 
 /**
  * 档口商品入库Controller

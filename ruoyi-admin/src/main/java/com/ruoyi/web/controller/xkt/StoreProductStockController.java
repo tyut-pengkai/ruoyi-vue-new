@@ -9,9 +9,6 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.web.controller.xkt.vo.storeProdStock.*;
-import com.ruoyi.web.controller.xkt.vo.storeProdStorage.StoreStorageExportVO;
-import com.ruoyi.xkt.dto.storeProdStorage.StoreStorageDetailDownloadDTO;
-import com.ruoyi.xkt.dto.storeProdStorage.StoreStorageExportDTO;
 import com.ruoyi.xkt.dto.storeProductStock.*;
 import com.ruoyi.xkt.service.IStoreProductStockService;
 import io.swagger.annotations.Api;
@@ -107,11 +104,10 @@ public class StoreProductStockController extends XktBaseController {
         List<StoreProdStockDownloadDTO> downloadList = storeProdStockService.export(BeanUtil.toBean(exportVO, StoreProdStockExportDTO.class));
         ExcelUtil<StoreProdStockDownloadDTO> util = new ExcelUtil<>(StoreProdStockDownloadDTO.class);
         // 设置下载excel名
-        String encodedFileName = URLEncoder.encode("库存明细" + DateUtils.getDate(),  "UTF-8").replaceAll("\\+", "%20");
+        String encodedFileName = URLEncoder.encode("库存明细" + DateUtils.getDate(), "UTF-8").replaceAll("\\+", "%20");
         response.setHeader("Content-disposition", "attachment;filename=" + encodedFileName + ".xlsx");
         util.exportExcel(response, downloadList, "库存明细");
     }
-
 
 
 }

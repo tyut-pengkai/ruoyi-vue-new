@@ -117,7 +117,7 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
     /**
      * 根据档口ID 和 档口商品颜色ID 查询商品库存
      *
-     * @param dto          入参
+     * @param dto 入参
      * @return StoreProdStockResDTO
      */
     @Override
@@ -490,7 +490,8 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
 
     /**
      * 获取商品某尺寸的库存
-     * @param size 尺寸
+     *
+     * @param size  尺寸
      * @param stock 库存
      * @return 库存
      */
@@ -502,41 +503,29 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
             return stock.getSize30();
         } else if (size == 31) {
             return stock.getSize31();
-        }
-        else if (size == 32) {
+        } else if (size == 32) {
             return stock.getSize32();
-        }
-        else if (size == 33) {
+        } else if (size == 33) {
             return stock.getSize33();
-        }
-        else if (size == 34) {
+        } else if (size == 34) {
             return stock.getSize34();
-        }
-        else if (size == 35) {
+        } else if (size == 35) {
             return stock.getSize35();
-        }
-        else if (size == 36) {
+        } else if (size == 36) {
             return stock.getSize36();
-        }
-        else if (size == 37) {
+        } else if (size == 37) {
             return stock.getSize37();
-        }
-        else if (size == 38) {
+        } else if (size == 38) {
             return stock.getSize38();
-        }
-        else if (size == 39) {
+        } else if (size == 39) {
             return stock.getSize39();
-        }
-        else if (size == 40) {
+        } else if (size == 40) {
             return stock.getSize40();
-        }
-        else if (size == 41) {
+        } else if (size == 41) {
             return stock.getSize41();
-        }
-        else if (size == 42) {
+        } else if (size == 42) {
             return stock.getSize42();
-        }
-        else if (size == 43) {
+        } else if (size == 43) {
             return stock.getSize43();
         }
         return null;

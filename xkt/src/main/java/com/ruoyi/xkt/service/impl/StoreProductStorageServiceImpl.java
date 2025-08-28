@@ -145,7 +145,7 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
         Map<Long, Map<Integer, Map<Long, Integer>>> unDeductMap = this.getUnDeductMap(demandDetailList, detailList.stream()
                 .map(StoreProductStorageDetail::getStoreProdColorId).collect(Collectors.toList()));
         long fifth = System.currentTimeMillis();
-        System.err.println("查询需求耗时:" + (fifth -  fourth));
+        System.err.println("查询需求耗时:" + (fifth - fourth));
         if (MapUtils.isEmpty(unDeductMap)) {
             return;
         }
@@ -155,7 +155,7 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
         System.err.println("库存转map耗时: " + (sixth - fifth));
         // 按照入库的数量明细依次判断哪些需求订单明细还未抵扣完毕
         Map<Long, Map<Long, Map<Integer, Map<Long, Integer>>>> totalMatchMap = this.getTotalMatchMap(storageQuantityMap, unDeductMap);
-        long  seventh = System.currentTimeMillis();
+        long seventh = System.currentTimeMillis();
         System.err.println("处理需求抵扣明细耗时:" + (seventh - sixth));
         if (MapUtils.isEmpty(totalMatchMap)) {
             return;

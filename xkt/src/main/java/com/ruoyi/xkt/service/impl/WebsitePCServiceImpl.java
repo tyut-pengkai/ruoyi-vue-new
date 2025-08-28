@@ -1761,15 +1761,14 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
     }
 
     /**
-     *
-     * @param advertRoundList 广告列表
-     * @param prodPriceAndMainPicMap  商品价格及主图map
-     * @param existProdIdList 已存在的商品ID列表
-     * @param limitCount 返回的 数量
+     * @param advertRoundList        广告列表
+     * @param prodPriceAndMainPicMap 商品价格及主图map
+     * @param existProdIdList        已存在的商品ID列表
+     * @param limitCount             返回的 数量
      * @return
      */
     private List<PCSearchResultAdvertDTO> fillPcSearchResultAdvertList(List<AdvertRound> advertRoundList, Map<Long, StoreProdPriceAndMainPicDTO> prodPriceAndMainPicMap,
-                                                             Map<Long, Store> storeMap, List<Long> existProdIdList, int limitCount) {
+                                                                       Map<Long, Store> storeMap, List<Long> existProdIdList, int limitCount) {
         List<PCSearchResultAdvertDTO> tempList = new ArrayList<>();
         advertRoundList.stream().collect(Collectors.groupingBy(AdvertRound::getStoreId))
                 .forEach((storeId, list) -> {

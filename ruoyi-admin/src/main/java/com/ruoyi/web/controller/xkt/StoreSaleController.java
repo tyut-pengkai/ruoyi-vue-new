@@ -8,7 +8,6 @@ import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.system.domain.SysOperLog;
 import com.ruoyi.web.controller.xkt.vo.storeCustomer.StoreCusGeneralSaleVO;
 import com.ruoyi.web.controller.xkt.vo.storeSale.*;
 import com.ruoyi.xkt.dto.storeSale.*;
@@ -116,7 +115,7 @@ public class StoreSaleController extends XktBaseController {
         List<StoreSaleDownloadDTO> downloadList = storeSaleService.export(BeanUtil.toBean(exportVO, StoreSaleExportDTO.class));
         ExcelUtil<StoreSaleDownloadDTO> util = new ExcelUtil<>(StoreSaleDownloadDTO.class);
         // 设置下载excel名
-        String encodedFileName = URLEncoder.encode("销售出库" + DateUtils.getDate(),  "UTF-8").replaceAll("\\+", "%20");
+        String encodedFileName = URLEncoder.encode("销售出库" + DateUtils.getDate(), "UTF-8").replaceAll("\\+", "%20");
         response.setHeader("Content-disposition", "attachment;filename=" + encodedFileName + ".xlsx");
         util.exportExcel(response, downloadList, "销售出库");
     }

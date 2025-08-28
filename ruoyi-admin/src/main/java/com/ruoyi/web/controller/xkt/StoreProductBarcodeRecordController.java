@@ -9,7 +9,6 @@ import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.xkt.domain.StoreProductBarcodeRecord;
 import com.ruoyi.xkt.service.IStoreProductBarcodeRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;

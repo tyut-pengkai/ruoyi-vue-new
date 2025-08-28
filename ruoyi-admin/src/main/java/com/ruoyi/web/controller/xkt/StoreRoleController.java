@@ -29,6 +29,16 @@ import java.util.List;
  *
  * @author ruoyi
  * @date 2025-03-26
+ * <p>
+ * 新增档口子角色
+ * <p>
+ * 编辑档口子角色
+ * <p>
+ * 获取档口子角色详细信息
+ * <p>
+ * 获取档口子角色列表
+ * <p>
+ * 停用/启用档口子角色
  *//*
 
 @Api(tags = "档口子角色")
@@ -46,8 +56,8 @@ public class StoreRoleController extends XktBaseController {
 
     */
 /**
-     * 新增档口子角色
-     *//*
+ * 新增档口子角色
+ *//*
 
     // @PreAuthorize("@ss.hasPermi('system:role:add')")
     @ApiOperation(value = "新增档口子角色", httpMethod = "POST", response = R.class)
@@ -60,8 +70,8 @@ public class StoreRoleController extends XktBaseController {
 
     */
 /**
-     * 编辑档口子角色
-     *//*
+ * 编辑档口子角色
+ *//*
 
     // @PreAuthorize("@ss.hasPermi('system:role:edit')")
     @ApiOperation(value = "编辑档口子角色", httpMethod = "PUT", response = R.class)
@@ -73,8 +83,8 @@ public class StoreRoleController extends XktBaseController {
 
     */
 /**
-     * 获取档口子角色详细信息
-     *//*
+ * 获取档口子角色详细信息
+ *//*
 
     // @PreAuthorize("@ss.hasPermi('system:role:query')")
     @ApiOperation(value = "获取档口子角色详细信息", httpMethod = "GET", response = R.class)
@@ -91,8 +101,8 @@ public class StoreRoleController extends XktBaseController {
 
     */
 /**
-     * 获取档口子角色列表
-     *//*
+ * 获取档口子角色列表
+ *//*
 
     // @PreAuthorize("@ss.hasPermi('system:role:list')")
     @ApiOperation(value = "查询档口销售出库列表", httpMethod = "POST", response = R.class)
@@ -103,8 +113,8 @@ public class StoreRoleController extends XktBaseController {
 
     */
 /**
-     * 停用/启用档口子角色
-     *//*
+ * 停用/启用档口子角色
+ *//*
 
     // @PreAuthorize("@ss.hasPermi('system:role:edit')")
     @ApiOperation(value = "停用/启用档口子角色", httpMethod = "PUT", response = R.class)

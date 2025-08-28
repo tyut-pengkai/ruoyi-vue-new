@@ -7,7 +7,6 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.web.controller.xkt.vo.storeCusProdDiscount.*;
-import com.ruoyi.web.controller.xkt.vo.storeProd.StoreProdSkuResVO;
 import com.ruoyi.xkt.dto.storeCusProdDiscount.*;
 import com.ruoyi.xkt.service.IStoreCustomerProductDiscountService;
 import io.swagger.annotations.Api;

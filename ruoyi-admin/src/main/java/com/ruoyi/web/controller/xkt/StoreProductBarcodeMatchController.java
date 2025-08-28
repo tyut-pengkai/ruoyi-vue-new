@@ -12,7 +12,6 @@ import com.ruoyi.xkt.domain.StoreProductBarcodeMatch;
 import com.ruoyi.xkt.dto.storeProdBarcodeMatch.BarcodeMatchDTO;
 import com.ruoyi.xkt.service.IStoreProductBarcodeMatchService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 

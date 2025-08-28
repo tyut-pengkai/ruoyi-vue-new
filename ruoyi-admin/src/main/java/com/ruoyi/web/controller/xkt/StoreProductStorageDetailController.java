@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * 档口商品入库明细Controller
@@ -49,7 +48,7 @@ public class StoreProductStorageDetailController extends XktBaseController {
         List<StoreStorageDetailDownloadDTO> downloadList = storageDetailService.export(BeanUtil.toBean(exportVO, StoreStorageExportDTO.class));
         ExcelUtil<StoreStorageDetailDownloadDTO> util = new ExcelUtil<>(StoreStorageDetailDownloadDTO.class);
         // 设置下载excel名
-        String encodedFileName = URLEncoder.encode("入库记录" + DateUtils.getDate(),  "UTF-8").replaceAll("\\+", "%20");
+        String encodedFileName = URLEncoder.encode("入库记录" + DateUtils.getDate(), "UTF-8").replaceAll("\\+", "%20");
         response.setHeader("Content-disposition", "attachment;filename=" + encodedFileName + ".xlsx");
         util.exportExcel(response, downloadList, "入库记录");
     }

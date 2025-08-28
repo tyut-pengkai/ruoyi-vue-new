@@ -284,7 +284,7 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
     public AdminAdRoundStatusCountResDTO statusCount() {
         final Date now = java.sql.Date.valueOf(LocalDate.now().plusDays(1));
         final Date sixMonthAgo = java.sql.Date.valueOf(LocalDate.now().minusMonths(6));
-        return this.advertRoundMapper.statusCount(sixMonthAgo,  now);
+        return this.advertRoundMapper.statusCount(sixMonthAgo, now);
     }
 
     /**

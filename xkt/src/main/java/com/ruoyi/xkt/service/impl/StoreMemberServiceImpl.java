@@ -66,7 +66,7 @@ public class StoreMemberServiceImpl implements IStoreMemberService {
         int count = this.storeMemberMapper.insert(storeMember);
         // 将档口权重增加1
         Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
-                .eq(Store::getId, createDTO.getStoreId()).eq(Store::getDelFlag, Constants.UNDELETED)))
+                        .eq(Store::getId, createDTO.getStoreId()).eq(Store::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
         store.setStoreWeight(ObjectUtils.defaultIfNull(store.getStoreWeight(), 0) + 1);
         this.storeMapper.updateById(store);

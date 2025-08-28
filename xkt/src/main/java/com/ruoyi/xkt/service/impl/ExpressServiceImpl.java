@@ -114,8 +114,8 @@ public class ExpressServiceImpl implements IExpressService {
         Assert.notEmpty(cityCode);
         Assert.notEmpty(countyCode);
         Map<String, ExpressFeeConfig> map = expressFeeConfigMapper.selectList(Wrappers.lambdaQuery(ExpressFeeConfig.class)
-                .eq(ExpressFeeConfig::getExpressId, expressId)
-                .in(ExpressFeeConfig::getRegionCode, Arrays.asList(provinceCode, cityCode, countyCode)))
+                        .eq(ExpressFeeConfig::getExpressId, expressId)
+                        .in(ExpressFeeConfig::getRegionCode, Arrays.asList(provinceCode, cityCode, countyCode)))
                 .stream()
                 //过滤掉已被删除的配置
                 .filter(BeanValidators::exists)
