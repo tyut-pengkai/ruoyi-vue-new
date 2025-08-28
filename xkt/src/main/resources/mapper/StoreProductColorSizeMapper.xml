@@ -34,9 +34,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             ( SELECT discount FROM store_customer_product_discount WHERE store_cus_id = #{storeCusId} AND store_prod_color_id = spc.id AND del_flag = 0 ) AS discount
         FROM
             store_product_color_size spcs
-                LEFT JOIN store_product_color_price spcp ON spcs.store_prod_id = spcp.store_prod_id AND spcs.store_color_id = spcp.store_color_id AND spcp.del_flag = 0
-                LEFT JOIN store_product sp ON spcs.store_prod_id = sp.id
-                LEFT JOIN store_product_color spc ON spcs.store_color_id = spc.store_color_id AND spcs.store_prod_id = spc.store_prod_id AND spc.del_flag = 0
+                JOIN store_product_color_price spcp ON spcs.store_prod_id = spcp.store_prod_id AND spcs.store_color_id = spcp.store_color_id AND spcp.del_flag = 0
+                JOIN store_product sp ON spcs.store_prod_id = sp.id
+                JOIN store_product_color spc ON spcs.store_color_id = spc.store_color_id AND spcs.store_prod_id = spc.store_prod_id AND spc.del_flag = 0
         WHERE
             spcs.del_flag = 0
             AND spcs.sn_prefix = #{snPrefix}
@@ -56,9 +56,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             ( SELECT discount FROM store_customer_product_discount WHERE store_cus_id = #{storeCusId} AND store_prod_color_id = spc.id AND del_flag = 0 ) AS discount
         FROM
             store_product_color_size spcs
-                LEFT JOIN store_product_color_price spcp ON spcs.store_prod_id = spcp.store_prod_id AND spcs.store_color_id = spcp.store_color_id AND spcp.del_flag = 0
-                LEFT JOIN store_product sp ON spcs.store_prod_id = sp.id
-                LEFT JOIN store_product_color spc ON spcs.store_color_id = spc.store_color_id AND spcs.store_prod_id = spc.store_prod_id AND spc.del_flag = 0
+                JOIN store_product_color_price spcp ON spcs.store_prod_id = spcp.store_prod_id AND spcs.store_color_id = spcp.store_color_id AND spcp.del_flag = 0
+                JOIN store_product sp ON spcs.store_prod_id = sp.id
+                JOIN store_product_color spc ON spcs.store_color_id = spc.store_color_id AND spcs.store_prod_id = spc.store_prod_id AND spc.del_flag = 0
         WHERE
             spcs.del_flag = 0
           AND spcs.other_sn_prefix = #{snPrefix}
@@ -77,8 +77,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             spcs.sn_prefix AS prefixPart
         FROM
             store_product_color_size spcs
-            JOIN store_product sp ON spcs.store_prod_id = sp.id
-            JOIN store_product_color spc ON spcs.store_color_id = spc.store_color_id AND spcs.store_prod_id = spc.store_prod_id AND spc.del_flag = 0
+                JOIN store_product sp ON spcs.store_prod_id = sp.id
+                JOIN store_product_color spc ON spcs.store_color_id = spc.store_color_id AND spcs.store_prod_id = spc.store_prod_id AND spc.del_flag = 0
         WHERE
             spcs.del_flag = 0
             AND sp.store_id = #{storeId}
@@ -102,8 +102,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             spcs.other_sn_prefix AS prefixPart
         FROM
             store_product_color_size spcs
-            JOIN store_product sp ON spcs.store_prod_id = sp.id
-            JOIN store_product_color spc ON spcs.store_color_id = spc.store_color_id AND spcs.store_prod_id = spc.store_prod_id AND spc.del_flag = 0
+                JOIN store_product sp ON spcs.store_prod_id = sp.id
+                JOIN store_product_color spc ON spcs.store_color_id = spc.store_color_id AND spcs.store_prod_id = spc.store_prod_id AND spc.del_flag = 0
         WHERE
             spcs.del_flag = 0
             AND sp.store_id = #{storeId}
@@ -124,8 +124,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             spcs.sn_prefix AS prefixPart
         FROM
             store_product_color_size spcs
-            JOIN store_product sp ON spcs.store_prod_id = sp.id
-            JOIN store_product_color spc ON spcs.store_color_id = spc.store_color_id AND spcs.store_prod_id = spc.store_prod_id AND spc.del_flag = 0
+                JOIN store_product sp ON spcs.store_prod_id = sp.id
+                JOIN store_product_color spc ON spcs.store_color_id = spc.store_color_id AND spcs.store_prod_id = spc.store_prod_id AND spc.del_flag = 0
         WHERE
             spcs.del_flag = 0
             <if test="buJuPrefixSnList != null and buJuPrefixSnList.size() > 0">
@@ -145,8 +145,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             spcs.other_sn_prefix AS prefixPart
         FROM
             store_product_color_size spcs
-            JOIN store_product sp ON spcs.store_prod_id = sp.id
-            JOIN store_product_color spc ON spcs.store_color_id = spc.store_color_id AND spcs.store_prod_id = spc.store_prod_id AND spc.del_flag = 0
+                JOIN store_product sp ON spcs.store_prod_id = sp.id
+                JOIN store_product_color spc ON spcs.store_color_id = spc.store_color_id AND spcs.store_prod_id = spc.store_prod_id AND spc.del_flag = 0
         WHERE
             spcs.del_flag = 0
             <if test="otherPrefixSnList != null and otherPrefixSnList.size() > 0">

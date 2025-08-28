@@ -1031,7 +1031,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                                 .from((searchDTO.getPageNum() - 1) * searchDTO.getPageSize())
                                 .size(searchDTO.getPageSize())
                                 .sort(sort -> sort.field(f -> f.field("storeWeight").order(SortOrder.Desc)))
-                                .sort(sort -> sort.field(f -> f.field(searchDTO.getSort()).order(SortOrder.Desc))),
+                                .sort(sort -> sort.field(f -> f.field(searchDTO.getSort()).order(searchDTO.getOrder()))),
                         ESProductDTO.class);
         final long total = resList.hits().total().value();
         final List<ESProductDTO> esProdList = resList.hits().hits().stream().map(x -> x.source().setStoreProdId(x.id())).collect(Collectors.toList());

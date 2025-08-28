@@ -12,8 +12,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             sf.file_url
         FROM
             advert_store_file ssf
-                LEFT JOIN sys_file sf ON ssf.pic_id = sf.id
-                LEFT JOIN store s ON ssf.store_id = s.id
+                JOIN sys_file sf ON ssf.pic_id = sf.id
+                JOIN store s ON ssf.store_id = s.id
         WHERE
             ssf.del_flag = 0
             <if test="storeName != null and storeName != ''">

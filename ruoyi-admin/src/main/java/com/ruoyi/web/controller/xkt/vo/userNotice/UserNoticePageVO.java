@@ -18,5 +18,7 @@ public class UserNoticePageVO extends BasePageVO {
 
     @ApiModelProperty(value = "公告标题")
     private String noticeTitle;
+    @ApiModelProperty(value = "公告类型（1通知 2公告）")
+    private Integer noticeType;
 
 }

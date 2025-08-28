@@ -39,8 +39,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             spcp.store_prod_id,
             MIN( spcp.price )
         FROM
-            store_product_color_price spcp JOIN store_product_color spc ON spcp.store_prod_id = spc.store_prod_id
-            AND spcp.store_color_id = spc.store_color_id AND spc.prod_status IN ( 2, 3 )
+            store_product_color_price spcp
+                JOIN store_product_color spc ON spcp.store_prod_id = spc.store_prod_id
+                    AND spcp.store_color_id = spc.store_color_id AND spc.prod_status IN ( 2, 3 )
         WHERE
             spcp.del_flag = 0
             <if test="storeProdIdList != null and storeProdIdList.size() > 0">

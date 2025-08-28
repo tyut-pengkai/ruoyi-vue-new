@@ -24,7 +24,9 @@ public interface UserNoticeMapper extends BaseMapper<UserNotice> {
      * @param noticeTitle 公告标题
      * @return 列表
      */
-    List<UserNoticeResDTO> selectUserNoticeList(@Param("userId") Long userId, @Param("noticeTitle") String noticeTitle);
+    List<UserNoticeResDTO> selectUserNoticeList(@Param("userId") Long userId,
+                                                @Param("noticeTitle") String noticeTitle,
+                                                @Param("noticeType") Integer noticeType);
 
     /**
      * 查询APP用户所有通知列表

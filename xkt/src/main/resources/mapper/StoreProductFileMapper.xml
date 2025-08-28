@@ -30,7 +30,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             sf.file_url AS fileUrl
         FROM
             store_product_file spf
-                LEFT JOIN sys_file sf ON spf.file_id = sf.id
+                JOIN sys_file sf ON spf.file_id = sf.id
         WHERE
             spf.del_flag = 0
             <if test="storeProdIdList != null and storeProdIdList.size() > 0">
@@ -54,8 +54,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             sf.file_url AS fileUrl
         FROM
             store_product_file spf
-                LEFT JOIN sys_file sf ON spf.file_id = sf.id
-                LEFT JOIN store_product sp ON spf.store_prod_id = sp.id
+                JOIN sys_file sf ON spf.file_id = sf.id
+                JOIN store_product sp ON spf.store_prod_id = sp.id
         WHERE
             spf.del_flag = 0
             AND spf.file_type = #{fileType}
@@ -83,7 +83,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             spf.order_num AS orderNum
         FROM
             store_product_file spf
-                LEFT JOIN sys_file sf ON spf.file_id = sf.id
+                JOIN sys_file sf ON spf.file_id = sf.id
         WHERE
             spf.del_flag = 0
             AND spf.file_type = #{fileType}
@@ -95,8 +95,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             spf.store_prod_id,
             sf.file_url
         FROM
-            store_product_file spf LEFT JOIN store_product sp ON spf.store_prod_id = sp.id
-            LEFT JOIN sys_file sf ON spf.file_id = sf.id
+            store_product_file spf
+                JOIN store_product sp ON spf.store_prod_id = sp.id
+                JOIN sys_file sf ON spf.file_id = sf.id
         WHERE
             spf.del_flag = 0
             AND spf.file_type = 1
@@ -116,9 +117,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 ROW_NUMBER() OVER ( PARTITION BY spf.store_id ORDER BY spf.create_time DESC ) AS rank_num
             FROM
                 store_product_file spf
-                LEFT JOIN store_product sp ON spf.store_prod_id = sp.id
-                LEFT JOIN sys_file sf ON spf.file_id = sf.id
-                LEFT JOIN store s ON spf.store_id = s.id
+                JOIN store_product sp ON spf.store_prod_id = sp.id
+                JOIN sys_file sf ON spf.file_id = sf.id
+                JOIN store s ON spf.store_id = s.id
             WHERE
                 spf.del_flag = 0
                 AND spf.file_type = 1
@@ -147,7 +148,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             spf.order_num
         FROM
             store_product_file spf
-                LEFT JOIN sys_file sf ON spf.file_id = sf.id
+                JOIN sys_file sf ON spf.file_id = sf.id
         WHERE
             spf.del_flag = 0
           AND spf.store_prod_id = #{storeProdId}

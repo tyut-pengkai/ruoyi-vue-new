@@ -47,7 +47,7 @@ public class UserNoticeServiceImpl implements IUserNoticeService {
     @Transactional(readOnly = true)
     public Page<UserNoticeResDTO> pcPage(UserNoticePageDTO pageDTO) {
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
-        List<UserNoticeResDTO> list = this.userNoticeMapper.selectUserNoticeList(SecurityUtils.getUserId(), pageDTO.getNoticeTitle());
+        List<UserNoticeResDTO> list = this.userNoticeMapper.selectUserNoticeList(SecurityUtils.getUserId(), pageDTO.getNoticeTitle(), pageDTO.getNoticeType());
         list.forEach(x -> x.setTargetNoticeTypeName(UserNoticeType.of(x.getTargetNoticeType()).getLabel()));
         return Page.convert(new PageInfo<>(list));
     }
