@@ -308,9 +308,9 @@ public class SysUserServiceImpl implements ISysUserService {
         if (StrUtil.equals(user.getUserName(), user.getPhonenumber())) {
             user.setUserName(phoneNumber);
         }
-        if (StrUtil.equals(user.getNickName(), user.getPhonenumber())) {
-            user.setNickName(phoneNumber);
-        }
+//        if (StrUtil.equals(user.getNickName(), user.getPhonenumber())) {
+//            user.setNickName(phoneNumber);
+//        }
         user.setPhonenumber(phoneNumber);
         updateUserBase(user);
     }
