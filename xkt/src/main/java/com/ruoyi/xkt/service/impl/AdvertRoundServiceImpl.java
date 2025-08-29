@@ -1003,25 +1003,27 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
      * @param roundList 播放轮次
      */
     private void setTimeRangePatternDeadline(DateTimeFormatter formatter, List<AdvertRound> roundList) {
-        // 第一轮（有可能为 位置枚举[多个] 或 时间范围[单个]）
-        roundList.stream().filter(x -> Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue())).distinct().forEach(x ->
+        Map<String, String> symbolDeadlineMap = new HashMap<>();
+        Map<String, Date> roundSymbolMap = new HashMap<>();
+        for (AdvertRound x : roundList) {
+            symbolDeadlineMap.put(x.getSymbol(), x.getDeadline());
+            if (!Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue())) {
+                roundSymbolMap.put(x.getSymbol(), x.getStartTime());
+            } else {
+                // 第一轮（有可能为 位置枚举[多个] 或 时间范围[单个]）
                 redisCache.setCacheObject(ADVERT_DEADLINE_KEY + x.getSymbol(),
-                        formatter.format(LocalDateTime.now().with(LocalTime.parse(x.getDeadline()))), 1, TimeUnit.DAYS));
-        // 每一个推广位置的截止时间
-        Map<String, String> symbolDeadlineMap = roundList.stream().collect(Collectors.toMap(AdvertRound::getSymbol, AdvertRound::getDeadline, (s1, s2) -> s2));
-        // 第二轮之后的轮次过期时间都为开始时间前一天
-        Map<String, Date> roundSymbolMap = roundList.stream().filter(x -> !Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue()))
-                .collect(Collectors.toMap(AdvertRound::getSymbol, AdvertRound::getStartTime, (s1, s2) -> s2));
-        if (MapUtils.isNotEmpty(roundSymbolMap)) {
-            roundSymbolMap.forEach((symbol, startTime) -> {
-                // 每一个symbol 的截止时间
-                String defaultDeadline = symbolDeadlineMap.getOrDefault(symbol, "22:00:00");
-                // 推广开始时间的前一天的 截止时间
-                final String deadline = formatter.format(startTime.toInstant().atZone(ZoneId.systemDefault())
-                        .toLocalDateTime().minusDays(1).with(LocalTime.parse(defaultDeadline)));
-                redisCache.setCacheObject(ADVERT_DEADLINE_KEY + symbol, deadline, 1, TimeUnit.DAYS);
-            });
+                        formatter.format(LocalDateTime.now().with(LocalTime.parse(x.getDeadline()))), 1, TimeUnit.DAYS);
+            }
         }
+        // 统一处理非第一轮
+        roundSymbolMap.forEach((symbol, startTime) -> {
+            String defaultDeadline = symbolDeadlineMap.getOrDefault(symbol, "22:00:00");
+            // 第二轮之后的轮次过期时间都为开始时间前一天
+            String deadline = formatter.format(
+                    startTime.toInstant().atZone(ZoneId.systemDefault())
+                            .toLocalDateTime().minusDays(1).with(LocalTime.parse(defaultDeadline)));
+            redisCache.setCacheObject(ADVERT_DEADLINE_KEY + symbol, deadline, 1, TimeUnit.DAYS);
+        });
     }
 
 
