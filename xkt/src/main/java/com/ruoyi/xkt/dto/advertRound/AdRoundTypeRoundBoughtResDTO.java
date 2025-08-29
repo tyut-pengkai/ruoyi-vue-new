@@ -23,6 +23,8 @@ public class AdRoundTypeRoundBoughtResDTO {
     private Long advertRoundId;
     @ApiModelProperty(value = "广告ID")
     private Long advertId;
+    @ApiModelProperty(value = "是否可购买")
+    private Boolean canPurchased;
     @ApiModelProperty(value = "广告轮次ID")
     private Integer roundId;
     @ApiModelProperty(value = "typeId")

@@ -14,6 +14,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum AdBiddingStatus {
 
+    // 未出价
+    UN_BIDDING(0, "未出价"),
     // 已出价
     BIDDING(1, "已出价"),
     // 竞价成功

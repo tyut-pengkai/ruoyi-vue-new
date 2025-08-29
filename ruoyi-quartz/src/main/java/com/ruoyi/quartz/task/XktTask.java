@@ -221,7 +221,7 @@ public class XktTask {
                         updateList.add(new AdvertRound().setAdvertId(advert.getId()).setTypeId(advert.getTypeId()).setRoundId(roundId).setLaunchStatus(launchStatus)
                                 .setStartTime(java.sql.Date.valueOf(now)).setEndTime(java.sql.Date.valueOf(endDate)).setPosition(position).setStartPrice(advert.getStartPrice())
                                 .setSysIntercept(AdSysInterceptType.UN_INTERCEPT.getValue()).setShowType(advert.getShowType())
-                                .setDisplayType(advert.getDisplayType()).setDeadline(advert.getDeadline())
+                                .setDisplayType(advert.getDisplayType()).setDeadline(advert.getDeadline()).setBiddingStatus(AdBiddingStatus.UN_BIDDING.getValue())
                                 .setSymbol(Objects.equals(advert.getShowType(), AdShowType.POSITION_ENUM.getValue())
                                         // 如果是位置枚举的推广位，则需要精确到某一个position的推广位，反之，若是时间范围，则直接精确到播放轮次即可
                                         ? advert.getBasicSymbol() + roundId + position : advert.getBasicSymbol() + roundId));
@@ -1689,7 +1689,7 @@ public class XktTask {
                         .setSysIntercept(AdSysInterceptType.UN_INTERCEPT.getValue()).setShowType(advert.getShowType()).setDisplayType(advert.getDisplayType())
                         .setStartTime(Date.from(startDate.atStartOfDay(ZoneId.systemDefault()).toInstant()))
                         .setEndTime(Date.from(endDate.atStartOfDay(ZoneId.systemDefault()).toInstant()))
-                        .setDeadline(advert.getDeadline())
+                        .setDeadline(advert.getDeadline()).setBiddingStatus(AdBiddingStatus.UN_BIDDING.getValue())
                         .setSymbol(Objects.equals(advert.getShowType(), AdShowType.POSITION_ENUM.getValue())
                                 // 如果是位置枚举的推广位，则需要精确到某一个position的推广位，反之，若是时间范围，则直接精确到播放轮次即可
                                 ? advert.getBasicSymbol() + maxRoundId + position : advert.getBasicSymbol() + maxRoundId);
