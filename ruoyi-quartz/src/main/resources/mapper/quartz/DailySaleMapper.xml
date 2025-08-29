@@ -15,7 +15,7 @@
             COALESCE(SUM(sps.quantity), 0) AS storageNum
         FROM
             store_sale ss
-                LEFT JOIN store_sale_detail ssd ON ss.id = ssd.store_sale_id
+                JOIN store_sale_detail ssd ON ss.id = ssd.store_sale_id
                 LEFT JOIN store_product_storage sps ON ss.store_id = sps.store_id
         WHERE
             ss.del_flag = 0 AND ss.voucher_date = #{voucherDate}

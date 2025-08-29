@@ -123,5 +123,9 @@ public class AdvertRound extends XktBaseEntity {
      * 拒绝理由
      */
     private String rejectReason;
+    /**
+     * 风格榜风格ID
+     */
+    private Integer styleType;
 
 }
