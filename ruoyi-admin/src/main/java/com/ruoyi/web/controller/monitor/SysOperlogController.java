@@ -20,13 +20,13 @@ import java.util.List;
  *
  * @author ruoyi
  */
-@RestController
-@RequestMapping("/monitor/operlog")
+//@RestController
+//@RequestMapping("/monitor/operlog")
 public class SysOperlogController extends BaseController {
     @Autowired
     private ISysOperLogService operLogService;
 
-    @PreAuthorize("@ss.hasPermi('monitor:operlog:list')")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @GetMapping("/list")
     public TableDataInfo list(SysOperLog operLog) {
         startPage();
@@ -35,7 +35,7 @@ public class SysOperlogController extends BaseController {
     }
 
     @Log(title = "操作日志", businessType = BusinessType.EXPORT)
-    @PreAuthorize("@ss.hasPermi('monitor:operlog:export')")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @PostMapping("/export")
     public void export(HttpServletResponse response, SysOperLog operLog) {
         List<SysOperLog> list = operLogService.selectOperLogList(operLog);
@@ -44,14 +44,14 @@ public class SysOperlogController extends BaseController {
     }
 
     @Log(title = "操作日志", businessType = BusinessType.DELETE)
-    @PreAuthorize("@ss.hasPermi('monitor:operlog:remove')")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @DeleteMapping("/{operIds}")
     public AjaxResult remove(@PathVariable Long[] operIds) {
         return toAjax(operLogService.deleteOperLogByIds(operIds));
     }
 
     @Log(title = "操作日志", businessType = BusinessType.CLEAN)
-    @PreAuthorize("@ss.hasPermi('monitor:operlog:remove')")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @DeleteMapping("/clean")
     public AjaxResult clean() {
         operLogService.cleanOperLog();

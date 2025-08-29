@@ -135,26 +135,4 @@ public class SysRoleController extends XktBaseController {
         return R.ok(scope.getCount());
     }
 
-//    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-//    @Log(title = "角色管理", businessType = BusinessType.UPDATE)
-//    @ApiOperation("授权角色 - 管理员")
-//    @PostMapping("/bindUser")
-    public R<Integer> bindUser(@Validated @RequestBody UserRoleBindReqVO vo) {
-        int count = roleService.bindUser(vo.getRoleId(), vo.getUserIds());
-        // 清除用户缓存（退出登录）
-        tokenService.deleteCacheUser(vo.getUserIds());
-        return R.ok(count);
-    }
-
-//    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-//    @Log(title = "角色管理", businessType = BusinessType.UPDATE)
-//    @ApiOperation("取消授权角色 - 管理员")
-//    @PostMapping("/unbindUser")
-    public R<Integer> unbindUser(@Validated @RequestBody UserRoleBindReqVO vo) {
-        int count = roleService.unbindUser(vo.getRoleId(), vo.getUserIds());
-        // 清除用户缓存（退出登录）
-        tokenService.deleteCacheUser(vo.getUserIds());
-        return R.ok(count);
-    }
-
 }
