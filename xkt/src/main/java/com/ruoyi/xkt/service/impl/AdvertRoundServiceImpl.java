@@ -231,9 +231,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                     // 如果是播放论，则播放开始时间展示为当天，因为有可能是播放的中间某一天
                     if (Objects.equals(advertRound.getRoundId(), AdRoundType.PLAY_ROUND.getValue())) {
                         Date tomorrow = Date.from(LocalDate.now().plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
-                        typeRoundResDTO.setStartTime(tomorrow)
-                                // 计算最
-                                .setStartWeekDay(getDayOfWeek(tomorrow))
+                        typeRoundResDTO.setStartTime(tomorrow).setStartWeekDay(getDayOfWeek(tomorrow))
                                 // 计算最新的间隔时间（如果为最新播放论，则展示第一轮正在播放时间与最后一天的差距）
                                 .setDurationDay(calculateDurationDay(tomorrow, advertRound.getEndTime(), Boolean.TRUE));
                     }
