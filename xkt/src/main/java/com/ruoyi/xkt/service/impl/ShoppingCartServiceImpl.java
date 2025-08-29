@@ -347,7 +347,7 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
             return colorSizeStockMap;
         }
         // 标准尺码map
-        Map<Integer, StoreProductColorSize> standardSizeMap = standardSizeList.stream().collect(Collectors.toMap(StoreProductColorSize::getSize, Function.identity()));
+        Map<Integer, StoreProductColorSize> standardSizeMap = standardSizeList.stream().collect(Collectors.toMap(StoreProductColorSize::getSize, Function.identity(), (s1, s2) -> s2));
         Map<String, List<StoreProductStock>> map = stockList.stream().collect(Collectors.groupingBy(x -> x.getStoreProdId().toString() + x.getStoreColorId().toString()));
         map.forEach((unionId, tempStockList) -> {
             List<ShopCartDetailResDTO.SCDStoreProdSizeStockDTO> sizeStockList = new ArrayList<>();
