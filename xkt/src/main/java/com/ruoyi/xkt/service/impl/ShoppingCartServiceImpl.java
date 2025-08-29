@@ -174,7 +174,7 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
                 .eq(StoreProductColorSize::getStoreProdId, shoppingCart.getStoreProdId()).eq(StoreProductColorSize::getDelFlag, Constants.UNDELETED)
                 .eq(StoreProductColorSize::getStandard, ProductSizeStatus.STANDARD.getValue()));
         // 标准尺码
-        List<Integer> standardList = standardSizeList.stream().map(StoreProductColorSize::getSize).distinct().collect(Collectors.toList());
+        List<Integer> standardList = standardSizeList.stream().map(StoreProductColorSize::getSize).distinct().sorted(Comparator.comparing(x -> x)).collect(Collectors.toList());
         Map<String, List<StoreProductColorSize>> colorSizeMap = standardSizeList.stream().collect(Collectors
                 .groupingBy(x -> x.getStoreProdId().toString() + x.getStoreColorId().toString()));
         // 获取商品颜色列表
@@ -192,16 +192,17 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
                 .in(StoreProductStock::getStoreProdColorId, colorList.stream().map(StoreProductColor::getId).distinct().collect(Collectors.toList()))
                 .eq(StoreProductStock::getDelFlag, Constants.UNDELETED));
         // 获取档口颜色尺码的库存数量
-        Map<String, List<ShopCartDetailResDTO.SCDStoreProdSizeStockDTO>> colorSizeStockMap = this.convertSizeStock(prodStockList, standardSizeList);
+        Map<String, List<ShopCartDetailResDTO.SCDStoreProdSizeStockDTO>> colorSizeStockMap = this.convertSizeStock(prodStockList, standardList);
+        // 库存数量为0默认值
+        List<ShopCartDetailResDTO.SCDStoreProdSizeStockDTO> defaultZeroStockList = standardList.stream().map(size ->
+                new ShopCartDetailResDTO.SCDStoreProdSizeStockDTO().setSize(size).setStock(0)).collect(Collectors.toList());
         List<ShopCartDetailResDTO.SCDStoreProdColorDTO> colorSizeStockList = colorList.stream()
-                .map(color -> BeanUtil.toBean(color, ShopCartDetailResDTO.SCDStoreProdColorDTO.class)
-                        .setStoreProdColorId(color.getId())
+                .map(color -> BeanUtil.toBean(color, ShopCartDetailResDTO.SCDStoreProdColorDTO.class).setStoreProdColorId(color.getId())
                         // 获取颜色设定的价格
                         .setPrice(colorPriceMap.containsKey(color.getStoreProdId().toString() + color.getStoreColorId().toString())
                                 ? colorPriceMap.get(color.getStoreProdId().toString() + color.getStoreColorId().toString()).getPrice() : null)
                         // 设定库存
-                        .setSizeStockList(colorSizeMap.containsKey(color.getStoreProdId().toString() + color.getStoreColorId().toString())
-                                ? colorSizeStockMap.get(color.getStoreProdId().toString() + color.getStoreColorId().toString()) : null))
+                        .setSizeStockList(colorSizeStockMap.getOrDefault(color.getStoreProdId().toString() + color.getStoreColorId().toString(), defaultZeroStockList)))
                 .collect(Collectors.toList());
         return new ShopCartDetailResDTO() {{
             setProdArtNum(shoppingCart.getProdArtNum()).setStoreProdId(shoppingCart.getStoreProdId())
@@ -341,13 +342,13 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
      * @param standardSizeList 当前商品的标准尺码
      * @return Map<Long, Map < Integer, Integer>>
      */
-    private Map<String, List<ShopCartDetailResDTO.SCDStoreProdSizeStockDTO>> convertSizeStock(List<StoreProductStock> stockList, List<StoreProductColorSize> standardSizeList) {
+    private Map<String, List<ShopCartDetailResDTO.SCDStoreProdSizeStockDTO>> convertSizeStock(List<StoreProductStock> stockList, List<Integer> standardSizeList) {
         Map<String, List<ShopCartDetailResDTO.SCDStoreProdSizeStockDTO>> colorSizeStockMap = new HashMap<>();
         if (CollectionUtils.isEmpty(stockList)) {
             return colorSizeStockMap;
         }
         // 标准尺码map
-        Map<Integer, StoreProductColorSize> standardSizeMap = standardSizeList.stream().collect(Collectors.toMap(StoreProductColorSize::getSize, Function.identity(), (s1, s2) -> s2));
+        Map<Integer, Integer> standardSizeMap = standardSizeList.stream().collect(Collectors.toMap(x -> x, x -> x));
         Map<String, List<StoreProductStock>> map = stockList.stream().collect(Collectors.groupingBy(x -> x.getStoreProdId().toString() + x.getStoreColorId().toString()));
         map.forEach((unionId, tempStockList) -> {
             List<ShopCartDetailResDTO.SCDStoreProdSizeStockDTO> sizeStockList = new ArrayList<>();
