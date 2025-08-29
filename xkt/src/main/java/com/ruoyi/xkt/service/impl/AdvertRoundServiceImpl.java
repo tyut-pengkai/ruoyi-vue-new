@@ -984,7 +984,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                                     .forEach(x -> {
                                         // 推广开始时间的前一天的 截止时间
                                         final String deadline = formatter.format(x.getStartTime().toInstant().atZone(ZoneId.systemDefault())
-                                                .toLocalDateTime().with(LocalTime.parse(x.getDeadline())));
+                                                .toLocalDateTime().minusDays(1).with(LocalTime.parse(x.getDeadline())));
                                         redisCache.setCacheObject(ADVERT_DEADLINE_KEY + x.getSymbol(), deadline, 1, TimeUnit.DAYS);
                                     });
                         }
@@ -1018,7 +1018,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                 String defaultDeadline = symbolDeadlineMap.getOrDefault(symbol, "22:00:00");
                 // 推广开始时间的前一天的 截止时间
                 final String deadline = formatter.format(startTime.toInstant().atZone(ZoneId.systemDefault())
-                        .toLocalDateTime().with(LocalTime.parse(defaultDeadline)));
+                        .toLocalDateTime().minusDays(1).with(LocalTime.parse(defaultDeadline)));
                 redisCache.setCacheObject(ADVERT_DEADLINE_KEY + symbol, deadline, 1, TimeUnit.DAYS);
             });
         }
