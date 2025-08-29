@@ -16,7 +16,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             ssd.quantity,
             ssd.amount,
             ssd.other_discount,
-            DATE_FORMAT(ssd.create_time, '(%m.%e出)') AS soldTime,
+            DATE_FORMAT(ssd.create_time, '(%m.%e出)') AS soldTime
         FROM
             store_sale_detail ssd
         WHERE
