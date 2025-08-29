@@ -29,6 +29,10 @@ public class PCIndexMidStyleDTO {
     private String picUrl;
     @ApiModelProperty(value = "1推广图")
     private Integer displayType;
+    @ApiModelProperty(value = "风格类型")
+    private Integer styleType;
+    @ApiModelProperty(value = "风格类型名称")
+    private String styleTypeName;
     @ApiModelProperty(value = "排序")
     private Integer orderNum;
     @ApiModelProperty(value = "档口出的推广价格")

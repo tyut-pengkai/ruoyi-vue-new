@@ -34,6 +34,8 @@ public class AdRoundStoreCreateDTO {
     private Integer picDesignType;
     @ApiModelProperty(value = "推广商品ID列表")
     private String prodIdStr;
+    @ApiModelProperty(value = "风格榜风格类型")
+    private Integer styleType;
     @ApiModelProperty(value = "对象锁符号")
     private String symbol;
     @ApiModelProperty(value = "支付方式")

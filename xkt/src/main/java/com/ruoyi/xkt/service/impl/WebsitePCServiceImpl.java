@@ -38,10 +38,7 @@ import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO;
 import com.ruoyi.xkt.dto.useSearchHistory.UserSearchHistoryDTO;
 import com.ruoyi.xkt.dto.website.IndexSearchDTO;
 import com.ruoyi.xkt.dto.website.StoreSearchDTO;
-import com.ruoyi.xkt.enums.AdBiddingStatus;
-import com.ruoyi.xkt.enums.AdDisplayType;
-import com.ruoyi.xkt.enums.AdLaunchStatus;
-import com.ruoyi.xkt.enums.SearchPlatformType;
+import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IPictureService;
 import com.ruoyi.xkt.service.IWebsitePCService;
@@ -1642,7 +1639,8 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                     }
                     StoreMember storeMember = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + storeId);
                     midStyleList.add(new PCIndexMidStyleDTO().setStoreId(storeId).setStoreName(storeMap.get(storeId).getStoreName())
-                            .setDisplayType(AdDisplayType.PICTURE.getValue()).setStyleList(styleList)
+                            .setDisplayType(AdDisplayType.PICTURE.getValue()).setStyleList(styleList).setStyleType(advertRound.getStyleType())
+                            .setStyleTypeName(ObjectUtils.isNotEmpty(advertRound.getStyleType()) ? AdStyleType.of(advertRound.getStyleType()).getLabel() : "")
                             .setPayPrice(ObjectUtils.defaultIfNull(advertRound.getPayPrice(), BigDecimal.ZERO))
                             .setMemberLevel(ObjectUtils.isNotEmpty(storeMember) ? storeMember.getLevel() : null)
                             .setPicUrl(ObjectUtils.isNotEmpty(fileMap.get(advertRound.getPicId())) ? fileMap.get(advertRound.getPicId()).getFileUrl() : ""));

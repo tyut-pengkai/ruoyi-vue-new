@@ -671,7 +671,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
             // 更新广告位数据
             minPriceAdvert
                     // 档口购买的推广位一律设置为 非拦截
-                    .setSysIntercept(AdSysInterceptType.UN_INTERCEPT.getValue())
+                    .setSysIntercept(AdSysInterceptType.UN_INTERCEPT.getValue()).setStyleType(createDTO.getStyleType())
                     .setStoreId(createDTO.getStoreId()).setPayPrice(createDTO.getPayPrice()).setVoucherDate(java.sql.Date.valueOf(LocalDate.now()))
                     .setBiddingStatus(AdBiddingStatus.BIDDING.getValue()).setBiddingTempStatus(AdBiddingStatus.BIDDING_SUCCESS.getValue())
                     .setPicSetType(this.hasPic(minPriceAdvert.getDisplayType()) ? AdPicSetType.UN_SET.getValue() : null)

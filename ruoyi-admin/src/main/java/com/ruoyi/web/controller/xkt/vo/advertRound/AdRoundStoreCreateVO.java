@@ -42,6 +42,8 @@ public class AdRoundStoreCreateVO {
     private Integer picDesignType;
     @ApiModelProperty(value = "推广商品ID列表")
     private String prodIdStr;
+    @ApiModelProperty(value = "风格榜风格类型")
+    private Integer styleType;
     @NotBlank(message = "对象锁符号不能为空!")
     @ApiModelProperty(value = "对象锁符号", required = true)
     private String symbol;

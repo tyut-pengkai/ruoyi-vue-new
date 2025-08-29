@@ -26,6 +26,10 @@ public class PCIndexMidStyleVO {
     private Integer displayType;
     @ApiModelProperty(value = "推广图路径")
     private String picUrl;
+    @ApiModelProperty(value = "风格类型")
+    private Integer styleType;
+    @ApiModelProperty(value = "风格类型名称")
+    private String styleTypeName;
     @ApiModelProperty(value = "排序")
     private Integer orderNum;
     @ApiModelProperty(value = "风格榜列表")
