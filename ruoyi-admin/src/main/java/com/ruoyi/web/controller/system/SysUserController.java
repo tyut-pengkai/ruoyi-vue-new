@@ -107,29 +107,6 @@ public class SysUserController extends BaseController {
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @Log(title = "用户管理", businessType = BusinessType.EXPORT)
-//    @ApiOperation("导出 - 管理员")
-//    @PostMapping("/export")
-    public void export(@Validated @RequestBody UserQueryVO vo, HttpServletResponse response) {
-        UserQuery query = BeanUtil.toBean(vo, UserQuery.class);
-        List<UserListItem> list = userService.listUser(query);
-        ExcelUtil<UserListItem> util = new ExcelUtil<>(UserListItem.class);
-        util.exportExcel(response, list, "用户数据");
-    }
-
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @Log(title = "用户管理", businessType = BusinessType.IMPORT)
-//    @ApiOperation("导入 - 管理员")
-//    @PostMapping("/importData")
-    public AjaxResult importData(MultipartFile file, boolean updateSupport) throws Exception {
-        ExcelUtil<SysUser> util = new ExcelUtil<SysUser>(SysUser.class);
-        List<SysUser> userList = util.importExcel(file.getInputStream());
-        String operName = getUsername();
-        String message = userService.importUser(userList, updateSupport, operName);
-        return success(message);
-    }
-
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation("导入模板 - 管理员")
     @PostMapping("/importTemplate")
     public void importTemplate(HttpServletResponse response) {

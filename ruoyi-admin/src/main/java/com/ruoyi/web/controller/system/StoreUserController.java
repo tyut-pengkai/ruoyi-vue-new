@@ -109,13 +109,13 @@ public class StoreUserController extends BaseController {
         Long storeId = SecurityUtils.getStoreId();
         Assert.notNull(storeId);
         Assert.notEmpty(vo.getPhonenumber(), "手机号不能为空");
-        Assert.notEmpty(vo.getUserName(), "账号名称不能为空");
+        Assert.notEmpty(vo.getNickName(), "用户昵称不能为空");
         //短信验证码
         loginService.validateSmsVerificationCode(vo.getPhonenumber(), vo.getCode());
         UserInfoEdit dto = BeanUtil.toBean(vo, UserInfoEdit.class);
         dto.setUserId(null);
-        //昵称默认手机号
-        dto.setNickName(dto.getPhonenumber());
+        //账号默认手机号
+        dto.setUserName(dto.getPhonenumber());
         Set<Long> subRoleIds = roleService.getSubRoleIdsByStore(storeId);
         if (CollUtil.isEmpty(dto.getRoleIds())) {
             dto.setRoleIds(Collections.singletonList(ESystemRole.SELLER.getId()));
@@ -141,7 +141,7 @@ public class StoreUserController extends BaseController {
                 .forEach(roleId -> Assert.isTrue(subRoleIds.contains(roleId), "角色非法"));
         UserInfo info = userService.getUserByPhoneNumber(vo.getPhonenumber());
         Assert.notNull(info, "用户不存在");
-        List<Long> roleIds = new ArrayList<>();
+        Set<Long> roleIds = new HashSet<>();
         List<Long> csRoleIds = new ArrayList<>();
         for (RoleInfo roleInfo : CollUtil.emptyIfNull(info.getRoles())) {
             if (subRoleIds.contains(roleInfo.getRoleId())) {
@@ -157,8 +157,8 @@ public class StoreUserController extends BaseController {
         }
         UserInfoEdit dto = BeanUtil.toBean(info, UserInfoEdit.class);
         roleIds.addAll(CollUtil.emptyIfNull(vo.getRoleIds()));
-        dto.setRoleIds(roleIds);
-        dto.setUserName(vo.getUserName());
+        dto.setRoleIds(new ArrayList<>(roleIds));
+        dto.setNickName(vo.getNickName());
         Long userId = userService.updateUser(dto);
         // 清除用户缓存（退出登录）
         tokenService.deleteCacheUser(userId);

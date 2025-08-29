@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author ruoyi
  */
-@RestController
-@RequestMapping("/monitor/server")
+//@RestController
+//@RequestMapping("/monitor/server")
 public class ServerController {
-    @PreAuthorize("@ss.hasPermi('monitor:server:list')")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @GetMapping()
     public AjaxResult getInfo() throws Exception {
         Server server = new Server();

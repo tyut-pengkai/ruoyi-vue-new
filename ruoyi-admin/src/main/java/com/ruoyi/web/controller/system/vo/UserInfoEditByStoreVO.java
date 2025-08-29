@@ -5,8 +5,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.List;
 
@@ -18,12 +16,12 @@ import java.util.List;
 @Data
 public class UserInfoEditByStoreVO {
     /**
-     * 用户账号
+     * 用户昵称
      */
-    @Xss(message = "用户账号不能包含脚本字符")
-    @Size(min = 0, max = 30, message = "用户账号长度不能超过30个字符")
-    @ApiModelProperty("用户账号")
-    private String userName;
+    @Xss(message = "用户昵称不能包含脚本字符")
+    @Size(min = 0, max = 30, message = "用户昵称长度不能超过30个字符")
+    @ApiModelProperty("用户昵称")
+    private String nickName;
 
     /**
      * 手机号码

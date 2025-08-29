@@ -153,30 +153,4 @@ public class StoreRoleController extends XktBaseController {
         return R.ok(scope.getCount());
     }
 
-//    @PreAuthorize("@ss.hasAnyRoles('store')")
-//    @Log(title = "角色管理", businessType = BusinessType.UPDATE)
-//    @ApiOperation("授权角色 - 档口")
-//    @PostMapping("/bindUser")
-    public R<Integer> bindUser(@Validated @RequestBody UserRoleBindReqVO vo) {
-        RoleInfo info = roleService.getRoleById(vo.getRoleId());
-        Assert.isTrue(Objects.equals(info.getStoreId(), SecurityUtils.getStoreId()), "档口ID不匹配");
-        int count = roleService.bindUser(vo.getRoleId(), vo.getUserIds());
-        // 清除用户缓存（退出登录）
-        tokenService.deleteCacheUser(vo.getUserIds());
-        return R.ok(count);
-    }
-
-//    @PreAuthorize("@ss.hasAnyRoles('store')")
-//    @Log(title = "角色管理", businessType = BusinessType.UPDATE)
-//    @ApiOperation("取消授权角色 - 档口")
-//    @PostMapping("/unbindUser")
-    public R<Integer> unbindUser(@Validated @RequestBody UserRoleBindReqVO vo) {
-        RoleInfo info = roleService.getRoleById(vo.getRoleId());
-        Assert.isTrue(Objects.equals(info.getStoreId(), SecurityUtils.getStoreId()), "档口ID不匹配");
-        int count = roleService.unbindUser(vo.getRoleId(), vo.getUserIds());
-        // 清除用户缓存（退出登录）
-        tokenService.deleteCacheUser(vo.getUserIds());
-        return R.ok(count);
-    }
-
 }

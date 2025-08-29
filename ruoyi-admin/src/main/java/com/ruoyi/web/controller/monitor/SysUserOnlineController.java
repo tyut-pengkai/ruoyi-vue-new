@@ -26,8 +26,8 @@ import java.util.List;
  *
  * @author ruoyi
  */
-@RestController
-@RequestMapping("/monitor/online")
+//@RestController
+//@RequestMapping("/monitor/online")
 public class SysUserOnlineController extends BaseController {
     @Autowired
     private ISysUserOnlineService userOnlineService;
@@ -38,7 +38,7 @@ public class SysUserOnlineController extends BaseController {
     @Autowired
     private TokenService tokenService;
 
-    @PreAuthorize("@ss.hasPermi('monitor:online:list')")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @GetMapping("/list")
     public TableDataInfo list(String ipaddr, String userName) {
         Collection<String> keys = redisCache.keys(CacheConstants.LOGIN_TOKEN_KEY + "*");
@@ -63,7 +63,7 @@ public class SysUserOnlineController extends BaseController {
     /**
      * 强退用户
      */
-    @PreAuthorize("@ss.hasPermi('monitor:online:forceLogout')")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @Log(title = "在线用户", businessType = BusinessType.FORCE)
     @DeleteMapping("/{tokenId}")
     public AjaxResult forceLogout(@PathVariable String tokenId) {
