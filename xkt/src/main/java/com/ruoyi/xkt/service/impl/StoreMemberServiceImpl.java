@@ -71,7 +71,7 @@ public class StoreMemberServiceImpl implements IStoreMemberService {
         store.setStoreWeight(ObjectUtils.defaultIfNull(store.getStoreWeight(), 0) + 1);
         this.storeMapper.updateById(store);
         // 将档口会员信息添加到 redis 中
-        redisCache.setCacheObject(CacheConstants.STORE_MEMBER + createDTO.getStoreId(), StoreMemberLevel.STRENGTH_CONSTRUCT.getValue());
+        redisCache.setCacheObject(CacheConstants.STORE_MEMBER + createDTO.getStoreId(), storeMember);
         // 新增订购成功的消息通知
         this.noticeService.createSingleNotice(SecurityUtils.getUserId(), "购买会员成功!", NoticeType.NOTICE.getValue(), NoticeOwnerType.SYSTEM.getValue(),
                 createDTO.getStoreId(), UserNoticeType.SYSTEM_MSG.getValue(), "恭喜您！购买:实力质造 会员成功!");

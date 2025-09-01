@@ -32,7 +32,7 @@ public class StoreMemberController extends XktBaseController {
 
     final IStoreMemberService storeMemberService;
 
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store'||@ss.hasSupplierSubRole())")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "新增档口会员", httpMethod = "POST", response = R.class)
     @Log(title = "新增档口会员", businessType = BusinessType.INSERT)
     @PostMapping
