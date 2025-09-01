@@ -442,6 +442,8 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                                 + "，最新出价:" + positionEnumMaxPriceMap.get(record.getAdvertRoundId())));
             });
         }
+        // 按照播放时间升序排列
+        boughtRoundList.sort(Comparator.comparing(AdRoundStoreBoughtResDTO::getStartTime));
         return boughtRoundList;
     }
 
