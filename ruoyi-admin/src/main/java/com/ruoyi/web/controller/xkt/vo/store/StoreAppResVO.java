@@ -1,9 +1,11 @@
 package com.ruoyi.web.controller.xkt.vo.store;
 
+import com.ruoyi.xkt.dto.store.StoreAppResDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -16,7 +18,7 @@ import java.util.List;
 public class StoreAppResVO {
 
     @ApiModelProperty(value = "档口头像")
-    private String storeLogo;
+    private SAFileVO logo;
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
     @ApiModelProperty(value = "档口名称")
@@ -31,5 +33,17 @@ public class StoreAppResVO {
     private String contactPhone;
     @ApiModelProperty(value = "备选联系电话")
     private String contactBackPhone;
+
+    @Data
+    public static class SAFileVO {
+        @ApiModelProperty(value = "文件名称")
+        private String fileName;
+        @ApiModelProperty(value = "文件路径")
+        private String fileUrl;
+        @ApiModelProperty(value = "文件类型")
+        private Integer fileType;
+        @ApiModelProperty(value = "文件大小")
+        private BigDecimal fileSize;
+    }
 
 }

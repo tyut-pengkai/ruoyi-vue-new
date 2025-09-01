@@ -227,9 +227,15 @@ public class StoreServiceImpl implements IStoreService {
         UserSubscriptions userSub = this.userSubMapper.selectOne(new LambdaQueryWrapper<UserSubscriptions>()
                 .eq(UserSubscriptions::getUserId, SecurityUtils.getUserId()).eq(UserSubscriptions::getStoreId, storeId)
                 .eq(UserSubscriptions::getDelFlag, Constants.UNDELETED));
-        return BeanUtil.toBean(store, StoreAppResDTO.class)
+        StoreAppResDTO appResDTO = BeanUtil.toBean(store, StoreAppResDTO.class).setStoreId(storeId)
                 .setAttention(ObjectUtils.isNotEmpty(userSub) ? Boolean.TRUE : Boolean.FALSE)
                 .setTagList(storeTagList.stream().map(DailyStoreTag::getTag).collect(Collectors.toList()));
+        // 获取档口LOGO
+        if (ObjectUtils.isNotEmpty(store.getStoreLogoId())) {
+            SysFile logo = this.fileMapper.selectById(store.getStoreLogoId());
+            appResDTO.setLogo(ObjectUtils.isNotEmpty(logo) ? BeanUtil.toBean(logo, StoreAppResDTO.SAFileDTO.class) : null);
+        }
+        return appResDTO;
     }
 
     /**
