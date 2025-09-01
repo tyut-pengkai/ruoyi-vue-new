@@ -387,7 +387,8 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                 .map(x -> {
                     // 如果是最近的播放轮次，且当前时间在 晚上10:00:01 之后到 当天23:59:59 都显示 biddingTempStatus 字段
                     final Integer biddingStatus = tenClockAfter && roundIdList.contains(x.getRoundId()) ? x.getBiddingTempStatus() : x.getBiddingStatus();
-                    return BeanUtil.toBean(x, AdRoundStoreBoughtResDTO.class).setAdvertRoundId(x.getId()).setBiddingStatus(biddingStatus)
+                    return BeanUtil.toBean(x, AdRoundStoreBoughtResDTO.class).setAdvertRoundId(x.getId())
+                            .setBiddingStatus(biddingStatus).setLaunchStatus(x.getLaunchStatus())
                             // 如果是已出价，则显示 "已出价:50"
                             .setBiddingStatusName(AdBiddingStatus.of(biddingStatus).getLabel() +
                                     (Objects.equals(biddingStatus, AdBiddingStatus.BIDDING.getValue()) ? ":" + x.getPayPrice() : ""))

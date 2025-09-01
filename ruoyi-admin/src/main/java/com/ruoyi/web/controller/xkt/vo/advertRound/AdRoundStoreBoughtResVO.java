@@ -48,5 +48,7 @@ public class AdRoundStoreBoughtResVO {
     private Integer biddingStatus;
     @ApiModelProperty(value = "竞价状态名称及描述")
     private String biddingStatusName;
+    @ApiModelProperty(value = "当前播放状态")
+    private Integer launchStatus;
 
 }
