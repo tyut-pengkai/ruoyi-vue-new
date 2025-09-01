@@ -19,6 +19,8 @@ import java.util.Date;
 @Accessors(chain = true)
 public class AdRoundTypeRoundBoughtResVO {
 
+    @ApiModelProperty(value = "推广轮次ID")
+    private Long advertRoundId;
     @ApiModelProperty(value = "广告ID")
     private Long advertId;
     @ApiModelProperty(value = "广告轮次ID")
