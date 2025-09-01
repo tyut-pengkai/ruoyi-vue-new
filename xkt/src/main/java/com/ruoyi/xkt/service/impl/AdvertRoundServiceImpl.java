@@ -300,7 +300,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         final Date date = new Date();
         List<AdRoundTypeRoundBoughtResDTO> resList = advertRoundList.stream().map(advertRound -> {
             AdRoundTypeRoundBoughtResDTO boughtResDTO = new AdRoundTypeRoundBoughtResDTO().setTypeId(advertRound.getTypeId()).setAdvertRoundId(advertRound.getId())
-                    .setAdvertId(advertRound.getAdvertId()).setRoundId(advertRound.getRoundId()).setPosition(advertRound.getPosition())
+                    .setAdvertId(advertRound.getAdvertId()).setRoundId(advertRound.getRoundId()).setPosition(advertRound.getPosition()).setCanPurchased(Boolean.TRUE)
                     .setStartPrice(advertRound.getStartPrice()).setPayPrice(advertRound.getPayPrice()).setStoreId(storeId).setLaunchStatus(advertRound.getLaunchStatus())
                     .setStartTime(advertRound.getStartTime()).setEndTime(advertRound.getEndTime()).setSymbol(advertRound.getSymbol());
             // 如果是播放论，并且是否全部为 BIDDING_SUCCESS，若是 则不可购买当前轮次（就算是当前档口购买的，biddingStatus也为2，也将标识置为false）
