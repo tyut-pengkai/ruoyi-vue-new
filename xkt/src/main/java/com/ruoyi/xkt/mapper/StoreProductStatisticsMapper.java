@@ -17,6 +17,13 @@ import java.util.List;
 @Repository
 public interface StoreProductStatisticsMapper extends BaseMapper<StoreProductStatistics> {
 
+    /**
+     * 查询系统图搜热款
+     *
+     * @param beginDate 查询开始时间
+     * @param endDate   查询结束时间
+     * @return List<ProductImgSearchCountDTO>
+     */
     List<ProductImgSearchCountDTO> listProdImgSearchCount(@Param("beginDate") Date beginDate, @Param("endDate") Date endDate);
 
     /**

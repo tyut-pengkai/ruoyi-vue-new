@@ -16,6 +16,7 @@ import com.ruoyi.quartz.mapper.SysJobMapper;
 import com.ruoyi.quartz.service.ISysJobService;
 import com.ruoyi.quartz.util.CronUtils;
 import com.ruoyi.quartz.util.ScheduleUtils;
+import com.ruoyi.xkt.dto.feedback.FeedbackResDTO;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobDataMap;
@@ -78,7 +79,7 @@ public class SysJobServiceImpl implements ISysJobService {
         }
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
         List<SysJob> list = this.jobMapper.selectList(queryWrapper);
-        return Page.convert(new PageInfo<>(BeanUtil.copyToList(list, JobPageResDTO.class)));
+        return Page.convert(new PageInfo<>(list), BeanUtil.copyToList(list, JobPageResDTO.class));
     }
 
     /**
