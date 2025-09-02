@@ -38,5 +38,7 @@ public class StoreProdViewVO {
     private Long storeId;
     @ApiModelProperty(value = "档口名称")
     private String storeName;
+    @ApiModelProperty(value = "是否关注")
+    private Boolean focus;
 
 }

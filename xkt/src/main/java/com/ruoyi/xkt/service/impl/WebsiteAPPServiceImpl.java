@@ -437,12 +437,17 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         Page<ESProductDTO> page = this.search(searchDTO);
         // ES 中存的 商品信息
         Map<String, ESProductDTO> esProdMap = page.getList().stream().collect(Collectors.toMap(ESProductDTO::getStoreProdId, Function.identity()));
+        Map<String, UserFavorites> collectMap = new HashMap<>();
         Long userId = SecurityUtils.getUserIdSafe();
-        Map<String, UserFavorites> collectMap = ObjectUtils.isEmpty(userId) ? new HashMap<>()
-                : this.userFavMapper.selectList(new LambdaQueryWrapper<UserFavorites>()
-                .eq(UserFavorites::getDelFlag, Constants.UNDELETED).in(UserFavorites::getStoreProdId, prodIdList)
-                .eq(UserFavorites::getUserId, userId)).stream().collect(Collectors
-                .toMap(x -> x.getStoreProdId().toString(), Function.identity()));
+        if (ObjectUtils.isNotEmpty(userId)) {
+            List<UserFavorites> userFavList = this.userFavMapper.selectList(new LambdaQueryWrapper<UserFavorites>()
+                    .eq(UserFavorites::getDelFlag, Constants.UNDELETED).in(UserFavorites::getStoreProdId, prodIdList)
+                    .eq(UserFavorites::getUserId, userId));
+            if (CollectionUtils.isNotEmpty(userFavList)) {
+                collectMap = userFavList.stream().collect(Collectors.toMap(x -> x.getStoreProdId().toString(), Function.identity()));
+            }
+        }
+        Map<String, UserFavorites> finalCollectMap = collectMap;
         return top50ProdList.stream()
                 .filter(x -> ObjectUtils.isNotEmpty(esProdMap.get(x.getStoreProdId().toString())))
                 .map(x -> {
@@ -451,8 +456,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                             // 是否为档口会员
                             .setMemberLevel(ObjectUtils.isNotEmpty(storeMember) ? storeMember.getLevel() : null)
                             // 是否收藏商品
-                            .setCollectProd(ObjectUtils.isNotEmpty(collectMap.get(x.getStoreProdId().toString()))
-                                    ? Boolean.TRUE : Boolean.FALSE);
+                            .setCollectProd(finalCollectMap.containsKey(x.getStoreProdId().toString()));
                 })
                 .collect(Collectors.toList());
     }
@@ -544,12 +548,18 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         searchDTO.setPageSize(100);
         searchDTO.setSort("recommendWeight");
         Page<ESProductDTO> page = this.search(searchDTO);
+
+        Map<String, UserFavorites> collectMap = new HashMap<>();
         Long userId = SecurityUtils.getUserIdSafe();
-        Map<String, UserFavorites> collectMap = ObjectUtils.isEmpty(userId) ? new HashMap<>()
-                : this.userFavMapper.selectList(new LambdaQueryWrapper<UserFavorites>()
-                .eq(UserFavorites::getDelFlag, Constants.UNDELETED).in(UserFavorites::getStoreProdId, prodIdList)
-                .eq(UserFavorites::getUserId, userId)).stream().collect(Collectors
-                .toMap(x -> x.getStoreProdId().toString(), Function.identity()));
+        if (ObjectUtils.isNotEmpty(userId)) {
+            List<UserFavorites> userFavList = this.userFavMapper.selectList(new LambdaQueryWrapper<UserFavorites>()
+                    .eq(UserFavorites::getDelFlag, Constants.UNDELETED).in(UserFavorites::getStoreProdId, prodIdList)
+                    .eq(UserFavorites::getUserId, userId));
+            if (CollectionUtils.isNotEmpty(userFavList)) {
+                collectMap = userFavList.stream().collect(Collectors.toMap(x -> x.getStoreProdId().toString(), Function.identity()));
+            }
+        }
+        Map<String, UserFavorites> finalCollectMap = collectMap;
         // ES 中存的 商品信息
         Map<String, ESProductDTO> esProdMap = page.getList().stream().collect(Collectors.toMap(ESProductDTO::getStoreProdId, Function.identity()));
         return prodIdList.stream().map(prodId -> {
@@ -558,8 +568,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                     // 是否为档口会员
                     .setMemberLevel(redisCache.getCacheObject(CacheConstants.STORE_MEMBER + esProd.getStoreId()))
                     // 是否收藏商品
-                    .setCollectProd(ObjectUtils.isNotEmpty(collectMap.get(prodId))
-                            ? Boolean.TRUE : Boolean.FALSE);
+                    .setCollectProd(finalCollectMap.containsKey(prodId));
         }).collect(Collectors.toList());
     }
 

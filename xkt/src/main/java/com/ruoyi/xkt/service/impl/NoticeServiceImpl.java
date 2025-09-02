@@ -16,7 +16,6 @@ import com.ruoyi.xkt.domain.UserNotice;
 import com.ruoyi.xkt.dto.notice.*;
 import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.mapper.NoticeMapper;
-import com.ruoyi.xkt.mapper.UserFavoritesMapper;
 import com.ruoyi.xkt.mapper.UserNoticeMapper;
 import com.ruoyi.xkt.mapper.UserSubscriptionsMapper;
 import com.ruoyi.xkt.service.INoticeService;
@@ -42,7 +41,6 @@ public class NoticeServiceImpl implements INoticeService {
 
     final NoticeMapper noticeMapper;
     final UserSubscriptionsMapper userSubMapper;
-    final UserFavoritesMapper userFavMapper;
     final UserNoticeMapper userNoticeMapper;
     final SysUserMapper userMapper;
 

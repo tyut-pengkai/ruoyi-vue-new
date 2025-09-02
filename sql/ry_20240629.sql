@@ -4100,7 +4100,8 @@ CREATE TABLE `user_favorites`
     `create_time`   datetime NULL DEFAULT NULL COMMENT '创建时间',
     `update_by`     varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '更新者',
     `update_time`   datetime NULL DEFAULT NULL COMMENT '更新时间',
-    PRIMARY KEY (`id`) USING BTREE
+    PRIMARY KEY (`id`) USING BTREE,
+    INDEX `idx_del_user_prod` (`del_flag`, `user_id`, `store_prod_id`)
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户收藏商品' ROW_FORMAT = DYNAMIC;
 
 

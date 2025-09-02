@@ -139,6 +139,11 @@ public class DailyTaskController extends BaseController {
         return R.ok();
     }
 
+    @PostMapping("/daily-prod-statistics")
+    public R dailyProductStatistics(SysJob sysJob) {
+        task.dailyProductStatistics();
+        return R.ok();
+    }
 
 
 

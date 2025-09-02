@@ -5,6 +5,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.redis.RedisCache;
@@ -13,15 +14,13 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.xkt.domain.PictureSearch;
 import com.ruoyi.xkt.domain.StoreMember;
 import com.ruoyi.xkt.domain.SysFile;
+import com.ruoyi.xkt.domain.UserFavorites;
 import com.ruoyi.xkt.dto.advertRound.picSearch.PicSearchAdvertDTO;
 import com.ruoyi.xkt.dto.picture.ProductImgSearchCountDTO;
 import com.ruoyi.xkt.dto.picture.ProductMatchDTO;
 import com.ruoyi.xkt.dto.picture.SearchRequestDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdViewDTO;
-import com.ruoyi.xkt.mapper.PictureSearchMapper;
-import com.ruoyi.xkt.mapper.StoreProductMapper;
-import com.ruoyi.xkt.mapper.StoreProductStatisticsMapper;
-import com.ruoyi.xkt.mapper.SysFileMapper;
+import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IPictureSearchService;
 import com.ruoyi.xkt.service.IPictureService;
 import com.ruoyi.xkt.service.IWebsitePCService;
@@ -45,6 +44,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class PictureSearchServiceImpl implements IPictureSearchService {
+
     @Autowired
     private PictureSearchMapper pictureSearchMapper;
     @Autowired
@@ -59,6 +59,8 @@ public class PictureSearchServiceImpl implements IPictureSearchService {
     private StoreProductMapper storeProdMapper;
     @Autowired
     private StoreProductStatisticsMapper storeProdStatisticsMapper;
+    @Autowired
+    private UserFavoritesMapper userFavMapper;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -110,16 +112,28 @@ public class PictureSearchServiceImpl implements IPictureSearchService {
     @Transactional(readOnly = true)
     public List<StoreProdViewDTO> listImgSearchTopProduct() {
         List<StoreProdViewDTO> picSearchHotList = redisCache.getCacheObject(CacheConstants.IMG_SEARCH_PRODUCT_HOT);
-        if (CollectionUtils.isNotEmpty(picSearchHotList)) {
-            return picSearchHotList;
+        if (CollectionUtils.isEmpty(picSearchHotList)) {
+            // 重新缓存数据到redis
+            picSearchHotList = this.cacheImgSearchTopProduct();
         }
-        // 重新缓存数据到redis
-        picSearchHotList = this.cacheImgSearchTopProduct();
         picSearchHotList.forEach(x -> {
             // 查询档口会员等级
             StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId());
             x.setMemberLevel(ObjectUtils.isNotEmpty(member) ? member.getLevel() : null);
         });
+        // 设置用户是否关注
+        Long userId = SecurityUtils.getUserIdSafe();
+        if (ObjectUtils.isNotEmpty(userId)) {
+            // 获取用户关注了哪些商品
+            List<UserFavorites> userFavList = this.userFavMapper.selectList(new LambdaQueryWrapper<UserFavorites>()
+                    .eq(UserFavorites::getDelFlag, Constants.UNDELETED).eq(UserFavorites::getUserId, userId)
+                    .in(UserFavorites::getStoreProdId, picSearchHotList.stream()
+                            .map(StoreProdViewDTO::getStoreProdId).collect(Collectors.toList())));
+            Map<Long, Long> userFavMap = CollectionUtils.isEmpty(userFavList) ? new HashMap<>()
+                    : userFavList.stream().collect(Collectors.toMap(UserFavorites::getStoreProdId, UserFavorites::getStoreProdId));
+            // 设置是否已关注
+            picSearchHotList.forEach(x -> x.setFocus(userFavMap.containsKey(x.getStoreProdId())));
+        }
         return picSearchHotList;
     }
 
