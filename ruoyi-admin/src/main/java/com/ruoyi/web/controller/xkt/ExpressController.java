@@ -61,7 +61,11 @@ public class ExpressController extends XktBaseController {
     @PostMapping("parseNamePhoneAddress")
     public R<ExpressStructAddressVO> parseNamePhoneAddress(@Valid @RequestBody ExpressAddressParseReqVO vo) {
         ExpressStructAddressDTO dto = expressService.parseNamePhoneAddress(vo.getAddress());
-        return success(BeanUtil.toBean(dto, ExpressStructAddressVO.class));
+        ExpressStructAddressVO resultVO = BeanUtil.toBean(dto, ExpressStructAddressVO.class);
+        if (resultVO != null) {
+            resultVO.setReceiveName(resultVO.getContactName());
+        }
+        return success(resultVO);
     }
 
     @ApiOperation("查询物流轨迹")

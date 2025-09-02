@@ -16,6 +16,9 @@ public class ExpressStructAddressVO {
      */
     @ApiModelProperty(value = "名称")
     private String contactName;
+
+    @ApiModelProperty(value = "同名称（兼容app）")
+    private String receiveName;
     /**
      * 电话
      */
