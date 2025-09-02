@@ -3,6 +3,8 @@ package com.ruoyi.common.core.domain.entity;
 import java.util.Date;
 import java.util.List;
 import javax.validation.constraints.*;
+
+import com.ruoyi.common.constant.CacheConstants;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
@@ -25,8 +27,12 @@ public class SysUser extends BaseEntity
     @Excel(name = "用户序号", type = Type.EXPORT, cellType = ColumnType.NUMERIC, prompt = "用户编号")
     private Long userId;
 
-    /** 部门ID */
-    @Excel(name = "部门编号", type = Type.IMPORT)
+    /**
+     * 部门ID
+     *  用于关联部门信息，数据来源：{@link CacheConstants#DEPT_LIST}
+     *  导入时会根据部门名称自动转换为对应的部门ID
+     */
+    @Excel(name = "部门名称", type = Type.IMPORT, dictType = CacheConstants.DEPT_LIST, comboReadDict = true, prompt = "部门名称")
     private Long deptId;
 
     /** 用户账号 */
