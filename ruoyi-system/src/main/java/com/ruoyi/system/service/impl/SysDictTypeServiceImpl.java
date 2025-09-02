@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
+
+import com.ruoyi.common.constant.CacheConstants;
+import com.ruoyi.common.core.domain.entity.SysDept;
+import com.ruoyi.system.mapper.SysDeptMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,13 +36,34 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService
     @Autowired
     private SysDictDataMapper dictDataMapper;
 
+    @Autowired
+    private SysDeptMapper deptMapper;
+
     /**
      * 项目启动时，初始化字典到缓存
      */
     @PostConstruct
-    public void init()
-    {
+    public void init() {
         loadingDictCache();
+        // 加载部门数据到字典缓存
+        loadingDeptCache();
+    }
+
+    /**
+     * 加载部门列表数据到字典缓存
+     */
+    private void loadingDeptCache() {
+        SysDept dept = new SysDept();
+        dept.setStatus("0");
+        List<SysDept> sysDepts = deptMapper.selectDeptList(dept);
+        List<SysDictData> dictData = sysDepts.stream().map(sysDept -> {
+            SysDictData sysDictData = new SysDictData();
+            sysDictData.setDictValue(sysDept.getDeptId().toString());
+            sysDictData.setDictLabel(sysDept.getDeptName());
+            sysDictData.setDictType(CacheConstants.DEPT_LIST);
+            return sysDictData;
+        }).collect(Collectors.toList());
+        DictUtils.setDictCache(CacheConstants.DEPT_LIST, dictData);
     }
 
     /**
