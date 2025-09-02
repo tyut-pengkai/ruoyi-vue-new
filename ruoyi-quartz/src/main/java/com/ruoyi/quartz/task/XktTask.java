@@ -1097,7 +1097,8 @@ public class XktTask {
         Map<String, Integer> iscMap = redisCache.getCacheMap(CacheConstants.PRODUCT_STATISTICS_IMG_SEARCH_COUNT);
         Map<String, Integer> vcMap = redisCache.getCacheMap(CacheConstants.PRODUCT_STATISTICS_VIEW_COUNT);
         Map<String, Integer> dcMap = redisCache.getCacheMap(CacheConstants.PRODUCT_STATISTICS_DOWNLOAD_COUNT);
-        Set<String> storeProdIds = MapUtil.emptyIfNull(iscMap).keySet();
+        Set<String> storeProdIds = new HashSet<>();
+        storeProdIds.addAll(MapUtil.emptyIfNull(iscMap).keySet());
         storeProdIds.addAll(MapUtil.emptyIfNull(vcMap).keySet());
         storeProdIds.addAll(MapUtil.emptyIfNull(dcMap).keySet());
         Date now = new Date();
