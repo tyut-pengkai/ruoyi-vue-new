@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -24,6 +25,7 @@ public class IndexSearchVO extends BasePageVO {
     private List<String> storeIdList;
     @ApiModelProperty(value = "搜索内容")
     private String search;
+    @NotNull(message = "商品状态列表不能为空")
     @ApiModelProperty(value = "商品状态列表")
     private List<String> prodStatusList;
     @ApiModelProperty(value = "一级类目ID列表")
@@ -38,6 +40,7 @@ public class IndexSearchVO extends BasePageVO {
     private List<String> styleList;
     @ApiModelProperty(value = "季节列表")
     private List<String> seasonList;
+    @NotBlank(message = "排序字段不能为空")
     @ApiModelProperty(value = "排序")
     private String sort;
     @NotNull(message = "排序方式不能为空")
