@@ -3172,6 +3172,7 @@ CREATE TABLE `store`
     `storage_usage`      decimal(10, 3) NULL DEFAULT NULL COMMENT '已使用文件大小',
     `template_num`       int UNSIGNED NULL DEFAULT NULL COMMENT '档口模板ID',
     `store_status`       tinyint UNSIGNED NULL DEFAULT NULL COMMENT '档口状态',
+    `stock_sys`          int UNSIGNED NULL DEFAULT NULL COMMENT '库存系统',
     `reject_reason`      varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '拒绝理由',
     `version`            bigint UNSIGNED NOT NULL COMMENT '版本号',
     `del_flag`           char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '删除标志（0代表存在 2代表删除）',
