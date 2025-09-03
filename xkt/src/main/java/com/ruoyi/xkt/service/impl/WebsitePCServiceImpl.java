@@ -95,25 +95,33 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
     @Transactional(readOnly = true)
     public Page<PCIndexRecommendDTO> pcIndexRecommendPage(IndexSearchDTO searchDTO) throws IOException {
         Page<ESProductDTO> page = this.search(searchDTO);
+        if (CollectionUtils.isEmpty(page.getList())) {
+            return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), Collections.emptyList());
+        }
         // 筛选出真实的数据
         List<PCIndexRecommendDTO> realDataList = page.getList().stream()
-                .map(esProduct -> BeanUtil.toBean(esProduct, PCIndexRecommendDTO.class).setAdvert(Boolean.FALSE)).collect(Collectors.toList());
+                .map(esProduct -> BeanUtil.toBean(esProduct, PCIndexRecommendDTO.class).setAdvert(Boolean.FALSE).setMemberLevel(null))
+                .collect(Collectors.toList());
         // 绑定档口会员等级
         realDataList.forEach(x -> {
             StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId());
             x.setMemberLevel(ObjectUtils.isNotEmpty(member) ? member.getLevel() : null);
         });
+        // 从redis中获取数据
+        List<PCIndexRecommendDTO> redisList = this.redisCache.getCacheObject(CacheConstants.PC_INDEX_RECOMMEND);
+        // 返回的真实数据列表 过滤掉广告商品
+        if (CollectionUtils.isNotEmpty(redisList)) {
+            final List<String> advertProdIdList = CollectionUtils.isEmpty(redisList) ? Collections.emptyList()
+                    : redisList.stream().map(PCIndexRecommendDTO::getStoreProdId).collect(Collectors.toList());
+            realDataList = realDataList.stream()
+                    .filter(x -> CollectionUtils.isEmpty(advertProdIdList) || !advertProdIdList.contains(x.getStoreProdId()))
+                    .collect(Collectors.toList());
+        }
         // APP 只有第一页 有数据 其它页暂时没有广告
         if (searchDTO.getPageNum() > 1) {
             return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), realDataList);
         }
-        // 从redis中获取数据
-        List<PCIndexRecommendDTO> redisList = this.redisCache.getCacheObject(CacheConstants.PC_INDEX_RECOMMEND);
         if (CollectionUtils.isNotEmpty(redisList)) {
-            redisList = redisList.stream()
-                    .filter(x -> CollectionUtils.isEmpty(searchDTO.getParCateIdList()) || searchDTO.getParCateIdList().contains(x.getParCateId().toString()))
-                    .filter(x -> CollectionUtils.isEmpty(searchDTO.getProdCateIdList()) || searchDTO.getProdCateIdList().contains(x.getProdCateId().toString()))
-                    .collect(Collectors.toList());
             // 推广数据排在最前面，其次才是真实的数据
             CollectionUtils.addAll(redisList, realDataList);
             // 添加广告的数据（PC的规则是将所有的广告数据全部放到最前面展示，不用给广告打标）
@@ -155,11 +163,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                 Collections.shuffle(indexRecommendList);
                 // 放到redis中 有效期1天
                 this.redisCache.setCacheObject(CacheConstants.PC_INDEX_RECOMMEND, indexRecommendList, 1, TimeUnit.DAYS);
-                List<PCIndexRecommendDTO> tempList = indexRecommendList.stream()
-                        .filter(x -> CollectionUtils.isEmpty(searchDTO.getParCateIdList()) || searchDTO.getParCateIdList().contains(x.getParCateId().toString()))
-                        .filter(x -> CollectionUtils.isEmpty(searchDTO.getProdCateIdList()) || searchDTO.getProdCateIdList().contains(x.getProdCateId().toString()))
-                        .collect(Collectors.toList());
-                CollectionUtils.addAll(tempList, realDataList);
+                CollectionUtils.addAll(indexRecommendList, realDataList);
                 // 添加了广告的数据
                 return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), indexRecommendList);
             }
@@ -176,6 +180,9 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
     @Override
     public Page<PCNewRecommendDTO> pcNewProdRecommendPage(IndexSearchDTO searchDTO) throws IOException {
         Page<ESProductDTO> page = this.search(searchDTO);
+        if (CollectionUtils.isEmpty(page.getList())) {
+            return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), Collections.emptyList());
+        }
         // 筛选出真实的数据
         List<PCNewRecommendDTO> realDataList = page.getList().stream()
                 .map(esProduct -> BeanUtil.toBean(esProduct, PCNewRecommendDTO.class).setAdvert(Boolean.FALSE)).collect(Collectors.toList());
@@ -184,17 +191,21 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
             StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId());
             x.setMemberLevel(ObjectUtils.isNotEmpty(member) ? member.getLevel() : null);
         });
+        // 从redis中获取数据
+        List<PCNewRecommendDTO> redisList = this.redisCache.getCacheObject(CacheConstants.PC_NEW_RECOMMEND);
+        // 返回的真实数据列表 过滤掉广告商品
+        if (CollectionUtils.isNotEmpty(redisList)) {
+            final List<String> advertProdIdList = CollectionUtils.isEmpty(redisList) ? Collections.emptyList()
+                    : redisList.stream().map(PCNewRecommendDTO::getStoreProdId).collect(Collectors.toList());
+            realDataList = realDataList.stream()
+                    .filter(x -> CollectionUtils.isEmpty(advertProdIdList) || !advertProdIdList.contains(x.getStoreProdId()))
+                    .collect(Collectors.toList());
+        }
         // APP 只有第一页 有数据 其它页暂时没有广告
         if (searchDTO.getPageNum() > 1) {
             return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), realDataList);
         }
-        // 从redis中获取数据
-        List<PCNewRecommendDTO> redisList = this.redisCache.getCacheObject(CacheConstants.PC_NEW_RECOMMEND);
         if (CollectionUtils.isNotEmpty(redisList)) {
-            redisList = redisList.stream()
-                    .filter(x -> CollectionUtils.isEmpty(searchDTO.getParCateIdList()) || searchDTO.getParCateIdList().contains(x.getParCateId().toString()))
-                    .filter(x -> CollectionUtils.isEmpty(searchDTO.getProdCateIdList()) || searchDTO.getProdCateIdList().contains(x.getProdCateId().toString()))
-                    .collect(Collectors.toList());
             // 推广数据排在最前面，其次才是真实的数据
             CollectionUtils.addAll(redisList, realDataList);
             // 添加广告的数据（PC的规则是将所有的广告数据全部放到最前面展示，不用给广告打标）
@@ -236,11 +247,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                 Collections.shuffle(newRecommendList);
                 // 放到redis中 有效期1天
                 this.redisCache.setCacheObject(CacheConstants.PC_NEW_RECOMMEND, newRecommendList, 1, TimeUnit.DAYS);
-                List<PCNewRecommendDTO> tempList = newRecommendList.stream()
-                        .filter(x -> CollectionUtils.isEmpty(searchDTO.getParCateIdList()) || searchDTO.getParCateIdList().contains(x.getParCateId().toString()))
-                        .filter(x -> CollectionUtils.isEmpty(searchDTO.getProdCateIdList()) || searchDTO.getProdCateIdList().contains(x.getProdCateId().toString()))
-                        .collect(Collectors.toList());
-                CollectionUtils.addAll(tempList, realDataList);
+                CollectionUtils.addAll(newRecommendList, realDataList);
                 // 添加了广告的数据
                 return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), newRecommendList);
             }
@@ -265,6 +272,9 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         }
         // 获取用户搜索结果列表
         Page<ESProductDTO> page = this.search(searchDTO);
+        if (CollectionUtils.isEmpty(page.getList())) {
+            return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), Collections.emptyList());
+        }
         // 筛选出真实的数据
         List<PCSearchDTO> realDataList = page.getList().stream()
                 .map(esProduct -> BeanUtil.toBean(esProduct, PCSearchDTO.class).setAdvert(Boolean.FALSE)).collect(Collectors.toList());

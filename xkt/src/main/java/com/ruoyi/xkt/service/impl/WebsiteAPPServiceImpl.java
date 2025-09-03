@@ -95,6 +95,9 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
     @Transactional(readOnly = true)
     public Page<APPIndexHotSaleDTO> appIndexHotSalePage(IndexSearchDTO searchDTO) throws IOException {
         Page<ESProductDTO> page = this.search(searchDTO);
+        if (CollectionUtils.isEmpty(page.getList())) {
+            return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), Collections.emptyList());
+        }
         // 筛选出真实的数据
         List<APPIndexHotSaleDTO> realDataList = page.getList().stream()
                 .map(esProduct -> BeanUtil.toBean(esProduct, APPIndexHotSaleDTO.class).setAdvert(Boolean.FALSE)).collect(Collectors.toList());
@@ -103,12 +106,29 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
             StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId());
             x.setMemberLevel(ObjectUtils.isNotEmpty(member) ? member.getLevel() : null);
         });
+        // app 需要过滤 右侧固定位置的广告 及 首页商品列表的广告
+        List<APPIndexHotSaleRightFixDTO> rightFixList = redisCache.getCacheObject(CacheConstants.APP_ADVERT + CacheConstants.APP_INDEX_HOT_SALE_RIGHT_FIX);
+        if (CollectionUtils.isNotEmpty(rightFixList)) {
+            final List<String> advertProdIdList = CollectionUtils.isEmpty(rightFixList) ? Collections.emptyList()
+                    : rightFixList.stream().map(x -> x.getStoreProdId().toString()).collect(Collectors.toList());
+            realDataList = realDataList.stream()
+                    .filter(x -> CollectionUtils.isEmpty(advertProdIdList) || !advertProdIdList.contains(x.getStoreProdId()))
+                    .collect(Collectors.toList());
+        }
+        // 从redis中获取 app 首页精选热卖广告
+        List<APPIndexHotSaleDTO> redisList = this.redisCache.getCacheObject(CacheConstants.APP_INDEX_HOT_SALE_ADVERT);
+        // 返回的真实数据列表 过滤掉广告商品
+        if (CollectionUtils.isNotEmpty(redisList)) {
+            final List<String> advertProdIdList = CollectionUtils.isEmpty(redisList) ? Collections.emptyList()
+                    : redisList.stream().map(APPIndexHotSaleDTO::getStoreProdId).collect(Collectors.toList());
+            realDataList = realDataList.stream()
+                    .filter(x -> CollectionUtils.isEmpty(advertProdIdList) || !advertProdIdList.contains(x.getStoreProdId()))
+                    .collect(Collectors.toList());
+        }
         // APP 只有第一页 有数据 其它页暂时没有广告
         if (searchDTO.getPageNum() > 1) {
             return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), realDataList);
         }
-        // 从redis中获取广告
-        List<APPIndexHotSaleDTO> redisList = this.redisCache.getCacheObject(CacheConstants.APP_INDEX_HOT_SALE_ADVERT);
         if (CollectionUtils.isNotEmpty(redisList)) {
             // 添加广告的数据
             return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), insertAdvertsIntoList(realDataList, redisList, Constants.APP_INSERT_POSITIONS));
@@ -156,6 +176,9 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
     @Transactional(readOnly = true)
     public Page<APPIndexPopularSaleDTO> appIndexPopularSalePage(IndexSearchDTO searchDTO) throws IOException {
         Page<ESProductDTO> page = this.search(searchDTO);
+        if (CollectionUtils.isEmpty(page.getList())) {
+            return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), Collections.emptyList());
+        }
         // 筛选出真实的数据
         List<APPIndexPopularSaleDTO> realDataList = page.getList().stream()
                 .map(esProduct -> BeanUtil.toBean(esProduct, APPIndexPopularSaleDTO.class).setAdvert(Boolean.FALSE)).collect(Collectors.toList());
@@ -164,12 +187,20 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
             StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId());
             x.setMemberLevel(ObjectUtils.isNotEmpty(member) ? member.getLevel() : null);
         });
+        // 从redis中获取数据
+        List<APPIndexPopularSaleDTO> redisList = this.redisCache.getCacheObject(CacheConstants.APP_INDEX_POPULAR_SALE_ADVERT);
+        // 返回的真实数据列表 过滤掉广告商品
+        if (CollectionUtils.isNotEmpty(redisList)) {
+            final List<String> advertProdIdList = CollectionUtils.isEmpty(redisList) ? Collections.emptyList()
+                    : redisList.stream().map(APPIndexPopularSaleDTO::getStoreProdId).collect(Collectors.toList());
+            realDataList = realDataList.stream()
+                    .filter(x -> CollectionUtils.isEmpty(advertProdIdList) || !advertProdIdList.contains(x.getStoreProdId()))
+                    .collect(Collectors.toList());
+        }
         // APP 只有第一页 有数据 其它页暂时没有广告
         if (searchDTO.getPageNum() > 1) {
             return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), realDataList);
         }
-        // 从redis中获取数据
-        List<APPIndexPopularSaleDTO> redisList = this.redisCache.getCacheObject(CacheConstants.APP_INDEX_POPULAR_SALE_ADVERT);
         if (CollectionUtils.isNotEmpty(redisList)) {
             // 添加广告的数据
             return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), insertAdvertsIntoList(realDataList, redisList, Constants.APP_INSERT_POSITIONS));
@@ -217,6 +248,9 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
     @Transactional(readOnly = true)
     public Page<APPIndexNewProdDTO> appIndexNewProdPage(IndexSearchDTO searchDTO) throws IOException {
         Page<ESProductDTO> page = this.search(searchDTO);
+        if (CollectionUtils.isEmpty(page.getList())) {
+            return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), Collections.emptyList());
+        }
         // 筛选出真实的数据
         List<APPIndexNewProdDTO> realDataList = page.getList().stream()
                 .map(esProduct -> BeanUtil.toBean(esProduct, APPIndexNewProdDTO.class).setAdvert(Boolean.FALSE)).collect(Collectors.toList());
@@ -225,12 +259,20 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
             StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId());
             x.setMemberLevel(ObjectUtils.isNotEmpty(member) ? member.getLevel() : null);
         });
+        // 从redis中获取数据
+        List<APPIndexNewProdDTO> redisList = this.redisCache.getCacheObject(CacheConstants.APP_INDEX_NEW_PROD);
+        // 返回的真实数据列表 过滤掉广告商品
+        if (CollectionUtils.isNotEmpty(redisList)) {
+            final List<String> advertProdIdList = CollectionUtils.isEmpty(redisList) ? Collections.emptyList()
+                    : redisList.stream().map(APPIndexNewProdDTO::getStoreProdId).collect(Collectors.toList());
+            realDataList = realDataList.stream()
+                    .filter(x -> CollectionUtils.isEmpty(advertProdIdList) || !advertProdIdList.contains(x.getStoreProdId()))
+                    .collect(Collectors.toList());
+        }
         // APP 只有第一页 有数据 其它页暂时没有广告
         if (searchDTO.getPageNum() > 1) {
             return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), realDataList);
         }
-        // 从redis中获取数据
-        List<APPIndexNewProdDTO> redisList = this.redisCache.getCacheObject(CacheConstants.APP_INDEX_NEW_PROD);
         if (CollectionUtils.isNotEmpty(redisList)) {
             // 添加广告的数据
             return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), insertAdvertsIntoList(realDataList, redisList, Constants.APP_INSERT_POSITIONS));
@@ -285,6 +327,9 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         }
         // 用户搜索结果
         Page<ESProductDTO> page = this.search(searchDTO);
+        if (CollectionUtils.isEmpty(page.getList())) {
+            return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), Collections.emptyList());
+        }
         // 筛选出真实的数据
         List<APPSearchDTO> realDataList = page.getList().stream()
                 .map(esProduct -> BeanUtil.toBean(esProduct, APPSearchDTO.class).setAdvert(Boolean.FALSE)).collect(Collectors.toList());
@@ -293,12 +338,20 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
             StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId());
             x.setMemberLevel(ObjectUtils.isNotEmpty(member) ? member.getLevel() : null);
         });
+        // 从redis中获取数据
+        List<APPSearchDTO> redisList = this.redisCache.getCacheObject(CacheConstants.APP_SEARCH);
+        // 返回的真实数据列表 过滤掉广告商品
+        if (CollectionUtils.isNotEmpty(redisList)) {
+            final List<String> advertProdIdList = CollectionUtils.isEmpty(redisList) ? Collections.emptyList()
+                    : redisList.stream().map(APPSearchDTO::getStoreProdId).collect(Collectors.toList());
+            realDataList = realDataList.stream()
+                    .filter(x -> CollectionUtils.isEmpty(advertProdIdList) || !advertProdIdList.contains(x.getStoreProdId()))
+                    .collect(Collectors.toList());
+        }
         // APP 只有第一页 有数据 其它页暂时没有广告
         if (searchDTO.getPageNum() > 1) {
             return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), realDataList);
         }
-        // 从redis中获取数据
-        List<APPSearchDTO> redisList = this.redisCache.getCacheObject(CacheConstants.APP_SEARCH);
         if (CollectionUtils.isNotEmpty(redisList)) {
             // 添加广告的数据
             return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), insertAdvertsIntoList(realDataList, redisList, Constants.APP_INSERT_POSITIONS));
