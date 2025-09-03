@@ -140,4 +140,9 @@ public class Store extends XktBaseEntity {
      */
     private Integer storeWeight;
 
+    /**
+     * 库存系统 1步橘 2天友 3发货宝
+     */
+    private Integer stockSys;
+
 }

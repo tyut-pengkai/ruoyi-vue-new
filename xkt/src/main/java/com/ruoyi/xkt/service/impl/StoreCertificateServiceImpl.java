@@ -19,6 +19,7 @@ import com.ruoyi.xkt.dto.storeCertificate.StoreCertDTO;
 import com.ruoyi.xkt.dto.storeCertificate.StoreCertResDTO;
 import com.ruoyi.xkt.dto.storeCertificate.StoreCertStepResDTO;
 import com.ruoyi.xkt.enums.FileType;
+import com.ruoyi.xkt.enums.StockSysType;
 import com.ruoyi.xkt.enums.StoreStatus;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IAssetService;
@@ -224,6 +225,8 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
         store.setTrialEndTime(oneYearAfter);
         // 设置档口默认权重 0
         store.setStoreWeight(Constants.STORE_WEIGHT_DEFAULT_ZERO);
+        // 设置默认的库存系统为 步橘 ，后续可在条码迁移之处修改
+        store.setStockSys(StockSysType.BU_JU.getValue());
         // 已使用的档口空间
         BigDecimal storageUsage = certDTO.getStoreCert().getFileList().stream().map(x -> ObjectUtils.defaultIfNull(x.getFileSize(), BigDecimal.ZERO))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);

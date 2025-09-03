@@ -18,7 +18,7 @@ import java.util.List;
 public class StorePrintSnDTO {
 
     @ApiModelProperty(value = "档口ID")
-    private String storeId;
+    private Long storeId;
     @ApiModelProperty(value = "打印颜色尺码列表")
     private List<SPColorSizeVO> colorSizeList;
 

@@ -13,7 +13,7 @@ import lombok.Data;
 public class StoreSaleSnDTO {
 
     @ApiModelProperty(value = "档口ID")
-    private String storeId;
+    private Long storeId;
     @ApiModelProperty(value = "档口客户ID")
     private Long storeCusId;
     @ApiModelProperty(value = "是否退货")

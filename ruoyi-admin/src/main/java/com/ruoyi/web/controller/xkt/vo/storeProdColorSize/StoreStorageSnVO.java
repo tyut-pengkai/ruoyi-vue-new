@@ -19,7 +19,7 @@ public class StoreStorageSnVO {
 
     @NotNull(message = "档口ID不能为空!")
     @ApiModelProperty(value = "档口ID", required = true)
-    private String storeId;
+    private Long storeId;
     @NotNull(message = "条码列表不能为空!")
     @ApiModelProperty(value = "条码列表", required = true)
     private List<String> snList;

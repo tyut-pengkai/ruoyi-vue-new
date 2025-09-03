@@ -238,6 +238,21 @@ public class Constants
     // %04d
     public static final String VOUCHER_SEQ_FORMAT = "%04d";
 
+    // 步橘网条码长度
+    public static final Integer BU_JU_SN_LENGTH = 21;
+    // 天友条码长度
+    public static final Integer TIAN_YOU_SN_LENGTH = 13;
+    // 发货宝条码长度
+    public static final Integer FA_HUO_BAO_SN_LENGTH = 17;
+    // 步橘网条码前缀长度
+    public static final Integer BU_JU_SN_PREFIX_LENGTH = 13;
+    // 天友条码前缀长度
+    public static final Integer TIAN_YOU_SN_PREFIX_LENGTH = 6;
+    // 发货宝条码前缀长度
+    public static final Integer FA_HUO_BAO_SN_PREFIX_LENGTH = 10;
+
+
+
     /**
      * 上市季节年份
      */

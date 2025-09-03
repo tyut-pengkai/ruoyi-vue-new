@@ -2,13 +2,18 @@ package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
+import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.xkt.domain.Store;
 import com.ruoyi.xkt.domain.StoreProductColorSize;
 import com.ruoyi.xkt.domain.StoreProductStock;
 import com.ruoyi.xkt.dto.storeProdColorSize.*;
+import com.ruoyi.xkt.enums.StockSysType;
+import com.ruoyi.xkt.mapper.StoreMapper;
 import com.ruoyi.xkt.mapper.StoreProductColorSizeMapper;
 import com.ruoyi.xkt.mapper.StoreProductStockMapper;
 import com.ruoyi.xkt.mapper.StoreSaleDetailMapper;
@@ -38,13 +43,36 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
     final StoreProductColorSizeMapper prodColorSizeMapper;
     final StoreSaleDetailMapper saleDetailMapper;
     final StoreProductStockMapper prodStockMapper;
+    final StoreMapper storeMapper;
+    final RedisCache redisCache;
 
     // 纯数字
     private static final Pattern POSITIVE_PATTERN = Pattern.compile("^\\d+$");
-    // 步橘系统条码截止索引
+/*    // 步橘系统条码截止索引
     private static final Integer buJuEndIndex = 13;
     // 其它系统的条码截止索引
-    private static final Integer otherSysEndIndex = 10;
+    private static final Integer otherSysEndIndex = 10;*/
+
+    // 当前库存系统的条码前缀长度
+    private static final Map<Integer, Integer> STOCK_PREFIX_LENGTH_MAP = new HashMap<>();
+    // 当前库存系统的条码长度
+    private static final Map<Integer, Set<Integer>> STOCK_FIXED_LENGTHS_MAP = new HashMap<>();
+
+    static {
+        STOCK_PREFIX_LENGTH_MAP.put(StockSysType.BU_JU.getValue(), Constants.BU_JU_SN_PREFIX_LENGTH);
+        STOCK_PREFIX_LENGTH_MAP.put(StockSysType.TIAN_YOU.getValue(), Constants.TIAN_YOU_SN_PREFIX_LENGTH);
+        STOCK_PREFIX_LENGTH_MAP.put(StockSysType.FA_HUO_BAO.getValue(), Constants.FA_HUO_BAO_SN_PREFIX_LENGTH);
+    }
+
+    static {
+        STOCK_FIXED_LENGTHS_MAP.put(StockSysType.BU_JU.getValue(), Collections
+                .unmodifiableSet(new HashSet<>(Collections.singletonList(Constants.BU_JU_SN_LENGTH))));
+        STOCK_FIXED_LENGTHS_MAP.put(StockSysType.TIAN_YOU.getValue(), Collections
+                .unmodifiableSet(new HashSet<>(Arrays.asList(Constants.TIAN_YOU_SN_LENGTH, Constants.BU_JU_SN_LENGTH))));
+        STOCK_FIXED_LENGTHS_MAP.put(StockSysType.FA_HUO_BAO.getValue(), Collections
+                .unmodifiableSet(new HashSet<>(Arrays.asList(Constants.FA_HUO_BAO_SN_LENGTH, Constants.BU_JU_SN_LENGTH))));
+    }
+
 
     /**
      * 查询条码 对应的商品信息
@@ -56,11 +84,13 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
     @Transactional(readOnly = true)
     public StoreSaleSnResDTO storeSaleSn(StoreSaleSnDTO snDTO) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(Long.valueOf(snDTO.getStoreId()))) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(snDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
-        // 非纯数字，则直接返回
-        if (!POSITIVE_PATTERN.matcher(snDTO.getSn()).matches()) {
+        final Integer stockSys = this.stockSys(snDTO.getStoreId());
+        // 非纯数字 且 条码长度不合法
+        if (!POSITIVE_PATTERN.matcher(snDTO.getSn()).matches()
+                && !STOCK_FIXED_LENGTHS_MAP.get(stockSys).contains(snDTO.getSn().length())) {
             return new StoreSaleSnResDTO().setSuccess(Boolean.FALSE).setSn(snDTO.getSn());
         }
         // 销售出库[退货]
@@ -71,13 +101,14 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
                 return barcodeResDTO.setSuccess(Boolean.TRUE);
             } else {
                 // 若是没查询到数据，则走正常条码查询流程
-                return this.getSnInfo(snDTO);
+                return this.getSnInfo(snDTO, stockSys);
             }
             // 销售出库[销售] 正常条码查询流程
         } else {
-            return this.getSnInfo(snDTO);
+            return this.getSnInfo(snDTO, stockSys);
         }
     }
+
 
     /**
      * 商品入库查询库存
@@ -89,26 +120,36 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
     @Transactional(readOnly = true)
     public StoreStorageSnResDTO storageSnList(StoreProdSnDTO snDTO) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(Long.valueOf(snDTO.getStoreId()))) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(snDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
-        List<String> snList = snDTO.getSnList().stream().filter(s -> POSITIVE_PATTERN.matcher(s).matches()).collect(Collectors.toList());
-        if (CollectionUtils.isEmpty(snList)) {
+        // 校验条码长度是否合法
+        final Integer stockSys = this.stockSys(snDTO.getStoreId());
+        // 符合规则的条码列表
+        List<String> validSnList = snDTO.getSnList().stream()
+                // 为纯数字 且 条码长度合法
+                .filter(s -> POSITIVE_PATTERN.matcher(s).matches() && STOCK_FIXED_LENGTHS_MAP.get(stockSys).contains(s.length()))
+                .collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(validSnList)) {
             // 全部都是错误条码
             return new StoreStorageSnResDTO().setFailList(snDTO.getSnList());
         }
-        // 非纯数字的条码
-        List<String> failList = snDTO.getSnList().stream().filter(s -> !POSITIVE_PATTERN.matcher(s).matches()).collect(Collectors.toList());
+        // 非法的条码
+        List<String> failList = snDTO.getSnList().stream().filter(s -> !validSnList.contains(s)).collect(Collectors.toList());
         // 步橘网条码
-        Set<String> buJuPrefixSnSet = snList.stream().filter(x -> x.startsWith(snDTO.getStoreId())).map(x -> x.substring(0, buJuEndIndex)).collect(Collectors.toSet());
+        Set<String> buJuPrefixSnSet = validSnList.stream().filter(x -> x.startsWith(snDTO.getStoreId().toString()))
+                .map(x -> x.substring(0, STOCK_PREFIX_LENGTH_MAP.get(StockSysType.BU_JU.getValue()))).collect(Collectors.toSet());
         // 其它系统条码
-        Set<String> otherPrefixSnSet = snList.stream().filter(x -> !x.startsWith(snDTO.getStoreId())).map(x -> x.substring(0, otherSysEndIndex)).collect(Collectors.toSet());
+        Set<String> otherPrefixSnSet = Objects.equals(StockSysType.BU_JU.getValue(), stockSys) ? new HashSet<>()
+                : validSnList.stream().filter(x -> !x.startsWith(snDTO.getStoreId().toString()))
+                .map(x -> x.substring(0, STOCK_PREFIX_LENGTH_MAP.get(stockSys))).collect(Collectors.toSet());
         List<StoreStorageSnDTO.SSSDetailDTO> existList = new ArrayList<>();
         // 根据条码查询数据库数据
         if (CollectionUtils.isNotEmpty(buJuPrefixSnSet)) {
             List<StoreStorageSnDTO.SSSDetailDTO> buJuExistList = this.prodColorSizeMapper.selectStorageBuJuSnList(snDTO.getStoreId(), new ArrayList<>(buJuPrefixSnSet));
             CollectionUtils.addAll(existList, buJuExistList);
-        } else if (CollectionUtils.isNotEmpty(otherPrefixSnSet)) {
+        }
+        if (CollectionUtils.isNotEmpty(otherPrefixSnSet)) {
             List<StoreStorageSnDTO.SSSDetailDTO> otherExistList = this.prodColorSizeMapper.selectStorageOtherSnList(snDTO.getStoreId(), new ArrayList<>(otherPrefixSnSet));
             CollectionUtils.addAll(existList, otherExistList);
         }
@@ -121,8 +162,10 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
         Set<StoreStorageSnResDTO.SSSDetailDTO> successSet = new HashSet<>();
         // 临时用来计数的list
         List<StoreStorageSnDTO.SSSDetailDTO> tempList = new ArrayList<>();
-        snList.forEach(sn -> {
-            String prefixPart = sn.startsWith(snDTO.getStoreId()) ? sn.substring(0, buJuEndIndex) : sn.substring(0, otherSysEndIndex);
+        validSnList.forEach(sn -> {
+            String prefixPart = sn.startsWith(snDTO.getStoreId().toString())
+                    ? sn.substring(0, STOCK_PREFIX_LENGTH_MAP.get(StockSysType.BU_JU.getValue()))
+                    : sn.substring(0, STOCK_PREFIX_LENGTH_MAP.get(stockSys));
             StoreStorageSnDTO.SSSDetailDTO exist = existMap.get(prefixPart);
             if (ObjectUtils.isNotEmpty(exist)) {
                 tempList.add(exist);
@@ -153,26 +196,36 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
     @Transactional(readOnly = true)
     public StoreStockTakingSnResDTO stockTakingSnList(StoreStockTakingSnDTO snDTO) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(Long.valueOf(snDTO.getStoreId()))) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(snDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
-        List<String> snList = snDTO.getSnList().stream().filter(s -> POSITIVE_PATTERN.matcher(s).matches()).collect(Collectors.toList());
-        if (CollectionUtils.isEmpty(snList)) {
+        // 校验条码长度是否合法
+        final Integer stockSys = this.stockSys(snDTO.getStoreId());
+        // 符合规则的条码列表
+        List<String> validSnList = snDTO.getSnList().stream()
+                // 为纯数字 且 条码长度合法
+                .filter(s -> POSITIVE_PATTERN.matcher(s).matches() && STOCK_FIXED_LENGTHS_MAP.get(stockSys).contains(s.length()))
+                .collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(validSnList)) {
             // 全部都是错误条码
             return new StoreStockTakingSnResDTO().setFailList(snDTO.getSnList());
         }
-        // 非纯数字的条码
-        List<String> failList = snDTO.getSnList().stream().filter(s -> !POSITIVE_PATTERN.matcher(s).matches()).collect(Collectors.toList());
+        // 非法的条码
+        List<String> failList = snDTO.getSnList().stream().filter(s -> !validSnList.contains(s)).collect(Collectors.toList());
         // 步橘网条码
-        Set<String> buJuPrefixSnSet = snList.stream().filter(x -> x.startsWith(snDTO.getStoreId())).map(x -> x.substring(0, buJuEndIndex)).collect(Collectors.toSet());
+        Set<String> buJuPrefixSnSet = validSnList.stream().filter(x -> x.startsWith(snDTO.getStoreId().toString()))
+                .map(x -> x.substring(0, STOCK_PREFIX_LENGTH_MAP.get(StockSysType.BU_JU.getValue()))).collect(Collectors.toSet());
         // 其它系统条码
-        Set<String> otherPrefixSnSet = snList.stream().filter(x -> !x.startsWith(snDTO.getStoreId())).map(x -> x.substring(0, otherSysEndIndex)).collect(Collectors.toSet());
+        Set<String> otherPrefixSnSet = Objects.equals(StockSysType.BU_JU.getValue(), stockSys) ? new HashSet<>()
+                : validSnList.stream().filter(x -> !x.startsWith(snDTO.getStoreId().toString()))
+                .map(x -> x.substring(0, STOCK_PREFIX_LENGTH_MAP.get(stockSys))).collect(Collectors.toSet());
         List<StoreStockTakingSnTempDTO.SSTSTDetailDTO> existList = new ArrayList<>();
         // 查询出的所有条码
         if (CollectionUtils.isNotEmpty(buJuPrefixSnSet)) {
             List<StoreStockTakingSnTempDTO.SSTSTDetailDTO> buJuExistList = this.prodColorSizeMapper.selectStockBuJuSnList(snDTO.getStoreId(), new ArrayList<>(buJuPrefixSnSet));
             CollectionUtils.addAll(existList, buJuExistList);
-        } else if (CollectionUtils.isNotEmpty(otherPrefixSnSet)) {
+        }
+        if (CollectionUtils.isNotEmpty(otherPrefixSnSet)) {
             List<StoreStockTakingSnTempDTO.SSTSTDetailDTO> otherExistList = this.prodColorSizeMapper.selectStockOtherSnList(snDTO.getStoreId(), new ArrayList<>(otherPrefixSnSet));
             CollectionUtils.addAll(existList, otherExistList);
         }
@@ -185,8 +238,10 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
         Set<StoreStockTakingSnResDTO.SSTSDetailDTO> stockSet = new HashSet<>();
         // 获取数量的列表
         List<StoreStockTakingSnTempDTO.SSTSTDetailDTO> tempList = new ArrayList<>();
-        snList.forEach(sn -> {
-            String prefixPart = sn.startsWith(snDTO.getStoreId()) ? sn.substring(0, buJuEndIndex) : sn.substring(0, otherSysEndIndex);
+        validSnList.forEach(sn -> {
+            String prefixPart = sn.startsWith(snDTO.getStoreId().toString())
+                    ? sn.substring(0, STOCK_PREFIX_LENGTH_MAP.get(StockSysType.BU_JU.getValue()))
+                    : sn.substring(0, STOCK_PREFIX_LENGTH_MAP.get(stockSys));
             StoreStockTakingSnTempDTO.SSTSTDetailDTO exist = existMap.get(prefixPart);
             if (ObjectUtils.isNotEmpty(exist)) {
                 tempList.add(exist);
@@ -257,7 +312,7 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
     @Transactional
     public List<StorePrintSnResDTO> getPrintSnList(StorePrintSnDTO snDTO) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(Long.valueOf(snDTO.getStoreId()))) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(snDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         // 获取商品颜色尺码基础数据
@@ -313,25 +368,42 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
     /**
      * 普通销售流程获取条码对应的商品信息
      *
-     * @param snDTO 条码入参
+     * @param snDTO    条码入参
+     * @param stockSys 使用的库存系统
      * @return StoreSaleBarcodeResDTO
      */
-    private StoreSaleSnResDTO getSnInfo(StoreSaleSnDTO snDTO) {
+    private StoreSaleSnResDTO getSnInfo(StoreSaleSnDTO snDTO, Integer stockSys) {
         StoreSaleSnResDTO barcodeResDTO;
         // 步橘网生成的条码
-        if (snDTO.getSn().startsWith(snDTO.getStoreId())) {
-            final String prefixPart = snDTO.getSn().substring(0, buJuEndIndex);
+        if (snDTO.getSn().startsWith(snDTO.getStoreId().toString())) {
+            final String prefixPart = snDTO.getSn().substring(0, STOCK_PREFIX_LENGTH_MAP.get(StockSysType.BU_JU.getValue()));
             // 查询数据库 获取条码对应的商品信息
             barcodeResDTO = prodColorSizeMapper.selectSn(prefixPart, snDTO.getStoreId(), snDTO.getStoreCusId());
         } else {
             // 从系统设置中获取，根据系统迁移时的配置
-
-            final String prefixPart = snDTO.getSn().substring(0, otherSysEndIndex);
+            final String prefixPart = snDTO.getSn().substring(0, STOCK_PREFIX_LENGTH_MAP.get(stockSys));
             // 查询数据库 获取条码对应的商品信息
             barcodeResDTO = prodColorSizeMapper.selectOtherSn(prefixPart, snDTO.getStoreId(), snDTO.getStoreCusId());
         }
         return ObjectUtils.isEmpty(barcodeResDTO) ? new StoreSaleSnResDTO().setSuccess(Boolean.FALSE).setSn(snDTO.getSn())
                 : barcodeResDTO.setSuccess(Boolean.TRUE).setSn(snDTO.getSn());
+    }
+
+
+    /**
+     * 校验条码长度是否合法
+     *
+     * @param storeId 档口ID
+     * @return Set
+     */
+    private Integer stockSys(Long storeId) {
+        // 获取当前档口的库存系统是：步橘网、天友、发货宝 的哪一个
+        Store store = this.redisCache.getCacheObject(CacheConstants.STORE_KEY + storeId);
+        if (ObjectUtils.isEmpty(store)) {
+            store = Optional.ofNullable(this.storeMapper.selectById(storeId)).orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
+            this.redisCache.setCacheObject(CacheConstants.STORE_KEY + storeId, store);
+        }
+        return store.getStockSys();
     }
 
 

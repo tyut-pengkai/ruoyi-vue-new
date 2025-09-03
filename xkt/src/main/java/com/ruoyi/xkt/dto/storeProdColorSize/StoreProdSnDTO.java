@@ -15,7 +15,7 @@ import java.util.List;
 public class StoreProdSnDTO {
 
     @ApiModelProperty(value = "档口ID")
-    private String storeId;
+    private Long storeId;
     @ApiModelProperty(value = "条码列表")
     private List<String> snList;
 

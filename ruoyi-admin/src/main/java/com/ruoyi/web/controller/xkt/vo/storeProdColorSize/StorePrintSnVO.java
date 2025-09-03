@@ -21,7 +21,7 @@ public class StorePrintSnVO {
 
     @NotNull(message = "档口ID不能为空!")
     @ApiModelProperty(value = "档口ID", required = true)
-    private String storeId;
+    private Long storeId;
     @Valid
     @NotNull(message = "打印颜色尺码列表不能为空!")
     @ApiModelProperty(value = "打印颜色尺码列表", required = true)

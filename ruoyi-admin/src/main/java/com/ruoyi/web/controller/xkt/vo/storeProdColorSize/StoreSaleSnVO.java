@@ -19,7 +19,7 @@ public class StoreSaleSnVO {
 
     @NotNull(message = "档口ID不能为空!")
     @ApiModelProperty(value = "档口ID", required = true)
-    private String storeId;
+    private Long storeId;
     @NotNull(message = "档口客户ID不能为空!")
     @ApiModelProperty(value = "档口客户ID", required = true)
     private Long storeCusId;
