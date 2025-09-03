@@ -2228,6 +2228,14 @@ INSERT INTO `sys_job` VALUES (120, '凌晨1:55更新app商品销量榜、分类�
 INSERT INTO `sys_job` VALUES (121, '凌晨2:00更新档口权重到redis', 'DEFAULT', 'xktTask.updateStoreWeightToES', '0 0 2 * * ?', '1', '1', '0', 0, '0', 'admin', '2025-08-12 13:08:09', '', '2025-08-12 13:08:09', '');
 INSERT INTO `sys_job` VALUES (122, '每晚22:00:10更新广告位竞价状态', 'DEFAULT', 'xktTask.updateAdvertRoundBiddingStatus', '10 0 22 * * ?', '1', '1', '0', 0, '0', 'admin', '2025-08-12 13:08:55', '', '2025-08-12 13:08:55', '');
 INSERT INTO `sys_job` VALUES (123, '每小时定时发布商品', 'DEFAULT', 'xktTask.hourPublicStoreProduct', '0 0 * * * ?', '1', '1', '0', 0, '0', 'admin', '2025-08-12 13:10:05', '', '2025-08-12 13:10:05', '');
+INSERT INTO `sys_job` VALUES (124, '自动关闭超时订单', 'DEFAULT', 'xktTask.autoCloseTimeoutStoreOrder', '0 0/10 * * * ? ', '3', '1', '0', 0, '0', 'admin', '2025-09-02 16:08:01', '', '2025-09-02 16:08:01', '');
+INSERT INTO `sys_job` VALUES (125, '自动完成订单', 'DEFAULT', 'xktTask.autoCompleteStoreOrder', '0 0/10 * * * ? ', '3', '1', '0', 0, '0', 'admin', '2025-09-02 16:11:19', '', '2025-09-02 16:11:19', '');
+INSERT INTO `sys_job` VALUES (126, '自动订单退款', 'DEFAULT', 'xktTask.autoRefundStoreOrder', '0 0/10 * * * ? ', '3', '1', '0', 0, '0', 'admin', '2025-09-02 16:12:10', '', '2025-09-02 16:12:10', '');
+INSERT INTO `sys_job` VALUES (127, '继续处理退款（异常中断补偿，非正常流程）', 'DEFAULT', 'xktTask.continueProcessRefund', '0 0/10 * * * ? ', '3', '1', '0', 0, '0', 'admin', '2025-09-02 16:13:08', '', '2025-09-02 16:13:08', '');
+INSERT INTO `sys_job` VALUES (128, '继续处理档口提现（异常中断补偿，非正常流程）', 'DEFAULT', 'xktTask.continueProcessWithdraw', '0 0/10 * * * ? ', '3', '1', '0', 0, '0', 'admin', '2025-09-02 16:13:54', '', '2025-09-02 16:13:54', '');
+INSERT INTO `sys_job` VALUES (129, '继续处理支付宝支付回调信息（异常中断补偿，非正常流程）', 'DEFAULT', 'xktTask.continueProcessAliCallback', '0 0/10 * * * ? ', '3', '1', '0', 0, '0', 'admin', '2025-09-02 16:14:30', '', '2025-09-02 16:14:30', '');
+INSERT INTO `sys_job` VALUES (130, '商品当日浏览量、下载量、图搜次数统计', 'DEFAULT', 'xktTask.dailyProductStatistics', '0 0 23 * * ? ', '3', '1', '0', 0, '0', 'admin', '2025-09-02 16:15:54', 'admin', '2025-09-02 16:15:54', '');
+INSERT INTO `sys_job` VALUES (131, '从中通同步行政区划', 'DEFAULT', 'xktTask.syncRegionFromZto', '0 0 0 1 * ? ', '3', '1', '0', 0, '0', 'admin', '2025-09-02 16:17:37', 'admin', '2025-09-02 16:17:37', '');
 
 
 -- ----------------------------
