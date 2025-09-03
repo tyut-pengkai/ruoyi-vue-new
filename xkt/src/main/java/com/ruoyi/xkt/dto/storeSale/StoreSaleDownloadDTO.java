@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.storeSale;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ruoyi.common.annotation.Excel;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
@@ -15,7 +14,7 @@ import java.util.Date;
  */
 @ApiModel("档口销售导出数据")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StoreSaleDownloadDTO {
 
     @Excel(name = "序号", cellType = Excel.ColumnType.NUMERIC)

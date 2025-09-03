@@ -1,7 +1,6 @@
 package com.ruoyi.xkt.dto.storeProduct;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ruoyi.xkt.dto.storeColor.StoreColorDTO;
 import com.ruoyi.xkt.dto.storeProdCateAttr.StoreProdCateAttrDTO;
 import com.ruoyi.xkt.dto.storeProdProcess.StoreProdProcessDTO;
@@ -26,7 +25,7 @@ import java.util.List;
  * @date 2025/3/27 15:12
  */
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StoreProdUpdateDTO {
 
     @ApiModelProperty(value = "档口商品名称")

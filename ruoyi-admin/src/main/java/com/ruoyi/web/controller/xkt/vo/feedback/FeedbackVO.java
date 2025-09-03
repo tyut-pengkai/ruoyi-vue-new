@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.feedback;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ruoyi.common.xss.Xss;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -17,7 +16,7 @@ import javax.validation.constraints.Size;
  */
 @Data
 @ApiModel
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class FeedbackVO {
 
     @ApiModelProperty(value = "用户反馈内容", required = true)

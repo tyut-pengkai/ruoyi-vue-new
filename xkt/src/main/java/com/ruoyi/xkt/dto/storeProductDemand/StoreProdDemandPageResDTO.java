@@ -1,7 +1,6 @@
 package com.ruoyi.xkt.dto.storeProductDemand;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.ruoyi.common.annotation.Excel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;

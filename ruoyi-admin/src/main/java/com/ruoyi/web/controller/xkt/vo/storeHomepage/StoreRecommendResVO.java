@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.storeHomepage;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -15,7 +14,7 @@ import java.util.List;
  */
 @ApiModel("档口推荐商品列表")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StoreRecommendResVO {
 
     @ApiModelProperty(value = "档口ID")

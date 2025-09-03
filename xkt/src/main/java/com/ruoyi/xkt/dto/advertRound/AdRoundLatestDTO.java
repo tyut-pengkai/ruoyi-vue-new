@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.advertRound;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -14,7 +13,7 @@ import lombok.experimental.Accessors;
 @ApiModel("获取该推广位最新的购买价格及设置的商品")
 @Data
 @Accessors(chain = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class AdRoundLatestDTO {
 
     @ApiModelProperty(value = "档口ID")

@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.advertRound.app.index;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -17,7 +16,7 @@ import java.util.List;
 @ApiModel("APP 搜索 列表")
 @Data
 @Accessors(chain = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class APPSearchDTO {
 
     @ApiModelProperty(value = "会员等级")

@@ -45,7 +45,7 @@ public class AlipayReqDTO {
     private String timeExpire;
     /**
      * https://opendocs.alipay.com/open/common/wifww7
-     *
+     * <p>
      * 余额	balance
      * 余额宝	moneyFund
      * 网银	bankPay

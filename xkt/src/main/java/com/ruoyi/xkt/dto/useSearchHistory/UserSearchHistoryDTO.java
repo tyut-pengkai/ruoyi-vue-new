@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.useSearchHistory;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -16,7 +15,7 @@ import java.util.Date;
 @ApiModel("用户搜索记录")
 @Data
 @Accessors(chain = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class UserSearchHistoryDTO {
 
     @ApiModelProperty(value = "用户搜索ID")

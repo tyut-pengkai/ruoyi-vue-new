@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.storeRoleAccount;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -12,7 +11,7 @@ import lombok.Data;
  */
 @ApiModel("档口子账号")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StoreRoleAccDTO {
 
     @ApiModelProperty(value = "档口子账号ID，新增为空 编辑必传")

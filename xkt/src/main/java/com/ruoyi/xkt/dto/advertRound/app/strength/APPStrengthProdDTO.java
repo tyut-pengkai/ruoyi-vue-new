@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.advertRound.app.strength;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -14,7 +13,6 @@ import java.util.List;
  */
 @Data
 @Accessors(chain = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class APPStrengthProdDTO {
 
     @ApiModelProperty(value = "会员等级")

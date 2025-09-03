@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.quickFunction;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -16,7 +15,7 @@ import java.util.List;
 @ApiModel
 @Data
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 @NoArgsConstructor
 @AllArgsConstructor
 public class QuickFuncVO {

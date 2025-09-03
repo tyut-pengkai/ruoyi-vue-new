@@ -1,7 +1,6 @@
 package com.ruoyi.web.controller.xkt.vo.storeSaleRefundRecord;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -18,7 +17,7 @@ import java.util.Date;
 @ApiModel("档口商品销售返单数据")
 @Data
 @Accessors(chain = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StoreSaleRefundRecordVO {
 
     @ApiModelProperty("返单ID")

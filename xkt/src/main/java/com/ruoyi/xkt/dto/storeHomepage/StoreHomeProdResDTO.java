@@ -1,7 +1,6 @@
 package com.ruoyi.xkt.dto.storeHomepage;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ruoyi.xkt.dto.storeProdCateAttr.StoreProdCateAttrDTO;
 import com.ruoyi.xkt.dto.storeProdDetail.StoreProdDetailDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdStatusCountDTO;
@@ -21,7 +20,7 @@ import java.util.List;
  * @date 2025/3/27 15:12
  */
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StoreHomeProdResDTO {
 
     @ApiModelProperty(value = "档口基本信息")

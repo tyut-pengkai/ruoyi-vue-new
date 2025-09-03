@@ -1,10 +1,8 @@
 package com.ruoyi.xkt.dto.storeSale;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -14,7 +12,7 @@ import java.util.List;
  * @date 2025/3/27 15:12
  */
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StoreSaleDTO {
 
     @ApiModelProperty(value = "是否为返单", notes = "true 是返单  false 不是返单")

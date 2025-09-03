@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.userAuthentication;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -16,7 +15,7 @@ import java.math.BigDecimal;
  */
 @Data
 @ApiModel
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class UserAuthCreateVO {
 
     @NotBlank(message = "真实名称不能为空")

@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.userShoppingCart;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -14,7 +13,7 @@ import java.util.List;
  */
 @ApiModel("电商卖家进货车数据")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class ShopCartResDTO {
 
     @ApiModelProperty(value = "进货车ID")

@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.storeCusProdDiscount;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -17,7 +16,7 @@ import java.util.List;
  */
 @ApiModel("档口是否已存在该商品的优惠")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StoreCusProdDiscExistVO {
 
     @NotNull(message = "档口ID不能为空!")

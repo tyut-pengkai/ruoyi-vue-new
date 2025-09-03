@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.storeProductStock;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -12,7 +11,7 @@ import lombok.Data;
  */
 @ApiModel("档口商品颜色的库存及客户的优惠信息")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StoreProdStockAndDiscountDTO {
 
     @ApiModelProperty(value = "档口商品颜色ID")

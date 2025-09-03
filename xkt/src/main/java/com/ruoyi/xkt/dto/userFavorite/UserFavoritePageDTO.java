@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.userFavorite;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ruoyi.xkt.dto.BasePageDTO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -15,7 +14,7 @@ import java.util.List;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class UserFavoritePageDTO extends BasePageDTO {
 
     @ApiModelProperty(value = "用户ID")

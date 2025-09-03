@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.advertRound.app.category;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -16,7 +15,7 @@ import java.math.BigDecimal;
 @ApiModel("APP分类页")
 @Data
 @Accessors(chain = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class APPCateDTO {
 
     @ApiModelProperty(value = "1推广图")

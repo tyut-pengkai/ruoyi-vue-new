@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.storeSale;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -15,7 +14,7 @@ import java.util.List;
  */
 @ApiModel("档口商品销售客户欠款结算")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StoreSalePayStatusVO {
 
     @ApiModelProperty(value = "结算的storeSaleId列表", required = true)

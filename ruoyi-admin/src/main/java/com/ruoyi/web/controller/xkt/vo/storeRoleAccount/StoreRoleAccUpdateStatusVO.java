@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.storeRoleAccount;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -15,7 +14,7 @@ import javax.validation.constraints.NotNull;
  */
 @Data
 @ApiModel
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StoreRoleAccUpdateStatusVO {
 
     @ApiModelProperty(value = "档口子账号ID", required = true)

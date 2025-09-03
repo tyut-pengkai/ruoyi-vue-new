@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.dailySale;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -15,7 +14,7 @@ import java.math.BigDecimal;
  */
 @ApiModel("档口今日销售数据")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 @Accessors(chain = true)
 public class StoreTodaySaleDTO {
 

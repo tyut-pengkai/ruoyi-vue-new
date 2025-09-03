@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.storeRoleAccount;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -15,7 +14,7 @@ import javax.validation.constraints.NotNull;
  */
 @ApiModel("档口子账号停用启用")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StoreRoleAccUpdateStatusDTO {
 
     @ApiModelProperty(value = "档口子账号ID")

@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.storeProdColorSize;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -15,7 +14,7 @@ import javax.validation.constraints.NotNull;
  */
 @Data
 @ApiModel(value = "档口销售条码查询model")
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StoreSaleSnVO {
 
     @NotNull(message = "档口ID不能为空!")

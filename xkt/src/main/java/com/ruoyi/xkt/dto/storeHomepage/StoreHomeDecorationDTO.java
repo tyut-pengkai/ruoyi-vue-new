@@ -1,11 +1,9 @@
 package com.ruoyi.xkt.dto.storeHomepage;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -16,7 +14,7 @@ import java.util.List;
  */
 @ApiModel("档口首页装修")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StoreHomeDecorationDTO {
 
     @ApiModelProperty(value = "档口ID")

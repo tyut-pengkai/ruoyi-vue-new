@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.userShoppingCart;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -17,7 +16,7 @@ import java.util.List;
  */
 @Data
 @ApiModel
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class ShopCartEditVO {
 
     @ApiModelProperty(value = "进货车ID, 新增不传，编辑必传", required = true)

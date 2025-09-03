@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.storeProdColorSize;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -14,7 +13,7 @@ import java.math.BigDecimal;
  */
 @Data
 @ApiModel(value = "档口销售扫码返回数据")
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StoreSaleSnResVO {
 
     @ApiModelProperty(value = "是否成功")

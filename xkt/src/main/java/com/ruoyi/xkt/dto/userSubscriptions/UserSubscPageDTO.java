@@ -1,12 +1,9 @@
 package com.ruoyi.xkt.dto.userSubscriptions;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ruoyi.xkt.dto.BasePageDTO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import javax.validation.constraints.NotBlank;
 
 /**
  * @author liujiang
@@ -15,7 +12,7 @@ import javax.validation.constraints.NotBlank;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class UserSubscPageDTO extends BasePageDTO {
 
     @ApiModelProperty(value = "档口名称")

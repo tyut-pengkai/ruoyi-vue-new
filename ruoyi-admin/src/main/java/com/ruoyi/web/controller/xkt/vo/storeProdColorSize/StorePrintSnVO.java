@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.storeProdColorSize;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -17,7 +16,7 @@ import java.util.List;
  */
 @Data
 @ApiModel(value = "打印条码请求入参")
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StorePrintSnVO {
 
     @NotNull(message = "档口ID不能为空!")

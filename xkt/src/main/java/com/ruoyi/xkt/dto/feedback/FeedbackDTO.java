@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.feedback;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -12,7 +11,7 @@ import lombok.Data;
  */
 @Data
 @ApiModel
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class FeedbackDTO {
 
     @ApiModelProperty(value = "用户反馈内容")

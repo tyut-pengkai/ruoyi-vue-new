@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.storeCusProdDiscount;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -15,7 +14,7 @@ import java.util.List;
  */
 @ApiModel("档口客户批量删除")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StoreCusProdBatchDiscountDeleteVO {
 
     @NotNull(message = "ID列表不能为空!")

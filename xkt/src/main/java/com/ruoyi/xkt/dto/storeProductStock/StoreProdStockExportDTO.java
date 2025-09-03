@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.storeProductStock;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -14,7 +13,7 @@ import java.util.List;
  */
 @ApiModel("档口库存导出数据")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StoreProdStockExportDTO {
 
     @ApiModelProperty(value = "storeId")

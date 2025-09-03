@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.storeSale;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -16,7 +15,7 @@ import javax.validation.constraints.Size;
  */
 @ApiModel("档口销售修改备注")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StoreSaleUpdateMemoVO {
 
     @NotNull(message = "storeSaleId不能为空!")

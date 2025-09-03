@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.advertRound;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -17,7 +16,7 @@ import javax.validation.constraints.NotNull;
 @ApiModel("获取该推广位最新的购买价格及设置的商品")
 @Data
 @Accessors(chain = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class AdRoundLatestVO {
 
     @NotNull(message = "档口ID不能为空!")

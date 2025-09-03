@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.userAuthentication;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -11,7 +10,7 @@ import lombok.experimental.Accessors;
  * @date 2025/3/27 15:12
  */
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 @Accessors(chain = true)
 public class UserAuthResDTO {
 

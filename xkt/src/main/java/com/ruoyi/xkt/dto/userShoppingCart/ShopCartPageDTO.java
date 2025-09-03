@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.userShoppingCart;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ruoyi.xkt.dto.BasePageDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -17,7 +16,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @ApiModel("电商卖家新增进货车")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class ShopCartPageDTO extends BasePageDTO {
 
     @ApiModelProperty(value = "userId")

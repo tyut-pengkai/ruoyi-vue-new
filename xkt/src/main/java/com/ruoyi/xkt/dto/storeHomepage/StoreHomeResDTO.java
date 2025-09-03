@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.storeHomepage;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdStatusCountDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -14,7 +13,7 @@ import lombok.experimental.Accessors;
  */
 @ApiModel("档口首页返回数据")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StoreHomeResDTO {
 
     @ApiModelProperty(value = "档口基本信息")

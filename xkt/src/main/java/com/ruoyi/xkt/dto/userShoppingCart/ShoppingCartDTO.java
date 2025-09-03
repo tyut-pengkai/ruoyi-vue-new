@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.userShoppingCart;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -15,7 +14,7 @@ import java.util.List;
  */
 @Data
 @Accessors(chain = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class ShoppingCartDTO {
 
     @ApiModelProperty(value = "档口ID")

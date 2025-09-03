@@ -1,7 +1,6 @@
 package com.ruoyi.xkt.dto.storeCusProdDiscount;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -14,7 +13,7 @@ import java.util.Date;
  * @date 2025/3/27 15:12
  */
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StoreCusProdDiscPageResDTO {
 
     @ApiModelProperty(value = "档口客户商品优惠ID")

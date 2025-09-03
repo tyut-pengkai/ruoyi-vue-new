@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.userShoppingCart;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ruoyi.web.controller.xkt.vo.BasePageVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -18,7 +17,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @ApiModel("电商卖家进货车列表")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class ShopCartPageVO extends BasePageVO {
 
     @NotNull(message = "商品状态不可为空!")

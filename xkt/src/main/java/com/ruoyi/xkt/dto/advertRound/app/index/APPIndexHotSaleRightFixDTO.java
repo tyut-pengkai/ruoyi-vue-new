@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.advertRound.app.index;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -14,7 +13,7 @@ import java.math.BigDecimal;
  */
 @Data
 @Accessors(chain = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class APPIndexHotSaleRightFixDTO {
 
     @ApiModelProperty(value = "2商品")

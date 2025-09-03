@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.userSubscriptions;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ruoyi.web.controller.xkt.vo.BasePageVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -17,7 +16,7 @@ import javax.validation.constraints.NotNull;
 @EqualsAndHashCode(callSuper = true)
 @ApiModel("用户关注档口列表查询入参")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class UserSubscPageVO extends BasePageVO {
 
     @ApiModelProperty(value = "档口名称")

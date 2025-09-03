@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.storeProdColorSize;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -16,7 +15,7 @@ import java.util.List;
 @Data
 @Accessors(chain = true)
 @ApiModel(value = "打印条码返回前端数据model")
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StorePrintSnResDTO {
 
     @ApiModelProperty(value = "档口商品颜色ID")

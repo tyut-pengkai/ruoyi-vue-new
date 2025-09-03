@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.storeCustomer;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -14,7 +13,7 @@ import java.math.BigDecimal;
  */
 @Data
 @ApiModel
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StoreCusGeneralSaleVO {
 
     @ApiModelProperty(value = "档口ID")

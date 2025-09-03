@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.storeCustomer;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Builder;
@@ -18,7 +17,7 @@ import java.math.BigDecimal;
 @Data
 @Builder
 @Accessors(chain = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StoreCusGeneralSaleDTO {
 
     @ApiModelProperty(value = "档口ID")

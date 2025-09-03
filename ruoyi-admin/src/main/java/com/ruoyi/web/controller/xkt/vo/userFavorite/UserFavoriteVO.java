@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.userFavorite;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -17,7 +16,7 @@ import java.util.List;
  */
 @Data
 @ApiModel
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class UserFavoriteVO {
 
     @ApiModelProperty("用户新增收藏列表")

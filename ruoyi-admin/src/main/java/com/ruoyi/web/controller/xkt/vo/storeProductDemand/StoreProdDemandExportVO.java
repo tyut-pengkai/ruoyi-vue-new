@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.storeProductDemand;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -15,7 +14,7 @@ import java.util.List;
  */
 @Data
 @ApiModel
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StoreProdDemandExportVO {
 
     @ApiModelProperty(value = "档口ID", required = true)

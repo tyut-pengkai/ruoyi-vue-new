@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.storeProductDemand;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ruoyi.common.annotation.Excel;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -12,7 +11,7 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StoreProdDemandDownloadDTO {
 
     @Excel(name = "序号", cellType = Excel.ColumnType.NUMERIC, needMerge = true)

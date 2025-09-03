@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.quickFunction;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -15,7 +14,7 @@ import java.util.List;
  */
 @ApiModel("档口快捷功能")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class QuickFuncDTO {
 
     @ApiModelProperty(value = "bizId 根据roleId确定，为storeId或者userId")

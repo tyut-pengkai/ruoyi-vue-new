@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.advertRound.app.prod;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -14,7 +13,7 @@ import java.util.List;
  */
 @Data
 @Accessors(chain = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class APPProdCateTop3DTO {
 
     @ApiModelProperty(value = "档口商品分类ID")

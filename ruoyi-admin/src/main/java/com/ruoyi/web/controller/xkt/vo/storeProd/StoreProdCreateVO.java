@@ -1,7 +1,6 @@
 package com.ruoyi.web.controller.xkt.vo.storeProd;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ruoyi.web.controller.xkt.vo.storeColor.StoreColorVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -24,7 +23,7 @@ import java.util.List;
  */
 @Data
 @ApiModel
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StoreProdCreateVO {
 
     @ApiModelProperty(value = "档口商品名称")

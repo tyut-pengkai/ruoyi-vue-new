@@ -1,13 +1,9 @@
 package com.ruoyi.xkt.dto.userSubscriptions;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
-
-import java.util.Date;
 
 /**
  * @author liujiang
@@ -16,7 +12,7 @@ import java.util.Date;
  */
 @ApiModel("电商卖家关注档口列表返回数据")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 @Accessors(chain = true)
 public class UserSubscPageResDTO {
 

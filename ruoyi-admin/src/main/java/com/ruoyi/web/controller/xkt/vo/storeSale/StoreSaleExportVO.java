@@ -1,7 +1,6 @@
 package com.ruoyi.web.controller.xkt.vo.storeSale;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -17,7 +16,7 @@ import java.util.List;
  */
 @ApiModel(value = "导出销售出库")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StoreSaleExportVO {
 
     @NotNull(message = "storeId不能为空!")

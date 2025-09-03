@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.store;
 
-import com.ruoyi.xkt.dto.store.StoreAppResDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

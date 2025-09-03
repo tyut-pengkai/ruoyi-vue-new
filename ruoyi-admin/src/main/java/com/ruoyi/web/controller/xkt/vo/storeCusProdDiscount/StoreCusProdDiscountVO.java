@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.storeCusProdDiscount;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -15,7 +14,7 @@ import javax.validation.constraints.NotNull;
  */
 @Data
 @ApiModel(value = "新增或修改档口客户优惠")
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StoreCusProdDiscountVO {
 
     @ApiModelProperty(value = "档口ID", required = true)

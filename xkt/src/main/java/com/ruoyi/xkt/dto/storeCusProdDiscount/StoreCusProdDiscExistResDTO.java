@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.storeCusProdDiscount;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -12,7 +11,7 @@ import lombok.Data;
  */
 @ApiModel("档口客户批量减价、批量抹零")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StoreCusProdDiscExistResDTO {
 
     @ApiModelProperty(value = "档口客户名称")

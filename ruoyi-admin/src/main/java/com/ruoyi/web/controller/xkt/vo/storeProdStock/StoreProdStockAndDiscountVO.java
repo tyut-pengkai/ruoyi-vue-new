@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.storeProdStock;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -14,7 +13,7 @@ import javax.validation.constraints.NotNull;
  */
 @ApiModel("档口商品颜色的库存及客户的优惠信息")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StoreProdStockAndDiscountVO {
 
     @NotNull(message = "档口商品颜色ID不能为空")

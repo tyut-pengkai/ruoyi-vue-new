@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.advertRound.app.strength;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -12,7 +11,7 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class APPStrengthStoreFileDTO {
 
     @ApiModelProperty(value = "档口ID")

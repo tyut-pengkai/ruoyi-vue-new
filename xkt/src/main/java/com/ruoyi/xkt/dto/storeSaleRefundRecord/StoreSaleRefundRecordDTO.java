@@ -1,7 +1,6 @@
 package com.ruoyi.xkt.dto.storeSaleRefundRecord;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -16,7 +15,7 @@ import java.util.Date;
  */
 @Data
 @Accessors(chain = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StoreSaleRefundRecordDTO {
 
     @ApiModelProperty("返单ID")

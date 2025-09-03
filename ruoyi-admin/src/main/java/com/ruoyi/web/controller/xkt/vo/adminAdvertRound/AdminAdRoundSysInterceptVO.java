@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.adminAdvertRound;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -19,7 +18,7 @@ import java.util.List;
 @Data
 @ApiModel
 @Accessors(chain = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class AdminAdRoundSysInterceptVO {
 
     @NotNull(message = "推广轮次ID不能为空")

@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.userFavorite;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ruoyi.web.controller.xkt.vo.BasePageVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -18,7 +17,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @ApiModel
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class UserFavoritePageVO extends BasePageVO {
 
     @NotNull(message = "商品状态不可为空!")

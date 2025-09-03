@@ -5,7 +5,6 @@ import com.ruoyi.xkt.dto.storeColor.StoreColorDTO;
 import com.ruoyi.xkt.dto.storeProdCateAttr.StoreProdCateAttrDTO;
 import com.ruoyi.xkt.dto.storeProdColor.StoreProdColorDTO;
 import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceSimpleDTO;
-import com.ruoyi.xkt.dto.storeProdColorSize.StoreProdColorSizeDTO;
 import com.ruoyi.xkt.dto.storeProdColorSize.StoreProdSizeDTO;
 import com.ruoyi.xkt.dto.storeProdProcess.StoreProdProcessDTO;
 import com.ruoyi.xkt.dto.storeProdSvc.StoreProdSvcDTO;

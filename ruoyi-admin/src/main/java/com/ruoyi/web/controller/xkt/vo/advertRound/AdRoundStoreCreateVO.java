@@ -1,6 +1,5 @@
 package com.ruoyi.web.controller.xkt.vo.advertRound;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -18,7 +17,7 @@ import java.math.BigDecimal;
 @ApiModel("档口购买推广营销位")
 @Data
 @Accessors(chain = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class AdRoundStoreCreateVO {
 
     @NotNull(message = "广告ID不能为空!")

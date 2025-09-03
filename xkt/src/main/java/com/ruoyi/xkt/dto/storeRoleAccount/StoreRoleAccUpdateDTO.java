@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.storeRoleAccount;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -10,7 +9,7 @@ import lombok.Data;
  * @date 2025/3/27 15:12
  */
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StoreRoleAccUpdateDTO {
 
     @ApiModelProperty(value = "档口子账号ID")

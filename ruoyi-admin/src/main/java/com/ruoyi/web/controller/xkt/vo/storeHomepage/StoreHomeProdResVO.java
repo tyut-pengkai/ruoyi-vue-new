@@ -1,7 +1,6 @@
 package com.ruoyi.web.controller.xkt.vo.storeHomepage;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -18,7 +17,7 @@ import java.util.List;
  */
 @ApiModel("档口首页返回数据")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class StoreHomeProdResVO {
 
     @ApiModelProperty(value = "档口基本信息")

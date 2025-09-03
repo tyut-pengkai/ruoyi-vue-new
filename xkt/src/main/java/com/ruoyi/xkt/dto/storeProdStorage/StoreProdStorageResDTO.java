@@ -1,7 +1,6 @@
 package com.ruoyi.xkt.dto.storeProdStorage;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -18,7 +17,7 @@ import java.util.List;
  */
 @ApiModel("档口商品入库详情")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 @Accessors(chain = true)
 public class StoreProdStorageResDTO {
 

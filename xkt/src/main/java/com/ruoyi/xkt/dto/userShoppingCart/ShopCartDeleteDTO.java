@@ -1,6 +1,5 @@
 package com.ruoyi.xkt.dto.userShoppingCart;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -14,7 +13,7 @@ import java.util.List;
  */
 @ApiModel("进货车删除")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class ShopCartDeleteDTO {
 
     @ApiModelProperty(value = "进货车ID列表")
