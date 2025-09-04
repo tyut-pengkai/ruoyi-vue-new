@@ -28,4 +28,8 @@ public class RechargeAddDTO {
      * 支付来源
      */
     private EPayPage payPage;
+    /**
+     * 支付完成后跳转url
+     */
+    private String returnUrl;
 }

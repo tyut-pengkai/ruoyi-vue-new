@@ -29,9 +29,10 @@ public interface PaymentManager {
      * @param subject
      * @param payPage
      * @param expireTime
+     * @param returnUrl
      * @return 跳转页面数据/签名字符串/支付跳转链接/预支付交易会话标识（根据支付渠道&支付来源确定）
      */
-    String pay(String tradeNo, BigDecimal amount, String subject, EPayPage payPage, Date expireTime);
+    String pay(String tradeNo, BigDecimal amount, String subject, EPayPage payPage, Date expireTime, String returnUrl);
 
     /**
      * 订单支付

@@ -3,6 +3,7 @@ package com.ruoyi.xkt.manager.impl;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.NumberUtil;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
@@ -61,8 +62,11 @@ public class AliPaymentMangerImpl implements PaymentManager, InitializingBean {
     @Value("${alipay.notifyUrl:}")
     private String notifyUrl;
 
-    @Value("${alipay.returnUrl:}")
-    private String returnUrl;
+    @Value("${alipay.defaultReturnUrl:}")
+    private String defaultReturnUrl;
+
+    @Value("${alipay.orderReturnUrl:}")
+    private String orderReturnUrl;
 
     @Value("${alipay.signType:}")
     private String signType;
@@ -109,7 +113,8 @@ public class AliPaymentMangerImpl implements PaymentManager, InitializingBean {
     }
 
     @Override
-    public String pay(String tradeNo, BigDecimal amount, String subject, EPayPage payPage, Date expireTime) {
+    public String pay(String tradeNo, BigDecimal amount, String subject, EPayPage payPage, Date expireTime,
+                      String returnUrl) {
         Assert.notEmpty(tradeNo);
         Assert.notNull(amount);
         Assert.notEmpty(subject);
@@ -120,7 +125,9 @@ public class AliPaymentMangerImpl implements PaymentManager, InitializingBean {
         reqDTO.setSubject(subject);
         reqDTO.setEnablePayChannels("balance,moneyFund,bankPay,debitCardExpress");
         reqDTO.setTimeExpire(DateUtil.formatDateTime(expireTime));
-
+        if (StrUtil.isBlank(returnUrl)) {
+            returnUrl = defaultReturnUrl;
+        }
         switch (payPage) {
             case WEB:
                 reqDTO.setProductCode("FAST_INSTANT_TRADE_PAY");
@@ -195,7 +202,7 @@ public class AliPaymentMangerImpl implements PaymentManager, InitializingBean {
             throw new ServiceException("订单[" + orderExt.getOrder().getOrderNo() + "]支付状态异常");
         }
         return pay(orderExt.getOrder().getOrderNo(), orderExt.getOrder().getTotalAmount(),
-                "代发订单" + orderExt.getOrder().getOrderNo(), payPage, null);
+                "代发订单" + orderExt.getOrder().getOrderNo(), payPage, null, orderReturnUrl);
     }
 
     @Override
