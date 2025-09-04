@@ -101,6 +101,9 @@ public class StoreOrderAddReqVO {
     @ApiModelProperty(value = "支付来源[1:电脑网站 2:手机网站 3:APP]", required = true)
     private Integer payPage;
 
+    @ApiModelProperty(value = "支付完成后跳转url，若为空默认跳转商城首页")
+    private String returnUrl;
+
     @ApiModel(value = "明细")
     @Data
     public static class Detail {

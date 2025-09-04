@@ -29,7 +29,7 @@ public class RechargeAddDTO {
      */
     private EPayPage payPage;
     /**
-     * 支付完成后跳转url
+     * 支付完成后跳转url，若为空默认跳转商城首页
      */
     private String returnUrl;
 }

@@ -39,9 +39,10 @@ public interface PaymentManager {
      *
      * @param order
      * @param payPage
+     * @param returnUrl
      * @return 跳转页面数据/签名字符串/支付跳转链接/预支付交易会话标识（根据支付渠道&支付来源确定）
      */
-    String payStoreOrder(StoreOrderExt order, EPayPage payPage);
+    String payStoreOrder(StoreOrderExt order, EPayPage payPage, String returnUrl);
 
     /**
      * 订单退款

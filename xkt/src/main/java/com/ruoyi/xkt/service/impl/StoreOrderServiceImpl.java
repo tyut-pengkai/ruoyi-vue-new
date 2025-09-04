@@ -94,7 +94,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public StoreOrderAddResult createOrder(StoreOrderAddDTO storeOrderAddDTO, boolean beginPay, EPayChannel payChannel,
-                                           EPayPage payPage) {
+                                           EPayPage payPage, String returnUrl) {
         Long orderUserId = storeOrderAddDTO.getOrderUserId();
         Long storeId = storeOrderAddDTO.getStoreId();
         Long expressId = storeOrderAddDTO.getExpressId();
@@ -221,7 +221,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         if (beginPay) {
             //发起支付
             PaymentManager paymentManager = getPaymentManager(payChannel);
-            rtnStr = paymentManager.payStoreOrder(orderExt, payPage);
+            rtnStr = paymentManager.payStoreOrder(orderExt, payPage, returnUrl);
         }
         return new StoreOrderAddResult(orderExt, rtnStr);
     }
@@ -403,7 +403,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         List<Long> spIds = detailInfos.stream().map(StoreOrderDetailInfoDTO::getStoreProdId).distinct()
                 .collect(Collectors.toList());
         Map<Long, String> mainPicMap = storeProductFileMapper.selectMainPicByStoreProdIdList(spIds,
-                        FileType.MAIN_PIC.getValue(), ORDER_NUM_1).stream()
+                FileType.MAIN_PIC.getValue(), ORDER_NUM_1).stream()
                 .collect(Collectors.toMap(StoreProdMainPicDTO::getStoreProdId, StoreProdMainPicDTO::getFileUrl,
                         (o, n) -> n));
         for (StoreOrderDetailInfoDTO detailInfo : detailInfos) {
@@ -447,8 +447,8 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             return ListUtil.empty();
         }
         Map<String, Date> printTimeMap = expressShippingLabelMapper.selectList(Wrappers
-                        .lambdaQuery(ExpressShippingLabel.class)
-                        .in(ExpressShippingLabel::getExpressWaybillNo, expressWaybillNos))
+                .lambdaQuery(ExpressShippingLabel.class)
+                .in(ExpressShippingLabel::getExpressWaybillNo, expressWaybillNos))
                 .stream()
                 .collect(Collectors.toMap(ExpressShippingLabel::getExpressWaybillNo,
                         ExpressShippingLabel::getLastPrintTime));
@@ -487,9 +487,9 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         //物流信息
         Map<Long, String> expressNameMap = expressService.getAllExpressNameMap();
         Map<String, List<StoreOrderDetail>> expressWaybillGroupMap = storeOrderDetailMapper.selectList(Wrappers
-                        .lambdaQuery(StoreOrderDetail.class)
-                        .eq(StoreOrderDetail::getStoreOrderId, storeOrderId)
-                        .eq(SimpleEntity::getDelFlag, Constants.UNDELETED))
+                .lambdaQuery(StoreOrderDetail.class)
+                .eq(StoreOrderDetail::getStoreOrderId, storeOrderId)
+                .eq(SimpleEntity::getDelFlag, Constants.UNDELETED))
                 .stream()
                 .filter(o -> StrUtil.isNotEmpty(o.getExpressWaybillNo()))
                 .collect(Collectors.groupingBy(StoreOrderDetail::getExpressWaybillNo));
@@ -560,7 +560,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             List<Long> spIds = orderDetailList.stream().map(StoreOrderDetailInfoDTO::getStoreProdId).distinct()
                     .collect(Collectors.toList());
             Map<Long, String> mainPicMap = storeProductFileMapper.selectMainPicByStoreProdIdList(spIds,
-                            FileType.MAIN_PIC.getValue(), ORDER_NUM_1).stream()
+                    FileType.MAIN_PIC.getValue(), ORDER_NUM_1).stream()
                     .collect(Collectors.toMap(StoreProdMainPicDTO::getStoreProdId, StoreProdMainPicDTO::getFileUrl,
                             (o, n) -> n));
             Map<Long, List<StoreOrderDetailInfoDTO>> orderDetailGroup = orderDetailList
@@ -1133,9 +1133,9 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             List<Long> afterSaleOrderIds = afterSaleOrderList.stream().map(SimpleEntity::getId)
                     .collect(Collectors.toList());
             Map<Long, List<StoreOrderDetail>> afterSaleOrderDetailGroupMap = storeOrderDetailMapper.selectList(
-                            Wrappers.lambdaQuery(StoreOrderDetail.class)
-                                    .in(StoreOrderDetail::getStoreOrderId, afterSaleOrderIds)
-                                    .eq(SimpleEntity::getDelFlag, Constants.UNDELETED))
+                    Wrappers.lambdaQuery(StoreOrderDetail.class)
+                            .in(StoreOrderDetail::getStoreOrderId, afterSaleOrderIds)
+                            .eq(SimpleEntity::getDelFlag, Constants.UNDELETED))
                     .stream()
                     .filter(o -> {
                         if (!EOrderStatus.AFTER_SALE_COMPLETED.getValue().equals(o.getDetailStatus())) {
@@ -1502,9 +1502,9 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
     public void refundSuccess(Long storeOrderId, List<Long> storeOrderDetailIds, Long operatorId) {
         StoreOrder order = getAndBaseCheck(storeOrderId);
         Map<Long, StoreOrderDetail> orderDetailMap = storeOrderDetailMapper.selectList(Wrappers
-                        .lambdaQuery(StoreOrderDetail.class)
-                        .eq(StoreOrderDetail::getStoreOrderId, order.getId())
-                        .eq(SimpleEntity::getDelFlag, Constants.UNDELETED))
+                .lambdaQuery(StoreOrderDetail.class)
+                .eq(StoreOrderDetail::getStoreOrderId, order.getId())
+                .eq(SimpleEntity::getDelFlag, Constants.UNDELETED))
                 .stream()
                 .collect(Collectors.toMap(SimpleEntity::getId, Function.identity()));
         for (Long storeOrderDetailId : storeOrderDetailIds) {
@@ -1890,8 +1890,8 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                 .collect(Collectors.toMap(StoreProductColorSize::getId, o -> o));
         //下单商品档口颜色
         Map<Long, StoreColor> scMap = storeColorMapper.selectByIds(spcsMap.values().stream()
-                        .map(StoreProductColorSize::getStoreColorId)
-                        .collect(Collectors.toSet())).stream()
+                .map(StoreProductColorSize::getStoreColorId)
+                .collect(Collectors.toSet())).stream()
                 .collect(Collectors.toMap(StoreColor::getId, Function.identity()));
         //下单商品
         List<Long> spIdList = spcsMap.values().stream()

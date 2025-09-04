@@ -26,10 +26,11 @@ public interface IStoreOrderService {
      * @param beginPay         是否发起支付
      * @param payChannel       支付渠道
      * @param payPage          支付来源
+     * @param returnUrl        支付完成后跳转url，若为空默认跳转商城首页
      * @return
      */
     StoreOrderAddResult createOrder(StoreOrderAddDTO storeOrderAddDTO, boolean beginPay, EPayChannel payChannel,
-                                    EPayPage payPage);
+                                    EPayPage payPage, String returnUrl);
 
     /**
      * 更新订单

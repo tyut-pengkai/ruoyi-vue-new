@@ -195,14 +195,15 @@ public class AliPaymentMangerImpl implements PaymentManager, InitializingBean {
     }
 
     @Override
-    public String payStoreOrder(StoreOrderExt orderExt, EPayPage payPage) {
+    public String payStoreOrder(StoreOrderExt orderExt, EPayPage payPage, String returnUrl) {
         Assert.notNull(orderExt);
         Assert.notNull(payPage);
         if (!EPayStatus.PAYING.getValue().equals(orderExt.getOrder().getPayStatus())) {
             throw new ServiceException("订单[" + orderExt.getOrder().getOrderNo() + "]支付状态异常");
         }
         return pay(orderExt.getOrder().getOrderNo(), orderExt.getOrder().getTotalAmount(),
-                "代发订单" + orderExt.getOrder().getOrderNo(), payPage, null, orderReturnUrl);
+                "代发订单" + orderExt.getOrder().getOrderNo(), payPage, null,
+                StrUtil.isBlank(returnUrl) ? orderReturnUrl : returnUrl);
     }
 
     @Override
