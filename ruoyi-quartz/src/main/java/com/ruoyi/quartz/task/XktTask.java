@@ -923,7 +923,7 @@ public class XktTask {
     public void autoCloseTimeoutStoreOrder() {
         log.info("-------------自动关闭超时订单开始-------------");
         Integer batchCount = 20;
-        Date beforeDate = DateUtil.offset(new Date(), DateField.MINUTE, 60);
+        Date beforeDate = DateUtil.offset(new Date(), DateField.MINUTE, -60);
         List<Long> storeOrderIds = storeOrderService.listNeedAutoCloseOrder(beforeDate, batchCount);
         for (Long storeOrderId : storeOrderIds) {
             log.info("开始处理: {}", storeOrderId);
@@ -943,7 +943,7 @@ public class XktTask {
     public void autoCompleteStoreOrder() {
         log.info("-------------自动完成订单开始-------------");
         Integer batchCount = 20;
-        Date beforeDate = DateUtil.offset(new Date(), DateField.DAY_OF_YEAR, 14);
+        Date beforeDate = DateUtil.offset(new Date(), DateField.DAY_OF_YEAR, -14);
         List<Long> storeOrderIds = storeOrderService.listNeedAutoCompleteOrder(beforeDate, batchCount);
         for (Long storeOrderId : storeOrderIds) {
             log.info("开始处理: {}", storeOrderId);
