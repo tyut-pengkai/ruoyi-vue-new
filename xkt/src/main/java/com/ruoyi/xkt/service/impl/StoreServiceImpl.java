@@ -28,6 +28,7 @@ import com.ruoyi.xkt.dto.store.*;
 import com.ruoyi.xkt.dto.storeCertificate.StoreCertDTO;
 import com.ruoyi.xkt.dto.storeCertificate.StoreCertResDTO;
 import com.ruoyi.xkt.enums.FileType;
+import com.ruoyi.xkt.enums.StockSysType;
 import com.ruoyi.xkt.enums.StoreStatus;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IAssetService;
@@ -376,6 +377,17 @@ public class StoreServiceImpl implements IStoreService {
     @Override
     public Integer getStoreStatus(Long storeId) {
         return Optional.ofNullable(storeMapper.selectById(storeId)).map(Store::getStoreStatus).orElse(null);
+    }
+
+    @Override
+    @Transactional
+    public Integer updateStockSys(StoreUpdateStockSysDTO stockSysDTO) {
+        StockSysType.of(stockSysDTO.getStockSys());
+        Store store = Optional.ofNullable(storeMapper.selectOne(new LambdaQueryWrapper<Store>()
+                        .eq(Store::getId, stockSysDTO.getStoreId()).eq(Store::getDelFlag, Constants.UNDELETED)))
+                .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
+        store.setStockSys(stockSysDTO.getStockSys());
+        return this.storeMapper.updateById(store);
     }
 
     /**

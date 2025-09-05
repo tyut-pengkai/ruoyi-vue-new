@@ -173,4 +173,11 @@ public class StoreController extends XktBaseController {
         return R.ok(BeanUtil.copyToList(storeService.indexTop10SaleCus(BeanUtil.toBean(saleCusTop10VO, StoreSaleCustomerTop10DTO.class)), StoreIndexCusSaleTop10ResVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')")
+    @ApiOperation(value = "更新档口库存系统", httpMethod = "PUT", response = R.class)
+    @PutMapping(value = "/stock-sys")
+    public R<Integer> updateStockSys(@Validated @RequestBody StoreUpdateStockSysVO stockSysVO) {
+        return R.ok(storeService.updateStockSys(BeanUtil.toBean(stockSysVO, StoreUpdateStockSysDTO.class)));
+    }
+
 }

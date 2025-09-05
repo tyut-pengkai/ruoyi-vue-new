@@ -1,10 +1,12 @@
 package com.ruoyi.xkt.enums;
 
+import com.ruoyi.common.constant.HttpStatus;
+import com.ruoyi.common.exception.ServiceException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 推广营销风格类型
+ * 库存系统枚举
  *
  * @author liujiang
  * @date 2025-04-02 23:42
@@ -32,7 +34,6 @@ public enum StockSysType {
                 return e;
             }
         }
-        // 默认库存
-        return StockSysType.BU_JU;
+        throw new ServiceException("库存系统枚举不存在!", HttpStatus.ERROR);
     }
 }

@@ -182,4 +182,13 @@ public interface IStoreService {
      * @return
      */
     Integer getStoreStatus(Long storeId);
+
+    /**
+     * 更新档口库存系统
+     *
+     * @param stockSysDTO 更新入参
+     * @return Integer
+     */
+    Integer updateStockSys(StoreUpdateStockSysDTO stockSysDTO);
+
 }
