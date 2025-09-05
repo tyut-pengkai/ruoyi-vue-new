@@ -725,6 +725,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
+        // 过滤掉系统管理员拦截的推广
         List<AdvertRoundStorePageResDTO> list = this.advertRoundMapper.selectStoreAdvertPage(pageDTO);
         List<String> idList = list.stream().map(AdvertRoundStorePageResDTO::getProdIdStr)
                 .filter(StringUtils::isNotBlank).flatMap(str -> StrUtil.split(str, ",").stream())

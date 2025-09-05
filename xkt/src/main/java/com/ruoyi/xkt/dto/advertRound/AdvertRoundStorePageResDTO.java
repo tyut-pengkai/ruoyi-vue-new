@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class AdvertRoundStorePageResDTO {
     @ApiModelProperty(value = "投放结束时间")
     private String endTime;
     @ApiModelProperty(value = "出价")
-    private String payPrice;
+    private BigDecimal payPrice;
     @ApiModelProperty(value = "商品ID")
     private String prodIdStr;
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")

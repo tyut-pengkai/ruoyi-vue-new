@@ -36,7 +36,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             ar.voucher_date,
             ar.start_time,
             ar.end_time,
-            ar.pay_price,
+            ar.pay_price AS payPrice,
             ar.launch_status,
             ar.bidding_status,
             ar.pic_design_type,
@@ -52,6 +52,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             LEFT JOIN sys_file sf ON ar.pic_id = sf.id
         WHERE
             ar.del_flag = 0
+            AND ar.sys_intercept = 0
             AND ar.store_id = #{storeId}
             AND ar.bidding_status IN
             <foreach item="biddingStatus" collection="biddingStatusList" open="(" separator="," close=")">
