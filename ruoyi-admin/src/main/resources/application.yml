@@ -47,12 +47,13 @@ user:
 
 # Spring配置
 spring:
+  # 引用数据库配置
+  config:
+    import: optional:application-druid.yml
   # 资源信息
   messages:
     # 国际化资源文件路径
     basename: i18n/messages
-  profiles:
-    active: druid
   # 文件上传
   servlet:
     multipart:
