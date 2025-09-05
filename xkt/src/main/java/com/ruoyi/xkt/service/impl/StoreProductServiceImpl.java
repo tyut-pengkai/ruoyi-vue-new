@@ -646,8 +646,8 @@ public class StoreProductServiceImpl implements IStoreProductService {
         Assert.notNull(picPackReqDTO.getUserId());
         String reqCacheKey = CacheConstants.PIC_PACK_USER_REQ_COUNT_CACHE + picPackReqDTO.getUserId();
         int reqCount = Optional.ofNullable((Integer) redisCache.getCacheObject(reqCacheKey)).orElse(0);
-        //3次请求后需要输入验证码
-        if (reqCount > 2) {
+        //5次请求后需要输入验证码
+        if (reqCount > 4) {
             //需验证验证码
             if (StrUtil.isEmpty(picPackReqDTO.getTicket()) || StrUtil.isEmpty(picPackReqDTO.getRandstr())) {
                 //未传验证码
