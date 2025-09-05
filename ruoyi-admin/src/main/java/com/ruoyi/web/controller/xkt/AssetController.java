@@ -179,6 +179,7 @@ public class AssetController extends XktBaseController {
         rechargeAddDTO.setAmount(vo.getAmount());
         rechargeAddDTO.setPayChannel(EPayChannel.of(vo.getPayChannel()));
         rechargeAddDTO.setPayPage(EPayPage.of(vo.getPayPage()));
+        rechargeAddDTO.setReturnUrl(vo.getReturnUrl());
         RechargeAddResult result = assetService.rechargeByStore(rechargeAddDTO);
         return success(new StoreRechargeRespVO(result.getBillNo(), result.getPayRtnStr()));
     }

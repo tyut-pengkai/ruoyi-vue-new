@@ -245,7 +245,7 @@ public class AssetServiceImpl implements IAssetService {
                 7, TimeUnit.DAYS);
         PaymentManager paymentManager = getPaymentManager(rechargeAddDTO.getPayChannel());
         String payRtnStr = paymentManager.pay(billNo, rechargeAddDTO.getAmount(),
-                "档口充值", rechargeAddDTO.getPayPage(), null);
+                "档口充值", rechargeAddDTO.getPayPage(), null, rechargeAddDTO.getReturnUrl());
         return new RechargeAddResult(billNo, payRtnStr);
     }
 

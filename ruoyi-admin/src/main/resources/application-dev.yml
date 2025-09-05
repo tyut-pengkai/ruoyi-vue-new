@@ -274,7 +274,8 @@ alipay:
   rootCertPath: C:/alipay/test/alipayRootCert.crt
   alipayPublicCertPath: C:/alipay/test/alipayPublicCert.crt
   notifyUrl: http://101.34.251.164:9310/rest/v1/alipay-callback/notify
-  returnUrl:
+  defaultReturnUrl: http://121.40.214.172/index.html
+  orderReturnUrl: http://121.40.214.172/index.html
   signType: RSA2
   charset: UTF-8
   gatewayUrl: https://openapi-sandbox.dl.alipaydev.com/gateway.do

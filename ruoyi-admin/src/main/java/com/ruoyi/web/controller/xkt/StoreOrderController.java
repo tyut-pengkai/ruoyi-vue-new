@@ -84,7 +84,7 @@ public class StoreOrderController extends XktBaseController {
         dto.setOrderUserId(SecurityUtils.getUserId());
         //创建订单并根据参数决定是否发起支付
         StoreOrderAddResult result = storeOrderService.createOrder(dto, vo.getBeginPay(),
-                EPayChannel.of(vo.getPayChannel()), EPayPage.of(vo.getPayPage()));
+                EPayChannel.of(vo.getPayChannel()), EPayPage.of(vo.getPayPage()), vo.getReturnUrl());
         //返回信息
         StoreOrderPayRespVO respVO = new StoreOrderPayRespVO(result.getOrderExt().getOrder().getId(),
                 result.getPayRtnStr());
@@ -116,7 +116,7 @@ public class StoreOrderController extends XktBaseController {
         //订单支付状态->支付中
         StoreOrderExt orderExt = storeOrderService.preparePayOrder(vo.getStoreOrderId(), payChannel);
         //调用支付
-        String rtnStr = paymentManager.payStoreOrder(orderExt, EPayPage.of(vo.getPayPage()));
+        String rtnStr = paymentManager.payStoreOrder(orderExt, EPayPage.of(vo.getPayPage()), vo.getReturnUrl());
         StoreOrderPayRespVO respVO = new StoreOrderPayRespVO(vo.getStoreOrderId(), rtnStr);
         return success(respVO);
     }
