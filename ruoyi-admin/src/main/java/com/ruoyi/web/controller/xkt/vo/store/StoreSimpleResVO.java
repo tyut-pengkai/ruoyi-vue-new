@@ -41,6 +41,8 @@ public class StoreSimpleResVO {
     private Boolean focus;
     @ApiModelProperty(value = "档口logo")
     private SSFileVO logo;
+    @ApiModelProperty(value = "档口库存系统 1 步橘网 2 天友 3 发货宝")
+    private Integer stockSys;
 
     @Data
     public static class SSFileVO {

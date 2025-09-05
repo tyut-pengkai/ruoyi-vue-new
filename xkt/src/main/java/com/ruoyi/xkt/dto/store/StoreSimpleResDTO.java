@@ -43,6 +43,8 @@ public class StoreSimpleResDTO {
     private Long storeLogoId;
     @ApiModelProperty(value = "档口logo")
     private SSFileDTO logo;
+    @ApiModelProperty(value = "档口库存系统 1 步橘网 2 天友 3 发货宝")
+    private Integer stockSys;
 
     @Data
     public static class SSFileDTO {
