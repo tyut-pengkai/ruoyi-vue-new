@@ -17,11 +17,11 @@ public class PicPackReqDTO {
      */
     private Long fileId;
     /**
-     * 图片验证码UUID
+     * ticket（图像验证参数）
      */
-    private String uuid;
+    private String ticket;
     /**
-     * 图片验证码CODE
+     * randstr（图像验证参数）
      */
-    private String code;
+    private String randstr;
 }

@@ -50,6 +50,7 @@ import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
 import com.ruoyi.xkt.dto.userBrowsingHistory.UserBrowsingHisDTO;
 import com.ruoyi.xkt.dto.userNotice.UserFocusAndFavUserIdDTO;
 import com.ruoyi.xkt.enums.*;
+import com.ruoyi.xkt.manager.TencentAuthManager;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IPictureService;
 import com.ruoyi.xkt.service.IStoreProductService;
@@ -110,6 +111,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
     final UserNoticeMapper userNoticeMapper;
     final UserSubscriptionsMapper userSubMapper;
     final OSSClientWrapper ossClient;
+    final TencentAuthManager tencentAuthManager;
 
 
     /**
@@ -647,12 +649,15 @@ public class StoreProductServiceImpl implements IStoreProductService {
         //3次请求后需要输入验证码
         if (reqCount > 2) {
             //需验证验证码
-            if (StrUtil.isEmpty(picPackReqDTO.getCode()) || StrUtil.isEmpty(picPackReqDTO.getUuid())) {
+            if (StrUtil.isEmpty(picPackReqDTO.getTicket()) || StrUtil.isEmpty(picPackReqDTO.getRandstr())) {
                 //未传验证码
                 return new PicPackInfoDTO(true);
             }
             //验证码校验
-            validateCaptcha(picPackReqDTO.getCode(), picPackReqDTO.getUuid());
+            boolean pass = tencentAuthManager.validate(picPackReqDTO.getTicket(), picPackReqDTO.getRandstr());
+            if (!pass) {
+                throw new ServiceException("验证未通过");
+            }
             //重置请求次数
             reqCount = 0;
         }

@@ -19,14 +19,10 @@ public class PicPackReqVO {
     @NotNull(message = "文件ID不能为空")
     @ApiModelProperty(value = "文件ID")
     private Long fileId;
-    /**
-     * 图片验证码UUID
-     */
-    @ApiModelProperty(value = "图片验证码UUID")
-    private String uuid;
-    /**
-     * 图片验证码CODE
-     */
-    @ApiModelProperty(value = "图片验证码CODE")
-    private String code;
+
+    @ApiModelProperty("ticket（图像验证参数）")
+    private String ticket;
+
+    @ApiModelProperty("randstr（图像验证参数）")
+    private String randstr;
 }
