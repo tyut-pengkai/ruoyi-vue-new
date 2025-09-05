@@ -44,4 +44,20 @@ public interface IStoreProductColorSizeService {
      */
     List<StorePrintSnResDTO> getPrintSnList(StorePrintSnDTO snDTO);
 
+    /**
+     * 一键迁移条码
+     *
+     * @param otherSnDTO 条码入参
+     * @return Integer
+     */
+    Integer updateOtherSn(StoreUpdateOtherSnDTO otherSnDTO);
+
+    /**
+     * 获取未设置条码的商品
+     *
+     * @param storeId 档口ID
+     * @return StoreUnsetSnResDTO
+     */
+    StoreUnsetSnDTO getUnSetSnProdList(Long storeId);
+
 }

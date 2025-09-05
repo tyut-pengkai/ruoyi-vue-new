@@ -6,20 +6,14 @@ import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.web.controller.xkt.vo.storeProdColorSize.*;
-import com.ruoyi.xkt.dto.storeProdColorSize.StorePrintSnDTO;
-import com.ruoyi.xkt.dto.storeProdColorSize.StoreProdSnDTO;
-import com.ruoyi.xkt.dto.storeProdColorSize.StoreSaleSnDTO;
-import com.ruoyi.xkt.dto.storeProdColorSize.StoreStockTakingSnDTO;
+import com.ruoyi.xkt.dto.storeProdColorSize.*;
 import com.ruoyi.xkt.service.IStoreProductColorSizeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -67,6 +61,22 @@ public class StoreProductColorSizeController extends XktBaseController {
     @PostMapping("/sn/print")
     public R<List<StorePrintSnResVO>> getPrintSnList(@Validated @RequestBody StorePrintSnVO snVO) {
         return R.ok(BeanUtil.copyToList(prodColorSizeService.getPrintSnList(BeanUtil.toBean(snVO, StorePrintSnDTO.class)), StorePrintSnResVO.class));
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
+    @Log(title = "一键迁移条码", businessType = BusinessType.INSERT)
+    @ApiOperation(value = "一键迁移条码", httpMethod = "PUT", response = R.class)
+    @PutMapping("/sn/other")
+    public R<Integer> updateOtherSn(@Validated @RequestBody StoreUpdateOtherSnVO snVO) {
+        return R.ok(prodColorSizeService.updateOtherSn(BeanUtil.toBean(snVO, StoreUpdateOtherSnDTO.class)));
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
+    @Log(title = "获取未设置条码的商品", businessType = BusinessType.INSERT)
+    @ApiOperation(value = "获取未设置条码的商品", httpMethod = "GET", response = R.class)
+    @GetMapping("/sn/unset/{storeId}")
+    public R<StoreUnsetSnVO> getUnSetSnProdList(@PathVariable Long storeId) {
+        return R.ok(BeanUtil.toBean(prodColorSizeService.getUnSetSnProdList(storeId), StoreUnsetSnVO.class));
     }
 
 }

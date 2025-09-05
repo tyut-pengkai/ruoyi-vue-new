@@ -8,20 +8,16 @@ import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
-import com.ruoyi.xkt.domain.Store;
-import com.ruoyi.xkt.domain.StoreProductColorSize;
-import com.ruoyi.xkt.domain.StoreProductStock;
+import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.storeProdColorSize.*;
 import com.ruoyi.xkt.enums.StockSysType;
-import com.ruoyi.xkt.mapper.StoreMapper;
-import com.ruoyi.xkt.mapper.StoreProductColorSizeMapper;
-import com.ruoyi.xkt.mapper.StoreProductStockMapper;
-import com.ruoyi.xkt.mapper.StoreSaleDetailMapper;
+import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IStoreProductColorSizeService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,15 +39,13 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
     final StoreProductColorSizeMapper prodColorSizeMapper;
     final StoreSaleDetailMapper saleDetailMapper;
     final StoreProductStockMapper prodStockMapper;
+    final StoreProductMapper storeProdMapper;
+    final StoreColorMapper storeColorMapper;
     final StoreMapper storeMapper;
     final RedisCache redisCache;
 
     // 纯数字
     private static final Pattern POSITIVE_PATTERN = Pattern.compile("^\\d+$");
-/*    // 步橘系统条码截止索引
-    private static final Integer buJuEndIndex = 13;
-    // 其它系统的条码截止索引
-    private static final Integer otherSysEndIndex = 10;*/
 
     // 当前库存系统的条码前缀长度
     private static final Map<Integer, Integer> STOCK_PREFIX_LENGTH_MAP = new HashMap<>();
@@ -363,6 +357,138 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
             this.prodColorSizeMapper.updateById(updateList);
         }
         return printSnList;
+    }
+
+    /**
+     * 一键更新条码
+     *
+     * @param otherSnDTO 条码入参
+     * @return Integer
+     */
+    @Override
+    @Transactional
+    public Integer updateOtherSn(StoreUpdateOtherSnDTO otherSnDTO) {
+        // 更新条码前的校验
+        Integer stockSys = this.otherSnCheck(otherSnDTO);
+        // 截取的条码长度
+        final Integer interceptLength = Objects.equals(stockSys, StockSysType.TIAN_YOU.getValue())
+                ? Constants.TIAN_YOU_SN_COMMON_PREFIX_LENGTH : Constants.FA_HUO_BAO_SN_COMMON_PREFIX_LENGTH;
+        // 找到所有已录入的条码
+        List<StoreProductColorSize> existList = this.prodColorSizeMapper.selectList(new LambdaQueryWrapper<StoreProductColorSize>()
+                .eq(StoreProductColorSize::getDelFlag, Constants.UNDELETED)
+                .in(StoreProductColorSize::getStoreColorId, otherSnDTO.getSnList().stream().map(StoreUpdateOtherSnDTO.SUOSnDTO::getStoreColorId).collect(Collectors.toList()))
+                .in(StoreProductColorSize::getStoreProdId, otherSnDTO.getSnList().stream().map(StoreUpdateOtherSnDTO.SUOSnDTO::getStoreProdId).collect(Collectors.toList())));
+        if (CollectionUtils.isEmpty(existList)) {
+            throw new ServiceException("商品尺码不存在，请联系管理员", HttpStatus.ERROR);
+        }
+        // key storeProdId + storeColorId, value SUOSnDTO
+        Map<String, StoreUpdateOtherSnDTO.SUOSnDTO> updateMap = otherSnDTO.getSnList().stream().collect(Collectors
+                .toMap(x -> x.getStoreProdId() + ":" + x.getStoreColorId(), Function.identity()));
+        // key storeProdId + storeColorId, value storeProductColorSize
+        Map<String, StoreProductColorSize> existMap = existList.stream().collect(Collectors
+                .toMap(x -> x.getStoreProdId() + ":" + x.getStoreColorId(), Function.identity(), (s1, s2) -> s2));
+        // key storeProdId + storeColorId, value List<storeProductColorSize>
+        Map<String, List<StoreProductColorSize>> existGroupMap = existList.stream().collect(Collectors.groupingBy(x -> x.getStoreProdId() + ":" + x.getStoreColorId()));
+        List<StoreProductColorSize> updateSnList = new ArrayList<>();
+        existMap.forEach((key, exist) -> {
+            StoreUpdateOtherSnDTO.SUOSnDTO updateSn = updateMap.get(key);
+            if (ObjectUtils.isNotEmpty(updateSn)) {
+                final String updateCommonPrefix = updateSn.getSn().substring(0, interceptLength);
+                // 未设置过条码，则直接新增
+                if (StringUtils.isEmpty(exist.getOtherSnPrefix())) {
+                    this.updateOtherSn(existGroupMap, key, updateCommonPrefix, updateSnList);
+                } else {
+                    final String existCommonPrefix = exist.getOtherSnPrefix().substring(0, interceptLength);
+                    // 更新的条码和存储的条码不一致，则更新
+                    if (!Objects.equals(existCommonPrefix, updateCommonPrefix)) {
+                        this.updateOtherSn(existGroupMap, key, updateCommonPrefix, updateSnList);
+                    }
+                }
+            }
+        });
+        return CollectionUtils.isEmpty(updateSnList) ? 0 : this.prodColorSizeMapper.updateById(updateSnList).size();
+    }
+
+    /**
+     * 获取未设置条码的商品列表
+     * @param storeId 档口ID
+     * @return StoreUnsetSnDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public StoreUnsetSnDTO getUnSetSnProdList(Long storeId) {
+        List<StoreUnsetSnTempDTO> unsetList = this.prodColorSizeMapper.selectUnsetProdList(storeId);
+        if (CollectionUtils.isEmpty(unsetList)) {
+            return new StoreUnsetSnDTO().setUnsetSnList(Collections.emptyList());
+        }
+        final List<Long> storeProdIdList = unsetList.stream().map(StoreUnsetSnTempDTO::getStoreProdId).collect(Collectors.toList());
+        List<StoreProduct> storeProdList = this.storeProdMapper.selectByIds(storeProdIdList);
+        Map<Long, StoreProduct> storeProdMap = CollectionUtils.isEmpty(storeProdList) ? new HashMap<>()
+                : storeProdList.stream().collect(Collectors.toMap(StoreProduct::getId, Function.identity()));
+        final List<Long> storeColorIdList = unsetList.stream().map(StoreUnsetSnTempDTO::getStoreColorId).collect(Collectors.toList());
+        List<StoreColor> storeColorList = this.storeColorMapper.selectByIds(storeColorIdList);
+        Map<Long, String> storeColorMap = CollectionUtils.isEmpty(storeColorList) ? new HashMap<>()
+                : storeColorList.stream().collect(Collectors.toMap(StoreColor::getId, StoreColor::getColorName));
+        List<String> unsetSnList = new ArrayList<>();
+        unsetList.stream().collect(Collectors.groupingBy(StoreUnsetSnTempDTO::getStoreProdId))
+                .forEach((storeProdId, groupList) -> {
+                    String str = groupList.stream().map(x -> storeColorMap.get(x.getStoreColorId())).filter(Objects::nonNull).collect(Collectors.joining("、"));
+                    // 商品名称 + 颜色名称
+                    unsetSnList.add(storeProdMap.get(storeProdId).getProdArtNum() + ":" + str);
+                });
+        return new StoreUnsetSnDTO().setUnsetSnList(unsetSnList);
+    }
+
+    /**
+     * 更新数据库其它系统的条码
+     *
+     * @param existGroupMap      已存在的条码map
+     * @param key                storeProdId:storeColorId
+     * @param updateCommonPrefix 更新条码前缀
+     * @param updateSnList       待更新条码列表
+     */
+    private void updateOtherSn(Map<String, List<StoreProductColorSize>> existGroupMap, String key,
+                               String updateCommonPrefix, List<StoreProductColorSize> updateSnList) {
+        List<StoreProductColorSize> groupList = existGroupMap.get(key);
+        if (CollectionUtils.isNotEmpty(groupList)) {
+            groupList.forEach(x -> x.setOtherSnPrefix(updateCommonPrefix + x.getSize()));
+            updateSnList.addAll(groupList);
+        }
+    }
+
+    /**
+     * 更新条码前的校验
+     *
+     * @param otherSnDTO 更新入参
+     * @return stockSys
+     */
+    private Integer otherSnCheck(StoreUpdateOtherSnDTO otherSnDTO) {
+        // 判断当前库存系统 是步橘还是发货宝 或 天友
+        Store store = redisCache.getCacheObject(CacheConstants.STORE_KEY + otherSnDTO.getStoreId());
+        if (ObjectUtils.isEmpty(store)) {
+            store = Optional.ofNullable(this.storeMapper.selectById(otherSnDTO.getStoreId()))
+                    .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
+        }
+        // 如果是步橘系统，则不能录入条码
+        if (Objects.equals(store.getStockSys(), StockSysType.BU_JU.getValue())) {
+            throw new ServiceException("当前库存系统为步橘网自带系统，不可录入条码!", HttpStatus.ERROR);
+        }
+        // 其它系统条码长度
+        final Integer otherSnLength = Objects.equals(store.getStockSys(), StockSysType.TIAN_YOU.getValue())
+                ? Constants.TIAN_YOU_SN_LENGTH : Constants.FA_HUO_BAO_SN_LENGTH;
+        // 校验条码长度是否合法
+        final Integer stockSys = this.stockSys(otherSnDTO.getStoreId());
+        // 不符合规则的条码列表
+        List<StoreUpdateOtherSnDTO.SUOSnDTO> illegalSnList = otherSnDTO.getSnList().stream()
+                // 非纯数字 或 长度不合法
+                .filter(s -> !POSITIVE_PATTERN.matcher(s.getSn()).matches() || !Objects.equals(s.getSn().length(), otherSnLength))
+                .collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(illegalSnList)) {
+            String errorMsg = illegalSnList.stream().map(x -> x.getProdArtNum() + " " + x.getColorName() + ":" + x.getSn())
+                    .collect(Collectors.joining(", "));
+            throw new ServiceException("以下条码不符合规则: " + errorMsg, HttpStatus.ERROR);
+        }
+        return stockSys;
     }
 
     /**

@@ -248,8 +248,12 @@ public class Constants
     public static final Integer BU_JU_SN_PREFIX_LENGTH = 13;
     // 天友条码前缀长度
     public static final Integer TIAN_YOU_SN_PREFIX_LENGTH = 6;
+    // 天友条码 公共部分 前缀长度
+    public static final Integer TIAN_YOU_SN_COMMON_PREFIX_LENGTH = 4;
     // 发货宝条码前缀长度
     public static final Integer FA_HUO_BAO_SN_PREFIX_LENGTH = 10;
+    // 发货宝条码 公共部分 前缀长度
+    public static final Integer FA_HUO_BAO_SN_COMMON_PREFIX_LENGTH = 8;
 
 
 

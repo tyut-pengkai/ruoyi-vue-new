@@ -2,10 +2,7 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProductColorSize;
-import com.ruoyi.xkt.dto.storeProdColorSize.StoreProdSizeDTO;
-import com.ruoyi.xkt.dto.storeProdColorSize.StoreSaleSnResDTO;
-import com.ruoyi.xkt.dto.storeProdColorSize.StoreStockTakingSnTempDTO;
-import com.ruoyi.xkt.dto.storeProdColorSize.StoreStorageSnDTO;
+import com.ruoyi.xkt.dto.storeProdColorSize.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -91,6 +88,14 @@ public interface StoreProductColorSizeMapper extends BaseMapper<StoreProductColo
      * @return List<StoreStockTakingSnTempDTO.SSTSTDetailDTO>
      */
     List<StoreStockTakingSnTempDTO.SSTSTDetailDTO> selectStockOtherSnList(@Param("storeId") Long storeId, @Param("otherPrefixSnList") List<String> otherPrefixSnList);
+
+    /**
+     * 获取未设置条码的商品颜色尺码列表
+     *
+     * @param storeId 档口ID
+     * @return List<StoreUnsetSnTempDTO>
+     */
+    List<StoreUnsetSnTempDTO> selectUnsetProdList(@Param("storeId") Long storeId);
 
 }
 

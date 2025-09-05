@@ -712,7 +712,8 @@ public class StoreProductServiceImpl implements IStoreProductService {
         // 将颜色信息按产品ID分组，并转换为所需的颜色DTO列表
         Map<Long, List<StoreProdFuzzyColorResDTO.SPFCColorDTO>> colorMap = CollectionUtils.isEmpty(colorList) ? new HashMap<>()
                 : colorList.stream().collect(Collectors.groupingBy(StoreProductColor::getStoreProdId, Collectors
-                .collectingAndThen(Collectors.toList(), list -> list.stream().map(y -> BeanUtil.toBean(y, StoreProdFuzzyColorResDTO.SPFCColorDTO.class))
+                .collectingAndThen(Collectors.toList(), list -> list.stream()
+                        .map(y -> BeanUtil.toBean(y, StoreProdFuzzyColorResDTO.SPFCColorDTO.class))
                         .collect(Collectors.toList()))));
         // 将产品列表转换为所需的产品DTO列表，并关联颜色信息
         return storeProdList.stream().map(x -> BeanUtil.toBean(x, StoreProdFuzzyColorResDTO.class).setStoreProdId(x.getId())

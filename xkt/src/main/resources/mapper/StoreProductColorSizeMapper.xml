@@ -157,4 +157,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             </if>
     </select>
 
+    <select id="selectUnsetProdList">
+        SELECT DISTINCT
+            spcs.store_prod_id,
+            spcs.store_color_id
+        FROM
+            store_product_color_size spcs
+                JOIN store_color sc ON spcs.store_color_id = sc.id AND sc.del_flag = 0 AND sc.store_id = #{storeId}
+                JOIN store_product sp ON spcs.store_prod_id = sp.id AND sp.del_flag = 0 AND sp.store_id = #{storeId}
+        WHERE
+            spcs.del_flag = 0
+            AND spcs.other_sn_prefix IS NULL;
+    </select>
+
 </mapper>
