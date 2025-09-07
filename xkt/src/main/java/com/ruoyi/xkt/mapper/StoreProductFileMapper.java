@@ -71,10 +71,11 @@ public interface StoreProductFileMapper extends BaseMapper<StoreProductFile> {
     /**
      * 根据商品ID获取商品主图和视频
      *
-     * @param storeProdId 商品ID
+     * @param storeProdId  商品ID
+     * @param fileTypeList 文件类型列表
      * @return List<StoreProdFileResDTO>
      */
-    List<StoreProdFileResDTO> selectVideoAndMainPicList(Long storeProdId);
+    List<StoreProdFileResDTO> selectVideoAndMainPicList(@Param("storeProdId") Long storeProdId, @Param("fileTypeList") List<Integer> fileTypeList);
 
     /**
      * 筛选档口随机主图

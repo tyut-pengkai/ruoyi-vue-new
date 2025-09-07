@@ -152,7 +152,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         WHERE
             spf.del_flag = 0
           AND spf.store_prod_id = #{storeProdId}
-          AND spf.file_type IN (1,2)
+          <if test="fileTypeList != null and fileTypeList.size() > 0">
+                AND spf.file_type IN
+                <foreach item="fileType" collection="fileTypeList" open="(" separator="," close=")">
+                    #{fileType}
+                </foreach>
+            </if>
     </select>
 
     <select id="selectRandomStoreFileList" resultType="com.ruoyi.xkt.dto.advertRound.app.strength.APPStrengthStoreFileDTO">

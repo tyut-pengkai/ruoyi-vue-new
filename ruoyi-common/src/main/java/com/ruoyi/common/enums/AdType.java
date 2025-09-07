@@ -17,30 +17,30 @@ public enum AdType {
 
     // 顶部横向大图
     PC_HOME_TOP_LEFT_BANNER(1, "首页顶部横向大图"),
-    // 顶部纵向小图
-    PC_HOME_TOP_RIGHT_BANNER(2, "首页顶部纵向小图"),
-    // 首页销售榜榜一
-    PC_HOME_SALE_RANK_ONE(3, "首页销售榜榜一"),
-    // 首页销售榜榜二
-    PC_HOME_SALE_RANK_TWO(4, "首页销售榜榜二"),
-    // 首页销售榜榜三
-    PC_HOME_SALE_RANK_THREE(5, "首页销售榜榜三"),
-    // 首页销售榜榜四
-    PC_HOME_SALE_RANK_FOUR(6, "首页销售榜榜四"),
+    // 顶部纵向商品
+    PC_HOME_TOP_RIGHT_BANNER(2, "首页顶部纵向商品"),
+    // 首页销售榜一商品
+    PC_HOME_SALE_RANK_ONE(3, "首页销售榜一商品"),
+    // 首页销售榜二商品
+    PC_HOME_SALE_RANK_TWO(4, "首页销售榜二商品"),
+    // 首页销售榜三商品
+    PC_HOME_SALE_RANK_THREE(5, "首页销售榜三商品"),
+    // 首页销售榜四商品
+    PC_HOME_SALE_RANK_FOUR(6, "首页销售榜四商品"),
     // 风格榜
     PC_HOME_STYLE_RANK(7, "首页风格榜"),
     // 人气榜左侧大图
     PC_HOME_POP_LEFT_BANNER(8, "首页人气榜左大图"),
     // 人气榜中间图
     PC_HOME_POP_MID(9, "首页人气榜中间图"),
-    // 人气榜右侧图
-    PC_HOME_POP_RIGHT(10, "首页人气榜右侧图"),
+    // 人气榜右侧商品
+    PC_HOME_POP_RIGHT(10, "首页人气榜右侧商品"),
     // 首页档口横幅
     PC_HOME_SINGLE_BANNER(11, "首页档口横幅"),
     // 首页商品列表
     PC_HOME_PRODUCT_LIST(12, "首页商品列表"),
-    // 首页两侧固定挂耳
-    PC_HOME_FIXED_EAR(13, "首页两侧固定挂耳"),
+    // 首页两侧固定侧边栏
+    PC_HOME_FIXED_EAR(13, "首页两侧固定侧边栏"),
     // 首页搜索框下名称
     PC_HOME_SEARCH_DOWN_NAME(14, "首页搜索框下档口名称"),
     // 首页搜索框中推荐商品

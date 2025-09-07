@@ -3,6 +3,7 @@ package com.ruoyi.xkt.dto.storeProductFile;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 
@@ -13,6 +14,7 @@ import java.math.BigDecimal;
  */
 @ApiModel("档口商品文件返回数据")
 @Data
+@Accessors(chain = true)
 public class StoreProdFileResDTO {
 
     @ApiModelProperty("档口商品名称")

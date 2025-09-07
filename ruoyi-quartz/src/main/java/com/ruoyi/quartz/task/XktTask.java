@@ -130,7 +130,7 @@ public class XktTask {
 
     /**
      * 每天执行定时任务
-     * 每年3月1日、6月1日、9月1日、12月1日执行 生成春夏秋冬标签
+     * 每年3月1日、6月1日、9月1日、12月1日执行 生成夏秋冬春标签
      */
     @Transactional
     public void seasonTag() {
@@ -139,13 +139,13 @@ public class XktTask {
         int day = today.getDayOfMonth();
         String seasonLabel = "";
         if (month == 3 && day == 1) {
-            seasonLabel = today.getYear() + "年春季";
-        } else if (month == 6 && day == 1) {
             seasonLabel = today.getYear() + "年夏季";
-        } else if (month == 9 && day == 1) {
+        } else if (month == 6 && day == 1) {
             seasonLabel = today.getYear() + "年秋季";
-        } else if (month == 12 && day == 1) {
+        } else if (month == 9 && day == 1) {
             seasonLabel = today.getYear() + "年冬季";
+        } else if (month == 12 && day == 1) {
+            seasonLabel = today.getYear() + 1 + "年春季";
         }
         if (StringUtils.isEmpty(seasonLabel)) {
             return;

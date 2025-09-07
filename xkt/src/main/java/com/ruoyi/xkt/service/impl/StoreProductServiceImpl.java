@@ -767,7 +767,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
         List<StoreProductColorSize> colorSizeList = this.storeProdColorSizeMapper.selectList(new LambdaQueryWrapper<StoreProductColorSize>()
                 .eq(StoreProductColorSize::getStoreProdId, storeProdId).eq(StoreProductColorSize::getDelFlag, Constants.UNDELETED)
                 .eq(StoreProductColorSize::getStandard, ProductSizeStatus.STANDARD.getValue()));
-        List<StoreProdFileResDTO> fileList = this.storeProdFileMapper.selectVideoAndMainPicList(storeProdId);
+        List<StoreProdFileResDTO> fileList = this.storeProdFileMapper.selectVideoAndMainPicList(storeProdId, Collections.singletonList(FileType.MAIN_PIC.getValue()));
         // 第一张商品主图
         final String mainPicUrl = fileList.stream().filter(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC.getValue()))
                 .filter(x -> Objects.equals(x.getOrderNum(), ORDER_NUM_1)).map(StoreProdFileResDTO::getFileUrl).findAny().orElse("");
@@ -877,7 +877,8 @@ public class StoreProductServiceImpl implements IStoreProductService {
         // 获取商品的属性
         StoreProductCategoryAttribute cateAttr = this.storeProdCateAttrMapper.selectOne(new LambdaQueryWrapper<StoreProductCategoryAttribute>()
                 .eq(StoreProductCategoryAttribute::getStoreProdId, storeProdId).eq(StoreProductCategoryAttribute::getDelFlag, Constants.UNDELETED));
-        List<StoreProdFileResDTO> fileList = this.storeProdFileMapper.selectVideoAndMainPicList(storeProdId);
+        List<StoreProdFileResDTO> fileList = this.storeProdFileMapper
+                .selectVideoAndMainPicList(storeProdId, Arrays.asList(FileType.MAIN_PIC_VIDEO.getValue(), FileType.MAIN_PIC.getValue()));
         prodInfoDTO
                 // 获取商品的属性
                 .setCateAttrMap(this.getCateAttrMap(cateAttr))
