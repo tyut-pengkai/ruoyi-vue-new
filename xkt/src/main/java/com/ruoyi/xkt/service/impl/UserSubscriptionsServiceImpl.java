@@ -1,5 +1,6 @@
 package com.ruoyi.xkt.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -9,10 +10,7 @@ import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
-import com.ruoyi.xkt.domain.Store;
-import com.ruoyi.xkt.domain.StoreProduct;
-import com.ruoyi.xkt.domain.StoreSale;
-import com.ruoyi.xkt.domain.UserSubscriptions;
+import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.userSubscriptions.UserSubscDTO;
 import com.ruoyi.xkt.dto.userSubscriptions.UserSubscDeleteDTO;
 import com.ruoyi.xkt.dto.userSubscriptions.UserSubscPageDTO;
@@ -20,10 +18,7 @@ import com.ruoyi.xkt.dto.userSubscriptions.UserSubscPageResDTO;
 import com.ruoyi.xkt.enums.NoticeOwnerType;
 import com.ruoyi.xkt.enums.NoticeType;
 import com.ruoyi.xkt.enums.UserNoticeType;
-import com.ruoyi.xkt.mapper.StoreMapper;
-import com.ruoyi.xkt.mapper.StoreProductMapper;
-import com.ruoyi.xkt.mapper.StoreSaleMapper;
-import com.ruoyi.xkt.mapper.UserSubscriptionsMapper;
+import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.INoticeService;
 import com.ruoyi.xkt.service.IUserSubscriptionsService;
 import lombok.RequiredArgsConstructor;
@@ -55,6 +50,7 @@ public class UserSubscriptionsServiceImpl implements IUserSubscriptionsService {
     final StoreProductMapper storeProdMapper;
     final INoticeService noticeService;
     final StoreMapper storeMapper;
+    final SysFileMapper fileMapper;
 
 
     /**
@@ -139,6 +135,13 @@ public class UserSubscriptionsServiceImpl implements IUserSubscriptionsService {
         List<UserSubscPageResDTO> list = this.userSubMapper.selectUserSubscPage(userId, pageDTO.getStoreName());
         if (CollectionUtils.isEmpty(list)) {
             return Page.empty(pageDTO.getPageNum(), pageDTO.getPageSize());
+        }
+        // 获取档口头像ID列表
+        List<Long> logoFileIdList = list.stream().map(UserSubscPageResDTO::getStoreLogoId).filter(ObjectUtils::isNotEmpty).collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(logoFileIdList)) {
+            List<SysFile> fileList = this.fileMapper.selectByIds(logoFileIdList);
+            Map<Long, SysFile> fileMap = fileList.stream().collect(Collectors.toMap(SysFile::getId, Function.identity()));
+            list.forEach(x -> x.setLogo(BeanUtil.toBean(fileMap.get(x.getStoreLogoId()), UserSubscPageResDTO.USPFileDTO.class)));
         }
         // APP 查询直接返回数据即可
         if (pageDTO.getSource() == 2) {

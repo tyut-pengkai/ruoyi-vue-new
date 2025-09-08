@@ -1,9 +1,12 @@
 package com.ruoyi.xkt.dto.userSubscriptions;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
+
+import java.math.BigDecimal;
 
 /**
  * @author liujiang
@@ -40,5 +43,22 @@ public class UserSubscPageResDTO {
     private Long last30DaysSaleQuantity;
     @ApiModelProperty(value = "最近7天新增商品数")
     private Long last7DaysNewProdQuantity;
+    @JsonIgnore
+    @ApiModelProperty(value = "档口LogoId")
+    private Long storeLogoId;
+    @ApiModelProperty(value = "档口头像")
+    private USPFileDTO logo;
+
+    @Data
+    public static class USPFileDTO {
+        @ApiModelProperty(value = "文件名称")
+        private String fileName;
+        @ApiModelProperty(value = "文件路径")
+        private String fileUrl;
+        @ApiModelProperty(value = "文件类型")
+        private Integer fileType;
+        @ApiModelProperty(value = "文件大小")
+        private BigDecimal fileSize;
+    }
 
 }

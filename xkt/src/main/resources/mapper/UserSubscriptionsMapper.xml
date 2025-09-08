@@ -25,6 +25,7 @@
             s.contact_back_phone,
             s.wechat_account,
             s.qq_account,
+            s.store_logo_id,
             s.store_address,
             s.del_flag AS storeDelFlag,
             DATEDIFF(CURDATE(), DATE(us.create_time)) AS focusDays
