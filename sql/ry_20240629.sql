@@ -2119,6 +2119,9 @@ VALUES (1089, 34, '2025年夏季', '2025年夏季', 'release_year_season', '0', 
 INSERT INTO `sys_dict_data`
 VALUES (1090, 35, '2025年秋季', '2025年秋季', 'release_year_season', '0', 'admin', '2025-08-03 20:57:32', '',
         '2025-08-03 20:57:32', '', 0, '0');
+INSERT INTO `sys_dict_data`
+VALUES (1092, 37, '2025年冬季', '2025年冬季', 'release_year_season', '0', 'admin', '2025-09-01 03:00:00', '',
+        '2025-09-01 03:00:00', NULL, 0, '0');
 
 
 -- ----------------------------

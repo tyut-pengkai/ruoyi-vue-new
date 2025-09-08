@@ -180,7 +180,7 @@ public class UserFavoritesServiceImpl implements IUserFavoritesService {
         // 找到当前商品的颜色
         List<StoreProductColor> prodColorList = this.prodColorMapper.selectList(new LambdaQueryWrapper<StoreProductColor>()
                 .in(StoreProductColor::getStoreProdId, notAddList.stream().map(UserFavBatchAddToShopCartDTO.BatchDTO::getStoreProdId).collect(Collectors.toList()))
-                .in(StoreProductColor::getProdStatus, Arrays.asList(EProductStatus.ON_SALE.getValue(), EProductStatus.TAIL_GOODS.getValue()))
+                .in(StoreProductColor::getProdStatus, Collections.singletonList(EProductStatus.ON_SALE.getValue()))
                 .eq(StoreProductColor::getDelFlag, Constants.UNDELETED));
         // 按照storeProdId分组，若商品有多个颜色则任取其一
         Map<Long, StoreProductColor> prodColorMap = prodColorList.stream().collect(Collectors.toMap(StoreProductColor::getStoreProdId, Function.identity(), (x, y) -> x));
