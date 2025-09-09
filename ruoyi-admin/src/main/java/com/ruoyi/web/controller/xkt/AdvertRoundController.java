@@ -134,4 +134,12 @@ public class AdvertRoundController extends XktBaseController {
         return R.ok(advertRoundService.getRejectReason(advertRoundId));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
+    @ApiOperation(value = "根据advertRoundId查看设置的商品及设置的推广图", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/set/{advertRoundId}/{storeId}")
+    public R<AdRoundLatestResVO> getSetInfo(@PathVariable("advertRoundId") Long advertRoundId, @PathVariable("storeId") Long storeId) {
+        return R.ok(BeanUtil.toBean(advertRoundService.getSetInfo(advertRoundId, storeId), AdRoundLatestResVO.class));
+    }
+
+
 }

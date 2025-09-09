@@ -138,4 +138,13 @@ public interface IAdvertRoundService {
      * @return List<AdRoundStoreBoughtResDTO>
      */
     List<AdRoundStoreBoughtResDTO> getStoreBoughtRecord(Long storeId);
+
+    /**
+     * 根据推广位置ID及档口ID 获取 设置的推广商品或图片
+     *
+     * @param advertRoundId 推广位置ID
+     * @param storeId       档口ID
+     * @return AdRoundLatestResDTO
+     */
+    AdRoundLatestResDTO getSetInfo(Long advertRoundId, Long storeId);
 }

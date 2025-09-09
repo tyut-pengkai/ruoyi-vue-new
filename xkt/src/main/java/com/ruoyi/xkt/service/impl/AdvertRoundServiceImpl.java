@@ -460,6 +460,31 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         return boughtRoundList;
     }
 
+    /**
+     * 根据推广位置ID及档口ID 获取 设置的推广商品或图片
+     *
+     * @param advertRoundId 推广位置ID
+     * @param storeId       档口ID
+     * @return AdRoundLatestResDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public AdRoundLatestResDTO getSetInfo(Long advertRoundId, Long storeId) {
+        AdvertRound advertRound = this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
+                .eq(AdvertRound::getId, advertRoundId).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
+                .eq(AdvertRound::getStoreId, storeId));
+        AdRoundLatestResDTO roundSetInfoDTO = new AdRoundLatestResDTO();
+        if (ObjectUtils.isEmpty(advertRound)) {
+            return roundSetInfoDTO;
+        }
+        List<StoreProduct> storeProdList = Optional.ofNullable(this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+                        .in(StoreProduct::getId, StrUtil.split(advertRound.getProdIdStr(), ","))
+                        .eq(StoreProduct::getDelFlag, Constants.UNDELETED).eq(StoreProduct::getStoreId, advertRound.getStoreId())))
+                .orElseThrow(() -> new ServiceException("档口商品不存在!", HttpStatus.ERROR));
+        return roundSetInfoDTO.setProdList(storeProdList.stream().map(x -> new AdRoundLatestResDTO.ARLProdDTO()
+                .setStoreProdId(x.getId()).setProdArtNum(x.getProdArtNum())).collect(Collectors.toList()));
+    }
+
 
     /**
      * 根据广告ID获取推广轮次列表，并返回当前档口在这些推广轮次的数据
@@ -851,12 +876,14 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         // 将minRoundIdMap中的值转换为List<AdRoundPopularResDTO>
         List<AdRoundPopularResDTO> list = minRoundIdMap.values().stream().map(Optional::get).map(x -> new AdRoundPopularResDTO().setAdvertId(x.getAdvertId())
                         .setTypeId(x.getTypeId()).setTypeName(AdType.of(x.getTypeId()).getLabel()).setShowType(x.getShowType())
-                        .setStartTime(DateUtils.timeMMDD(x.getStartTime())).setEndTime(DateUtils.timeMMDD(x.getEndTime())).setStartPrice(x.getStartPrice()))
+                        .setStartTime(DateUtils.timeMMDD(x.getStartTime())).setEndTime(DateUtils.timeMMDD(x.getEndTime()))
+                        .setStartPrice(this.getAvgStartPrice(x.getStartTime(), x.getEndTime(), x.getStartPrice())))
                 .collect(Collectors.toList());
         // 存到redis中
         redisCache.setCacheObject(ADVERT_POPULAR, list, 1, TimeUnit.DAYS);
         return list;
     }
+
 
     /**
      * 获取当前推广位最高的价格及档口设置的商品
@@ -1229,6 +1256,20 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
      */
     private boolean hasPic(Integer displayType) {
         return Objects.equals(displayType, AdDisplayType.PICTURE.getValue()) || Objects.equals(displayType, AdDisplayType.PIC_AND_PROD.getValue());
+    }
+
+    /**
+     * 获取受欢迎推广图的平均价格
+     *
+     * @param startTime  开始时间
+     * @param endTime    结束时间
+     * @param startPrice 开始价格
+     * @return 平均每一天价格
+     */
+    private BigDecimal getAvgStartPrice(Date startTime, Date endTime, BigDecimal startPrice) {
+        // 根据当前日期与截止日期的占比修改推广价格
+        return startPrice.divide(BigDecimal.valueOf(calculateDurationDay(startTime, endTime, Boolean.TRUE)),
+                0, RoundingMode.HALF_UP);
     }
 
 }
