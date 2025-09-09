@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * @author liujiang
@@ -27,6 +28,6 @@ public class StoreProdPageVO extends BasePageVO {
     private Long storeId;
     @ApiModelProperty(value = "商品状态[1未发布，2在售，3尾货，4已下架，5已删除]", required = true)
     @NotNull(message = "商品状态不能为空")
-    private Integer prodStatus;
+    private List<Integer> prodStatusList;
 
 }

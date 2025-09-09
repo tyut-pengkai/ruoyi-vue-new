@@ -11,6 +11,7 @@ import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.AdType;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.adminAdvertRound.*;
 import com.ruoyi.xkt.dto.advertRound.AdRoundUpdateDTO;
@@ -233,7 +234,7 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
         // 设置系统拦截的数据 并将系统拦截设置为1
         advertRound.setStoreId(interceptDTO.getStoreId()).setSysIntercept(AdSysInterceptType.INTERCEPT.getValue())
                 .setVoucherDate(java.sql.Date.valueOf(LocalDate.now())).setBiddingStatus(AdBiddingStatus.BIDDING_SUCCESS.getValue())
-                .setBiddingTempStatus(AdBiddingStatus.BIDDING_SUCCESS.getValue());
+                .setBiddingTempStatus(AdBiddingStatus.BIDDING_SUCCESS.getValue()).setCreateBy(SecurityUtils.getUsernameSafe());
         if (ObjectUtils.isNotEmpty(interceptDTO.getFile())) {
             SysFile file = BeanUtil.toBean(interceptDTO.getFile(), SysFile.class);
             this.fileMapper.insert(file);

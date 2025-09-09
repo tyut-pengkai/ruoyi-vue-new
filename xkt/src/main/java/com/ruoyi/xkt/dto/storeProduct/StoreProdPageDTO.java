@@ -6,6 +6,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.List;
+
 /**
  * @author liujiang
  * @version v1.0
@@ -23,6 +25,6 @@ public class StoreProdPageDTO extends BasePageDTO {
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
     @ApiModelProperty(value = "商品状态")
-    private Integer prodStatus;
+    private List<Integer> prodStatusList;
 
 }
