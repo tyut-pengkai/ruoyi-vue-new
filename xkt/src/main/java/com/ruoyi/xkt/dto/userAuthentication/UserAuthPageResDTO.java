@@ -24,6 +24,6 @@ public class UserAuthPageResDTO {
     @ApiModelProperty(value = "审核状态名称")
     private String authStatusName;
     @ApiModelProperty(value = "启用状态")
-    private Integer delFlag;
+    private String delFlag;
 
 }
