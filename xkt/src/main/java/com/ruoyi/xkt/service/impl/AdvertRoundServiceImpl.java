@@ -387,14 +387,26 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                 .map(x -> {
                     // 如果是最近的播放轮次，且当前时间在 晚上10:00:01 之后到 当天23:59:59 都显示 biddingTempStatus 字段
                     final Integer biddingStatus = tenClockAfter && roundIdList.contains(x.getRoundId()) ? x.getBiddingTempStatus() : x.getBiddingStatus();
-                    return BeanUtil.toBean(x, AdRoundStoreBoughtResDTO.class).setAdvertRoundId(x.getId())
-                            .setBiddingStatus(biddingStatus).setLaunchStatus(x.getLaunchStatus())
+                    AdRoundStoreBoughtResDTO boughtResDTO = BeanUtil.toBean(x, AdRoundStoreBoughtResDTO.class).setAdvertRoundId(x.getId())
+                            .setBiddingStatus(biddingStatus).setLaunchStatus(x.getLaunchStatus()).setActivePlay(Boolean.FALSE)
                             // 如果是已出价，则显示 "已出价:50"
                             .setBiddingStatusName(AdBiddingStatus.of(biddingStatus).getLabel() +
                                     (Objects.equals(biddingStatus, AdBiddingStatus.BIDDING.getValue()) ? ":" + x.getPayPrice() : ""))
                             .setTypeName(AdType.of(x.getTypeId()).getLabel())
                             // 如果是时间范围则不返回position
                             .setPosition(Objects.equals(x.getShowType(), AdShowType.TIME_RANGE.getValue()) ? null : x.getPosition());
+
+                    // 当前为播放轮 或 当前为第二轮且开始时间为明天
+                    if (Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue())) {
+                        boughtResDTO.setActivePlay(Boolean.TRUE);
+                        // 如果是第二轮且开始时间为明天
+                    } else if (Objects.equals(x.getRoundId(), AdRoundType.SECOND_ROUND.getValue())) {
+                        LocalDate startTimeDate = x.getStartTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                        if (LocalDate.now().plusDays(1).equals(startTimeDate)) {
+                            boughtResDTO.setActivePlay(Boolean.TRUE);
+                        }
+                    }
+                    return boughtResDTO;
                 })
                 .collect(Collectors.toList());
         // showType 为 时间范围的 每一轮最高的出价map

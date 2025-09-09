@@ -50,5 +50,7 @@ public class AdRoundStoreBoughtResDTO {
     private String biddingStatusName;
     @ApiModelProperty(value = "当前播放状态")
     private Integer launchStatus;
+    @ApiModelProperty(value = "正在播放 或 即将播放")
+    private Boolean activePlay;
 
 }

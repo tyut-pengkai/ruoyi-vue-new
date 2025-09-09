@@ -424,7 +424,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         if (ObjectUtils.isNotEmpty(searchResultAdvertList)) {
             return searchResultAdvertList;
         }
-        List<AdvertRound> oneMonthList = this.getOneMonthAdvertList(Collections.singletonList(AdType.PC_SEARCH_RESULT.getValue()));
+        List<AdvertRound> oneMonthList = this.getOneMonthAdvertList(Collections.singletonList(AdType.PC_SEARCH_RIGHT_PRODUCT.getValue()));
         if (CollectionUtils.isEmpty(oneMonthList)) {
             return new ArrayList<>();
         }

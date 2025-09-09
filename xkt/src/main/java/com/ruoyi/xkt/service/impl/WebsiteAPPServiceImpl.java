@@ -359,7 +359,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
             // 从数据库查首页 新品榜 推广（精准搜索是否存在推广，不存在从已过期的数据中拉数据来凑数）
             List<AdvertRound> advertRoundList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
                     .isNotNull(AdvertRound::getStoreId).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
-                    .eq(AdvertRound::getTypeId, AdType.APP_SEARCH_RESULT.getValue())
+                    .eq(AdvertRound::getTypeId, AdType.APP_SEARCH_RESULT_PRODUCT.getValue())
                     .eq(AdvertRound::getLaunchStatus, AdLaunchStatus.LAUNCHING.getValue())
                     .eq(AdvertRound::getBiddingStatus, AdBiddingStatus.BIDDING_SUCCESS.getValue()));
             if (CollectionUtils.isNotEmpty(advertRoundList)) {

@@ -76,12 +76,14 @@ public enum AdType {
     PIC_SEARCH_PRODUCT(300, "以图搜款商品"),
 
 
-    // PC搜索结果
-    PC_SEARCH_RESULT(401, "电脑端搜索结果"),
+    // PC搜索右侧商品
+    PC_SEARCH_RIGHT_PRODUCT(401, "电脑端搜索右侧商品"),
     // PC用户中心 18个位置
     PC_USER_CENTER(402, "电脑端用户中心"),
     // PC下载页
     PC_DOWNLOAD(403, "电脑端下载页"),
+    // PC搜索结果商品
+    PC_SEARCH_RESULT_PRODUCT(404, "电脑端搜索结果商品"),
 
 
     // APP首页顶部轮播图
@@ -96,8 +98,8 @@ public enum AdType {
     APP_HOME_POP_RECOMMEND_PROD(505, "APP首页人气榜商品列表"),
     // APP首页新品榜 商品列表
     APP_HOME_NEW_PROD_RECOMMEND_PROD(506, "APP首页新品榜商品列表"),
-    // APP搜索结果
-    APP_SEARCH_RESULT(507, "APP搜索结果"),
+    // APP搜索结果商品
+    APP_SEARCH_RESULT_PRODUCT(507, "APP搜索结果商品"),
 
 
     // APP分类页轮播图
