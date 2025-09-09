@@ -1,15 +1,20 @@
 package com.ruoyi.xkt.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
+import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.Store;
 import com.ruoyi.xkt.domain.StoreMember;
 import com.ruoyi.xkt.dto.storeMember.StoreMemberCreateDTO;
+import com.ruoyi.xkt.dto.storeMember.StoreMemberPageDTO;
+import com.ruoyi.xkt.dto.storeMember.StoreMemberPageResDTO;
 import com.ruoyi.xkt.enums.NoticeOwnerType;
 import com.ruoyi.xkt.enums.NoticeType;
 import com.ruoyi.xkt.enums.StoreMemberLevel;
@@ -20,11 +25,13 @@ import com.ruoyi.xkt.service.IAssetService;
 import com.ruoyi.xkt.service.INoticeService;
 import com.ruoyi.xkt.service.IStoreMemberService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -52,6 +59,10 @@ public class StoreMemberServiceImpl implements IStoreMemberService {
     @Override
     @Transactional
     public Integer create(StoreMemberCreateDTO createDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isAdmin()) {
+            throw new ServiceException("当前用户非管理员账号，无权限操作!", HttpStatus.ERROR);
+        }
         Optional.ofNullable(createDTO.getStoreId()).orElseThrow(() -> new RuntimeException("档口ID不能为空!"));
         Optional.ofNullable(createDTO.getPayPrice()).orElseThrow(() -> new RuntimeException("购买金额不能为空!"));
         StoreMember storeMember = new StoreMember();
@@ -79,5 +90,25 @@ public class StoreMemberServiceImpl implements IStoreMemberService {
         assetService.payVipFee(createDTO.getStoreId(), createDTO.getPayPrice());
         return count;
     }
+
+    /**
+     * 获取档口会员列表
+     *
+     * @param pageDTO 档口会员列表入参
+     * @return Page<StoreMemberPageResDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page<StoreMemberPageResDTO> page(StoreMemberPageDTO pageDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isAdmin()) {
+            throw new ServiceException("当前用户非管理员账号，无权限操作!", HttpStatus.ERROR);
+        }
+        PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
+        List<StoreMemberPageResDTO> list = this.storeMemberMapper.selectStoreMemberPage(pageDTO);
+        return CollectionUtils.isEmpty(list) ? Page.empty(pageDTO.getPageSize(), pageDTO.getPageNum())
+                : Page.convert(new PageInfo<>(list));
+    }
+
 
 }

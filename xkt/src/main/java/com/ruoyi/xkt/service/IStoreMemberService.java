@@ -1,6 +1,9 @@
 package com.ruoyi.xkt.service;
 
+import com.ruoyi.common.core.page.Page;
 import com.ruoyi.xkt.dto.storeMember.StoreMemberCreateDTO;
+import com.ruoyi.xkt.dto.storeMember.StoreMemberPageDTO;
+import com.ruoyi.xkt.dto.storeMember.StoreMemberPageResDTO;
 
 /**
  * 推广营销Service接口
@@ -17,4 +20,12 @@ public interface IStoreMemberService {
      * @return Integer
      */
     Integer create(StoreMemberCreateDTO createDTO);
+
+    /**
+     * 档口会员列表
+     *
+     * @param pageDTO 档口会员列表入参
+     * @return Page<StoreMemberPageResDTO>
+     */
+    Page<StoreMemberPageResDTO> page(StoreMemberPageDTO pageDTO);
 }

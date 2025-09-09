@@ -61,6 +61,10 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
     @Override
     @Transactional(readOnly = true)
     public Page<AdminAdRoundPageResDTO> page(AdminAdRoundPageDTO pageDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isAdmin() ) {
+            throw new ServiceException("当前用户非管理员账号，无权限操作!", HttpStatus.ERROR);
+        }
         Optional.ofNullable(pageDTO.getLaunchStatus()).orElseThrow(() -> new ServiceException("投放状态launchStatus必传", HttpStatus.ERROR));
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
         List<AdminAdRoundPageResDTO> list = this.advertRoundMapper.selectAdminAdvertPage(pageDTO);
@@ -95,6 +99,10 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
     @Override
     @Transactional
     public Integer auditPic(AdminAdRoundAuditDTO auditDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isAdmin() ) {
+            throw new ServiceException("当前用户非管理员账号，无权限操作!", HttpStatus.ERROR);
+        }
         AdvertRound advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
                         .eq(AdvertRound::getId, auditDTO.getAdvertRoundId()).eq(AdvertRound::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("推广位不存在!", HttpStatus.ERROR));
@@ -125,6 +133,10 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
     @Override
     @Transactional
     public Integer unsubscribe(AdminAdRoundUnsubscribeDTO unsubscribeDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isAdmin() ) {
+            throw new ServiceException("当前用户非管理员账号，无权限操作!", HttpStatus.ERROR);
+        }
         AdvertRound advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
                         .eq(AdvertRound::getId, unsubscribeDTO.getAdvertRoundId()).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
                         .eq(AdvertRound::getStoreId, unsubscribeDTO.getStoreId())))
@@ -153,6 +165,10 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
     @Override
     @Transactional
     public Integer uploadAdvertPic(AdRoundUpdateDTO picDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isAdmin() ) {
+            throw new ServiceException("当前用户非管理员账号，无权限操作!", HttpStatus.ERROR);
+        }
         AdvertRound advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
                         .eq(AdvertRound::getId, picDTO.getAdvertRoundId()).eq(AdvertRound::getStoreId, picDTO.getStoreId())
                         .eq(AdvertRound::getDelFlag, Constants.UNDELETED)))
@@ -181,6 +197,10 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
     @Override
     @Transactional
     public synchronized Integer sysIntercept(AdminAdRoundSysInterceptDTO interceptDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isAdmin() ) {
+            throw new ServiceException("当前用户非管理员账号，无权限操作!", HttpStatus.ERROR);
+        }
         final LocalDateTime nineThirty = LocalDateTime.of(LocalDate.now(), LocalTime.of(21, 30));
         final LocalDateTime tenFive = LocalDateTime.of(LocalDate.now(), LocalTime.of(22, 5));
         // 判断当前时间是否为晚上9:30 - 10:05区间，若是，则管理员不可操作推广拦截
@@ -261,6 +281,10 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
     @Override
     @Transactional
     public Integer cancelIntercept(AdminAdRoundCancelInterceptDTO cancelInterceptDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isAdmin() ) {
+            throw new ServiceException("当前用户非管理员账号，无权限操作!", HttpStatus.ERROR);
+        }
         // 该推广位是否被拦截
         AdvertRound advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
                         .eq(AdvertRound::getId, cancelInterceptDTO.getAdvertRoundId()).eq(AdvertRound::getDelFlag, Constants.UNDELETED)

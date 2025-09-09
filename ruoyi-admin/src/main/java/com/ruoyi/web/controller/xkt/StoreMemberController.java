@@ -4,9 +4,16 @@ import cn.hutool.core.bean.BeanUtil;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.web.controller.xkt.vo.store.StorePageVO;
 import com.ruoyi.web.controller.xkt.vo.storeMember.StoreMemberCreateVO;
+import com.ruoyi.web.controller.xkt.vo.storeMember.StoreMemberPageVO;
+import com.ruoyi.xkt.dto.store.StorePageDTO;
+import com.ruoyi.xkt.dto.store.StorePageResDTO;
 import com.ruoyi.xkt.dto.storeMember.StoreMemberCreateDTO;
+import com.ruoyi.xkt.dto.storeMember.StoreMemberPageDTO;
+import com.ruoyi.xkt.dto.storeMember.StoreMemberPageResDTO;
 import com.ruoyi.xkt.service.IStoreMemberService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -38,6 +45,13 @@ public class StoreMemberController extends XktBaseController {
     @PostMapping
     public R<Integer> create(@Validated @RequestBody StoreMemberCreateVO createVO) {
         return R.ok(storeMemberService.create(BeanUtil.toBean(createVO, StoreMemberCreateDTO.class)));
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @ApiOperation(value = "查询会员列表 ", httpMethod = "POST", response = R.class)
+    @PostMapping("/page")
+    public R<Page<StoreMemberPageResDTO>> page(@Validated @RequestBody StoreMemberPageVO pageVO) {
+        return R.ok(storeMemberService.page(BeanUtil.toBean(pageVO, StoreMemberPageDTO.class)));
     }
 
     // TODO 每天获取档口会员过期提醒
