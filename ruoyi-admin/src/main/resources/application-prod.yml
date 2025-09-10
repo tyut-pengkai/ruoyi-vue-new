@@ -7,7 +7,7 @@ ruoyi:
   # 版权年份
   copyrightYear: 2025
   # 文件路径 示例（ Windows配置D:/ruoyi/uploadPath，Linux配置 /home/ruoyi/uploadPath）
-  profile: D:/ruoyi/uploadPath
+  profile: /ruoyi/uploadPath
   # 获取ip地址开关
   addressEnabled: false
   # 验证码类型 math 数字计算 char 字符验证  num 纯数字
@@ -22,7 +22,7 @@ oss:
   regionId: cn-hangzhou
   roleArn: acs:ram::1970150216435822:role/oss-upload
   expiredDuration: 3600
-  tempDir: E:/temp/
+  tempDir: /temp/
   stsCacheDuration: 1800
 img-search:
   endPoint: imagesearch.cn-hangzhou.aliyuncs.com
