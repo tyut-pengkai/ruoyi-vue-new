@@ -128,8 +128,8 @@ public class AdvertRoundController extends XktBaseController {
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
-    @ApiOperation(value = "查看图片审核拒绝理由", httpMethod = "PUT", response = R.class)
-    @PutMapping("/reject-reason/{advertRoundId}")
+    @ApiOperation(value = "查看图片审核拒绝理由", httpMethod = "GET", response = R.class)
+    @GetMapping("/reject-reason/{advertRoundId}")
     public R<String> getRejectReason(@PathVariable Long advertRoundId) {
         return R.ok(advertRoundService.getRejectReason(advertRoundId));
     }
