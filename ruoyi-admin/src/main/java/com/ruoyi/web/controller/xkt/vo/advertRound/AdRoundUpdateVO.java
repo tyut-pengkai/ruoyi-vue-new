@@ -29,6 +29,8 @@ public class AdRoundUpdateVO {
     private ARUFileVO file;
     @ApiModelProperty(value = "商品ID字符串")
     private String prodIdStr;
+    @ApiModelProperty(value = "风格类型")
+    private Integer styleType;
 
     @Data
     public static class ARUFileVO {

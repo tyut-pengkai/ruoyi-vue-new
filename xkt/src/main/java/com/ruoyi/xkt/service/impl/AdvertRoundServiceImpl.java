@@ -960,25 +960,38 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                 || Objects.equals(advertRound.getLaunchStatus(), AdLaunchStatus.CANCEL.getValue())) {
             throw new ServiceException(AdLaunchStatus.of(advertRound.getLaunchStatus()).getLabel() + "推广不可调整!", HttpStatus.ERROR);
         }
-        // 若为 待投放，判断上传时间是否为 推广开始前一晚 22:20 分
-        if (Objects.equals(advertRound.getLaunchStatus(), AdLaunchStatus.UN_LAUNCH.getValue())) {
-            // 将advertRound.getStartTime()转为LocalDateTime
-            LocalDateTime filterTime = advertRound.getStartTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().minusDays(1).withHour(22).withMinute(20);
-            if (LocalDateTime.now().isAfter(filterTime)) {
+        // 获取当前推广上传推广图或上传商品 的 截止时间
+        String uploadDeadline = redisCache.getCacheObject(ADVERT_UPLOAD_FILTER_TIME_KEY + advertRound.getSymbol());
+        if (StringUtils.isNotEmpty(uploadDeadline)) {
+            if (uploadDeadline.compareTo(DateUtils.getTime()) < 0) {
                 throw new ServiceException("已超过推广修改截止时间，修改失败!", HttpStatus.ERROR);
             }
-        }
-        // 投放中，则判断 voucherDate 是否等于当天，若是，则再判断 是否晚于22:20分，若是，则不可编辑
-        if (Objects.equals(advertRound.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())) {
-            if (!Objects.equals(DateUtils.dateTime(advertRound.getVoucherDate()), DateUtils.dateTime(new Date()))) {
-                throw new ServiceException("已超过推广修改截止时间，修改失败!", HttpStatus.ERROR);
+            // 保底的判断，其实上面的判断已经够了
+        } else {
+            // 若为 待投放，判断上传时间是否为 推广开始前一晚 22:20 分
+            if (Objects.equals(advertRound.getLaunchStatus(), AdLaunchStatus.UN_LAUNCH.getValue())) {
+                // 将advertRound.getStartTime()转为LocalDateTime
+                LocalDateTime filterTime = advertRound.getStartTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().minusDays(1).withHour(22).withMinute(20);
+                if (LocalDateTime.now().isAfter(filterTime)) {
+                    throw new ServiceException("已超过推广修改截止时间，修改失败!", HttpStatus.ERROR);
+                }
             }
-            if (LocalDateTime.now().isAfter(LocalDateTime.now().withHour(22).withMinute(20))) {
-                throw new ServiceException("已超过推广修改截止时间，修改失败!", HttpStatus.ERROR);
+            // 投放中，则判断 voucherDate 是否等于当天，若是，则再判断 是否晚于22:20分，若是，则不可编辑
+            if (Objects.equals(advertRound.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue())) {
+                if (!Objects.equals(DateUtils.dateTime(advertRound.getVoucherDate()), DateUtils.dateTime(new Date()))) {
+                    throw new ServiceException("已超过推广修改截止时间，修改失败!", HttpStatus.ERROR);
+                }
+                if (LocalDateTime.now().isAfter(LocalDateTime.now().withHour(22).withMinute(20))) {
+                    throw new ServiceException("已超过推广修改截止时间，修改失败!", HttpStatus.ERROR);
+                }
             }
         }
         // 设置推广商品
         advertRound.setProdIdStr(picDTO.getProdIdStr());
+        // 设置风格类型
+        if (ObjectUtils.isNotEmpty(picDTO.getStyleType())) {
+            advertRound.setStyleType(picDTO.getStyleType());
+        }
         // 修改推广图
         if (ObjectUtils.isNotEmpty(picDTO.getFile())) {
             SysFile file = BeanUtil.toBean(picDTO.getFile(), SysFile.class);
@@ -1076,9 +1089,10 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
 
     /**
      * 处理 "时间范围" 类型 或者 "时间范围 + 位置枚举" 类型 的截止时间
-     *  @param formatter formatter
+     *
+     * @param formatter formatter
      * @param roundList 播放轮次
-     * @param zoneId zoneId
+     * @param zoneId    zoneId
      */
     private void setTimeRangePatternDeadline(DateTimeFormatter formatter, List<AdvertRound> roundList, ZoneId zoneId) {
         Map<String, String> symbolDeadlineMap = new HashMap<>();
@@ -1102,7 +1116,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
             String defaultDeadline = symbolDeadlineMap.getOrDefault(symbol, "22:00:00");
             // 第二轮之后的轮次过期时间都为开始时间前一天
             String deadline = formatter.format(startTime.toInstant().atZone(zoneId)
-                            .toLocalDateTime().minusDays(1).with(LocalTime.parse(defaultDeadline)));
+                    .toLocalDateTime().minusDays(1).with(LocalTime.parse(defaultDeadline)));
             redisCache.setCacheObject(ADVERT_DEADLINE_KEY + symbol, deadline, 1, TimeUnit.DAYS);
             // 档口上传推广图 或 上传推广商品 截止时间
             String uploadDeadline = formatter.format(startTime.toInstant().atZone(zoneId)
