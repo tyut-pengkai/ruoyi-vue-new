@@ -231,16 +231,16 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                             .setCanPurchased(Boolean.TRUE).setEndWeekDay(getDayOfWeek(advertRound.getEndTime()))
                             .setShowType(advertRound.getShowType()).setPosition(advertRound.getPosition())
                             .setUploadDeadline(redisCache.getCacheObject(ADVERT_UPLOAD_FILTER_TIME_KEY + advertRound.getSymbol()));
-                    // 如果是播放论，并且是否全部为 BIDDING_SUCCESS，若是 则不可购买当前轮次（就算是当前档口购买的，biddingStatus也为2，也将标识置为false）
+                    // 如果是播放轮，并且是否全部为 BIDDING_SUCCESS，若是 则不可购买当前轮次（就算是当前档口购买的，biddingStatus也为2，也将标识置为false）
                     if (Objects.equals(roundId, AdRoundType.PLAY_ROUND.getValue())
                             && currentRoundList.stream().allMatch(x -> Objects.equals(x.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue()))) {
                         typeRoundResDTO.setCanPurchased(Boolean.FALSE);
                     }
-                    // 如果是播放论，则播放开始时间展示为当天，因为有可能是播放的中间某一天
+                    // 如果是播放轮，则播放开始时间展示为当天，因为有可能是播放的中间某一天
                     if (Objects.equals(advertRound.getRoundId(), AdRoundType.PLAY_ROUND.getValue())) {
                         Date tomorrow = Date.from(LocalDate.now().plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
                         typeRoundResDTO.setStartTime(tomorrow).setStartWeekDay(getDayOfWeek(tomorrow))
-                                // 计算最新的间隔时间（如果为最新播放论，则展示第一轮正在播放时间与最后一天的差距）
+                                // 计算最新的间隔时间（如果为最新播放轮，则展示第一轮正在播放时间与最后一天的差距）
                                 .setDurationDay(calculateDurationDay(tomorrow, advertRound.getEndTime(), Boolean.TRUE));
                     }
                     // 展示类型 为时间范围 则，修改价格并显示每一轮竞价状态（位置枚举的价格是从另一个接口取的）
@@ -306,7 +306,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                     .setStartPrice(advertRound.getStartPrice()).setPayPrice(advertRound.getPayPrice()).setStoreId(storeId).setLaunchStatus(advertRound.getLaunchStatus())
                     .setStartTime(advertRound.getStartTime()).setEndTime(advertRound.getEndTime()).setSymbol(advertRound.getSymbol())
                     .setUploadDeadline(redisCache.getCacheObject(ADVERT_UPLOAD_FILTER_TIME_KEY + advertRound.getSymbol()));
-            // 如果是播放论，并且是否全部为 BIDDING_SUCCESS，若是 则不可购买当前轮次（就算是当前档口购买的，biddingStatus也为2，也将标识置为false）
+            // 如果是播放轮，并且是否全部为 BIDDING_SUCCESS，若是 则不可购买当前轮次（就算是当前档口购买的，biddingStatus也为2，也将标识置为false）
             if (Objects.equals(advertRound.getRoundId(), AdRoundType.PLAY_ROUND.getValue())
                     && Objects.equals(advertRound.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue())) {
                 boughtResDTO.setCanPurchased(Boolean.FALSE);
@@ -370,6 +370,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         boolean tenClockAfter = now.isAfter(LocalTime.of(22, 0, 0)) && now.isBefore(LocalTime.of(23, 59, 59));
         // 当天
         final Date voucherDate = java.sql.Date.valueOf(LocalDate.now());
+        final ZoneId zoneId = ZoneId.systemDefault();
         // 获取当前所有 正在投放 和 待投放的推广轮次
         List<AdvertRound> allRoundList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>().eq(AdvertRound::getDelFlag, Constants.UNDELETED)
                 .in(AdvertRound::getLaunchStatus, Arrays.asList(AdLaunchStatus.LAUNCHING.getValue(), AdLaunchStatus.UN_LAUNCH.getValue())));
@@ -391,7 +392,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                     // 如果是最近的播放轮次，且当前时间在 晚上10:00:01 之后到 当天23:59:59 都显示 biddingTempStatus 字段
                     final Integer biddingStatus = tenClockAfter && roundIdList.contains(x.getRoundId()) ? x.getBiddingTempStatus() : x.getBiddingStatus();
                     AdRoundStoreBoughtResDTO boughtResDTO = BeanUtil.toBean(x, AdRoundStoreBoughtResDTO.class).setAdvertRoundId(x.getId())
-                            .setBiddingStatus(biddingStatus).setLaunchStatus(x.getLaunchStatus()).setActivePlay(Boolean.FALSE)
+                            .setBiddingStatus(biddingStatus).setLaunchStatus(x.getLaunchStatus()).setActivePlay(Boolean.FALSE).setCanPurchased(Boolean.TRUE)
                             // 如果是已出价，则显示 "已出价:50"
                             .setBiddingStatusName(AdBiddingStatus.of(biddingStatus).getLabel() +
                                     (Objects.equals(biddingStatus, AdBiddingStatus.BIDDING.getValue()) ? ":" + x.getPayPrice() : ""))
@@ -403,9 +404,13 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                     // 当前为播放轮 或 当前为第二轮且开始时间为明天
                     if (Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue())) {
                         boughtResDTO.setActivePlay(Boolean.TRUE);
+                        // 如果是播放轮，并且是否全部为 BIDDING_SUCCESS，若是 则不可购买当前轮次（就算是当前档口购买的，biddingStatus也为2，也将标识置为false）
+                        if (Objects.equals(x.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue())) {
+                            boughtResDTO.setCanPurchased(Boolean.FALSE);
+                        }
                         // 如果是第二轮且开始时间为明天
                     } else if (Objects.equals(x.getRoundId(), AdRoundType.SECOND_ROUND.getValue())) {
-                        LocalDate startTimeDate = x.getStartTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                        LocalDate startTimeDate = x.getStartTime().toInstant().atZone(zoneId).toLocalDate();
                         if (LocalDate.now().plusDays(1).equals(startTimeDate)) {
                             boughtResDTO.setActivePlay(Boolean.TRUE);
                         }
@@ -417,9 +422,8 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         Map<Integer, BigDecimal> timeRangeRoundMaxPriceMap = allRoundList.stream()
                 .filter(x -> Objects.equals(x.getShowType(), AdShowType.TIME_RANGE.getValue()))
                 .filter(x -> ObjectUtils.isNotEmpty(x.getPayPrice()))
-                .collect(Collectors
-                        .groupingBy(AdvertRound::getRoundId, Collectors
-                                .mapping(AdvertRound::getPayPrice, Collectors.reducing(BigDecimal.ZERO, BigDecimal::max))));
+                .collect(Collectors.groupingBy(AdvertRound::getRoundId, Collectors
+                        .mapping(AdvertRound::getPayPrice, Collectors.reducing(BigDecimal.ZERO, BigDecimal::max))));
         // showType 为 位置枚举的 每一个位置最高出价的 map
         Map<Long, BigDecimal> positionEnumMaxPriceMap = allRoundList.stream()
                 .filter(x -> Objects.equals(x.getShowType(), AdShowType.POSITION_ENUM.getValue()))
@@ -432,19 +436,19 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         final List<Long> boughtPositionAdvertRoundIdList = boughtRoundList.stream().filter(x -> Objects.equals(x.getShowType(), AdShowType.POSITION_ENUM.getValue()))
                 .map(AdRoundStoreBoughtResDTO::getAdvertRoundId).collect(Collectors.toList());
         // 购买失败的 时间范围播放轮次的  列表
-        Map<Integer, AdvertRoundRecord> unBoughtTimeRangeMap = allRecordList.stream()
+        Map<Integer, AdvertRoundRecord> boughtFailTimeRangeMap = allRecordList.stream()
                 .filter(x -> Objects.equals(x.getShowType(), AdShowType.TIME_RANGE.getValue()))
                 .filter(x -> !boughtTimeRangeRoundIdList.contains(x.getRoundId()))
                 .collect(Collectors.toMap(AdvertRoundRecord::getRoundId, Function.identity(),
                         BinaryOperator.maxBy(Comparator.comparingLong(AdvertRoundRecord::getId))));
         // 购买失败的 位置枚举播放轮次的 列表
-        Map<Long, AdvertRoundRecord> unBoughtPositionMap = allRecordList.stream()
+        Map<Long, AdvertRoundRecord> boughtFailPositionMap = allRecordList.stream()
                 .filter(x -> Objects.equals(x.getShowType(), AdShowType.POSITION_ENUM.getValue()))
                 .filter(x -> !boughtPositionAdvertRoundIdList.contains(x.getAdvertRoundId()))
                 .collect(Collectors.toMap(AdvertRoundRecord::getAdvertRoundId, Function.identity(),
                         BinaryOperator.maxBy(Comparator.comparingLong(AdvertRoundRecord::getId))));
-        if (MapUtils.isNotEmpty(unBoughtTimeRangeMap)) {
-            unBoughtTimeRangeMap.forEach((roundId, record) -> {
+        if (MapUtils.isNotEmpty(boughtFailTimeRangeMap)) {
+            boughtFailTimeRangeMap.forEach((roundId, record) -> {
                 boughtRoundList.add(BeanUtil.toBean(record, AdRoundStoreBoughtResDTO.class).setPosition(null)
                         .setTypeName(AdType.of(record.getTypeId()).getLabel())
                         // 档口上传推广图或上传商品的截止时间
@@ -453,8 +457,8 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                                 + "，最新出价:" + timeRangeRoundMaxPriceMap.get(record.getRoundId())));
             });
         }
-        if (MapUtils.isNotEmpty(unBoughtPositionMap)) {
-            unBoughtPositionMap.forEach((advertRoundId, record) -> {
+        if (MapUtils.isNotEmpty(boughtFailPositionMap)) {
+            boughtFailPositionMap.forEach((advertRoundId, record) -> {
                 boughtRoundList.add(BeanUtil.toBean(record, AdRoundStoreBoughtResDTO.class)
                         .setTypeName(AdType.of(record.getTypeId()).getLabel())
                         // 档口上传推广图或上传商品的截止时间
@@ -463,9 +467,15 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                                 + "，最新出价:" + positionEnumMaxPriceMap.get(record.getAdvertRoundId())));
             });
         }
-        // 按照播放时间升序排列
-        boughtRoundList.sort(Comparator.comparing(AdRoundStoreBoughtResDTO::getStartTime));
-        return boughtRoundList;
+        return boughtRoundList.stream().peek(x -> {
+                    // 如果是播放轮，则播放开始时间展示为当天，因为有可能是播放的中间某一天
+                    if (Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue())) {
+                        x.setStartTime(Date.from(LocalDate.now().plusDays(1).atStartOfDay(zoneId).toInstant()));
+                    }
+                })
+                // 按照播放时间升序排列
+                .sorted(Comparator.comparing(AdRoundStoreBoughtResDTO::getStartTime))
+                .collect(Collectors.toList());
     }
 
     /**

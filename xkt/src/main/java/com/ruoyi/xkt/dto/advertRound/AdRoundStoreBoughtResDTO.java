@@ -54,5 +54,7 @@ public class AdRoundStoreBoughtResDTO {
     private Boolean activePlay;
     @ApiModelProperty(value = "购买上传截止时间")
     private String uploadDeadline;
+    @ApiModelProperty(value = "是否可购买")
+    private Boolean canPurchased;
 
 }
