@@ -238,6 +238,9 @@ public class Constants
     // %04d
     public static final String VOUCHER_SEQ_FORMAT = "%04d";
 
+    // 档口上传推广图或上传推广商品截止时间 晚上 22:20:00
+    public static final String ADVERT_STORE_UPLOAD_DEADLINE = "22:20:00";
+
     // 步橘网条码长度
     public static final Integer BU_JU_SN_LENGTH = 21;
     // 天友条码长度

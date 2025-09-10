@@ -45,6 +45,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.ruoyi.common.constant.CacheConstants.ADVERT_DEADLINE_KEY;
+import static com.ruoyi.common.constant.CacheConstants.ADVERT_UPLOAD_FILTER_TIME_KEY;
 import static com.ruoyi.common.constant.Constants.ADVERT_POPULAR;
 
 /**
@@ -228,7 +229,8 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                             .setSymbol(advertRound.getSymbol()).setLaunchStatus(advertRound.getLaunchStatus()).setStartTime(advertRound.getStartTime())
                             .setEndTime(advertRound.getEndTime()).setStartWeekDay(getDayOfWeek(advertRound.getStartTime())).setDurationDay(durationDay)
                             .setCanPurchased(Boolean.TRUE).setEndWeekDay(getDayOfWeek(advertRound.getEndTime()))
-                            .setShowType(advertRound.getShowType()).setPosition(advertRound.getPosition());
+                            .setShowType(advertRound.getShowType()).setPosition(advertRound.getPosition())
+                            .setUploadDeadline(redisCache.getCacheObject(ADVERT_UPLOAD_FILTER_TIME_KEY + advertRound.getSymbol()));
                     // 如果是播放论，并且是否全部为 BIDDING_SUCCESS，若是 则不可购买当前轮次（就算是当前档口购买的，biddingStatus也为2，也将标识置为false）
                     if (Objects.equals(roundId, AdRoundType.PLAY_ROUND.getValue())
                             && currentRoundList.stream().allMatch(x -> Objects.equals(x.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue()))) {
@@ -302,7 +304,8 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
             AdRoundTypeRoundBoughtResDTO boughtResDTO = new AdRoundTypeRoundBoughtResDTO().setTypeId(advertRound.getTypeId()).setAdvertRoundId(advertRound.getId())
                     .setAdvertId(advertRound.getAdvertId()).setRoundId(advertRound.getRoundId()).setPosition(advertRound.getPosition()).setCanPurchased(Boolean.TRUE)
                     .setStartPrice(advertRound.getStartPrice()).setPayPrice(advertRound.getPayPrice()).setStoreId(storeId).setLaunchStatus(advertRound.getLaunchStatus())
-                    .setStartTime(advertRound.getStartTime()).setEndTime(advertRound.getEndTime()).setSymbol(advertRound.getSymbol());
+                    .setStartTime(advertRound.getStartTime()).setEndTime(advertRound.getEndTime()).setSymbol(advertRound.getSymbol())
+                    .setUploadDeadline(redisCache.getCacheObject(ADVERT_UPLOAD_FILTER_TIME_KEY + advertRound.getSymbol()));
             // 如果是播放论，并且是否全部为 BIDDING_SUCCESS，若是 则不可购买当前轮次（就算是当前档口购买的，biddingStatus也为2，也将标识置为false）
             if (Objects.equals(advertRound.getRoundId(), AdRoundType.PLAY_ROUND.getValue())
                     && Objects.equals(advertRound.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue())) {
@@ -394,8 +397,9 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                                     (Objects.equals(biddingStatus, AdBiddingStatus.BIDDING.getValue()) ? ":" + x.getPayPrice() : ""))
                             .setTypeName(AdType.of(x.getTypeId()).getLabel())
                             // 如果是时间范围则不返回position
-                            .setPosition(Objects.equals(x.getShowType(), AdShowType.TIME_RANGE.getValue()) ? null : x.getPosition());
-
+                            .setPosition(Objects.equals(x.getShowType(), AdShowType.TIME_RANGE.getValue()) ? null : x.getPosition())
+                            // 档口上传推广图或上传商品的截止时间
+                            .setUploadDeadline(redisCache.getCacheObject(ADVERT_UPLOAD_FILTER_TIME_KEY + x.getSymbol()));
                     // 当前为播放轮 或 当前为第二轮且开始时间为明天
                     if (Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue())) {
                         boughtResDTO.setActivePlay(Boolean.TRUE);
@@ -443,6 +447,8 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
             unBoughtTimeRangeMap.forEach((roundId, record) -> {
                 boughtRoundList.add(BeanUtil.toBean(record, AdRoundStoreBoughtResDTO.class).setPosition(null)
                         .setTypeName(AdType.of(record.getTypeId()).getLabel())
+                        // 档口上传推广图或上传商品的截止时间
+                        .setUploadDeadline(redisCache.getCacheObject(ADVERT_UPLOAD_FILTER_TIME_KEY + record.getSymbol()))
                         .setBiddingStatusName(AdBiddingStatus.of(record.getBiddingStatus()).getLabel()
                                 + "，最新出价:" + timeRangeRoundMaxPriceMap.get(record.getRoundId())));
             });
@@ -451,6 +457,8 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
             unBoughtPositionMap.forEach((advertRoundId, record) -> {
                 boughtRoundList.add(BeanUtil.toBean(record, AdRoundStoreBoughtResDTO.class)
                         .setTypeName(AdType.of(record.getTypeId()).getLabel())
+                        // 档口上传推广图或上传商品的截止时间
+                        .setUploadDeadline(redisCache.getCacheObject(ADVERT_UPLOAD_FILTER_TIME_KEY + record.getSymbol()))
                         .setBiddingStatusName(AdBiddingStatus.of(record.getBiddingStatus()).getLabel()
                                 + "，最新出价:" + positionEnumMaxPriceMap.get(record.getAdvertRoundId())));
             });
@@ -1020,6 +1028,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         if (CollectionUtils.isEmpty(advertRoundList)) {
             return;
         }
+        final ZoneId zoneId = ZoneId.systemDefault();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DateUtils.YYYY_MM_DD_HH_MM_SS);
         advertRoundList.stream().collect(Collectors.groupingBy(AdvertRound::getAdvertId))
                 .forEach((advertId, roundList) -> {
@@ -1027,7 +1036,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                     final boolean isTimeRange = roundList.stream().anyMatch(x -> Objects.equals(x.getShowType(), AdShowType.TIME_RANGE.getValue()));
                     // 时间范围处理逻辑
                     if (isTimeRange) {
-                        this.setTimeRangePatternDeadline(formatter, roundList);
+                        this.setTimeRangePatternDeadline(formatter, roundList, zoneId);
                     } else {
                         // 开始时间和结束时间相同，则代表是 只有一天 的枚举类型
                         List<AdvertRound> onceRoundList = roundList.stream().filter(x -> Objects.equals(x.getStartTime(), x.getEndTime())).collect(Collectors.toList());
@@ -1037,19 +1046,29 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                         if (CollectionUtils.isNotEmpty(onceRoundList)) {
                             // 将位置枚举的每一个symbol都存放到redis中
                             onceRoundList.stream().filter(x -> Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue()))
-                                    .forEach(x -> redisCache.setCacheObject(ADVERT_DEADLINE_KEY + x.getSymbol(),
-                                            formatter.format(LocalDateTime.now().with(LocalTime.parse(x.getDeadline()))), 1, TimeUnit.DAYS));
+                                    .forEach(x -> {
+                                        redisCache.setCacheObject(ADVERT_DEADLINE_KEY + x.getSymbol(),
+                                                formatter.format(LocalDateTime.now().with(LocalTime.parse(x.getDeadline()))), 1, TimeUnit.DAYS);
+                                        // 档口上传推广图 或 上传推广商品 截止时间
+                                        redisCache.setCacheObject(ADVERT_UPLOAD_FILTER_TIME_KEY + x.getSymbol(),
+                                                formatter.format(LocalDateTime.now().with(LocalTime.parse(Constants.ADVERT_STORE_UPLOAD_DEADLINE))), 1, TimeUnit.DAYS);
+                                    });
                             onceRoundList.stream().filter(x -> !Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue()))
                                     .forEach(x -> {
                                         // 推广开始时间的前一天的 截止时间
-                                        final String deadline = formatter.format(x.getStartTime().toInstant().atZone(ZoneId.systemDefault())
+                                        final String deadline = formatter.format(x.getStartTime().toInstant().atZone(zoneId)
                                                 .toLocalDateTime().minusDays(1).with(LocalTime.parse(x.getDeadline())));
                                         redisCache.setCacheObject(ADVERT_DEADLINE_KEY + x.getSymbol(), deadline, 1, TimeUnit.DAYS);
+                                        // 档口上传推广图 或 上传推广商品 截止时间
+                                        String uploadDeadline = formatter.format(x.getStartTime().toInstant().atZone(zoneId)
+                                                .toLocalDateTime().minusDays(1).with(LocalTime.parse(Constants.ADVERT_STORE_UPLOAD_DEADLINE)));
+                                        redisCache.setCacheObject(ADVERT_UPLOAD_FILTER_TIME_KEY + x.getSymbol(), uploadDeadline, 1, TimeUnit.DAYS);
+
                                     });
                         }
                         // 时间范围 + 位置枚举
                         if (CollectionUtils.isNotEmpty(timePositionList)) {
-                            this.setTimeRangePatternDeadline(formatter, timePositionList);
+                            this.setTimeRangePatternDeadline(formatter, timePositionList, zoneId);
                         }
                     }
                 });
@@ -1057,11 +1076,11 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
 
     /**
      * 处理 "时间范围" 类型 或者 "时间范围 + 位置枚举" 类型 的截止时间
-     *
-     * @param formatter formatter
+     *  @param formatter formatter
      * @param roundList 播放轮次
+     * @param zoneId zoneId
      */
-    private void setTimeRangePatternDeadline(DateTimeFormatter formatter, List<AdvertRound> roundList) {
+    private void setTimeRangePatternDeadline(DateTimeFormatter formatter, List<AdvertRound> roundList, ZoneId zoneId) {
         Map<String, String> symbolDeadlineMap = new HashMap<>();
         Map<String, Date> roundSymbolMap = new HashMap<>();
         for (AdvertRound x : roundList) {
@@ -1070,18 +1089,25 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                 roundSymbolMap.put(x.getSymbol(), x.getStartTime());
             } else {
                 // 第一轮（有可能为 位置枚举[多个] 或 时间范围[单个]）
+                // 档口购买推广的截止时间
                 redisCache.setCacheObject(ADVERT_DEADLINE_KEY + x.getSymbol(),
                         formatter.format(LocalDateTime.now().with(LocalTime.parse(x.getDeadline()))), 1, TimeUnit.DAYS);
+                // 档口上传推广图 或 上传推广商品 截止时间
+                redisCache.setCacheObject(ADVERT_UPLOAD_FILTER_TIME_KEY + x.getSymbol(),
+                        formatter.format(LocalDateTime.now().with(LocalTime.parse(Constants.ADVERT_STORE_UPLOAD_DEADLINE))), 1, TimeUnit.DAYS);
             }
         }
         // 统一处理非第一轮
         roundSymbolMap.forEach((symbol, startTime) -> {
             String defaultDeadline = symbolDeadlineMap.getOrDefault(symbol, "22:00:00");
             // 第二轮之后的轮次过期时间都为开始时间前一天
-            String deadline = formatter.format(
-                    startTime.toInstant().atZone(ZoneId.systemDefault())
+            String deadline = formatter.format(startTime.toInstant().atZone(zoneId)
                             .toLocalDateTime().minusDays(1).with(LocalTime.parse(defaultDeadline)));
             redisCache.setCacheObject(ADVERT_DEADLINE_KEY + symbol, deadline, 1, TimeUnit.DAYS);
+            // 档口上传推广图 或 上传推广商品 截止时间
+            String uploadDeadline = formatter.format(startTime.toInstant().atZone(zoneId)
+                    .toLocalDateTime().minusDays(1).with(LocalTime.parse(Constants.ADVERT_STORE_UPLOAD_DEADLINE)));
+            redisCache.setCacheObject(ADVERT_UPLOAD_FILTER_TIME_KEY + symbol, uploadDeadline, 1, TimeUnit.DAYS);
         });
     }
 

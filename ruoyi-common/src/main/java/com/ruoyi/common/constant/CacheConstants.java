@@ -90,6 +90,11 @@ public class CacheConstants {
     public static final String ADVERT_DEADLINE_KEY = "advert_deadline:";
 
     /**
+     * 推广上传推广图或上传商品截止时间
+     */
+    public static final String ADVERT_UPLOAD_FILTER_TIME_KEY = "advert_upload_filter_time:";
+
+    /**
      * PC 广告
      */
     public static final String PC_ADVERT = "pc_advert:";

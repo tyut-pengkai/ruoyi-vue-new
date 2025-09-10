@@ -49,5 +49,7 @@ public class AdRoundTypeRoundResVO {
     private Integer biddingStatus;
     @ApiModelProperty(value = "竞价状态名称")
     private String biddingStatusName;
+    @ApiModelProperty(value = "购买上传截止时间")
+    private String uploadDeadline;
 
 }
