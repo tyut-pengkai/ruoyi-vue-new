@@ -67,7 +67,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="startTime != null "> and ar.start_time &gt;= #{startTime}</if>
             <if test="endTime != null "> and ar.end_time &lt;= #{endTime}</if>
         ORDER BY
-            ar.start_time
+            ar.start_time DESC,
+            ar.launch_status
     </select>
 
 
