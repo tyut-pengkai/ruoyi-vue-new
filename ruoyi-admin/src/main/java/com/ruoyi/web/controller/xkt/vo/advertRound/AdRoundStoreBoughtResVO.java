@@ -52,8 +52,6 @@ public class AdRoundStoreBoughtResVO {
     private Integer launchStatus;
     @ApiModelProperty(value = "正在播放 或 即将播放")
     private Boolean activePlay;
-    @ApiModelProperty(value = "购买上传截止时间")
-    private String uploadDeadline;
     @ApiModelProperty(value = "是否可购买")
     private Boolean canPurchased;
 

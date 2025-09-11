@@ -228,14 +228,11 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                     AdRoundTypeRoundResDTO typeRoundResDTO = new AdRoundTypeRoundResDTO().setAdvertId(advertRound.getAdvertId()).setRoundId(advertRound.getRoundId())
                             .setSymbol(advertRound.getSymbol()).setLaunchStatus(advertRound.getLaunchStatus()).setStartTime(advertRound.getStartTime())
                             .setEndTime(advertRound.getEndTime()).setStartWeekDay(getDayOfWeek(advertRound.getStartTime())).setDurationDay(durationDay)
-                            .setCanPurchased(Boolean.TRUE).setEndWeekDay(getDayOfWeek(advertRound.getEndTime()))
+                            // 设置是否可以购买当前推广位
+                            .setCanPurchased(this.setRoundCanPurchased(advertRound, storeId, currentRoundList))
+                            .setEndWeekDay(getDayOfWeek(advertRound.getEndTime()))
                             .setShowType(advertRound.getShowType()).setPosition(advertRound.getPosition())
                             .setUploadDeadline(redisCache.getCacheObject(ADVERT_UPLOAD_FILTER_TIME_KEY + advertRound.getSymbol()));
-                    // 如果是播放轮，并且是否全部为 BIDDING_SUCCESS，若是 则不可购买当前轮次（就算是当前档口购买的，biddingStatus也为2，也将标识置为false）
-                    if (Objects.equals(roundId, AdRoundType.PLAY_ROUND.getValue())
-                            && currentRoundList.stream().allMatch(x -> Objects.equals(x.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue()))) {
-                        typeRoundResDTO.setCanPurchased(Boolean.FALSE);
-                    }
                     // 如果是播放轮，则播放开始时间展示为当天，因为有可能是播放的中间某一天
                     if (Objects.equals(advertRound.getRoundId(), AdRoundType.PLAY_ROUND.getValue())) {
                         Date tomorrow = Date.from(LocalDate.now().plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
@@ -278,6 +275,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         return resList.stream().sorted(Comparator.comparing(AdRoundTypeRoundResDTO::getRoundId)).collect(Collectors.toList());
     }
 
+
     /**
      * 位置枚举的推广位档口购买情况
      *
@@ -302,15 +300,12 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         final Date date = new Date();
         List<AdRoundTypeRoundBoughtResDTO> resList = advertRoundList.stream().map(advertRound -> {
             AdRoundTypeRoundBoughtResDTO boughtResDTO = new AdRoundTypeRoundBoughtResDTO().setTypeId(advertRound.getTypeId()).setAdvertRoundId(advertRound.getId())
-                    .setAdvertId(advertRound.getAdvertId()).setRoundId(advertRound.getRoundId()).setPosition(advertRound.getPosition()).setCanPurchased(Boolean.TRUE)
+                    .setAdvertId(advertRound.getAdvertId()).setRoundId(advertRound.getRoundId()).setPosition(advertRound.getPosition())
+                    // 设置是否可以购买当前推广位
+                    .setCanPurchased(this.setRoundCanPurchased(advertRound, storeId, Collections.singletonList(advertRound)))
                     .setStartPrice(advertRound.getStartPrice()).setPayPrice(advertRound.getPayPrice()).setStoreId(storeId).setLaunchStatus(advertRound.getLaunchStatus())
                     .setStartTime(advertRound.getStartTime()).setEndTime(advertRound.getEndTime()).setSymbol(advertRound.getSymbol())
                     .setUploadDeadline(redisCache.getCacheObject(ADVERT_UPLOAD_FILTER_TIME_KEY + advertRound.getSymbol()));
-            // 如果是播放轮，并且是否全部为 BIDDING_SUCCESS，若是 则不可购买当前轮次（就算是当前档口购买的，biddingStatus也为2，也将标识置为false）
-            if (Objects.equals(advertRound.getRoundId(), AdRoundType.PLAY_ROUND.getValue())
-                    && Objects.equals(advertRound.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue())) {
-                boughtResDTO.setCanPurchased(Boolean.FALSE);
-            }
             // 如果当前位置没有档口购买，且为第一轮 则需按照剩余时间比例进行减价
             if (ObjectUtils.isEmpty(advertRound.getStoreId()) && Objects.equals(advertRound.getRoundId(), AdRoundType.PLAY_ROUND.getValue())) {
                 Integer durationDay = calculateDurationDay(advertRound.getStartTime(), advertRound.getEndTime(), Boolean.TRUE);
@@ -370,6 +365,8 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         boolean tenClockAfter = now.isAfter(LocalTime.of(22, 0, 0)) && now.isBefore(LocalTime.of(23, 59, 59));
         // 当天
         final Date voucherDate = java.sql.Date.valueOf(LocalDate.now());
+        // 已出价 和 竞价成功
+        final List<Integer> canPurchasedStatusList = Arrays.asList(AdBiddingStatus.BIDDING_SUCCESS.getValue(), AdBiddingStatus.BIDDING.getValue());
         final ZoneId zoneId = ZoneId.systemDefault();
         // 获取当前所有 正在投放 和 待投放的推广轮次
         List<AdvertRound> allRoundList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>().eq(AdvertRound::getDelFlag, Constants.UNDELETED)
@@ -392,22 +389,18 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                     // 如果是最近的播放轮次，且当前时间在 晚上10:00:01 之后到 当天23:59:59 都显示 biddingTempStatus 字段
                     final Integer biddingStatus = tenClockAfter && roundIdList.contains(x.getRoundId()) ? x.getBiddingTempStatus() : x.getBiddingStatus();
                     AdRoundStoreBoughtResDTO boughtResDTO = BeanUtil.toBean(x, AdRoundStoreBoughtResDTO.class).setAdvertRoundId(x.getId())
-                            .setBiddingStatus(biddingStatus).setLaunchStatus(x.getLaunchStatus()).setActivePlay(Boolean.FALSE).setCanPurchased(Boolean.TRUE)
+                            .setBiddingStatus(biddingStatus).setLaunchStatus(x.getLaunchStatus()).setActivePlay(Boolean.FALSE)
+                            // 设置当前档口是否可以购买
+                            .setCanPurchased(this.setBoughtRecordCanPurchased(x, canPurchasedStatusList))
                             // 如果是已出价，则显示 "已出价:50"
                             .setBiddingStatusName(AdBiddingStatus.of(biddingStatus).getLabel() +
                                     (Objects.equals(biddingStatus, AdBiddingStatus.BIDDING.getValue()) ? ":" + x.getPayPrice() : ""))
                             .setTypeName(AdType.of(x.getTypeId()).getLabel())
                             // 如果是时间范围则不返回position
-                            .setPosition(Objects.equals(x.getShowType(), AdShowType.TIME_RANGE.getValue()) ? null : x.getPosition())
-                            // 档口上传推广图或上传商品的截止时间
-                            .setUploadDeadline(redisCache.getCacheObject(ADVERT_UPLOAD_FILTER_TIME_KEY + x.getSymbol()));
+                            .setPosition(Objects.equals(x.getShowType(), AdShowType.TIME_RANGE.getValue()) ? null : x.getPosition());
                     // 当前为播放轮 或 当前为第二轮且开始时间为明天
                     if (Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue())) {
                         boughtResDTO.setActivePlay(Boolean.TRUE);
-                        // 如果是播放轮，并且是否全部为 BIDDING_SUCCESS，若是 则不可购买当前轮次（就算是当前档口购买的，biddingStatus也为2，也将标识置为false）
-                        if (Objects.equals(x.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue())) {
-                            boughtResDTO.setCanPurchased(Boolean.FALSE);
-                        }
                         // 如果是第二轮且开始时间为明天
                     } else if (Objects.equals(x.getRoundId(), AdRoundType.SECOND_ROUND.getValue())) {
                         LocalDate startTimeDate = x.getStartTime().toInstant().atZone(zoneId).toLocalDate();
@@ -451,8 +444,8 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
             boughtFailTimeRangeMap.forEach((roundId, record) -> {
                 boughtRoundList.add(BeanUtil.toBean(record, AdRoundStoreBoughtResDTO.class).setPosition(null)
                         .setTypeName(AdType.of(record.getTypeId()).getLabel())
-                        // 档口上传推广图或上传商品的截止时间
-                        .setUploadDeadline(redisCache.getCacheObject(ADVERT_UPLOAD_FILTER_TIME_KEY + record.getSymbol()))
+                        // 设置是否能购买推广位
+                        .setCanPurchased(DateUtils.getTime().compareTo(this.getDeadline(record.getSymbol())) > 0 ? Boolean.FALSE : Boolean.TRUE)
                         .setBiddingStatusName(AdBiddingStatus.of(record.getBiddingStatus()).getLabel()
                                 + "，最新出价:" + timeRangeRoundMaxPriceMap.get(record.getRoundId())));
             });
@@ -461,8 +454,8 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
             boughtFailPositionMap.forEach((advertRoundId, record) -> {
                 boughtRoundList.add(BeanUtil.toBean(record, AdRoundStoreBoughtResDTO.class)
                         .setTypeName(AdType.of(record.getTypeId()).getLabel())
-                        // 档口上传推广图或上传商品的截止时间
-                        .setUploadDeadline(redisCache.getCacheObject(ADVERT_UPLOAD_FILTER_TIME_KEY + record.getSymbol()))
+                        // 设置是否能购买推广位
+                        .setCanPurchased(DateUtils.getTime().compareTo(this.getDeadline(record.getSymbol())) > 0 ? Boolean.FALSE : Boolean.TRUE)
                         .setBiddingStatusName(AdBiddingStatus.of(record.getBiddingStatus()).getLabel()
                                 + "，最新出价:" + positionEnumMaxPriceMap.get(record.getAdvertRoundId())));
             });
@@ -1320,6 +1313,51 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         // 根据当前日期与截止日期的占比修改推广价格
         return startPrice.divide(BigDecimal.valueOf(calculateDurationDay(startTime, endTime, Boolean.TRUE)),
                 0, RoundingMode.HALF_UP);
+    }
+
+    /**
+     * 设置当前档口是否能够购买推广
+     *
+     * @param advertRound      当前推广
+     * @param storeId          档口ID
+     * @param currentRoundList 当前档口已购买的推广
+     * @return true 可以购买  false 不可购买
+     */
+    private Boolean setRoundCanPurchased(AdvertRound advertRound, Long storeId, List<AdvertRound> currentRoundList) {
+        // 初始化为true
+        Boolean canPurchased = Boolean.TRUE;
+        // 如果为当前档口购买，有可能biddingStatus = 1 或 biddingStatus = 2，不用管 只要storeId 为当前档口即可
+        if (Objects.equals(advertRound.getStoreId(), storeId)) {
+            canPurchased = Boolean.FALSE;
+            // 如果是播放轮，且 所有 biddingStatus = 2，则不能购买
+        } else if (Objects.equals(advertRound.getRoundId(), AdRoundType.PLAY_ROUND.getValue())
+                && currentRoundList.stream().allMatch(x -> Objects.equals(x.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue()))) {
+            canPurchased = Boolean.FALSE;
+            // 判断截止时间是否超时，并且只会处理马上播放的这一轮。比如 5.1-5.3，当前为4.30，处理这一轮；当前为5.2，处理这一轮；当前为5.3（最后一天），处理下一轮。
+        } else if (DateUtils.getTime().compareTo(this.getDeadline(advertRound.getSymbol())) > 0) {
+            canPurchased = Boolean.FALSE;
+        }
+        return canPurchased;
+    }
+
+    /**
+     * 已购推广列表设置 是否能购买广告
+     *
+     * @param advertRound            当前推广
+     * @param canPurchasedStatusList 已出价 和 竞价成功
+     * @return true 可以购买  false 不可购买
+     */
+    private Boolean setBoughtRecordCanPurchased(AdvertRound advertRound, List<Integer> canPurchasedStatusList) {
+        // 初始化为true
+        Boolean canPurchased = Boolean.TRUE;
+        // 当前档口已出价 或 竞价成功，则不可再出价
+        if (canPurchasedStatusList.contains(advertRound.getBiddingStatus())) {
+            canPurchased = Boolean.FALSE;
+            // 判断截止时间是否超时，并且只会处理马上播放的这一轮。比如 5.1-5.3，当前为4.30，处理这一轮；当前为5.2，处理这一轮；当前为5.3（最后一天），处理下一轮。
+        } else if (DateUtils.getTime().compareTo(this.getDeadline(advertRound.getSymbol())) > 0) {
+            canPurchased = Boolean.FALSE;
+        }
+        return canPurchased;
     }
 
 }
