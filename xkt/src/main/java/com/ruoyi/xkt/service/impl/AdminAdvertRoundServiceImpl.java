@@ -22,6 +22,7 @@ import com.ruoyi.xkt.service.IAssetService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,7 +63,7 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
     @Transactional(readOnly = true)
     public Page<AdminAdRoundPageResDTO> page(AdminAdRoundPageDTO pageDTO) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isAdmin() ) {
+        if (!SecurityUtils.isAdmin()) {
             throw new ServiceException("当前用户非管理员账号，无权限操作!", HttpStatus.ERROR);
         }
         Optional.ofNullable(pageDTO.getLaunchStatus()).orElseThrow(() -> new ServiceException("投放状态launchStatus必传", HttpStatus.ERROR));
@@ -100,7 +101,7 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
     @Transactional
     public Integer auditPic(AdminAdRoundAuditDTO auditDTO) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isAdmin() ) {
+        if (!SecurityUtils.isAdmin()) {
             throw new ServiceException("当前用户非管理员账号，无权限操作!", HttpStatus.ERROR);
         }
         AdvertRound advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
@@ -134,7 +135,7 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
     @Transactional
     public Integer unsubscribe(AdminAdRoundUnsubscribeDTO unsubscribeDTO) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isAdmin() ) {
+        if (!SecurityUtils.isAdmin()) {
             throw new ServiceException("当前用户非管理员账号，无权限操作!", HttpStatus.ERROR);
         }
         AdvertRound advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
@@ -166,7 +167,7 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
     @Transactional
     public Integer uploadAdvertPic(AdRoundUpdateDTO picDTO) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isAdmin() ) {
+        if (!SecurityUtils.isAdmin()) {
             throw new ServiceException("当前用户非管理员账号，无权限操作!", HttpStatus.ERROR);
         }
         AdvertRound advertRound = Optional.ofNullable(this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
@@ -198,7 +199,7 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
     @Transactional
     public synchronized Integer sysIntercept(AdminAdRoundSysInterceptDTO interceptDTO) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isAdmin() ) {
+        if (!SecurityUtils.isAdmin()) {
             throw new ServiceException("当前用户非管理员账号，无权限操作!", HttpStatus.ERROR);
         }
         final LocalDateTime nineThirty = LocalDateTime.of(LocalDate.now(), LocalTime.of(21, 30));
@@ -269,6 +270,10 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
         if (ObjectUtils.isNotEmpty(interceptDTO.getStoreProdIdList())) {
             advertRound.setProdIdStr(StringUtils.join(interceptDTO.getStoreProdIdList(), ","));
         }
+        // 如果是位置枚举，则设置一个很高的价格（200 - 300）范围，有其它档口愿意出更高价格拿下就随他去
+        if (Objects.equals(advertRound.getShowType(), AdShowType.POSITION_ENUM.getValue())) {
+            advertRound.setPayPrice(BigDecimal.valueOf(RandomUtils.nextLong(20, 30 + 1) * 10));
+        }
         return this.advertRoundMapper.updateById(advertRound);
     }
 
@@ -282,7 +287,7 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
     @Transactional
     public Integer cancelIntercept(AdminAdRoundCancelInterceptDTO cancelInterceptDTO) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isAdmin() ) {
+        if (!SecurityUtils.isAdmin()) {
             throw new ServiceException("当前用户非管理员账号，无权限操作!", HttpStatus.ERROR);
         }
         // 该推广位是否被拦截

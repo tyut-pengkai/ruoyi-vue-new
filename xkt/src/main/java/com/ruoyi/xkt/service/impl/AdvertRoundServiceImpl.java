@@ -70,6 +70,13 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
 
     // 推广营销位锁 key：symbol + roundId 或者 symbol + roundId + position 。value都是new Object()
     public static Map<String, Object> advertLockMap = new ConcurrentHashMap<>();
+    // 推广轮次待播放 及 正在播放
+    private static final List<Integer> LAUNCHING_STATUS_LIST =
+            Arrays.asList(AdLaunchStatus.LAUNCHING.getValue(), AdLaunchStatus.UN_LAUNCH.getValue());
+    // 推广轮次 未出价 及 已出价
+    private static final List<Integer> BIDDING_STATUS_LIST =
+    Arrays.asList(AdBiddingStatus.BIDDING.getValue(), AdBiddingStatus.UN_BIDDING.getValue());
+
 
     /**
      * 项目启动后执行一次，做初始化操作
@@ -695,7 +702,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
             }
             LambdaQueryWrapper<AdvertRound> queryWrapper = new LambdaQueryWrapper<AdvertRound>()
                     .eq(AdvertRound::getAdvertId, createDTO.getAdvertId()).eq(AdvertRound::getRoundId, createDTO.getRoundId())
-                    .in(AdvertRound::getBiddingStatus, Arrays.asList(AdBiddingStatus.BIDDING.getValue(), AdBiddingStatus.UN_BIDDING.getValue()))
+                    .in(AdvertRound::getLaunchStatus, LAUNCHING_STATUS_LIST).in(AdvertRound::getBiddingStatus, BIDDING_STATUS_LIST)
                     .eq(AdvertRound::getDelFlag, Constants.UNDELETED).orderByAsc(AdvertRound::getPayPrice).last("LIMIT 1");
             // 如果是 时间范围 的广告位，则不查 系统拦截的数据；其实位置枚举的广告位也可不用查系统拦截的数据，主要是为了真实，给档口留个缝
             if (Objects.equals(createDTO.getShowType(), AdShowType.TIME_RANGE.getValue())) {
