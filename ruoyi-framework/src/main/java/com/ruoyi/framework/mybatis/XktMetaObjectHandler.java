@@ -24,6 +24,6 @@ public class XktMetaObjectHandler implements MetaObjectHandler {
     @Override
     public void updateFill(MetaObject metaObject) {
         // 更新时自动填充 updateTime
-        this.strictUpdateFill(metaObject, "updateTime", Date.class, new Date());
+        this.setFieldValByName("updateTime", new Date(), metaObject);
     }
 }

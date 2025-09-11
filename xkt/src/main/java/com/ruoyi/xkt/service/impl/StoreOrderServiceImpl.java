@@ -1993,7 +1993,6 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
 
     private <T extends SimpleEntity> T prepareUpdate(T obj) {
         obj.setUpdateBy(SecurityUtils.getUsernameSafe());
-        obj.setUpdateTime(new Date());
         return obj;
     }
 

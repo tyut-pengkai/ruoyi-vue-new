@@ -262,7 +262,6 @@ public class SysRoleServiceImpl implements ISysRoleService {
         Assert.notNull(role.getRoleId());
         String currentUser = SecurityUtils.getUsernameSafe();
         role.setUpdateBy(currentUser);
-        role.setUpdateTime(new Date());
         int c = roleMapper.updateById(role);
         if (c == 0) {
             throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);

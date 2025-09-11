@@ -483,7 +483,6 @@ public class SysUserServiceImpl implements ISysUserService {
         Assert.notNull(user.getUserId());
         String currentUser = SecurityUtils.getUsernameSafe();
         user.setUpdateBy(currentUser);
-        user.setUpdateTime(new Date());
         int c = userMapper.updateById(user);
         if (c == 0) {
             throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);

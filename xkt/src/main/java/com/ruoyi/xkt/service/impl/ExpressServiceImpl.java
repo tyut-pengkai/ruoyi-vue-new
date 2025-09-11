@@ -374,7 +374,6 @@ public class ExpressServiceImpl implements IExpressService {
         config.setFirstItemAmount(editDTO.getFirstItemAmount());
         config.setNextItemAmount(editDTO.getNextItemAmount());
         config.setUpdateBy(SecurityUtils.getUsernameSafe());
-        config.setUpdateTime(new Date());
         expressFeeConfigMapper.updateById(config);
     }
 

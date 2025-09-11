@@ -197,7 +197,6 @@ public class SysMenuServiceImpl implements ISysMenuService {
         Assert.notNull(menu.getMenuId());
         String currentUser = SecurityUtils.getUsernameSafe();
         menu.setUpdateBy(currentUser);
-        menu.setUpdateTime(new Date());
         int c = menuMapper.updateById(menu);
         if (c == 0) {
             throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
