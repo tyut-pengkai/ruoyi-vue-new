@@ -313,7 +313,9 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                 BigDecimal numerator = BigDecimal.valueOf(calculateDurationDay(date, advertRound.getEndTime(), Boolean.FALSE));
                 BigDecimal curStartPrice = numerator.multiply(advertRound.getStartPrice())
                         .divide(BigDecimal.valueOf(durationDay), 0, RoundingMode.HALF_UP);
-                boughtResDTO.setStartPrice(curStartPrice);
+                // 播放轮开始时间需要调整
+                Date tomorrow = Date.from(LocalDate.now().plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
+                boughtResDTO.setStartPrice(curStartPrice).setStartTime(tomorrow);
             }
             // 当前档口购买的推广位置
             if (Objects.equals(advertRound.getStoreId(), storeId)) {
@@ -460,15 +462,9 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                                 + "，最新出价:" + positionEnumMaxPriceMap.get(record.getAdvertRoundId())));
             });
         }
-        return boughtRoundList.stream().peek(x -> {
-                    // 如果是播放轮，则播放开始时间展示为当天，因为有可能是播放的中间某一天
-                    if (Objects.equals(x.getRoundId(), AdRoundType.PLAY_ROUND.getValue())) {
-                        x.setStartTime(Date.from(LocalDate.now().plusDays(1).atStartOfDay(zoneId).toInstant()));
-                    }
-                })
-                // 按照播放时间升序排列
-                .sorted(Comparator.comparing(AdRoundStoreBoughtResDTO::getStartTime))
-                .collect(Collectors.toList());
+        // 按照播放时间升序排列
+        boughtRoundList.sort(Comparator.comparing(AdRoundStoreBoughtResDTO::getStartTime));
+        return boughtRoundList;
     }
 
     /**
