@@ -925,6 +925,8 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                             .eq(AdvertRound::getPosition, latestDTO.getPosition()).eq(AdvertRound::getDelFlag, Constants.UNDELETED)))
                     .orElseThrow(() -> new ServiceException("推广位不存在!", HttpStatus.ERROR));
         }
+        // 档口购买时间
+        latestInfo.setUpdateTime(advertRound.getUpdateTime());
         // 有人竞拍情况，才获取该位置的档口负责人名称
         if (ObjectUtils.isNotEmpty(advertRound.getStoreId())) {
             Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()

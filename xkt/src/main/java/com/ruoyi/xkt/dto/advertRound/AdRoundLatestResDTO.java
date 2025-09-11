@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -24,6 +25,8 @@ public class AdRoundLatestResDTO {
     private String contactPhone;
     @ApiModelProperty(value = "最高价格")
     private BigDecimal payPrice;
+    @ApiModelProperty(value = "购买时间")
+    private Date updateTime;
     @ApiModelProperty(value = "档口设置的商品")
     private List<ARLProdDTO> prodList;
 
