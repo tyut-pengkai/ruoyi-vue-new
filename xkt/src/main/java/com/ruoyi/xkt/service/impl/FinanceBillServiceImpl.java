@@ -213,18 +213,21 @@ public class FinanceBillServiceImpl implements IFinanceBillService {
         Map<Long, FinanceBillDetail> refundPaymentBillDetailMap;
         if (CollUtil.isNotEmpty(afterSaleBillUks)) {
             refundPaymentBillMap = financeBillMapper.selectList(
-                            Wrappers.lambdaQuery(FinanceBill.class)
-                                    .in(FinanceBill::getBusinessUniqueKey, afterSaleBillUks)
-                                    .eq(FinanceBill::getBillType, EFinBillType.PAYMENT.getValue())
-                                    .eq(SimpleEntity::getDelFlag, Constants.UNDELETED))
+                    Wrappers.lambdaQuery(FinanceBill.class)
+                            .in(FinanceBill::getBusinessUniqueKey, afterSaleBillUks)
+                            .eq(FinanceBill::getBillType, EFinBillType.PAYMENT.getValue())
+                            .eq(SimpleEntity::getDelFlag, Constants.UNDELETED))
                     .stream()
                     .collect(Collectors.toMap(SimpleEntity::getId, Function.identity()));
-            Assert.notEmpty(refundPaymentBillMap);
-            refundPaymentBillDetailMap = financeBillDetailMapper.selectList(
-                            Wrappers.lambdaQuery(FinanceBillDetail.class)
-                                    .in(FinanceBillDetail::getFinanceBillId, refundPaymentBillMap.keySet())
-                                    .eq(SimpleEntity::getDelFlag, Constants.UNDELETED)).stream()
-                    .collect(Collectors.toMap(FinanceBillDetail::getRelId, Function.identity()));
+            if (MapUtil.isEmpty(refundPaymentBillMap)) {
+                refundPaymentBillDetailMap = MapUtil.empty();
+            } else {
+                refundPaymentBillDetailMap = financeBillDetailMapper.selectList(
+                        Wrappers.lambdaQuery(FinanceBillDetail.class)
+                                .in(FinanceBillDetail::getFinanceBillId, refundPaymentBillMap.keySet())
+                                .eq(SimpleEntity::getDelFlag, Constants.UNDELETED)).stream()
+                        .collect(Collectors.toMap(FinanceBillDetail::getRelId, Function.identity()));
+            }
         } else {
             refundPaymentBillMap = MapUtil.empty();
             refundPaymentBillDetailMap = MapUtil.empty();
