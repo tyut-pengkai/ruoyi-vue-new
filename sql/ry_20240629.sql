@@ -146,7 +146,6 @@ CREATE TABLE `advert_round_record`
     `bidding_temp_status` int UNSIGNED NULL DEFAULT NULL COMMENT '竞价成功',
     `pic_audit_status`    int UNSIGNED NULL DEFAULT NULL COMMENT '图片审核状态（待审核、审核通过、审核驳回）',
     `reject_reason`       varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '审核驳回理由',
-    `pic_set`             int UNSIGNED NULL DEFAULT NULL COMMENT '图片是否已设置',
     `pic_id`              bigint UNSIGNED NULL DEFAULT NULL COMMENT '图片ID',
     `prod_id_str`         varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '商品ID字符串',
     `pic_design_type`     int UNSIGNED NULL DEFAULT NULL COMMENT '图片设计（自主设计、平台设计）',

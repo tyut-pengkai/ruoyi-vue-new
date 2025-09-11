@@ -97,7 +97,6 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                 .forEach((typeId, roundList) -> roundList
                         // 初始化  锁资源对象
                         .forEach(round -> advertLockMap.putIfAbsent(round.getSymbol(), new Object())));
-        System.err.println(advertLockMap);
     }
 
     /**

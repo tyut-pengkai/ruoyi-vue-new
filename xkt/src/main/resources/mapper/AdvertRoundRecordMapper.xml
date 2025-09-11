@@ -22,13 +22,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             JOIN advert a ON arr.advert_id = a.id
         WHERE
             arr.del_flag = 0
+            AND arr.sys_intercept = 0
             AND arr.store_id = #{storeId}
+            AND arr.bidding_status IN
+            <foreach item="biddingStatus" collection="biddingStatusList" open="(" separator="," close=")">
+                #{biddingStatus}
+            </foreach>
             <if test="platformId != null "> and a.platform_id = #{platformId}</if>
             <if test="typeId != null "> and arr.type_id = #{typeId}</if>
+            <if test="launchStatus != null "> and arr.launch_status = #{launchStatus}</if>
+            <if test="picSetType != null "> and arr.pic_set_type = #{picSetType}</if>
+            <if test="picDesignType != null "> and arr.pic_design_type = #{picDesignType}</if>
+            <if test="picAuditStatus != null "> and arr.pic_audit_status = #{picAuditStatus}</if>
             <if test="startTime != null "> and arr.start_time &gt;= #{startTime}</if>
             <if test="endTime != null "> and arr.end_time &lt;= #{endTime}</if>
         ORDER BY
-            arr.start_time
+            arr.launch_status
     </select>
 
 
