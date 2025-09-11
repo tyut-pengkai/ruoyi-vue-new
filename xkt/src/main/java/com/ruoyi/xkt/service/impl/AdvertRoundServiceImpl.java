@@ -477,15 +477,13 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
      * 根据推广位置ID及档口ID 获取 设置的推广商品或图片
      *
      * @param advertRoundId 推广位置ID
-     * @param storeId       档口ID
      * @return AdRoundLatestResDTO
      */
     @Override
     @Transactional(readOnly = true)
-    public AdRoundLatestResDTO getSetInfo(Long advertRoundId, Long storeId) {
+    public AdRoundLatestResDTO getSetInfo(Long advertRoundId) {
         AdvertRound advertRound = this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
-                .eq(AdvertRound::getId, advertRoundId).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
-                .eq(AdvertRound::getStoreId, storeId));
+                .eq(AdvertRound::getId, advertRoundId).eq(AdvertRound::getDelFlag, Constants.UNDELETED));
         AdRoundLatestResDTO roundSetInfoDTO = new AdRoundLatestResDTO();
         if (ObjectUtils.isEmpty(advertRound)) {
             return roundSetInfoDTO;
