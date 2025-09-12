@@ -267,7 +267,7 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
         if (CollectionUtils.isEmpty(demandDetailList)) {
             demandVerifyDTO.getDetailList().forEach(x -> {
                 String errors = this.addErrorMsg(x);
-                if (StringUtils.isNotEmpty(errors)) {
+                if (StringUtils.isNotBlank(errors)) {
                     errorsMsgList.add(errors);
                 }
             });
@@ -331,7 +331,7 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
                 // 如果没有对应的需求单则直接返回错误信息
                 if (MapUtils.isEmpty(sizeQuantityMap)) {
                     String errors = this.addErrorMsg(x);
-                    if (StringUtils.isNotEmpty(errors)) {
+                    if (StringUtils.isNotBlank(errors)) {
                         errorsMsgList.add(errors);
                     }
                 } else {

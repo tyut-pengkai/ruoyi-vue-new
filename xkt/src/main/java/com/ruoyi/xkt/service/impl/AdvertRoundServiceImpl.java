@@ -488,7 +488,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         if (ObjectUtils.isEmpty(advertRound) || ObjectUtils.isEmpty(advertRound.getStoreId())) {
             return roundSetInfoDTO;
         }
-        if (StringUtils.isNotEmpty(advertRound.getProdIdStr())) {
+        if (StringUtils.isNotBlank(advertRound.getProdIdStr())) {
             List<StoreProduct> storeProdList = Optional.ofNullable(this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
                             .in(StoreProduct::getId, StrUtil.split(advertRound.getProdIdStr(), ","))
                             .eq(StoreProduct::getDelFlag, Constants.UNDELETED).eq(StoreProduct::getStoreId, advertRound.getStoreId())))
@@ -970,7 +970,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         }
         // 获取当前推广上传推广图或上传商品 的 截止时间
         String uploadDeadline = redisCache.getCacheObject(ADVERT_UPLOAD_FILTER_TIME_KEY + advertRound.getSymbol());
-        if (StringUtils.isNotEmpty(uploadDeadline)) {
+        if (StringUtils.isNotBlank(uploadDeadline)) {
             if (uploadDeadline.compareTo(DateUtils.getTime()) < 0) {
                 throw new ServiceException("已超过推广修改截止时间，修改失败!", HttpStatus.ERROR);
             }

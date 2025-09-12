@@ -1538,7 +1538,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
             List<String> prodTagList = new ArrayList<String>() {{
                 add("同类热卖");
             }};
-            CollectionUtils.addAll(prodTagList, ObjectUtils.isNotEmpty(viewDTO) && StringUtils.isNotEmpty(viewDTO.getTagStr())
+            CollectionUtils.addAll(prodTagList, ObjectUtils.isNotEmpty(viewDTO) && StringUtils.isNotBlank(viewDTO.getTagStr())
                     ? StrUtil.split(viewDTO.getTagStr(), ",") : new ArrayList<>());
             return new PicSearchAdvertDTO().setImgSearchCount(ObjectUtils.isNotEmpty(viewDTO) && ObjectUtils.isNotEmpty(viewDTO.getImgSearchCount())
                             ? viewDTO.getImgSearchCount() : (long) (new Random().nextInt(191) + 10))
@@ -1635,7 +1635,8 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
     private List<PCIndexMidStyleDTO> fillMidStyleFromExpired(List<AdvertRound> dbStyleList, Map<Long, StoreProdPriceAndMainPicDTO> prodPriceAndMainPicMap,
                                                              Map<Long, SysFile> fileMap, Map<Long, Store> storeMap, int limitCount) {
         List<PCIndexMidStyleDTO> midStyleList = new ArrayList<>();
-        dbStyleList.stream().collect(Collectors.groupingBy(AdvertRound::getStoreId))
+        dbStyleList.stream().filter(x -> StringUtils.isNotBlank(x.getProdIdStr()))
+                .collect(Collectors.groupingBy(AdvertRound::getStoreId))
                 .forEach((storeId, list) -> {
                     AdvertRound advertRound = list.get(0);
                     List<String> prodIdStrList = StrUtil.split(advertRound.getProdIdStr(), ",");
