@@ -125,7 +125,7 @@ public class WebsiteController extends XktBaseController {
         return R.ok(BeanUtil.toBean(websitePCService.getPcIndexBottomPopularList(), PCIndexBottomPopularVO.class));
     }
 
-    @ApiOperation(value = "PC 首页 两侧固定挂耳", httpMethod = "GET", response = R.class)
+    @ApiOperation(value = "PC 首页 两侧固定侧边栏", httpMethod = "GET", response = R.class)
     @GetMapping("/pc/index/fixed-ear")
     public R<PCIndexFixedEarVO> getPcIndexFixedEar() {
         return R.ok(BeanUtil.toBean(websitePCService.getPcIndexFixedEar(), PCIndexFixedEarVO.class));

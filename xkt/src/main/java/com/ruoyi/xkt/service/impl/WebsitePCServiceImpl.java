@@ -60,6 +60,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.ruoyi.common.constant.Constants.TOPMOST_PRODUCT_CATEGORY_ID;
+
 /**
  * 首页搜索
  *
@@ -84,6 +86,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
     final StoreProductStatisticsMapper prodStatsMapper;
     final IPictureService pictureService;
     final UserSubscriptionsMapper userSubsMapper;
+    final SysProductCategoryMapper prodCateMapper;
 
     /**
      * PC 首页 为你推荐
@@ -306,18 +309,30 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                 .filter(x -> StringUtils.isEmpty(searchDTO.getStoreName()) || x.getStoreName().contains(searchDTO.getStoreName()))
                 .skip((long) (searchDTO.getPageNum() - 1) * searchDTO.getPageSize())
                 .limit(searchDTO.getPageSize()).collect(Collectors.toList());
+        // 当前分页无数据，则直接返回
+        if (CollectionUtils.isEmpty(realDataList)) {
+            return Page.empty(searchDTO.getPageSize(), searchDTO.getPageNum());
+        }
         realDataList.forEach(x -> {
             // 查询档口会员等级
             StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId());
             x.setMemberLevel(ObjectUtils.isNotEmpty(member) ? member.getLevel() : null);
         });
         final long pages = (long) Math.ceil((double) redisList.size() / searchDTO.getPageSize());
+        // 从redis中获取数据
+        List<PCStoreRecommendDTO> redisAdvertList = this.redisCache.getCacheObject(CacheConstants.PC_STORE_RECOMMEND_ADVERT);
+        // 返回的真实数据列表 过滤掉广告档口
+        if (CollectionUtils.isNotEmpty(redisAdvertList)) {
+            // 推广的档口ID列表
+            final List<Long> advertStoreIdList = redisAdvertList.stream().map(PCStoreRecommendDTO::getStoreId).collect(Collectors.toList());
+            realDataList = realDataList.stream()
+                    .filter(x -> CollectionUtils.isEmpty(advertStoreIdList) || !advertStoreIdList.contains(x.getStoreId()))
+                    .collect(Collectors.toList());
+        }
         // APP 只有第一页 有数据 其它页暂时没有广告
         if (searchDTO.getPageNum() > 1) {
             return new Page<>(searchDTO.getPageNum(), searchDTO.getPageSize(), pages, redisList.size(), realDataList);
         }
-        // 从redis中获取数据
-        List<PCStoreRecommendDTO> redisAdvertList = this.redisCache.getCacheObject(CacheConstants.PC_STORE_RECOMMEND_ADVERT);
         if (CollectionUtils.isNotEmpty(redisAdvertList)) {
             // 添加广告的数据
             return new Page<>(searchDTO.getPageNum(), searchDTO.getPageSize(), pages, redisList.size(),
@@ -327,6 +342,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
             List<AdvertRound> advertRoundList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
                     .isNotNull(AdvertRound::getStoreId).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
                     .eq(AdvertRound::getTypeId, AdType.PC_STORE_RECOMMEND.getValue())
+                    // 必须是正在推广的档口，不能从已过期的档口推广列表中选数据
                     .eq(AdvertRound::getLaunchStatus, AdLaunchStatus.LAUNCHING.getValue())
                     .eq(AdvertRound::getBiddingStatus, AdBiddingStatus.BIDDING_SUCCESS.getValue()));
             if (CollectionUtils.isNotEmpty(advertRoundList)) {
@@ -339,6 +355,12 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                         .in(DailyStoreTag::getStoreId, advertRoundList.stream().map(AdvertRound::getStoreId).collect(Collectors.toList())));
                 Map<Long, List<String>> storeTagMap = CollectionUtils.isEmpty(storeTagList) ? new ConcurrentHashMap<>()
                         : storeTagList.stream().collect(Collectors.groupingBy(DailyStoreTag::getStoreId, Collectors.mapping(DailyStoreTag::getTag, Collectors.toList())));
+
+
+
+
+
+
                 // 商品的主图map
                 List<StoreProdPriceAndMainPicDTO> mainPicList = this.storeProdMapper.selectPriceAndMainPicList(advertRoundList.stream().filter(x -> StringUtils.isNotBlank(x.getProdIdStr()))
                         .map(x -> x.getProdIdStr().split(",")).flatMap(Arrays::stream).map(Long::valueOf).distinct().collect(Collectors.toList()));
@@ -591,6 +613,8 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         if (CollectionUtils.isEmpty(cateSaleList)) {
             return new ArrayList<>();
         }
+        // 所有二级分类ID map
+        Map<Long, Long> parCateIdMap = this.getParCateIdMap();
         final List<Long> storeProdIdList = cateSaleList.stream().map(CateSaleRankDTO::getStoreProdId).collect(Collectors.toList());
         // 档口商品的价格及商品主图map
         Map<Long, StoreProdPriceAndMainPicDTO> prodPriceAndMainPicMap = CollectionUtils.isEmpty(storeProdIdList) ? new ConcurrentHashMap<>()
@@ -624,12 +648,14 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                                 ? prodPriceAndMainPicMap.get(dto.getStoreProdId()).getMainPicUrl() : "");
                 saleDTOList.add(saleDTO);
             }
-            retCateOrderList.add(new PCIndexMidSalesDTO().setProdCateId(cateId).setProdCateName(cateIdMap.get(cateId)).setOrderNum(i + 1).setSaleList(saleDTOList));
+            retCateOrderList.add(new PCIndexMidSalesDTO().setProdCateId(cateId).setProdCateName(cateIdMap.get(cateId)).setOrderNum(i + 1)
+                    .setParCateId(parCateIdMap.get(cateId)).setSaleList(saleDTOList));
         }
         // 缓存至 Redis
         redisCache.setCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_ADVERT_INDEX_MID_SALE, retCateOrderList, 1, TimeUnit.DAYS);
         return retCateOrderList;
     }
+
 
     /**
      * PC 首页 风格榜
@@ -803,7 +829,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
     }
 
     /**
-     * PC 首页 固定挂耳
+     * PC 首页 固定侧边栏
      *
      * @return PCIndexFixedEarDTO
      */
@@ -1422,11 +1448,6 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
             StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId());
             x.setMemberLevel(ObjectUtils.isNotEmpty(member) ? member.getLevel() : null);
         });
-        pcUserCenterList.forEach(x -> {
-            // 查询档口会员等级
-            StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId());
-            x.setMemberLevel(ObjectUtils.isNotEmpty(member) ? member.getLevel() : null);
-        });
         // 放到redis 中 过期时间1天
         redisCache.setCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_USER_CENTER, pcUserCenterList, 1, TimeUnit.DAYS);
         return pcUserCenterList;
@@ -1958,5 +1979,28 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         // 设置用户搜索历史，不过期
         redisCache.setCacheObject(CacheConstants.USER_SEARCH_HISTORY + loginUser.getUserId(), userSearchList);
     }
+
+    /**
+     * 获取父级分类ID Map，如果只有父级一级 则 parCateId和prodCateId一致
+     * @return
+     */
+    private Map<Long, Long> getParCateIdMap() {
+        List<SysProductCategory> prodCateList = this.prodCateMapper.selectList(new LambdaQueryWrapper<SysProductCategory>()
+                .eq(SysProductCategory::getDelFlag, Constants.UNDELETED)
+                // 排除最顶层的父级分类
+                .ne(SysProductCategory::getParentId, 0));
+        // 所有字分类
+        List<SysProductCategory> subCateList = prodCateList.stream().filter(x -> !Objects.equals(x.getParentId(), TOPMOST_PRODUCT_CATEGORY_ID)).collect(Collectors.toList());
+        Map<Long, Long> subCateMap = subCateList.stream().collect(Collectors.toMap(SysProductCategory::getId, SysProductCategory::getParentId));
+        // 所有的一级分类
+        List<Long> topCateList = prodCateList.stream().filter(x -> Objects.equals(x.getParentId(), TOPMOST_PRODUCT_CATEGORY_ID))
+                .map(SysProductCategory::getId).collect(Collectors.toList());
+        final List<Long> hasSubCateIdList = new ArrayList<>(subCateMap.keySet());
+        // 如果只有父类一级，则父类分类ID和字类分类ID一致
+        Map<Long, Long> parCateAloneIdMap = topCateList.stream().filter(x -> !hasSubCateIdList.contains(x)).collect(Collectors.toMap(x -> x, x -> x));
+        subCateMap.putAll(parCateAloneIdMap);
+        return subCateMap;
+    }
+
 
 }

@@ -69,7 +69,7 @@ public interface IWebsitePCService {
     PCIndexBottomPopularDTO getPcIndexBottomPopularList();
 
     /**
-     * PC 首页 固定挂耳
+     * PC 首页 固定侧边栏
      *
      * @return PCIndexFixedEarDTO
      */

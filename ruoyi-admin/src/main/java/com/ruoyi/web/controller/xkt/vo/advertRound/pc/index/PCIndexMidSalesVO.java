@@ -16,6 +16,8 @@ import java.util.List;
 @ApiModel
 public class PCIndexMidSalesVO {
 
+    @ApiModelProperty(value = "父级分类ID")
+    private Long parCateId;
     @ApiModelProperty(value = "分类ID")
     private Long prodCateId;
     @ApiModelProperty(value = "分类名称")

@@ -138,6 +138,8 @@ public class SecurityConfig
                         .antMatchers("/rest/v1/stores/simple/**").permitAll()
                         // 商品状态数量
                         .antMatchers("/rest/v1/prods/status/num/**").permitAll()
+                        // 商品分类状态数量
+                        .antMatchers("/rest/v1/prods/status/cate/num/**").permitAll()
                         // PC 商品详情
                         .antMatchers("/rest/v1/prods/pc/detail/**").permitAll()
 

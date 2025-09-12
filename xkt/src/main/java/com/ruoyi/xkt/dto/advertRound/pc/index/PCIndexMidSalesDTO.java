@@ -19,6 +19,8 @@ import java.util.List;
 @Accessors(chain = true)
 public class PCIndexMidSalesDTO {
 
+    @ApiModelProperty(value = "父级分类ID")
+    private Long parCateId;
     @ApiModelProperty(value = "分类ID")
     private Long prodCateId;
     @ApiModelProperty(value = "分类名称")

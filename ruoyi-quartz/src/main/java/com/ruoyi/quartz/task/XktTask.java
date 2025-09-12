@@ -581,7 +581,7 @@ public class XktTask {
         // 先按照 档口权重 倒序排，再按照 推荐权重 倒序排
         storeRecommendList.sort(Comparator.comparing(PCStoreRecommendTempDTO::getStoreWeight, Comparator.nullsLast(Comparator.reverseOrder()))
                 .thenComparing(PCStoreRecommendTempDTO::getRecommendWeight, Comparator.nullsLast(Comparator.reverseOrder())));
-        // 返回给前端的数据 不包含 storeWeight  和 storeRecommnedWeight
+        // 返回给前端的数据 不包含 storeWeight  和 storeRecommendWeight
         List<PCStoreRecommendDTO> recommendList = BeanUtil.copyToList(storeRecommendList, PCStoreRecommendDTO.class);
         // 放到redis中
         redisCache.setCacheObject(CacheConstants.PC_STORE_RECOMMEND_LIST, recommendList);
