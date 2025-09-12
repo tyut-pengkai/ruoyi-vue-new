@@ -485,15 +485,18 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         AdvertRound advertRound = this.advertRoundMapper.selectOne(new LambdaQueryWrapper<AdvertRound>()
                 .eq(AdvertRound::getId, advertRoundId).eq(AdvertRound::getDelFlag, Constants.UNDELETED));
         AdRoundLatestResDTO roundSetInfoDTO = new AdRoundLatestResDTO();
-        if (ObjectUtils.isEmpty(advertRound)) {
+        if (ObjectUtils.isEmpty(advertRound) || ObjectUtils.isEmpty(advertRound.getStoreId())) {
             return roundSetInfoDTO;
         }
-        List<StoreProduct> storeProdList = Optional.ofNullable(this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
-                        .in(StoreProduct::getId, StrUtil.split(advertRound.getProdIdStr(), ","))
-                        .eq(StoreProduct::getDelFlag, Constants.UNDELETED).eq(StoreProduct::getStoreId, advertRound.getStoreId())))
-                .orElseThrow(() -> new ServiceException("档口商品不存在!", HttpStatus.ERROR));
-        return roundSetInfoDTO.setProdList(storeProdList.stream().map(x -> new AdRoundLatestResDTO.ARLProdDTO()
-                .setStoreProdId(x.getId()).setProdArtNum(x.getProdArtNum())).collect(Collectors.toList()));
+        if (StringUtils.isNotEmpty(advertRound.getProdIdStr())) {
+            List<StoreProduct> storeProdList = Optional.ofNullable(this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+                            .in(StoreProduct::getId, StrUtil.split(advertRound.getProdIdStr(), ","))
+                            .eq(StoreProduct::getDelFlag, Constants.UNDELETED).eq(StoreProduct::getStoreId, advertRound.getStoreId())))
+                    .orElseThrow(() -> new ServiceException("档口商品不存在!", HttpStatus.ERROR));
+            return roundSetInfoDTO.setProdList(storeProdList.stream().map(x -> new AdRoundLatestResDTO.ARLProdDTO()
+                    .setStoreProdId(x.getId()).setProdArtNum(x.getProdArtNum())).collect(Collectors.toList()));
+        }
+        return roundSetInfoDTO;
     }
 
 
