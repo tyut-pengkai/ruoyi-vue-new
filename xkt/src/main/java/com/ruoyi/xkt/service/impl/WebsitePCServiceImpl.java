@@ -34,6 +34,7 @@ import com.ruoyi.xkt.dto.picture.ProductMatchDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdPriceAndMainPicAndTagDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdPriceAndMainPicDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdViewDTO;
+import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileLatestFourProdDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO;
 import com.ruoyi.xkt.dto.useSearchHistory.UserSearchHistoryDTO;
 import com.ruoyi.xkt.dto.website.IndexSearchDTO;
@@ -355,18 +356,12 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                         .in(DailyStoreTag::getStoreId, advertRoundList.stream().map(AdvertRound::getStoreId).collect(Collectors.toList())));
                 Map<Long, List<String>> storeTagMap = CollectionUtils.isEmpty(storeTagList) ? new ConcurrentHashMap<>()
                         : storeTagList.stream().collect(Collectors.groupingBy(DailyStoreTag::getStoreId, Collectors.mapping(DailyStoreTag::getTag, Collectors.toList())));
-
-
-
-
-
-
-                // 商品的主图map
-                List<StoreProdPriceAndMainPicDTO> mainPicList = this.storeProdMapper.selectPriceAndMainPicList(advertRoundList.stream().filter(x -> StringUtils.isNotBlank(x.getProdIdStr()))
-                        .map(x -> x.getProdIdStr().split(",")).flatMap(Arrays::stream).map(Long::valueOf).distinct().collect(Collectors.toList()));
-                Map<Long, StoreProdPriceAndMainPicDTO> mainPicMap = mainPicList.stream().collect(Collectors.toMap(StoreProdPriceAndMainPicDTO::getStoreProdId, x -> x));
+                // 筛选这些档口前4张最新的商品主图
+                List<StoreProdFileLatestFourProdDTO> latest4ProdList = this.prodFileMapper.selectLatestFourProdList(Collections.emptyList());
+                Map<Long, List<StoreProdFileLatestFourProdDTO>> latest4ProdMap = latest4ProdList.stream().collect(Collectors
+                        .groupingBy(StoreProdFileLatestFourProdDTO::getStoreId));
                 List<PCStoreRecommendDTO> storeRecommendList = new ArrayList<>();
-                advertRoundList.stream().filter(x -> StringUtils.isNotBlank(x.getProdIdStr())).forEach(x -> {
+                advertRoundList.forEach(x -> {
                     Store store = storeMap.get(x.getStoreId());
                     PCStoreRecommendDTO storeRecommend = new PCStoreRecommendDTO().setAdvert(Boolean.TRUE).setStoreId(x.getStoreId())
                             .setPayPrice(ObjectUtils.defaultIfNull(x.getPayPrice(), BigDecimal.ZERO))
@@ -376,13 +371,9 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                             .setWechatAccount(ObjectUtils.isNotEmpty(store) ? store.getWechatAccount() : "")
                             .setQqAccount(ObjectUtils.isNotEmpty(store) ? store.getQqAccount() : "")
                             .setStoreAddress(ObjectUtils.isNotEmpty(store) ? store.getStoreAddress() : "");
-                    // 这里是一个档口上传多个档口商品，所以需要对prodIdStr的逗号进行分割
-                    List<Long> prodIdList = StrUtil.split(x.getProdIdStr(), ",").stream().map(Long::parseLong).collect(Collectors.toList());
-                    storeRecommend.setProdList(prodIdList.stream().map(storeProdId -> {
-                        StoreProdPriceAndMainPicDTO mainPicDTO = mainPicMap.get(storeProdId);
-                        return new PCStoreRecommendDTO.PCSRNewProdDTO().setStoreProdId(storeProdId)
-                                .setMainPicUrl(ObjectUtils.isNotEmpty(mainPicDTO) ? mainPicDTO.getMainPicUrl() : "");
-                    }).collect(Collectors.toList()));
+                    // 档口最新4个商品
+                    List<StoreProdFileLatestFourProdDTO> prodMainPicList = latest4ProdMap.get(x.getStoreId());
+                    storeRecommend.setProdList(BeanUtil.copyToList(prodMainPicList, PCStoreRecommendDTO.PCSRNewProdDTO.class));
                     storeRecommendList.add(storeRecommend);
                 });
                 // 按照价格由高到低进行排序，价格高的排1，其次按照价格排 2 3 4 5

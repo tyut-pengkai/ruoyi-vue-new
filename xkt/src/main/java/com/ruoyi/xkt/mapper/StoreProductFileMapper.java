@@ -66,7 +66,7 @@ public interface StoreProductFileMapper extends BaseMapper<StoreProductFile> {
      *
      * @return List<StoreProdFileLatestFourProdDTO>
      */
-    List<StoreProdFileLatestFourProdDTO> selectLatestFourProdList();
+    List<StoreProdFileLatestFourProdDTO> selectLatestFourProdList(@Param("storeIdList") List<Long> storeIdList);
 
     /**
      * 根据商品ID获取商品主图和视频

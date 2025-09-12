@@ -559,7 +559,7 @@ public class XktTask {
         Map<Long, List<String>> storeTagMap = storeTagList.stream().collect(Collectors
                 .groupingBy(DailyStoreTag::getStoreId, Collectors.collectingAndThen(Collectors.toList(), list -> list.stream()
                         .sorted(Comparator.comparing(DailyStoreTag::getType)).map(DailyStoreTag::getTag).collect(Collectors.toList()))));
-        List<StoreProdFileLatestFourProdDTO> latest4ProdList = this.storeProdFileMapper.selectLatestFourProdList();
+        List<StoreProdFileLatestFourProdDTO> latest4ProdList = this.storeProdFileMapper.selectLatestFourProdList(Collections.emptyList());
         Map<Long, List<StoreProdFileLatestFourProdDTO>> latestProdMap = latest4ProdList.stream().collect(Collectors
                 .groupingBy(StoreProdFileLatestFourProdDTO::getStoreId));
         List<PCStoreRecommendTempDTO> storeRecommendList = new ArrayList<>();
