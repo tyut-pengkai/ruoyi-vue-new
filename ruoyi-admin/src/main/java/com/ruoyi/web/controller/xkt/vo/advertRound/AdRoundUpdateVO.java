@@ -16,7 +16,6 @@ import java.math.BigDecimal;
 @ApiModel("档口上传推广图 或 修改商品")
 @Data
 @Accessors(chain = true)
-
 public class AdRoundUpdateVO {
 
     @NotNull(message = "推广轮次ID不能为空!")

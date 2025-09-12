@@ -174,7 +174,7 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
                         .eq(AdvertRound::getId, picDTO.getAdvertRoundId()).eq(AdvertRound::getStoreId, picDTO.getStoreId())
                         .eq(AdvertRound::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("推广位不存在!", HttpStatus.ERROR));
-        SysFile file = BeanUtil.toBean(picDTO, SysFile.class);
+        SysFile file = BeanUtil.toBean(picDTO.getFile(), SysFile.class);
         int count = this.fileMapper.insert(file);
         // 更新推广位的图片ID
         advertRound.setPicId(file.getId());
