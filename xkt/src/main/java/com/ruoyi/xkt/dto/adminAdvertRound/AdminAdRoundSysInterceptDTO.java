@@ -33,6 +33,8 @@ public class AdminAdRoundSysInterceptDTO {
     private AARSIFileVO file;
     @ApiModelProperty(value = "档口商品ID集合")
     private List<Long> storeProdIdList;
+    @ApiModelProperty(value = "风格类型")
+    private Integer styleType;
 
     @Data
     @ApiModel(value = "推广图对象")

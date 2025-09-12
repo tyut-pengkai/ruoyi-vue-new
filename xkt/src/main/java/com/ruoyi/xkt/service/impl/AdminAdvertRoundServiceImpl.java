@@ -253,7 +253,7 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
             this.record(advertRound);
         }
         // 设置系统拦截的数据 并将系统拦截设置为1
-        advertRound.setStoreId(interceptDTO.getStoreId()).setSysIntercept(AdSysInterceptType.INTERCEPT.getValue())
+        advertRound.setStoreId(interceptDTO.getStoreId()).setSysIntercept(AdSysInterceptType.INTERCEPT.getValue()).setStyleType(interceptDTO.getStyleType())
                 .setVoucherDate(java.sql.Date.valueOf(LocalDate.now())).setBiddingStatus(AdBiddingStatus.BIDDING_SUCCESS.getValue())
                 .setBiddingTempStatus(AdBiddingStatus.BIDDING_SUCCESS.getValue()).setCreateBy(SecurityUtils.getUsernameSafe());
         if (ObjectUtils.isNotEmpty(interceptDTO.getFile())) {
