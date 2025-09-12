@@ -585,13 +585,14 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
     @Override
     @Transactional(readOnly = true)
     public List<APPProdCateSubDTO> getAppCateSubProdSaleList(Long prodCateId) throws IOException {
-        List<DailyStoreProdSaleDTO> cateSaleTop100ProdList = redisCache.getCacheObject(CacheConstants.CATE_TOP_50_SALE_PROD);
-        if (CollectionUtils.isEmpty(cateSaleTop100ProdList)) {
+        List<DailyStoreProdSaleDTO> cateSaleTop50ProdList = redisCache.getCacheObject(CacheConstants.CATE_TOP_50_SALE_PROD);
+        if (CollectionUtils.isEmpty(cateSaleTop50ProdList)) {
             return new ArrayList<>();
         }
         // 某一个具体分类下的商品ID列表
-        List<String> prodIdList = cateSaleTop100ProdList.stream().filter(x -> x.getProdCateId().equals(prodCateId))
-                .sorted(Comparator.comparing(DailyStoreProdSaleDTO::getCount).reversed()).map(String::valueOf)
+        List<String> prodIdList = cateSaleTop50ProdList.stream().filter(x -> x.getProdCateId().equals(prodCateId))
+                .sorted(Comparator.comparing(DailyStoreProdSaleDTO::getCount).reversed())
+                .map(DailyStoreProdSaleDTO::getStoreProdId).map(String::valueOf)
                 .collect(Collectors.toList());
         // 构建入参
         IndexSearchDTO searchDTO = new IndexSearchDTO();
@@ -617,9 +618,11 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         Map<String, ESProductDTO> esProdMap = page.getList().stream().collect(Collectors.toMap(ESProductDTO::getStoreProdId, Function.identity()));
         return prodIdList.stream().filter(x -> ObjectUtils.isNotEmpty(esProdMap.get(x))).map(prodId -> {
             ESProductDTO esProd = esProdMap.get(prodId);
+            // 查询档口会员等级
+            StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + Long.valueOf(esProd.getStoreId()));
             return BeanUtil.toBean(esProd, APPProdCateSubDTO.class)
                     // 是否为档口会员
-                    .setMemberLevel(redisCache.getCacheObject(CacheConstants.STORE_MEMBER + esProd.getStoreId()))
+                    .setMemberLevel(ObjectUtils.isNotEmpty(member) ? member.getLevel() : null)
                     // 是否收藏商品
                     .setCollectProd(finalCollectMap.containsKey(prodId));
         }).collect(Collectors.toList());
