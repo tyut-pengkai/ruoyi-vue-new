@@ -560,7 +560,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                             .setOrderNum(this.positionToNumber(x.getPosition())).setStoreId(x.getStoreId()))
                     .collect(Collectors.toList());
             // 如果 launchingList 只有一个则还需要补充一个推广填空
-            if (launchingList.size() < 2) {
+            if (topRightList.size() < 2) {
                 topRightList.addAll(this.fillTopRightFromExpired(expiredList, 1, mainPicMap));
                 for (int i = 0; i < topRightList.size(); i++) {
                     topRightList.get(i).setOrderNum(i + 1);
@@ -669,7 +669,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         } else {
             midStyleList = this.fillMidStyleFromExpired(launchingList, prodPriceAndMainPicMap, fileMap, storeMap, 4);
             // 轮播图不足4个，则从过期的广告轮播图补充
-            if (launchingList.size() < 4) {
+            if (midStyleList.size() < 4) {
                 midStyleList.addAll(this.fillMidStyleFromExpired(expiredList, prodPriceAndMainPicMap, fileMap, storeMap, 4 - launchingList.size()));
             }
         }
