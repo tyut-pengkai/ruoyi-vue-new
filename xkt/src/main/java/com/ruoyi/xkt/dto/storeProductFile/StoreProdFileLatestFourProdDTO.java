@@ -19,6 +19,8 @@ public class StoreProdFileLatestFourProdDTO {
     private Long storeId;
     @ApiModelProperty(value = "档口商品ID")
     private Long storeProdId;
+    @ApiModelProperty(value = "商品编号")
+    private String prodArtNum;
     @ApiModelProperty(value = "主图url")
     private String mainPicUrl;
 

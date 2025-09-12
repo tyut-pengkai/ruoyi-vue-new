@@ -113,6 +113,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             SELECT
                 spf.store_prod_id,
                 spf.store_id,
+                sp.prod_art_num,
                 sf.file_url AS mainPicUrl,
                 ROW_NUMBER() OVER ( PARTITION BY spf.store_id ORDER BY spf.create_time DESC ) AS rank_num
             FROM
@@ -133,6 +134,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         ) SELECT
                 store_prod_id,
                 store_id,
+                prod_art_num,
                 mainPicUrl
             FROM
                 RankedProducts

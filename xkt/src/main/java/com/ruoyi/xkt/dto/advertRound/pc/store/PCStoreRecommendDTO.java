@@ -45,6 +45,8 @@ public class PCStoreRecommendDTO {
 
     @Data
     public static class PCSRNewProdDTO {
+        @ApiModelProperty(value = "商品编号")
+        private String prodArtNum;
         @ApiModelProperty(value = "档口商品ID")
         private Long storeProdId;
         @ApiModelProperty(value = "商品第一张主图路径")
