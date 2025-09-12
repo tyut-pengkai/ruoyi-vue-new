@@ -615,7 +615,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         Map<String, UserFavorites> finalCollectMap = collectMap;
         // ES 中存的 商品信息
         Map<String, ESProductDTO> esProdMap = page.getList().stream().collect(Collectors.toMap(ESProductDTO::getStoreProdId, Function.identity()));
-        return prodIdList.stream().map(prodId -> {
+        return prodIdList.stream().filter(x -> ObjectUtils.isNotEmpty(esProdMap.get(x))).map(prodId -> {
             ESProductDTO esProd = esProdMap.get(prodId);
             return BeanUtil.toBean(esProd, APPProdCateSubDTO.class)
                     // 是否为档口会员
