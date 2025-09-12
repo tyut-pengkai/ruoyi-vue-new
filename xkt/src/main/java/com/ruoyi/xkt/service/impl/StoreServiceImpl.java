@@ -481,17 +481,19 @@ public class StoreServiceImpl implements IStoreService {
     @Transactional(readOnly = true)
     public StoreSimpleResDTO getSimpleInfo(Long storeId) {
         StoreSimpleResDTO simpleDTO = this.storeMapper.getSimpleInfo(storeId);
-        UserSubscriptions userSub = this.userSubMapper.selectOne(new LambdaQueryWrapper<UserSubscriptions>()
-                .eq(UserSubscriptions::getUserId, SecurityUtils.getUserId())
-                .eq(UserSubscriptions::getStoreId, storeId)
-                .eq(UserSubscriptions::getDelFlag, Constants.UNDELETED));
-        simpleDTO.setFocus(ObjectUtils.isNotEmpty(userSub) ? Boolean.TRUE : Boolean.FALSE);
         // 获取档口LOGO
         if (ObjectUtils.isNotEmpty(simpleDTO.getStoreLogoId())) {
             SysFile logo = this.fileMapper.selectById(simpleDTO.getStoreLogoId());
             simpleDTO.setLogo(BeanUtil.toBean(logo, StoreSimpleResDTO.SSFileDTO.class));
         }
-        return simpleDTO;
+        Long userId = SecurityUtils.getUserIdSafe();
+        if (ObjectUtils.isEmpty(userId)) {
+            return simpleDTO;
+        }
+        UserSubscriptions userSub = this.userSubMapper.selectOne(new LambdaQueryWrapper<UserSubscriptions>()
+                .eq(UserSubscriptions::getUserId, userId).eq(UserSubscriptions::getStoreId, storeId)
+                .eq(UserSubscriptions::getDelFlag, Constants.UNDELETED));
+        return simpleDTO.setFocus(ObjectUtils.isNotEmpty(userSub) ? Boolean.TRUE : Boolean.FALSE);
     }
 
     @Override
