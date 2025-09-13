@@ -313,13 +313,20 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
                 .eq(StoreSaleDetail::getStoreSaleId, storeSaleDTO.getStoreSaleId()).eq(StoreSaleDetail::getDelFlag, Constants.UNDELETED));
         // 若为返单，则将之前数据记录到返单记录表中
         if (Objects.equals(storeSaleDTO.getRefund(), Boolean.TRUE)) {
+            final Date now = new Date();
             // 订单记录到StoreSaleRefundRecord
             StoreSaleRefundRecord refundRecord = BeanUtil.toBean(storeSale, StoreSaleRefundRecord.class).setId(null)
                     .setStoreSaleId(storeSale.getId()).setOperatorId(loginUser.getUserId()).setOperatorName(loginUser.getUsername());
+            refundRecord.setCreateTime(now);
+            refundRecord.setUpdateTime(now);
             this.refundRecordMapper.insert(refundRecord);
             // 明细记录到StoreSaleRefundRecordDetail
-            List<StoreSaleRefundRecordDetail> refundDetailRecordList = saleDetailList.stream().map(x -> BeanUtil.toBean(x, StoreSaleRefundRecordDetail.class)
-                    .setId(null).setStoreSaleRefundRecordId(refundRecord.getId())).collect(Collectors.toList());
+            List<StoreSaleRefundRecordDetail> refundDetailRecordList = saleDetailList.stream().map(x -> {
+                StoreSaleRefundRecordDetail refundDetail = BeanUtil.toBean(x, StoreSaleRefundRecordDetail.class).setId(null).setStoreSaleRefundRecordId(refundRecord.getId());
+                refundDetail.setCreateTime(now);
+                refundDetail.setUpdateTime(now);
+                return refundDetail;
+            }).collect(Collectors.toList());
             this.refundRecordDetailMapper.insert(refundDetailRecordList);
         }
         // 更新档口销售数据

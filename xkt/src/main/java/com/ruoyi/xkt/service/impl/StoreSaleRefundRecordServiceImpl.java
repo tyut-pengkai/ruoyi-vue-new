@@ -6,7 +6,6 @@ import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
-import com.ruoyi.xkt.domain.StoreSale;
 import com.ruoyi.xkt.domain.StoreSaleRefundRecord;
 import com.ruoyi.xkt.dto.storeSaleRefundRecord.StoreSaleRefundRecordDTO;
 import com.ruoyi.xkt.mapper.StoreSaleMapper;
@@ -18,9 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -55,15 +53,10 @@ public class StoreSaleRefundRecordServiceImpl implements IStoreSaleRefundRecordS
         if (CollectionUtils.isEmpty(refundRecordList)) {
             return new ArrayList<>();
         }
-        List<StoreSaleRefundRecordDTO> refundRecordDTOList = refundRecordList.stream().map(x -> BeanUtil.toBean(x, StoreSaleRefundRecordDTO.class)
-                .setStoreSaleRefundRecordId(x.getId())).collect(Collectors.toList());
-        // 获取当前最新数据
-        StoreSale storeSale = Optional.ofNullable(storeSaleMapper.selectById(storeSaleId))
-                .orElseThrow(() -> new ServiceException("档口销售出库订单不存在!", HttpStatus.ERROR));
-        refundRecordDTOList.add(BeanUtil.toBean(storeSale, StoreSaleRefundRecordDTO.class).setStoreSaleRefundRecordId(-1L));
-        // 将最新数据放在第一位
-        Collections.reverse(refundRecordDTOList);
-        return refundRecordDTOList;
+        return refundRecordList.stream()
+                .map(x -> BeanUtil.toBean(x, StoreSaleRefundRecordDTO.class).setStoreSaleRefundRecordId(x.getId()))
+                .sorted(Comparator.comparing(StoreSaleRefundRecordDTO::getCreateTime).reversed())
+                .collect(Collectors.toList());
     }
 
 }
