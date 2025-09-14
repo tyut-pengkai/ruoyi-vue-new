@@ -27,6 +27,8 @@ public class StoreProdStorageResDTO {
     private Long storeId;
     @ApiModelProperty(value = "单据编号")
     private String code;
+    @ApiModelProperty(value = "工厂名称")
+    private String facName;
     @ApiModelProperty(value = "入库类型")
     private Integer storageType;
     @ApiModelProperty(value = "数量")

@@ -3787,21 +3787,22 @@ CREATE TABLE `store_product_stock`
 DROP TABLE IF EXISTS `store_product_storage`;
 CREATE TABLE `store_product_storage`
 (
-    `id`             bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '档口商品入库ID',
-    `code`           varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '入库CODE',
-    `store_id`       bigint UNSIGNED NOT NULL COMMENT '档口ID',
-    `storage_type`   tinyint UNSIGNED NOT NULL COMMENT '入库类型（生产入库1、其它入库2、维修入库3）',
-    `quantity`       int UNSIGNED NOT NULL COMMENT '数量',
-    `produce_amount` decimal(10, 2) UNSIGNED NULL DEFAULT NULL COMMENT '生产成本金额',
-    `operator_id`    bigint UNSIGNED NOT NULL COMMENT '当前操作人ID sys_user.id',
-    `operator_name`  varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '操作人名称',
-    `version`        bigint UNSIGNED NOT NULL COMMENT '版本号',
-    `del_flag`       char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '删除标志（0代表存在 2代表删除）',
-    `create_by`      varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '创建者',
-    `create_time`    datetime NULL DEFAULT NULL COMMENT '创建时间',
-    `update_by`      varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '更新者',
-    `update_time`    datetime NULL DEFAULT NULL COMMENT '更新时间',
-    `voucher_date`   date                                                          NOT NULL COMMENT '单据日期',
+    `id`               bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '档口商品入库ID',
+    `code`             varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '入库CODE',
+    `store_id`         bigint UNSIGNED NOT NULL COMMENT '档口ID',
+    `store_factory_id` bigint UNSIGNED NOT NULL COMMENT '档口工厂ID',
+    `storage_type`     tinyint UNSIGNED NOT NULL COMMENT '入库类型（生产入库1、其它入库2、维修入库3）',
+    `quantity`         int UNSIGNED NOT NULL COMMENT '数量',
+    `produce_amount`   decimal(10, 2) UNSIGNED NULL DEFAULT NULL COMMENT '生产成本金额',
+    `operator_id`      bigint UNSIGNED NOT NULL COMMENT '当前操作人ID sys_user.id',
+    `operator_name`    varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '操作人名称',
+    `version`          bigint UNSIGNED NOT NULL COMMENT '版本号',
+    `del_flag`         char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '删除标志（0代表存在 2代表删除）',
+    `create_by`        varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '创建者',
+    `create_time`      datetime NULL DEFAULT NULL COMMENT '创建时间',
+    `update_by`        varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '更新者',
+    `update_time`      datetime NULL DEFAULT NULL COMMENT '更新时间',
+    `voucher_date`     date                                                          NOT NULL COMMENT '单据日期',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '档口商品入库' ROW_FORMAT = DYNAMIC;
 

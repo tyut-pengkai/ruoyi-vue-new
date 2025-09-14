@@ -3,9 +3,6 @@ package com.ruoyi.xkt.dto.storeProdStorage;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -18,33 +15,26 @@ import java.util.List;
 
 public class StoreProdStorageDTO {
 
+    @ApiModelProperty(value = "工厂ID")
+    private Long storeFactoryId;
     @ApiModelProperty(value = "档口ID")
-    @NotNull(message = "档口ID不能为空!")
     private Long storeId;
-    @NotBlank(message = "入库类型不能为空!")
     @ApiModelProperty(value = "入库类型")
     private Integer storageType;
-    @Valid
-    @NotNull(message = "商品入库明细列表不能为空!")
     @ApiModelProperty(value = "商品入库明细列表")
     private List<StorageDetailDTO> detailList;
 
     @Data
     public static class StorageDetailDTO {
 
-        @NotBlank(message = "商品货号不能为空!")
         @ApiModelProperty(value = "商品货号")
         private String prodArtNum;
-        @NotNull(message = "档口商品颜色ID不能为空!")
         @ApiModelProperty(value = "档口商品颜色ID")
         private Long storeProdColorId;
-        @NotNull(message = "档口颜色ID不能为空!")
         @ApiModelProperty(value = "档口颜色ID")
         private Long storeColorId;
-        @NotBlank(message = "颜色名称不能为空!")
         @ApiModelProperty(value = "颜色名称")
         private String colorName;
-        @NotNull(message = "档口商品ID不能为空!")
         @ApiModelProperty(value = "档口商品ID")
         private Long storeProdId;
         @ApiModelProperty(value = "尺码30")
@@ -81,7 +71,6 @@ public class StoreProdStorageDTO {
         private BigDecimal producePrice;
         @ApiModelProperty(value = "总的生产价格")
         private BigDecimal produceAmount;
-
     }
 
 }

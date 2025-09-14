@@ -36,6 +36,10 @@ public class StoreProductStorage extends XktBaseEntity {
      */
     private Long storeId;
     /**
+     * 档口工厂ID
+     */
+    private Long storeFactoryId;
+    /**
      * code
      */
     @Excel(name = "code")

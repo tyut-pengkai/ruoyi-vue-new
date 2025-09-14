@@ -54,6 +54,7 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
     final StoreProductDemandDetailMapper demandDetailMapper;
     final StoreProductDemandMapper demandMapper;
     final StoreProductStorageDemandDeductMapper deductMapper;
+    final StoreFactoryMapper storeFacMapper;
 
 
     /**
@@ -187,10 +188,13 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
         if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(storage.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
+        // 获取档口工厂
+        StoreFactory storeFac = this.storeFacMapper.selectById(storage.getStoreFactoryId());
         // 档口商品入库明细
         List<StoreProductStorageDetail> storageDetailList = storageDetailMapper.selectList(new LambdaQueryWrapper<StoreProductStorageDetail>()
                 .eq(StoreProductStorageDetail::getStoreProdStorId, storeProdStorageId).eq(StoreProductStorageDetail::getDelFlag, Constants.UNDELETED));
         return BeanUtil.toBean(storage, StoreProdStorageResDTO.class)
+                .setFacName(ObjectUtils.isNotEmpty(storeFac) ? storeFac.getFacName() : "")
                 .setDetailList(storageDetailList.stream().map(x -> BeanUtil.toBean(x, StoreProdStorageResDTO.StorageDetailDTO.class)).collect(Collectors.toList()));
     }
 

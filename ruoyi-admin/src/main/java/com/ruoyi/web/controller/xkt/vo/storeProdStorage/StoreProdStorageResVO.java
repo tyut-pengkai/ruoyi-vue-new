@@ -33,6 +33,8 @@ public class StoreProdStorageResVO {
     private Integer storageType;
     @ApiModelProperty(value = "数量")
     private Integer quantity;
+    @ApiModelProperty(value = "工厂名称")
+    private String facName;
     @ApiModelProperty(value = "生产成本金额")
     private BigDecimal produceAmount;
     @ApiModelProperty(value = "操作人名称")

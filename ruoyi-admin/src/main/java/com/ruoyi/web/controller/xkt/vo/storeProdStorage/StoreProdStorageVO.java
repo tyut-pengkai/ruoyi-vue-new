@@ -22,6 +22,9 @@ import java.util.List;
 
 public class StoreProdStorageVO {
 
+    @NotNull(message = "工厂ID不能为空!")
+    @ApiModelProperty(value = "工厂ID", required = true)
+    private Long storeFactoryId;
     @ApiModelProperty(value = "档口ID", required = true)
     @NotNull(message = "档口ID不能为空!")
     private Long storeId;
