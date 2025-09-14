@@ -30,6 +30,8 @@ public class StoreProdStorageDemandDeductVO {
     private Date createTime;
     @ApiModelProperty(name = "入库总数量")
     private Integer quantity;
+    @ApiModelProperty(value = "工厂名称")
+    private String facName;
     @ApiModelProperty(name = "生产成本金额")
     private BigDecimal produceAmount;
     @ApiModelProperty(name = "抵扣明细列表")

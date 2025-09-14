@@ -8,6 +8,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         SELECT
             DENSE_RANK() OVER (ORDER BY sps.code, sps.create_time DESC) AS orderNum,
             sps.`code`,
+            sf.fac_name,
             sps.create_time,
             sps.quantity,
             sps.produce_amount,
@@ -37,19 +38,31 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             COALESCE(spsd.size_42, 0) + COALESCE(spsd.size_43, 0) AS totalQuantity,
             sps.operator_name
         FROM
-            store_product_storage_detail spsd JOIN store_product_storage sps ON spsd.store_prod_stor_id = sps.id
+            store_product_storage_detail spsd
+                JOIN store_product_storage sps ON spsd.store_prod_stor_id = sps.id
+                JOIN store_factory sf ON sps.store_factory_id = sf.id
         WHERE
             spsd.del_flag = 0
             AND sps.id IN
             <foreach collection="storeProdStorageIdList" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>
+            <if test="prodArtNum != null and prodArtNum != ''">
+                AND spsd.prod_art_num LIKE CONCAT('%', #{prodArtNum}, '%')
+            </if>
+            <if test="facName != null and facName != ''">
+                AND sf.fac_name LIKE CONCAT('%', #{facName}, '%')
+            </if>
+            <if test="storageType != null">
+                AND sps.storage_type = #{storageType}
+            </if>
     </select>
 
     <select id="selectExportListVoucherDateBetween" resultType="com.ruoyi.xkt.dto.storeProdStorage.StoreStorageDetailDownloadDTO">
         SELECT
             DENSE_RANK() OVER (ORDER BY sps.code, sps.create_time DESC) AS orderNum,
             sps.`code`,
+            sf.fac_name,
             sps.create_time,
             sps.quantity,
             sps.produce_amount,
@@ -79,10 +92,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             COALESCE(spsd.size_42, 0) + COALESCE(spsd.size_43, 0) AS totalQuantity,
             sps.operator_name
         FROM
-            store_product_storage_detail spsd JOIN store_product_storage sps ON spsd.store_prod_stor_id = sps.id
+            store_product_storage_detail spsd
+                JOIN store_product_storage sps ON spsd.store_prod_stor_id = sps.id
+                JOIN store_factory sf ON sps.store_factory_id = sf.id
         WHERE
             spsd.del_flag = 0
             AND sps.voucher_date BETWEEN #{voucherDateStart} AND #{voucherDateEnd}
+            <if test="prodArtNum != null and prodArtNum != ''">
+                AND spsd.prod_art_num LIKE CONCAT('%', #{prodArtNum}, '%')
+            </if>
+            <if test="facName != null and facName != ''">
+                AND sf.fac_name LIKE CONCAT('%', #{facName}, '%')
+            </if>
+            <if test="storageType != null">
+                AND sps.storage_type = #{storageType}
+            </if>
     </select>
 
 </mapper>

@@ -25,6 +25,8 @@ public class StoreProdStoragePageVO extends BasePageVO {
     private Long storeId;
     @ApiModelProperty(value = "商品货号")
     private String prodArtNum;
+    @ApiModelProperty(value = "档口工厂ID")
+    private Long storeFactoryId;
     @ApiModelProperty(value = "入库类型")
     private Integer storageType;
     @ApiModelProperty(value = "销售开始时间")

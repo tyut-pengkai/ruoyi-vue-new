@@ -26,6 +26,8 @@ public class StoreProdStorageDemandDeductDTO {
     private String storageCode;
     @ApiModelProperty(name = "入库类型 1 PROD_STORAGE  其它入库 2 OTHER_STORAGE  维修入库 3 REPAIR_STORAGE")
     private Integer storageType;
+    @ApiModelProperty(value = "工厂名称")
+    private String facName;
     @ApiModelProperty(value = "创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;

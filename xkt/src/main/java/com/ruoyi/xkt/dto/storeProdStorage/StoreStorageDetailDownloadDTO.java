@@ -21,12 +21,14 @@ public class StoreStorageDetailDownloadDTO {
     private Integer orderNum;
     @Excel(name = "单据编号", needMerge = true)
     private String code;
+    @Excel(name = "工厂名称", needMerge = true)
+    private String facName;
+    @Excel(name = "入库类型", readConverterExp = "1=生产入库,2=其它入库,3=维修入库", needMerge = true)
+    private Integer storageType;
     @Excel(name = "出库日期", width = 30, dateFormat = "yyyy-MM-dd", needMerge = true)
     private Date createTime;
     @Excel(name = "总生产成本", needMerge = true)
     private BigDecimal produceAmount;
-    @Excel(name = "结款状态", readConverterExp = "1=生产入库,2=其它入库,3=维修入库", needMerge = true)
-    private Integer storageType;
     @Excel(name = "货号", needMerge = true)
     private String prodArtNum;
     @Excel(name = "颜色", needMerge = true)

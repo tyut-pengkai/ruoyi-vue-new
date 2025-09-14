@@ -6,10 +6,12 @@ import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.xkt.domain.StoreFactory;
 import com.ruoyi.xkt.domain.StoreProductStorage;
 import com.ruoyi.xkt.domain.StoreProductStorageDemandDeduct;
 import com.ruoyi.xkt.domain.StoreProductStorageDetail;
 import com.ruoyi.xkt.dto.storeProductStorageDemandDeduct.StoreProdStorageDemandDeductDTO;
+import com.ruoyi.xkt.mapper.StoreFactoryMapper;
 import com.ruoyi.xkt.mapper.StoreProductStorageDemandDeductMapper;
 import com.ruoyi.xkt.mapper.StoreProductStorageDetailMapper;
 import com.ruoyi.xkt.mapper.StoreProductStorageMapper;
@@ -38,6 +40,7 @@ public class StoreProductStorageDemandDeducteServiceImpl implements IStoreProduc
     final StoreProductStorageMapper prodStorageMapper;
     final StoreProductStorageDetailMapper productStorageDetailMapper;
     final StoreProductStorageDemandDeductMapper prodStorageDemandDeductMapper;
+    final StoreFactoryMapper storeFacMapper;
 
 
     /**
@@ -59,11 +62,14 @@ public class StoreProductStorageDemandDeducteServiceImpl implements IStoreProduc
                         .eq(StoreProductStorage::getCode, storageCode).eq(StoreProductStorage::getStoreId, storeId)
                         .eq(StoreProductStorage::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口商品入库不存在!", HttpStatus.ERROR));
+        // 获取仓库
+        StoreFactory storeFac = this.storeFacMapper.selectById(storage.getStoreFactoryId());
         List<StoreProductStorageDetail> storageDetailList = this.productStorageDetailMapper.selectList(new LambdaQueryWrapper<StoreProductStorageDetail>()
                 .eq(StoreProductStorageDetail::getStoreProdStorId, storage.getId()).eq(StoreProductStorageDetail::getDelFlag, Constants.UNDELETED));
         List<StoreProductStorageDemandDeduct> demandDeductList = this.prodStorageDemandDeductMapper.selectList(new LambdaQueryWrapper<StoreProductStorageDemandDeduct>()
                 .eq(StoreProductStorageDemandDeduct::getStorageCode, storageCode).eq(StoreProductStorageDemandDeduct::getDelFlag, Constants.UNDELETED));
-        StoreProdStorageDemandDeductDTO dto = BeanUtil.toBean(storage, StoreProdStorageDemandDeductDTO.class).setStorageCode(storageCode);
+        StoreProdStorageDemandDeductDTO dto = BeanUtil.toBean(storage, StoreProdStorageDemandDeductDTO.class).setStorageCode(storageCode)
+                .setFacName(ObjectUtils.isNotEmpty(storeFac) ? storeFac.getFacName() : "");
         if (CollectionUtils.isEmpty(demandDeductList)) {
             return dto;
         }

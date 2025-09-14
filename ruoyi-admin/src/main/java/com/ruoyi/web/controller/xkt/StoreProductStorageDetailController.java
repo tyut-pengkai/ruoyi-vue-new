@@ -41,8 +41,8 @@ public class StoreProductStorageDetailController extends XktBaseController {
     final IStoreProductStorageDetailService storageDetailService;
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
-    @ApiOperation(value = "打印入库单", httpMethod = "POST", response = R.class)
-    @Log(title = "打印入库单", businessType = BusinessType.EXPORT)
+    @ApiOperation(value = "导出入库单", httpMethod = "POST", response = R.class)
+    @Log(title = "导出入库单", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, @Validated @RequestBody StoreStorageExportVO exportVO) throws UnsupportedEncodingException {
         List<StoreStorageDetailDownloadDTO> downloadList = storageDetailService.export(BeanUtil.toBean(exportVO, StoreStorageExportDTO.class));
