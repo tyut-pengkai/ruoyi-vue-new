@@ -23,5 +23,7 @@ public class StoreIndexCusSaleTop10ResDTO {
     private Integer saleNum;
     @ApiModelProperty(value = "累计退货量")
     private Integer refundNum;
+    @ApiModelProperty(value = "退货率")
+    private BigDecimal refundRate;
 
 }

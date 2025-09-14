@@ -257,7 +257,8 @@ public class Constants
     public static final Integer FA_HUO_BAO_SN_PREFIX_LENGTH = 10;
     // 发货宝条码 公共部分 前缀长度
     public static final Integer FA_HUO_BAO_SN_COMMON_PREFIX_LENGTH = 8;
-
+    // 每个档口默认 现金客户
+    public static final String STORE_CUS_CASH = "现金客户";
 
 
     /**

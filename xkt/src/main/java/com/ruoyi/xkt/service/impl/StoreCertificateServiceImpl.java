@@ -11,10 +11,7 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.system.service.ISysUserService;
-import com.ruoyi.xkt.domain.Store;
-import com.ruoyi.xkt.domain.StoreCertificate;
-import com.ruoyi.xkt.domain.SysFile;
-import com.ruoyi.xkt.domain.VoucherSequence;
+import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.storeCertificate.StoreCertDTO;
 import com.ruoyi.xkt.dto.storeCertificate.StoreCertResDTO;
 import com.ruoyi.xkt.dto.storeCertificate.StoreCertStepResDTO;
@@ -57,6 +54,7 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
     final DailySaleProductMapper dailySaleProdMapper;
     final ISysUserService userService;
     final VoucherSequenceMapper vsMapper;
+    final StoreCustomerMapper storeCusMapper;
 
     /**
      * 新增档口认证
@@ -85,6 +83,11 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
         // 代发订单
         vsList.add(this.initVoucherSequence(store.getId(), Constants.VOUCHER_SEQ_STORE_ORDER_TYPE, Constants.VOUCHER_SEQ_STORE_ORDER_PREFIX));
         this.vsMapper.insert(vsList);
+        // 新增档口 “现金客户”
+        StoreCustomer storeCus = new StoreCustomer().setStoreId(store.getId()).setPhone(store.getContactPhone())
+                // 默认创建现金客户
+                .setCusName(Constants.STORE_CUS_CASH).setAddOverPrice(0);
+        this.storeCusMapper.insert(storeCus);
         return count;
     }
 
