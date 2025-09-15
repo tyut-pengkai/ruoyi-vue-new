@@ -3506,7 +3506,7 @@ CREATE TABLE `store_product_color`
 -- ----------------------------
 -- Table structure for store_product_color_price
 -- ----------------------------
-DROP TABLE IF EXISTS `store_product_color_price`;
+/*DROP TABLE IF EXISTS `store_product_color_price`;
 CREATE TABLE `store_product_color_price`
 (
     `id`             bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '档口商品颜色价格ID',
@@ -3522,7 +3522,7 @@ CREATE TABLE `store_product_color_price`
     PRIMARY KEY (`id`) USING BTREE,
     INDEX            `idx_spcp_prodid_colorid_del`(`store_prod_id`, `store_color_id`, `del_flag`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '档口商品颜色定价' ROW_FORMAT = DYNAMIC;
-
+*/
 -- ----------------------------
 -- Table structure for store_product_color_size
 -- ----------------------------
@@ -3533,6 +3533,7 @@ CREATE TABLE `store_product_color_size`
     `store_color_id`  bigint UNSIGNED NOT NULL COMMENT '档口商品颜色ID',
     `store_prod_id`   bigint UNSIGNED NOT NULL COMMENT '档口商品ID',
     `size`            int UNSIGNED NOT NULL COMMENT '商品尺码',
+    `price`           decimal(10, 2) UNSIGNED NOT NULL COMMENT '档口商品定价',
     `sn_prefix`       varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '档口商品颜色尺码的前缀',
     `other_sn_prefix` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '其它系统条码前缀',
     `next_sn`         int UNSIGNED NULL DEFAULT NULL COMMENT '下一个条码起始值',

@@ -9,6 +9,8 @@ import lombok.experimental.Accessors;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import java.math.BigDecimal;
+
 /**
  * 档口商品颜色的尺码对象 store_product_color_size
  * 条码规则 5位档口ID + 8位 store_product_color_size.id + 8位 nextBarcode
@@ -43,6 +45,11 @@ public class StoreProductColorSize extends XktBaseEntity {
      */
     @Excel(name = "商品尺码")
     private Integer size;
+    /**
+     * 档口商品定价
+     */
+    @Excel(name = "档口商品定价")
+    private BigDecimal price;
     /**
      * 档口商品颜色尺码的前缀 1000100000001 xxxx
      */
