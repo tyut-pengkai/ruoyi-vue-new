@@ -591,9 +591,9 @@ public class StoreProductServiceImpl implements IStoreProductService {
     public List<PicPackSimpleDTO> prepareGetPicPackDownloadUrl(Long storeProductId) {
         Assert.notNull(storeProductId);
         List<StoreProductFile> productFiles = storeProdFileMapper.selectList(Wrappers.lambdaQuery(StoreProductFile.class)
-                .eq(StoreProductFile::getStoreProdId, storeProductId)
-                .in(StoreProductFile::getFileType, FileType.picPackValues())
-                .eq(XktBaseEntity::getDelFlag, UNDELETED))
+                        .eq(StoreProductFile::getStoreProdId, storeProductId)
+                        .in(StoreProductFile::getFileType, FileType.picPackValues())
+                        .eq(XktBaseEntity::getDelFlag, UNDELETED))
                 .stream()
                 .collect(Collectors.toList());
         if (CollUtil.isEmpty(productFiles)) {
@@ -994,11 +994,6 @@ public class StoreProductServiceImpl implements IStoreProductService {
         // 档口类目属性
         this.storeProdCateAttrMapper.insert(BeanUtil.toBean(storeProdDTO.getCateAttr(), StoreProductCategoryAttribute.class)
                 .setStoreProdId(storeProd.getId()).setStoreId(storeProd.getStoreId()));
-        // 档口颜色价格列表
-//        List<StoreProductColorPrice> priceList = storeProdDTO.getPriceList().stream().map(x -> BeanUtil.toBean(x, StoreProductColorPrice.class)
-//                        .setStoreProdId(storeProd.getId()).setStoreColorId(storeColorMap.get(x.getColorName()).getId()))
-//                .collect(Collectors.toList());
-//        this.storeProdColorPriceMapper.insert(priceList);
         // 档口详情内容
         StoreProductDetail storeProdDetail = new StoreProductDetail().setDetail(storeProdDTO.getDetail()).setStoreProdId(storeProd.getId());
         this.storeProdDetailMapper.insert(storeProdDetail);

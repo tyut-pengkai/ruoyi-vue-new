@@ -3501,28 +3501,6 @@ CREATE TABLE `store_product_color`
     INDEX            `idx_spc_prodid_colorid_del`(`store_prod_id`, `store_color_id`, `del_flag`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '档口当前商品颜色' ROW_FORMAT = DYNAMIC;
 
-
-
--- ----------------------------
--- Table structure for store_product_color_price
--- ----------------------------
-/*DROP TABLE IF EXISTS `store_product_color_price`;
-CREATE TABLE `store_product_color_price`
-(
-    `id`             bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '档口商品颜色价格ID',
-    `store_prod_id`  bigint UNSIGNED NOT NULL COMMENT '档口商品ID',
-    `store_color_id` bigint UNSIGNED NOT NULL COMMENT '档口颜色ID',
-    `price`          decimal(10, 2) UNSIGNED NOT NULL COMMENT '档口商品定价',
-    `version`        bigint UNSIGNED NOT NULL COMMENT '版本号',
-    `del_flag`       char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '删除标志（0代表存在 2代表删除）',
-    `create_by`      varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '创建者',
-    `create_time`    datetime NULL DEFAULT NULL COMMENT '创建时间',
-    `update_by`      varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '更新者',
-    `update_time`    datetime NULL DEFAULT NULL COMMENT '更新时间',
-    PRIMARY KEY (`id`) USING BTREE,
-    INDEX            `idx_spcp_prodid_colorid_del`(`store_prod_id`, `store_color_id`, `del_flag`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '档口商品颜色定价' ROW_FORMAT = DYNAMIC;
-*/
 -- ----------------------------
 -- Table structure for store_product_color_size
 -- ----------------------------
