@@ -20,6 +20,7 @@ import com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandSimpleDTO;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockDTO;
 import com.ruoyi.xkt.enums.DemandStatus;
 import com.ruoyi.xkt.enums.EVoucherSequenceType;
+import com.ruoyi.xkt.enums.StorageType;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IStoreProductStockService;
 import com.ruoyi.xkt.service.IStoreProductStorageService;
@@ -84,7 +85,6 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
     @Override
     @Transactional
     public int create(StoreProdStorageDTO storeProdStorageDTO) {
-        long start = System.currentTimeMillis();
         // 用户是否为档口管理者或子账户
         if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(storeProdStorageDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
@@ -108,67 +108,14 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
         this.storageDetailMapper.insert(detailList);
         // 构造增加库存的入参DTO
         List<StoreProdStockDTO> increaseStockList = BeanUtil.copyToList(detailList, StoreProdStockDTO.class);
-        long second = System.currentTimeMillis();
-        System.err.println("入库耗时：" + (second - start));
         // 增加档口商品的库存
         this.stockService.increaseStock(storeProdStorageDTO.getStoreId(), increaseStockList);
-        long third = System.currentTimeMillis();
-        System.err.println("库存耗时：" + (third - second));
-        // 处理档口商品需求单的抵扣
-        this.handleStorageDemandDeduct(storeProdStorageDTO.getStoreId(), storeProdStorage.getCode(), detailList);
-        long last = System.currentTimeMillis();
-        System.err.println("处理需求耗时：" + (last - third));
+        //  只有生产入库的库存才处理需求单的抵扣
+        if (Objects.equals(storeProdStorage.getStorageType(), StorageType.PROD_STORAGE.getValue())) {
+            // 处理档口商品需求单的抵扣
+            this.handleStorageDemandDeduct(storeProdStorageDTO.getStoreId(), storeProdStorage.getCode(), storeProdStorage.getStoreFactoryId(), detailList);
+        }
         return count;
-    }
-
-    /**
-     * 处理库存抵扣需求
-     * 该方法用于根据入库明细列表来抵扣相应的产品需求量
-     *
-     * @param storeId     店铺ID
-     * @param storageCode 入库单号
-     * @param detailList  入库明细列表
-     */
-    private void handleStorageDemandDeduct(Long storeId, String storageCode, List<StoreProductStorageDetail> detailList) {
-        long fourth = System.currentTimeMillis();
-        // 根据明细列表找到所有提交的需求
-        List<StoreProductDemandDetail> demandDetailList = this.demandDetailMapper.selectList(new LambdaQueryWrapper<StoreProductDemandDetail>()
-                .eq(StoreProductDemandDetail::getStoreId, storeId).eq(StoreProductDemandDetail::getDelFlag, Constants.UNDELETED)
-                .in(StoreProductDemandDetail::getDetailStatus, Arrays.asList(DemandStatus.PENDING_PRODUCTION.getValue(), DemandStatus.IN_PRODUCTION.getValue()))
-                .in(StoreProductDemandDetail::getStoreProdColorId, detailList.stream().map(StoreProductStorageDetail::getStoreProdColorId).collect(Collectors.toList())));
-        // 若没有任何需求则不抵扣，直接结束流程
-        if (CollectionUtils.isEmpty(demandDetailList)) {
-            return;
-        }
-        // 所有的需求单ID列表
-        final List<Long> demandIdList = demandDetailList.stream().map(StoreProductDemandDetail::getStoreProdDemandId).distinct().collect(Collectors.toList());
-        // 所有颜色尺码需要抵扣的需求数量
-        Map<Long, Map<Integer, Map<Long, Integer>>> unDeductMap = this.getUnDeductMap(demandDetailList, detailList.stream()
-                .map(StoreProductStorageDetail::getStoreProdColorId).collect(Collectors.toList()));
-        long fifth = System.currentTimeMillis();
-        System.err.println("查询需求耗时:" + (fifth - fourth));
-        if (MapUtils.isEmpty(unDeductMap)) {
-            return;
-        }
-        // 按照入库明细列表依次进行需求数量扣减
-        Map<Long, Map<Long, Map<Integer, Integer>>> storageQuantityMap = this.getStorageQuantityMap(detailList);
-        long sixth = System.currentTimeMillis();
-        System.err.println("库存转map耗时: " + (sixth - fifth));
-        // 按照入库的数量明细依次判断哪些需求订单明细还未抵扣完毕
-        Map<Long, Map<Long, Map<Integer, Map<Long, Integer>>>> totalMatchMap = this.getTotalMatchMap(storageQuantityMap, unDeductMap);
-        long seventh = System.currentTimeMillis();
-        System.err.println("处理需求抵扣明细耗时:" + (seventh - sixth));
-        if (MapUtils.isEmpty(totalMatchMap)) {
-            return;
-        }
-        // 新增入库与需求的抵扣关系
-        List<Long> updateDetailIdList = this.createDemandDeduct(storageCode, demandDetailList, totalMatchMap);
-        long eighth = System.currentTimeMillis();
-        System.err.println("新增入库需求抵扣明细耗时:" + (eighth - seventh));
-        // 根据最新的数据更新需求单的抵扣状态
-        this.updateLatestDemandStatus(updateDetailIdList, demandIdList, totalMatchMap);
-        long ninth = System.currentTimeMillis();
-        System.err.println("更新需求单状态耗时:" + (ninth - eighth));
     }
 
     /**
@@ -235,6 +182,59 @@ public class StoreProductStorageServiceImpl implements IStoreProductStorageServi
         // 将入库抵扣的需求的中间表删除
         this.deleteStorageDemandDeduct(storageDetailList);
         return count;
+    }
+
+    /**
+     * 处理库存抵扣需求
+     * 该方法用于根据入库明细列表来抵扣相应的产品需求量
+     *
+     * @param storeId        店铺ID
+     * @param storageCode    入库单号
+     * @param storeFactoryId 档口仓库ID
+     * @param detailList     入库明细列表
+     */
+    private void handleStorageDemandDeduct(Long storeId, String storageCode, Long storeFactoryId, List<StoreProductStorageDetail> detailList) {
+        long fourth = System.currentTimeMillis();
+        // 根据明细列表找到所有提交的需求
+        List<StoreProductDemandDetail> demandDetailList = this.demandDetailMapper.selectList(new LambdaQueryWrapper<StoreProductDemandDetail>()
+                .eq(StoreProductDemandDetail::getStoreId, storeId).eq(StoreProductDemandDetail::getDelFlag, Constants.UNDELETED)
+                // 抵扣相同工厂需求单
+                .eq(StoreProductDemandDetail::getStoreFactoryId, storeFactoryId)
+                .in(StoreProductDemandDetail::getDetailStatus, Arrays.asList(DemandStatus.PENDING_PRODUCTION.getValue(), DemandStatus.IN_PRODUCTION.getValue()))
+                .in(StoreProductDemandDetail::getStoreProdColorId, detailList.stream().map(StoreProductStorageDetail::getStoreProdColorId).collect(Collectors.toList())));
+        // 若没有任何需求则不抵扣，直接结束流程
+        if (CollectionUtils.isEmpty(demandDetailList)) {
+            return;
+        }
+        // 所有的需求单ID列表
+        final List<Long> demandIdList = demandDetailList.stream().map(StoreProductDemandDetail::getStoreProdDemandId).distinct().collect(Collectors.toList());
+        // 所有颜色尺码需要抵扣的需求数量
+        Map<Long, Map<Integer, Map<Long, Integer>>> unDeductMap = this.getUnDeductMap(demandDetailList, detailList.stream()
+                .map(StoreProductStorageDetail::getStoreProdColorId).collect(Collectors.toList()));
+        long fifth = System.currentTimeMillis();
+        System.err.println("查询需求耗时:" + (fifth - fourth));
+        if (MapUtils.isEmpty(unDeductMap)) {
+            return;
+        }
+        // 按照入库明细列表依次进行需求数量扣减
+        Map<Long, Map<Long, Map<Integer, Integer>>> storageQuantityMap = this.getStorageQuantityMap(detailList);
+        long sixth = System.currentTimeMillis();
+        System.err.println("库存转map耗时: " + (sixth - fifth));
+        // 按照入库的数量明细依次判断哪些需求订单明细还未抵扣完毕
+        Map<Long, Map<Long, Map<Integer, Map<Long, Integer>>>> totalMatchMap = this.getTotalMatchMap(storageQuantityMap, unDeductMap);
+        long seventh = System.currentTimeMillis();
+        System.err.println("处理需求抵扣明细耗时:" + (seventh - sixth));
+        if (MapUtils.isEmpty(totalMatchMap)) {
+            return;
+        }
+        // 新增入库与需求的抵扣关系
+        List<Long> updateDetailIdList = this.createDemandDeduct(storageCode, demandDetailList, totalMatchMap);
+        long eighth = System.currentTimeMillis();
+        System.err.println("新增入库需求抵扣明细耗时:" + (eighth - seventh));
+        // 根据最新的数据更新需求单的抵扣状态
+        this.updateLatestDemandStatus(updateDetailIdList, demandIdList, totalMatchMap);
+        long ninth = System.currentTimeMillis();
+        System.err.println("更新需求单状态耗时:" + (ninth - eighth));
     }
 
     /**
