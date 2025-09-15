@@ -590,25 +590,27 @@ public class StoreProductServiceImpl implements IStoreProductService {
     @Override
     public List<PicPackSimpleDTO> prepareGetPicPackDownloadUrl(Long storeProductId) {
         Assert.notNull(storeProductId);
-        List<Long> fileIds = storeProdFileMapper.selectList(Wrappers.lambdaQuery(StoreProductFile.class)
-                        .eq(StoreProductFile::getStoreProdId, storeProductId)
-                        .in(StoreProductFile::getFileType, FileType.picPackValues())
-                        .eq(XktBaseEntity::getDelFlag, UNDELETED))
+        List<StoreProductFile> productFiles = storeProdFileMapper.selectList(Wrappers.lambdaQuery(StoreProductFile.class)
+                .eq(StoreProductFile::getStoreProdId, storeProductId)
+                .in(StoreProductFile::getFileType, FileType.picPackValues())
+                .eq(XktBaseEntity::getDelFlag, UNDELETED))
                 .stream()
-                .map(StoreProductFile::getFileId)
-                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
-        if (CollUtil.isEmpty(fileIds)) {
+        if (CollUtil.isEmpty(productFiles)) {
             return ListUtil.empty();
         }
         // 商品下载量+1
         redisCache.valueIncr(CacheConstants.PRODUCT_STATISTICS_DOWNLOAD_COUNT, storeProductId);
-        List<SysFile> files = fileMapper.selectByIds(fileIds);
-        return files.stream()
-                .filter(o -> UNDELETED.equals(o.getDelFlag()))
+        List<Long> fileIds = productFiles.stream().map(StoreProductFile::getFileId).collect(Collectors.toList());
+        Map<Long, SysFile> fileMaps = fileMapper.selectByIds(fileIds)
+                .stream()
+                .collect(Collectors.toMap(SysFile::getId, Function.identity()));
+        return productFiles.stream()
                 .map(o -> {
-                    PicPackSimpleDTO dto = BeanUtil.toBean(o, PicPackSimpleDTO.class);
-                    dto.setFileId(o.getId());
+                    SysFile sysFile = fileMaps.get(o.getFileId());
+                    PicPackSimpleDTO dto = BeanUtil.toBean(sysFile, PicPackSimpleDTO.class);
+                    dto.setFileId(sysFile.getId());
+                    dto.setFileType(o.getFileType());
                     return dto;
                 }).collect(Collectors.toList());
     }
