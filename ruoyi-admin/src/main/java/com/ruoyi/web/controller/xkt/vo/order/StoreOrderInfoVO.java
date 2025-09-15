@@ -384,9 +384,6 @@ public class StoreOrderInfoVO {
         @ApiModelProperty(value = "更新时间")
         private Date updateTime;
 
-//        @ApiModelProperty(value = "档口商品名称")
-//        private String prodName;
-
         @ApiModelProperty(value = "商品货号")
         private String prodArtNum;
 
