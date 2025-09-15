@@ -17,33 +17,42 @@ import java.math.BigDecimal;
  * @author ruoyi
  * @date 2025-03-26
  */
+/*
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Accessors(chain = true)
 public class StoreProductColorPrice extends XktBaseEntity {
     private static final long serialVersionUID = 1L;
 
-    /**
+    */
+/**
      * 档口商品颜色价格ID
-     */
+     *//*
+
     @TableId
     private Long id;
 
-    /**
+    */
+/**
      * 档口颜色ID
-     */
+     *//*
+
     @Excel(name = "档口颜色ID")
     private Long storeColorId;
 
-    /**
+    */
+/**
      * 档口商品ID
-     */
+     *//*
+
     @Excel(name = "档口商品ID")
     private Long storeProdId;
 
-    /**
+    */
+/**
      * 档口商品定价
-     */
+     *//*
+
     @Excel(name = "档口商品定价")
     private BigDecimal price;
 
@@ -63,3 +72,4 @@ public class StoreProductColorPrice extends XktBaseEntity {
                 .toString();
     }
 }
+*/

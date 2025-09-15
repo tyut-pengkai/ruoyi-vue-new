@@ -43,7 +43,6 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
     final StoreProductStockMapper storeProdStockMapper;
     final StoreProductFileMapper storeProdFileMapper;
     final SysFileMapper fileMapper;
-    final StoreProductColorPriceMapper prodColorPriceMapper;
     final StoreCustomerProductDiscountMapper storeCusProdDiscMapper;
     final StoreProductMapper storeProdMapper;
     final StoreProductColorSizeMapper prodColorSizeMapper;
@@ -127,8 +126,8 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
         if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(dto.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
-        // 商品颜色等基本信息
-        StoreProdStockAndDiscountResDTO basicInfoDTO = ObjectUtils.defaultIfNull(this.prodColorPriceMapper.selectStockAndCusDiscount(dto),
+        // 获取商品的基本属性
+        StoreProdStockAndDiscountResDTO basicInfoDTO = ObjectUtils.defaultIfNull(this.prodColorSizeMapper.selectStockAndCusDiscount(dto),
                 new StoreProdStockAndDiscountResDTO());
         // 档口商品颜色 的 库存
         StoreProductStock stock = this.storeProdStockMapper.selectOne(new LambdaQueryWrapper<StoreProductStock>()
@@ -139,7 +138,8 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
                 .eq(StoreProductColorSize::getStoreProdId, basicInfoDTO.getStoreProdId()).eq(StoreProductColorSize::getStoreColorId, basicInfoDTO.getStoreColorId())
                 .eq(StoreProductColorSize::getDelFlag, Constants.UNDELETED));
         List<StoreProdStockAndDiscountResDTO.SPSADSizeDTO> sizeStockList = prodColorSizeList.stream().map(size -> new StoreProdStockAndDiscountResDTO.SPSADSizeDTO()
-                .setSize(size.getSize()).setStandard(size.getStandard()).setStock(this.getSizeStock(size.getSize(), stock))).collect(Collectors.toList());
+                        .setSize(size.getSize()).setStandard(size.getStandard()).setPrice(size.getPrice()).setStock(this.getSizeStock(size.getSize(), stock)))
+                .collect(Collectors.toList());
         return basicInfoDTO.setStoreCusId(dto.getStoreCusId()).setStoreId(dto.getStoreId()).setSizeStockList(sizeStockList);
     }
 

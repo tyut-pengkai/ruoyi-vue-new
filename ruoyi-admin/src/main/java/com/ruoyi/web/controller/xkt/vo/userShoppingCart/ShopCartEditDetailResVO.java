@@ -55,8 +55,6 @@ public class ShopCartEditDetailResVO {
         private String colorName;
         @ApiModelProperty(value = "排序")
         private Integer orderNum;
-        @ApiModelProperty(value = "档口商品定价")
-        private BigDecimal price;
         @ApiModelProperty(value = "商品尺码及库存")
         List<StoreProdSizeStockVO> sizeStockList;
     }
@@ -65,6 +63,8 @@ public class ShopCartEditDetailResVO {
     @ApiModel
     @Accessors(chain = true)
     public static class StoreProdSizeStockVO {
+        @ApiModelProperty(value = "档口商品定价")
+        private BigDecimal price;
         @ApiModelProperty(value = "商品尺码")
         private Integer size;
         @ApiModelProperty(value = "尺码库存")

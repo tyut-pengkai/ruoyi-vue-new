@@ -8,7 +8,7 @@ import com.ruoyi.web.controller.xkt.vo.storeProdColorPrice.StoreProdColorPricePa
 import com.ruoyi.web.controller.xkt.vo.storeProdColorPrice.StoreProdColorPriceVO;
 import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPricePageDTO;
 import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceResDTO;
-import com.ruoyi.xkt.service.IStoreProductColorPriceService;
+import com.ruoyi.xkt.service.IStoreProductColorService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -30,19 +30,19 @@ import java.util.List;
 @RequestMapping("/rest/v1/prod-color-prices")
 public class StoreProductColorPriceController extends XktBaseController {
 
-    final IStoreProductColorPriceService prodColorPriceService;
+    final IStoreProductColorService prodColorService;
 
     @ApiOperation(value = "根据storeProdId获取所有颜色分类及定价", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{storeId}/{storeProdId}")
     public R<List<StoreProdColorPriceVO>> getColorPriceByStoreProdId(@PathVariable(value = "storeProdId") Long storeProdId, @PathVariable("storeId") Long storeId) {
-        return R.ok(BeanUtil.copyToList(prodColorPriceService.getColorPriceByStoreProdId(storeId, storeProdId), StoreProdColorPriceVO.class));
+        return R.ok(BeanUtil.copyToList(prodColorService.getColorPriceByStoreProdId(storeId, storeProdId), StoreProdColorPriceVO.class));
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "获取商品颜色价格列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<StoreProdColorPriceResDTO>> page(@Validated @RequestBody StoreProdColorPricePageVO pageVO) {
-        return R.ok(prodColorPriceService.page(BeanUtil.toBean(pageVO, StoreProdColorPricePageDTO.class)));
+        return R.ok(prodColorService.page(BeanUtil.toBean(pageVO, StoreProdColorPricePageDTO.class)));
     }
 
 }

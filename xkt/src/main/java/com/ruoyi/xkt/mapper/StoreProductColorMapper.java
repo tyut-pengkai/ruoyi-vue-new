@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProductColor;
 import com.ruoyi.xkt.dto.storeProdColor.StoreProdColorDTO;
 import com.ruoyi.xkt.dto.storeProdColor.StoreProdColorResDTO;
+import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPricePageDTO;
+import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceResDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdPageDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdPageResDTO;
 import org.apache.ibatis.annotations.Param;
@@ -22,6 +24,7 @@ public interface StoreProductColorMapper extends BaseMapper<StoreProductColor> {
 
     /**
      * 将商品颜色置为无效
+     *
      * @param storeProdId 档口商品ID
      */
     void updateDelFlagByStoreProdId(Long storeProdId);
@@ -51,4 +54,20 @@ public interface StoreProductColorMapper extends BaseMapper<StoreProductColor> {
      */
     List<StoreProdColorResDTO> fuzzyQueryColorList(@Param("storeId") Long storeId, @Param("prodArtNum") String prodArtNum);
 
+    /**
+     * 获取商品颜色价格列表
+     *
+     * @param storeProdId 档口商品ID
+     * @param storeId     档口ID
+     * @return List<StoreProdColorPriceResDTO>
+     */
+    List<StoreProdColorPriceResDTO> selectListByStoreProdIdAndStoreId(@Param("storeProdId") Long storeProdId, @Param("storeId") Long storeId);
+
+    /**
+     * 新增客户优惠获取所有的颜色及价格
+     *
+     * @param pageDTO 入参
+     * @return List<StoreProdColorPriceResDTO>
+     */
+    List<StoreProdColorPriceResDTO> selectColorPricePage(StoreProdColorPricePageDTO pageDTO);
 }

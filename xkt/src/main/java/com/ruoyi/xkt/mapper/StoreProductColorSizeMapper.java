@@ -2,7 +2,10 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProductColorSize;
+import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdMinPriceDTO;
 import com.ruoyi.xkt.dto.storeProdColorSize.*;
+import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockAndDiscountDTO;
+import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockAndDiscountResDTO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -96,6 +99,22 @@ public interface StoreProductColorSizeMapper extends BaseMapper<StoreProductColo
      * @return List<StoreUnsetSnTempDTO>
      */
     List<StoreUnsetSnTempDTO> selectUnsetProdList(@Param("storeId") Long storeId);
+
+    /**
+     * 获取档口商品最小价格
+     *
+     * @param storeProdIdList 档口商品ID列表
+     * @return List<StoreProdMinPriceDTO>
+     */
+    List<StoreProdMinPriceDTO> selectStoreProdMinPriceList(@Param("storeProdIdList") List<String> storeProdIdList);
+
+    /**
+     * 销售出库，输入货号，查询颜色价格等信息
+     *
+     * @param dto 入参
+     * @return StoreProdStockAndDiscountResDTO
+     */
+    StoreProdStockAndDiscountResDTO selectStockAndCusDiscount(StoreProdStockAndDiscountDTO dto);
 
 }
 

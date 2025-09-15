@@ -47,31 +47,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             </if>
     </select>
 
-    <select id="selectPicSpaceList" >
-        SELECT
-            sp.prod_art_num AS prodArtNum,
-            sp.id AS storeProdId,
-            sf.file_url AS fileUrl
-        FROM
-            store_product_file spf
-                JOIN sys_file sf ON spf.file_id = sf.id
-                JOIN store_product sp ON spf.store_prod_id = sp.id
-        WHERE
-            spf.del_flag = 0
-            AND spf.file_type = #{fileType}
-            AND spf.store_id = #{storeId}
-            <if test="storeProdIdList != null and storeProdIdList.size() > 0">
-                AND spf.store_prod_id in
-                <foreach item="storeProdId" collection="storeProdIdList" open="(" separator="," close=")">
-                    #{storeProdId}
-                </foreach>
-            </if>
-        ORDER BY
-            spf.store_prod_id DESC,
-            spf.order_num
-    </select>
-
-
     <select id="selectTotalMainPicList" resultType="com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO">
         SELECT
             spf.store_prod_id AS storeProdId,

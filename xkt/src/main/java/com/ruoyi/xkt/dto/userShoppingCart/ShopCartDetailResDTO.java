@@ -43,7 +43,7 @@ public class ShopCartDetailResDTO {
     }
 
     @Data
-    @ApiModel(value = "档口商品基本信息")
+    @ApiModel
     @Accessors(chain = true)
     public static class SCDStoreProdColorDTO {
         @ApiModelProperty(value = "档口商品颜色ID")
@@ -54,16 +54,16 @@ public class ShopCartDetailResDTO {
         private String colorName;
         @ApiModelProperty(value = "排序")
         private Integer orderNum;
-        @ApiModelProperty(value = "档口商品定价")
-        private BigDecimal price;
         @ApiModelProperty(value = "商品尺码及库存")
         List<SCDStoreProdSizeStockDTO> sizeStockList;
     }
 
     @Data
-    @ApiModel(value = "档口商品尺码及库存")
+    @ApiModel
     @Accessors(chain = true)
     public static class SCDStoreProdSizeStockDTO {
+        @ApiModelProperty(value = "档口商品定价")
+        private BigDecimal price;
         @ApiModelProperty(value = "商品尺码")
         private Integer size;
         @ApiModelProperty(value = "尺码库存")

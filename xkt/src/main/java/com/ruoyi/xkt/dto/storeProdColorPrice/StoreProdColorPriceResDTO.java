@@ -29,7 +29,7 @@ public class StoreProdColorPriceResDTO {
     private String prodArtNum;
     @ApiModelProperty(value = "颜色名称")
     private String colorName;
-    @ApiModelProperty(value = "档口商品颜色定价")
+    @ApiModelProperty(value = "档口商品颜色最低售价")
     private BigDecimal price;
     @ApiModelProperty(value = "大小码加价")
     private Integer overPrice;

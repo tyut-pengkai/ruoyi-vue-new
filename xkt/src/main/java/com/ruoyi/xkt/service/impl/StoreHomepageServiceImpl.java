@@ -46,7 +46,6 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
     final StoreProductDetailMapper prodDetailMapper;
     final StoreProductColorSizeMapper prodColorSizeMapper;
     final StoreProductStockMapper prodStockMapper;
-    final StoreProductColorPriceMapper prodColorPriceMapper;
     final StoreProductFileMapper prodFileMapper;
     final StoreProductCategoryAttributeMapper prodCateAttrMapper;
     final StoreCertificateMapper storeCertMapper;

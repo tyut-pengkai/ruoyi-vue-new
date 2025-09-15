@@ -120,13 +120,6 @@ public class StoreProductController extends XktBaseController {
         return R.ok(storeProdService.updateStoreProductStatus(BeanUtil.toBean(prodStatusVO, StoreProdStatusDTO.class)));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
-    @ApiOperation(value = "获取档口图片空间", httpMethod = "POST", response = R.class)
-    @PostMapping(value = "/pic-space")
-    public R<StoreProdPicSpaceResVO> getStoreProductPicSpace(@Validated @RequestBody StoreProdPicSpaceVO picSpaceVO) {
-        return R.ok(BeanUtil.toBean(storeProdService.getStoreProductPicSpace(BeanUtil.toBean(picSpaceVO, StoreProdPicSpaceDTO.class)), StoreProdPicSpaceResVO.class));
-    }
-
     @ApiOperation(value = "获取商品各个状态数量", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/status/num/{storeId}")
     public R<StoreProdStatusCountResVO> getStatusNum(@PathVariable Long storeId) {

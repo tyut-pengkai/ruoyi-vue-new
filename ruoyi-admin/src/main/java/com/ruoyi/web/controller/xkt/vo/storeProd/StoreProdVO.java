@@ -81,10 +81,6 @@ public class StoreProdVO {
     @Valid
     @ApiModelProperty(value = "档口尺码列表", required = true)
     private List<StoreProdCreateVO.SPCSizeVO> sizeList;
-    @Valid
-    @NotNull(message = "商品颜色价格列表不能为空!")
-    @ApiModelProperty(value = "档口颜色价格列表", required = true)
-    private List<StoreProdCreateVO.SPCColorPriceVO> colorPriceList;
     @ApiModelProperty(value = "档口服务承诺")
     private StoreProdCreateVO.StoreProdSvcVO svc;
     @NotBlank(message = "详情内容不能为空!")
@@ -92,24 +88,6 @@ public class StoreProdVO {
     private String detail;
     @ApiModelProperty(value = "档口生产工艺")
     private StoreProdCreateVO.StoreProdProcessVO process;
-
-
-    @Data
-    @Valid
-    @ApiModel
-    public static class SPCColorPriceVO {
-        @ApiModelProperty(value = "档口商品颜色ID")
-        private Long storeColorId;
-        @NotBlank(message = "颜色名称不能为空!")
-        @ApiModelProperty(value = "颜色名称", required = true)
-        private String colorName;
-        @NotNull(message = "档口商品定价不能为空!")
-        @ApiModelProperty(value = "档口商品定价", required = true)
-        private BigDecimal price;
-        @NotNull(message = "排序不能为空!")
-        @ApiModelProperty(value = "排序", required = true)
-        private Integer orderNum;
-    }
 
 
     @Data

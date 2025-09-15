@@ -114,7 +114,6 @@ public class XktTask {
     final StoreProductFileMapper storeProdFileMapper;
     final UserSearchHistoryMapper userSearchHisMapper;
     final UserBrowsingHistoryMapper userBrowHisMapper;
-    final StoreProductColorPriceMapper prodColorPriceMapper;
     final IPictureService pictureService;
     final NoticeMapper noticeMapper;
     final UserNoticeMapper userNoticeMapper;
@@ -123,6 +122,7 @@ public class XktTask {
     final IExpressService expressService;
     final ZtoExpressManagerImpl ztoExpressManager;
     final SysDictDataMapper dictDataMapper;
+    final StoreProductColorSizeMapper prodColorSizeMapper;
 
     public void test() throws IOException {
         System.err.println("aaa");
@@ -845,12 +845,8 @@ public class XktTask {
         List<SysProductCategory> prodCateList = this.prodCateMapper.selectList(new LambdaQueryWrapper<SysProductCategory>()
                 .eq(SysProductCategory::getDelFlag, Constants.UNDELETED));
         Map<Long, SysProductCategory> prodCateMap = prodCateList.stream().collect(Collectors.toMap(SysProductCategory::getId, x -> x));
-        // 父级分类
-        Map<Long, Long> parProdCateMap = prodCateList.stream().collect(Collectors.toMap(SysProductCategory::getParentId, SysProductCategory::getParentId, (s1, s2) -> s2));
-        // 子分类
-        Map<Long, Long> childProdCateMap = prodCateList.stream().collect(Collectors.toMap(SysProductCategory::getId, SysProductCategory::getId));
         // 获取当前商品最低价格
-        Map<Long, BigDecimal> prodMinPriceMap = this.prodColorPriceMapper.selectStoreProdMinPriceList(storeProdIdList).stream().collect(Collectors
+        Map<Long, BigDecimal> prodMinPriceMap = this.prodColorSizeMapper.selectStoreProdMinPriceList(storeProdIdList).stream().collect(Collectors
                 .toMap(StoreProdMinPriceDTO::getStoreProdId, StoreProdMinPriceDTO::getPrice));
         // 档口商品的属性map
         Map<Long, StoreProductCategoryAttribute> cateAttrMap = this.cateAttrMapper.selectList(new LambdaQueryWrapper<StoreProductCategoryAttribute>()

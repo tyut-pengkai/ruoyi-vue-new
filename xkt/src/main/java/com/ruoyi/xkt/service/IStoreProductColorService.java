@@ -1,6 +1,9 @@
 package com.ruoyi.xkt.service;
 
+import com.ruoyi.common.core.page.Page;
 import com.ruoyi.xkt.dto.storeProdColor.StoreProdColorResDTO;
+import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPricePageDTO;
+import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceResDTO;
 
 import java.util.List;
 
@@ -19,4 +22,22 @@ public interface IStoreProductColorService {
      * @return 返回一个列表，包含匹配的产品颜色信息
      */
     List<StoreProdColorResDTO> fuzzyQueryColorList(Long storeId, String prodArtNum);
+
+    /**
+     * 获取档口某个商品所有颜色对应的价格等
+     *
+     * @param storeId     档口ID
+     * @param storeProdId 档口商品ID
+     * @return
+     */
+    List<StoreProdColorPriceResDTO> getColorPriceByStoreProdId(Long storeId, Long storeProdId);
+
+    /**
+     * 查询档口商品颜色价格分页
+     *
+     * @param pageDTO 入参
+     * @return Page<StoreProdColorPriceResDTO>
+     */
+    Page<StoreProdColorPriceResDTO> page(StoreProdColorPricePageDTO pageDTO);
+
 }

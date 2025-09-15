@@ -28,8 +28,6 @@ public class StoreProdStockAndDiscountResVO {
     private BigDecimal price;
     @ApiModelProperty(value = "优惠金额")
     private Integer discount;
-    @ApiModelProperty(value = "大小码加价")
-    private Integer overPrice;
     @ApiModelProperty(value = "商品货号")
     private String prodArtNum;
     @ApiModelProperty(value = "档口商品ID")

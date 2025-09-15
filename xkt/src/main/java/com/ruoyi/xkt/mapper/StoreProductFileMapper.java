@@ -44,16 +44,6 @@ public interface StoreProductFileMapper extends BaseMapper<StoreProductFile> {
                                                              @Param("orderNum") Integer orderNum);
 
     /**
-     * 获取档口图片空间的下载包
-     *
-     * @param storeId  档口ID
-     * @param fileType 文件类型
-     * @return List<StoreProdFilePicSpaceResDTO>
-     */
-    List<StoreProdFilePicSpaceResDTO> selectPicSpaceList(@Param("storeId") Long storeId, @Param("fileType") Integer fileType,
-                                                         @Param("storeProdIdList") List<Long> storeProdIdList);
-
-    /**
      * 根据storeProdIdList 查询所有主图
      *
      * @param storeProdIdList 商品ID列表

@@ -9,15 +9,20 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </update>
 
     <select id="selectListByStoreProdId" parameterType="Long" resultType="com.ruoyi.xkt.dto.storeProdColorSize.StoreProdSizeDTO">
-        SELECT DISTINCT
+        SELECT
+            spcs.store_color_id,
+            sc.color_name,
             spcs.size,
-            spcs.standard
+            spcs.standard,
+            spcs.price
         FROM
             store_product_color_size spcs
+                JOIN store_color sc ON spcs.store_color_id = sc.id
         WHERE
             spcs.del_flag = 0
-          AND spcs.store_prod_id = #{storeProdId}
+            AND spcs.store_prod_id = #{storeProdId}
         ORDER BY
+            spcs.store_color_id,
             spcs.size
     </select>
 
@@ -168,6 +173,42 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         WHERE
             spcs.del_flag = 0
             AND spcs.other_sn_prefix IS NULL;
+    </select>
+
+    <select id="selectStoreProdMinPriceList" resultType="com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdMinPriceDTO">
+        SELECT
+            spcs.store_prod_id,
+            MIN( spcs.price ) AS price
+        FROM
+            store_product_color_size spcs
+        WHERE
+            spcs.del_flag = 0
+            <if test="storeProdIdList != null and storeProdIdList.size() > 0">
+                AND spcs.store_prod_id IN
+                <foreach item="item" collection="storeProdIdList" separator="," open="(" close=")" index="">
+                    #{item}
+                </foreach>
+            </if>
+        GROUP BY
+            spcs.store_prod_id
+    </select>
+
+    <select id="selectStockAndCusDiscount" resultType="com.ruoyi.xkt.dto.storeProductStock.StoreProdStockAndDiscountResDTO">
+        SELECT
+            spc.id AS storeProdColorId,
+            spc.store_color_id,
+            spc.color_name,
+            spc.store_prod_id,
+            sp.prod_art_num,
+            scpd.discount,
+            ( SELECT sc.cus_name FROM store_customer sc WHERE sc.id = #{storeCusId} ) AS storeCusName
+        FROM
+            store_product_color spc
+                JOIN store_product sp ON spc.store_prod_id = sp.id
+                LEFT JOIN store_customer_product_discount scpd ON scpd.store_prod_color_id = spc.id  AND scpd.del_flag = 0
+        WHERE
+            spc.del_flag = 0
+            AND spc.id = #{storeProdColorId}
     </select>
 
 </mapper>

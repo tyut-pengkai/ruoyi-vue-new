@@ -9,7 +9,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -58,8 +57,6 @@ public class StoreProdResVO {
     private List<StoreColorVO> allColorList;
     @ApiModelProperty(value = "商品颜色列表")
     private List<StoreColorVO> colorList;
-    @ApiModelProperty(value = "档口颜色价格列表")
-    private List<StoreProdColorPriceVO> priceList;
     @ApiModelProperty(value = "档口商品尺码列表")
     private List<StoreProdSizeVO> sizeList;
     @ApiModelProperty(value = "档口服务承诺")
@@ -74,12 +71,16 @@ public class StoreProdResVO {
     @NoArgsConstructor
     @Valid
     public static class StoreProdSizeVO {
-        @ApiModelProperty(value = "商品尺码", required = true)
-        @NotNull(message = "档口商品定价不能为空!")
+        @ApiModelProperty(value = "档口商品颜色ID")
+        private Long storeColorId;
+        @ApiModelProperty(value = "颜色名称")
+        private String colorName;
+        @ApiModelProperty(value = "商品尺码")
         private Integer size;
-        @NotNull(message = "是否是标准尺码不能为空!")
-        @ApiModelProperty(value = "是否是标准尺码", required = true)
+        @ApiModelProperty(value = "是否是标准尺码")
         private Integer standard;
+        @ApiModelProperty(value = "尺码价格")
+        private BigDecimal price;
     }
 
     @Data
@@ -98,11 +99,11 @@ public class StoreProdResVO {
 
     @Data
     public static class StoreProdCateAttrVO {
-        @ApiModelProperty(value = "帮面材质", required = true)
+        @ApiModelProperty(value = "帮面材质")
         private String upperMaterial;
-        @ApiModelProperty(value = "内里材质", required = true)
+        @ApiModelProperty(value = "内里材质")
         private String liningMaterial;
-        @ApiModelProperty(value = "鞋垫材质", required = true)
+        @ApiModelProperty(value = "鞋垫材质")
         private String insoleMaterial;
         @ApiModelProperty(value = "上市季节年份")
         private String releaseYearSeason;
@@ -140,14 +141,6 @@ public class StoreProdResVO {
         private String fashionElements;
         @ApiModelProperty(value = "适用对象")
         private String suitablePerson;
-    }
-
-    @Data
-    public static class StoreProdColorPriceVO {
-        @ApiModelProperty(value = "档口商品颜色ID")
-        private Long storeColorId;
-        @ApiModelProperty(value = "档口商品定价")
-        private BigDecimal price;
     }
 
     @Data

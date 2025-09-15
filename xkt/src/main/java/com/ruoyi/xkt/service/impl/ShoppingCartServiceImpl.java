@@ -47,7 +47,6 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
     final StoreProductColorSizeMapper prodColorSizeMapper;
     final StoreProductColorMapper prodColorMapper;
     final StoreProductStockMapper prodStockMapper;
-    final StoreProductColorPriceMapper prodColorPriceMapper;
     final StoreProductFileMapper prodFileMapper;
     final StoreProductCategoryAttributeMapper prodCateAttrMapper;
     final StoreMapper storeMapper;
@@ -175,34 +174,27 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
                 .eq(StoreProductColorSize::getStandard, ProductSizeStatus.STANDARD.getValue()));
         // 标准尺码
         List<Integer> standardList = standardSizeList.stream().map(StoreProductColorSize::getSize).distinct().sorted(Comparator.comparing(x -> x)).collect(Collectors.toList());
-        Map<String, List<StoreProductColorSize>> colorSizeMap = standardSizeList.stream().collect(Collectors
-                .groupingBy(x -> x.getStoreProdId().toString() + x.getStoreColorId().toString()));
+        // key storeColorId:size value price
+        Map<String, BigDecimal> standardSizePriceMap = standardSizeList.stream().collect(Collectors.toMap(x -> x.getStoreColorId() + ":" + x.getSize(), StoreProductColorSize::getPrice));
         // 获取商品颜色列表
         List<StoreProductColor> colorList = this.prodColorMapper.selectList(new LambdaQueryWrapper<StoreProductColor>()
                 .eq(StoreProductColor::getStoreProdId, shoppingCart.getStoreProdId()).eq(StoreProductColor::getDelFlag, Constants.UNDELETED)
                 .in(StoreProductColor::getProdStatus, Arrays.asList(EProductStatus.ON_SALE.getValue(), EProductStatus.TAIL_GOODS.getValue())));
-        // 档口商品颜色价格列表
-        List<StoreProductColorPrice> colorPriceList = this.prodColorPriceMapper.selectList(new LambdaQueryWrapper<StoreProductColorPrice>()
-                .eq(StoreProductColorPrice::getStoreProdId, shoppingCart.getStoreProdId()).eq(StoreProductColorPrice::getDelFlag, Constants.UNDELETED));
-        Map<String, StoreProductColorPrice> colorPriceMap = colorPriceList.stream().collect(Collectors
-                .toMap(x -> x.getStoreProdId().toString() + x.getStoreColorId().toString(), Function.identity()));
         // 根据标准尺码去找对应尺码的库存数量
         List<StoreProductStock> prodStockList = this.prodStockMapper.selectList(new LambdaQueryWrapper<StoreProductStock>()
                 .eq(StoreProductStock::getStoreProdId, shoppingCart.getStoreProdId())
                 .in(StoreProductStock::getStoreProdColorId, colorList.stream().map(StoreProductColor::getId).distinct().collect(Collectors.toList()))
                 .eq(StoreProductStock::getDelFlag, Constants.UNDELETED));
         // 获取档口颜色尺码的库存数量
-        Map<String, List<ShopCartDetailResDTO.SCDStoreProdSizeStockDTO>> colorSizeStockMap = this.convertSizeStock(prodStockList, standardList);
+        Map<String, List<ShopCartDetailResDTO.SCDStoreProdSizeStockDTO>> colorSizeStockMap = this.convertSizeStock(prodStockList, standardList, standardSizePriceMap);
         // 库存数量为0默认值
         List<ShopCartDetailResDTO.SCDStoreProdSizeStockDTO> defaultZeroStockList = standardList.stream().map(size ->
                 new ShopCartDetailResDTO.SCDStoreProdSizeStockDTO().setSize(size).setStock(0)).collect(Collectors.toList());
         List<ShopCartDetailResDTO.SCDStoreProdColorDTO> colorSizeStockList = colorList.stream()
                 .map(color -> BeanUtil.toBean(color, ShopCartDetailResDTO.SCDStoreProdColorDTO.class).setStoreProdColorId(color.getId())
-                        // 获取颜色设定的价格
-                        .setPrice(colorPriceMap.containsKey(color.getStoreProdId().toString() + color.getStoreColorId().toString())
-                                ? colorPriceMap.get(color.getStoreProdId().toString() + color.getStoreColorId().toString()).getPrice() : null)
-                        // 设定库存
-                        .setSizeStockList(colorSizeStockMap.getOrDefault(color.getStoreProdId().toString() + color.getStoreColorId().toString(), defaultZeroStockList)))
+                        // 设定尺码对应的库存及价格
+                        .setSizeStockList(colorSizeStockMap
+                                .getOrDefault(color.getStoreProdId().toString() + ":" + color.getStoreColorId().toString(), defaultZeroStockList)))
                 .collect(Collectors.toList());
         return new ShopCartDetailResDTO() {{
             setProdArtNum(shoppingCart.getProdArtNum()).setStoreProdId(shoppingCart.getStoreProdId())
@@ -288,14 +280,6 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
         List<StoreProdMainPicDTO> mainPicList = this.prodFileMapper.selectMainPicByStoreProdIdList(listDTO.getStoreProdIdList(), FileType.MAIN_PIC.getValue(), ORDER_NUM_1);
         Map<Long, String> mainPicMap = CollectionUtils.isEmpty(mainPicList) ? new HashMap<>() : mainPicList.stream()
                 .collect(Collectors.toMap(StoreProdMainPicDTO::getStoreProdId, StoreProdMainPicDTO::getFileUrl));
-        // 获取明细商品的价格
-        List<StoreProductColorPrice> priceList = this.prodColorPriceMapper.selectList(new LambdaQueryWrapper<StoreProductColorPrice>()
-                .in(StoreProductColorPrice::getStoreProdId, shoppingCartList.stream().map(ShoppingCart::getStoreProdId).collect(Collectors.toList()))
-                .in(StoreProductColorPrice::getStoreColorId, detailList.stream().map(ShoppingCartDetail::getStoreColorId).collect(Collectors.toList()))
-                .eq(StoreProductColorPrice::getDelFlag, Constants.UNDELETED));
-        // 商品价格map
-        Map<String, BigDecimal> priceMap = priceList.stream().collect(Collectors
-                .toMap(x -> x.getStoreProdId().toString() + x.getStoreColorId().toString(), x -> ObjectUtils.defaultIfNull(x.getPrice(), BigDecimal.ZERO)));
         // 获取商品价格尺码
         List<StoreProductColorSize> priceSizeList = this.prodColorSizeMapper.selectList(new LambdaQueryWrapper<StoreProductColorSize>()
                 .in(StoreProductColorSize::getStoreProdId, shoppingCartList.stream().map(ShoppingCart::getStoreProdId).collect(Collectors.toList()))
@@ -306,18 +290,18 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
                 .eq(StoreProduct::getDelFlag, Constants.UNDELETED));
         Map<Long, StoreProduct> storeProdMap = storeProdList.stream().collect(Collectors.toMap(StoreProduct::getId, Function.identity()));
         // 商品价格尺码map
-        Map<String, Long> priceSizeMap = priceSizeList.stream().collect(Collectors
-                .toMap(x -> x.getStoreProdId().toString() + x.getStoreColorId().toString() + x.getSize(), StoreProductColorSize::getId));
+        Map<String, StoreProductColorSize> priceSizeMap = priceSizeList.stream().collect(Collectors
+                .toMap(x -> x.getStoreProdId().toString() + x.getStoreColorId().toString() + x.getSize(), x -> x));
         return shoppingCartList.stream().map(x -> {
             ShoppingCartDTO shopCartDTO = BeanUtil.toBean(x, ShoppingCartDTO.class).setMainPicUrl(mainPicMap.get(x.getStoreProdId()))
                     .setProdTitle(ObjectUtils.isNotEmpty(storeProdMap.get(x.getStoreProdId())) ? storeProdMap.get(x.getStoreProdId()).getProdTitle() : "")
                     .setStoreName(ObjectUtils.isNotEmpty(storeMap.get(x.getStoreId())) ? storeMap.get(x.getStoreId()).getStoreName() : "");
             List<ShoppingCartDTO.SCDetailDTO> shopCartDetailList = detailMap.get(x.getId()).stream().map(detail -> {
-                final BigDecimal price = ObjectUtils.defaultIfNull(priceMap.get(x.getStoreProdId().toString() + detail.getStoreColorId().toString()), BigDecimal.ZERO);
-                return BeanUtil.toBean(detail, ShoppingCartDTO.SCDetailDTO.class).setPrice(price)
-                        .setStoreProdColorSizeId(priceSizeMap.get(x.getStoreProdId().toString() + detail.getStoreColorId().toString() + detail.getSize()))
-                        .setAmount(price.multiply(BigDecimal.valueOf(detail.getQuantity())));
-            }).collect(Collectors.toList());
+                final StoreProductColorSize prodColorSize = priceSizeMap.get(x.getStoreProdId().toString() + detail.getStoreColorId().toString() + detail.getSize());
+                return ObjectUtils.isEmpty(prodColorSize) ? null : BeanUtil.toBean(detail, ShoppingCartDTO.SCDetailDTO.class)
+                        .setPrice(prodColorSize.getPrice()).setStoreProdColorSizeId(prodColorSize.getId())
+                        .setAmount(prodColorSize.getPrice().multiply(BigDecimal.valueOf(detail.getQuantity())));
+            }).filter(ObjectUtils::isNotEmpty).collect(Collectors.toList());
             return shopCartDTO.setDetailList(shopCartDetailList);
         }).collect(Collectors.toList());
     }
@@ -340,116 +324,91 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
      *
      * @param stockList        库存数量
      * @param standardSizeList 当前商品的标准尺码
+     * @param standardSizePriceMap 颜色尺码对应的价格
      * @return Map<Long, Map < Integer, Integer>>
      */
-    private Map<String, List<ShopCartDetailResDTO.SCDStoreProdSizeStockDTO>> convertSizeStock(List<StoreProductStock> stockList, List<Integer> standardSizeList) {
+    private Map<String, List<ShopCartDetailResDTO.SCDStoreProdSizeStockDTO>> convertSizeStock(List<StoreProductStock> stockList, List<Integer> standardSizeList,
+                                                                                              Map<String, BigDecimal> standardSizePriceMap) {
         Map<String, List<ShopCartDetailResDTO.SCDStoreProdSizeStockDTO>> colorSizeStockMap = new HashMap<>();
         if (CollectionUtils.isEmpty(stockList)) {
             return colorSizeStockMap;
         }
         // 标准尺码map
         Map<Integer, Integer> standardSizeMap = standardSizeList.stream().collect(Collectors.toMap(x -> x, x -> x));
-        Map<String, List<StoreProductStock>> map = stockList.stream().collect(Collectors.groupingBy(x -> x.getStoreProdId().toString() + x.getStoreColorId().toString()));
-        map.forEach((unionId, tempStockList) -> {
+        Map<String, StoreProductStock> colorStockMap = stockList.stream().collect(Collectors.toMap(x -> x.getStoreProdId().toString() + ":" + x.getStoreColorId().toString(), x -> x));
+        colorStockMap.forEach((unionId, colorStock) -> {
             List<ShopCartDetailResDTO.SCDStoreProdSizeStockDTO> sizeStockList = new ArrayList<>();
-            Integer size30Stock = tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize30(), 0)).reduce(0, Integer::sum);
             if (standardSizeMap.containsKey(SIZE_30)) {
-                sizeStockList.add(new ShopCartDetailResDTO.SCDStoreProdSizeStockDTO() {{
-                    setSize(SIZE_30);
-                    setStock(size30Stock);
-                }});
+                sizeStockList.add(new ShopCartDetailResDTO.SCDStoreProdSizeStockDTO().setSize(SIZE_30)
+                        .setStock(ObjectUtils.defaultIfNull(colorStock.getSize30(), 0))
+                        .setPrice(standardSizePriceMap.get(colorStock.getStoreColorId().toString() + ":" + SIZE_30)));
             }
-            Integer size31Stock = tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize31(), 0)).reduce(0, Integer::sum);
             if (standardSizeMap.containsKey(SIZE_31)) {
-                sizeStockList.add(new ShopCartDetailResDTO.SCDStoreProdSizeStockDTO() {{
-                    setSize(SIZE_31);
-                    setStock(size31Stock);
-                }});
+                sizeStockList.add(new ShopCartDetailResDTO.SCDStoreProdSizeStockDTO().setSize(SIZE_31)
+                        .setStock(ObjectUtils.defaultIfNull(colorStock.getSize31(), 0))
+                        .setPrice(standardSizePriceMap.get(colorStock.getStoreColorId().toString() + ":" + SIZE_31)));
             }
-            Integer size32Stock = tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize32(), 0)).reduce(0, Integer::sum);
             if (standardSizeMap.containsKey(SIZE_32)) {
-                sizeStockList.add(new ShopCartDetailResDTO.SCDStoreProdSizeStockDTO() {{
-                    setSize(SIZE_32);
-                    setStock(size32Stock);
-                }});
+                sizeStockList.add(new ShopCartDetailResDTO.SCDStoreProdSizeStockDTO().setSize(SIZE_32)
+                        .setStock(ObjectUtils.defaultIfNull(colorStock.getSize32(), 0))
+                        .setPrice(standardSizePriceMap.get(colorStock.getStoreColorId().toString() + ":" + SIZE_32)));
             }
-            Integer size33Stock = tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize33(), 0)).reduce(0, Integer::sum);
             if (standardSizeMap.containsKey(SIZE_33)) {
-                sizeStockList.add(new ShopCartDetailResDTO.SCDStoreProdSizeStockDTO() {{
-                    setSize(SIZE_33);
-                    setStock(size33Stock);
-                }});
+                sizeStockList.add(new ShopCartDetailResDTO.SCDStoreProdSizeStockDTO().setSize(SIZE_33)
+                        .setStock(ObjectUtils.defaultIfNull(colorStock.getSize33(), 0))
+                        .setPrice(standardSizePriceMap.get(colorStock.getStoreColorId().toString() + ":" + SIZE_33)));
             }
-            Integer size34Stock = tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize34(), 0)).reduce(0, Integer::sum);
             if (standardSizeMap.containsKey(SIZE_34)) {
-                sizeStockList.add(new ShopCartDetailResDTO.SCDStoreProdSizeStockDTO() {{
-                    setSize(SIZE_34);
-                    setStock(size34Stock);
-                }});
+                sizeStockList.add(new ShopCartDetailResDTO.SCDStoreProdSizeStockDTO().setSize(SIZE_34)
+                        .setStock(ObjectUtils.defaultIfNull(colorStock.getSize34(), 0))
+                        .setPrice(standardSizePriceMap.get(colorStock.getStoreColorId().toString() + ":" + SIZE_34)));
             }
-            Integer size35Stock = tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize35(), 0)).reduce(0, Integer::sum);
             if (standardSizeMap.containsKey(SIZE_35)) {
-                sizeStockList.add(new ShopCartDetailResDTO.SCDStoreProdSizeStockDTO() {{
-                    setSize(SIZE_35);
-                    setStock(size35Stock);
-                }});
+                sizeStockList.add(new ShopCartDetailResDTO.SCDStoreProdSizeStockDTO().setSize(SIZE_35)
+                        .setStock(ObjectUtils.defaultIfNull(colorStock.getSize35(), 0))
+                        .setPrice(standardSizePriceMap.get(colorStock.getStoreColorId().toString() + ":" + SIZE_35)));
             }
-            Integer size36Stock = tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize36(), 0)).reduce(0, Integer::sum);
             if (standardSizeMap.containsKey(SIZE_36)) {
-                sizeStockList.add(new ShopCartDetailResDTO.SCDStoreProdSizeStockDTO() {{
-                    setSize(SIZE_36);
-                    setStock(size36Stock);
-                }});
+                sizeStockList.add(new ShopCartDetailResDTO.SCDStoreProdSizeStockDTO().setSize(SIZE_36)
+                        .setStock(ObjectUtils.defaultIfNull(colorStock.getSize36(), 0))
+                        .setPrice(standardSizePriceMap.get(colorStock.getStoreColorId().toString() + ":" + SIZE_36)));
             }
-            Integer size37Stock = tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize37(), 0)).reduce(0, Integer::sum);
             if (standardSizeMap.containsKey(SIZE_37)) {
-                sizeStockList.add(new ShopCartDetailResDTO.SCDStoreProdSizeStockDTO() {{
-                    setSize(SIZE_37);
-                    setStock(size37Stock);
-                }});
+                sizeStockList.add(new ShopCartDetailResDTO.SCDStoreProdSizeStockDTO().setSize(SIZE_37)
+                        .setStock(ObjectUtils.defaultIfNull(colorStock.getSize37(), 0))
+                        .setPrice(standardSizePriceMap.get(colorStock.getStoreColorId().toString() + ":" + SIZE_37)));
             }
-            Integer size38Stock = tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize38(), 0)).reduce(0, Integer::sum);
             if (standardSizeMap.containsKey(SIZE_38)) {
-                sizeStockList.add(new ShopCartDetailResDTO.SCDStoreProdSizeStockDTO() {{
-                    setSize(SIZE_38);
-                    setStock(size38Stock);
-                }});
+                sizeStockList.add(new ShopCartDetailResDTO.SCDStoreProdSizeStockDTO().setSize(SIZE_38)
+                        .setStock(ObjectUtils.defaultIfNull(colorStock.getSize38(), 0))
+                        .setPrice(standardSizePriceMap.get(colorStock.getStoreColorId().toString() + ":" + SIZE_38)));
             }
-            Integer size39Stock = tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize39(), 0)).reduce(0, Integer::sum);
             if (standardSizeMap.containsKey(SIZE_39)) {
-                sizeStockList.add(new ShopCartDetailResDTO.SCDStoreProdSizeStockDTO() {{
-                    setSize(SIZE_39);
-                    setStock(size39Stock);
-                }});
+                sizeStockList.add(new ShopCartDetailResDTO.SCDStoreProdSizeStockDTO().setSize(SIZE_39)
+                        .setStock(ObjectUtils.defaultIfNull(colorStock.getSize39(), 0))
+                        .setPrice(standardSizePriceMap.get(colorStock.getStoreColorId().toString() + ":" + SIZE_39)));
             }
-            Integer size40Stock = tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize40(), 0)).reduce(0, Integer::sum);
             if (standardSizeMap.containsKey(SIZE_40)) {
-                sizeStockList.add(new ShopCartDetailResDTO.SCDStoreProdSizeStockDTO() {{
-                    setSize(SIZE_40);
-                    setStock(size40Stock);
-                }});
+                sizeStockList.add(new ShopCartDetailResDTO.SCDStoreProdSizeStockDTO().setSize(SIZE_40)
+                        .setStock(ObjectUtils.defaultIfNull(colorStock.getSize40(), 0))
+                        .setPrice(standardSizePriceMap.get(colorStock.getStoreColorId().toString() + ":" + SIZE_40)));
             }
-            Integer size41Stock = tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize41(), 0)).reduce(0, Integer::sum);
             if (standardSizeMap.containsKey(SIZE_41)) {
-                sizeStockList.add(new ShopCartDetailResDTO.SCDStoreProdSizeStockDTO() {{
-                    setSize(SIZE_41);
-                    setStock(size41Stock);
-                }});
+                sizeStockList.add(new ShopCartDetailResDTO.SCDStoreProdSizeStockDTO().setSize(SIZE_41)
+                        .setStock(ObjectUtils.defaultIfNull(colorStock.getSize41(), 0))
+                        .setPrice(standardSizePriceMap.get(colorStock.getStoreColorId().toString() + ":" + SIZE_41)));
             }
-            Integer size42Stock = tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize42(), 0)).reduce(0, Integer::sum);
             if (standardSizeMap.containsKey(SIZE_42)) {
-                sizeStockList.add(new ShopCartDetailResDTO.SCDStoreProdSizeStockDTO() {{
-                    setSize(SIZE_42);
-                    setStock(size42Stock);
-                }});
+                sizeStockList.add(new ShopCartDetailResDTO.SCDStoreProdSizeStockDTO().setSize(SIZE_42)
+                        .setStock(ObjectUtils.defaultIfNull(colorStock.getSize42(), 0))
+                        .setPrice(standardSizePriceMap.get(colorStock.getStoreColorId().toString() + ":" + SIZE_42)));
             }
-            Integer size43Stock = tempStockList.stream().map(x -> ObjectUtils.defaultIfNull(x.getSize43(), 0)).reduce(0, Integer::sum);
             if (standardSizeMap.containsKey(SIZE_43)) {
-                sizeStockList.add(new ShopCartDetailResDTO.SCDStoreProdSizeStockDTO() {{
-                    setSize(SIZE_43);
-                    setStock(size43Stock);
-                }});
+                sizeStockList.add(new ShopCartDetailResDTO.SCDStoreProdSizeStockDTO().setSize(SIZE_43)
+                        .setStock(ObjectUtils.defaultIfNull(colorStock.getSize43(), 0))
+                        .setPrice(standardSizePriceMap.get(colorStock.getStoreColorId().toString() + ":" + SIZE_43)));
             }
+
             colorSizeStockMap.put(unionId, sizeStockList);
         });
         return colorSizeStockMap;

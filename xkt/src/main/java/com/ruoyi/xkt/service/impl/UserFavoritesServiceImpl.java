@@ -11,6 +11,7 @@ import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.*;
+import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdMinPriceDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
 import com.ruoyi.xkt.dto.userFavorite.*;
 import com.ruoyi.xkt.enums.*;
@@ -46,7 +47,6 @@ public class UserFavoritesServiceImpl implements IUserFavoritesService {
     final StoreProductFileMapper prodFileMapper;
     final StoreProductColorSizeMapper prodColorSizeMapper;
     final ShoppingCartMapper shopCartMapper;
-    final StoreProductColorPriceMapper prodColorPriceMapper;
     final StoreProductColorMapper prodColorMapper;
     final ShoppingCartDetailMapper shopCartDetailMapper;
     final StoreMapper storeMapper;
@@ -117,14 +117,11 @@ public class UserFavoritesServiceImpl implements IUserFavoritesService {
         if (CollectionUtils.isEmpty(favoriteList)) {
             return Page.empty(pageDTO.getPageNum(), pageDTO.getPageSize());
         }
-        // 找到商品的定价
-        List<StoreProductColorPrice> priceList = this.prodColorPriceMapper.selectList(new LambdaQueryWrapper<StoreProductColorPrice>()
-                .in(StoreProductColorPrice::getStoreProdId, favoriteList.stream().map(UserFavoritePageResDTO::getStoreProdId).collect(Collectors.toList()))
-                .eq(StoreProductColorPrice::getDelFlag, Constants.UNDELETED));
-        // 按照storeProdId分组，并取价格最低的价格
-        Map<Long, BigDecimal> minPriceMap = priceList.stream().collect(Collectors.groupingBy(StoreProductColorPrice::getStoreProdId,
-                Collectors.collectingAndThen(Collectors.toList(), list -> list.stream().map(StoreProductColorPrice::getPrice)
-                        .min(Comparator.comparing(Function.identity())).orElseThrow(() -> new ServiceException("商品价格不存在", HttpStatus.ERROR)))));
+        // 档口商品最低价格
+        List<StoreProdMinPriceDTO> prodMinPriceList = this.prodColorSizeMapper.selectStoreProdMinPriceList(favoriteList.stream()
+                .map(UserFavoritePageResDTO::getStoreProdId).map(String::valueOf).collect(Collectors.toList()));
+        Map<Long, BigDecimal> prodMinPriceMap = CollectionUtils.isEmpty(prodMinPriceList) ? new HashMap<>()
+                : prodMinPriceList.stream().collect(Collectors.toMap(StoreProdMinPriceDTO::getStoreProdId, StoreProdMinPriceDTO::getPrice));
         // 找到第一张商品主图
         List<StoreProdMainPicDTO> mainPicList = this.prodFileMapper.selectMainPicByStoreProdIdList(favoriteList.stream()
                 .map(UserFavoritePageResDTO::getStoreProdId).collect(Collectors.toList()), FileType.MAIN_PIC.getValue(), ORDER_NUM_1);
@@ -150,7 +147,7 @@ public class UserFavoritesServiceImpl implements IUserFavoritesService {
                         })));
         favoriteList.forEach(x -> x.setStandardSize(minAndMaxSizeMap.getOrDefault(x.getStoreProdId(), ""))
                 .setMainPicUrl(mainPicMap.getOrDefault(x.getStoreProdId(), null))
-                .setPrice(minPriceMap.getOrDefault(x.getStoreProdId(), null)));
+                .setPrice(prodMinPriceMap.getOrDefault(x.getStoreProdId(), null)));
         return Page.convert(new PageInfo<>(favoriteList));
     }
 

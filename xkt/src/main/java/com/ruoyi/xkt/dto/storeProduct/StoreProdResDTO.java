@@ -65,8 +65,6 @@ public class StoreProdResDTO {
     private List<StoreProdColorDTO> colorList;
     @ApiModelProperty(value = "档口商品尺码列表")
     private List<StoreProdSizeDTO> sizeList;
-    @ApiModelProperty(value = "档口颜色价格列表")
-    private List<StoreProdColorPriceSimpleDTO> priceList;
     @ApiModelProperty(value = "档口服务承诺")
     private StoreProdSvcDTO svc;
     @ApiModelProperty(value = "详情内容")

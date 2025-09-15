@@ -24,12 +24,8 @@ public class StoreProdStockAndDiscountResDTO {
     private Long storeCusId;
     @ApiModelProperty(value = "档口客户名称")
     private String storeCusName;
-    @ApiModelProperty(value = "销售金额")
-    private BigDecimal price;
     @ApiModelProperty(value = "优惠金额")
     private Integer discount;
-    @ApiModelProperty(value = "大小码加价")
-    private Integer overPrice;
     @ApiModelProperty(value = "商品货号")
     private String prodArtNum;
     @ApiModelProperty(value = "档口商品ID")
@@ -45,6 +41,8 @@ public class StoreProdStockAndDiscountResDTO {
 
     @Data
     public static class SPSADSizeDTO {
+        @ApiModelProperty(value = "销售金额")
+        private BigDecimal price;
         @ApiModelProperty(value = "尺码")
         private Integer size;
         @ApiModelProperty(value = "是否是标准尺码")

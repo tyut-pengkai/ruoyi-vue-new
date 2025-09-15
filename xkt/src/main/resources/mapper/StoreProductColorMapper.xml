@@ -80,4 +80,56 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
 
+    <select id="selectListByStoreProdIdAndStoreId" resultType="com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceResDTO">
+        SELECT
+            spc.id AS storeProdColorId,
+            spc.store_id,
+            spc.store_color_id,
+            sp.prod_art_num,
+            spc.color_name,
+            (SELECT MIN(spcs.price) FROM store_product_color_size spcs
+                WHERE spcs.store_prod_id = spc.store_prod_id AND spcs.store_color_id = spc.store_color_id AND spcs.del_flag = 0) AS price,
+            sp.over_price,
+            spc.order_num
+        FROM
+            store_product_color spc
+                JOIN store_product sp ON spc.store_prod_id = sp.id
+        WHERE
+            spc.del_flag = 0
+            AND spc.prod_status IN ( 2, 3 )
+            AND spc.store_prod_id = #{storeProdId}
+            AND spc.store_id = #{storeId}
+        ORDER BY
+            spc.order_num
+    </select>
+
+    <select id="selectColorPricePage" resultType="com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceResDTO">
+        SELECT
+            spc.id AS storeProdColorId,
+            sp.store_id,
+            spc.store_prod_id,
+            spc.store_color_id,
+            sp.prod_art_num,
+            spc.color_name,
+            MIN( spcs.price ) AS price
+        FROM
+            store_product_color spc
+                JOIN store_product sp ON spc.store_prod_id = sp.id
+                JOIN store_product_color_size spcs ON spc.store_prod_id = spcs.store_prod_id AND spcs.del_flag = 0
+        WHERE
+            spc.del_flag = 0 AND sp.store_id = #{storeId}
+            <if test="prodArtNum != null  and prodArtNum != ''">
+                AND sp.prod_art_num like concat('%', #{prodArtNum}, '%')
+            </if>
+            <if test="prodStatusList != null and prodStatusList.size() > 0">
+                AND spc.prod_status IN
+                <foreach item="item" collection="prodStatusList" separator="," open="(" close=")" index="">
+                    #{item}
+                </foreach>
+            </if>
+        GROUP BY
+            spc.id
+    </select>
+
+
 </mapper>
