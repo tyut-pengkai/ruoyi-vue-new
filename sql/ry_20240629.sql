@@ -3583,6 +3583,7 @@ CREATE TABLE `store_product_demand_detail`
 (
     `id`                   bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '档口商品需求明细ID',
     `store_prod_demand_id` bigint UNSIGNED NOT NULL COMMENT '档口商品需求ID',
+    `store_factory_id`     bigint UNSIGNED NOT NULL COMMENT '档口工厂ID',
     `store_prod_color_id`  bigint UNSIGNED NOT NULL COMMENT '档口商品颜色ID',
     `store_color_id`       bigint UNSIGNED NOT NULL COMMENT '档口颜色ID',
     `store_prod_id`        bigint UNSIGNED NOT NULL COMMENT '档口商品ID',

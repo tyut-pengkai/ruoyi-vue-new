@@ -167,7 +167,8 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
         int count = this.storeProdDemandMapper.insert(demand);
         // 生产需求详情
         List<StoreProductDemandDetail> detailList = demandDTO.getDetailList().stream().map(x -> {
-            StoreProductDemandDetail detail = BeanUtil.toBean(x, StoreProductDemandDetail.class).setStoreId(demandDTO.getStoreId())
+            StoreProductDemandDetail detail = BeanUtil.toBean(x, StoreProductDemandDetail.class)
+                    .setStoreId(demandDTO.getStoreId()).setStoreFactoryId(demandDTO.getStoreFactoryId())
                     .setStoreProdDemandId(demand.getId()).setDetailStatus(DemandStatus.PENDING_PRODUCTION.getValue());
             detail.setCreateBy(SecurityUtils.getUsername());
             return detail;

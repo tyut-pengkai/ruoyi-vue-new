@@ -40,6 +40,11 @@ public class StoreProductDemandDetail extends XktBaseEntity {
     private Long storeProdDemandId;
 
     /**
+     * 档口工厂ID
+     */
+    private Long storeFactoryId;
+
+    /**
      * 档口商品颜色ID
      */
     @Excel(name = "档口商品颜色ID")
