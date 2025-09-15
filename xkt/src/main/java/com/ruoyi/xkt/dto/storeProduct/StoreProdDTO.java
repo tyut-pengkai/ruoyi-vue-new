@@ -27,8 +27,6 @@ import java.util.List;
 @Accessors(chain = true)
 public class StoreProdDTO {
 
-    @ApiModelProperty(value = "档口商品名称")
-    private String prodName;
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
     @ApiModelProperty(value = "商品分类ID")

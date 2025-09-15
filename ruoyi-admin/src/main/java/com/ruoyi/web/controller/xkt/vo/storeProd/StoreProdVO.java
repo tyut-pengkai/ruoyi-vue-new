@@ -26,8 +26,6 @@ import java.util.List;
 
 public class StoreProdVO {
 
-    @ApiModelProperty(value = "档口商品名称")
-    private String prodName;
     @ApiModelProperty(value = "档口ID", required = true)
     @NotNull(message = "档口ID不能为空!")
     private Long storeId;

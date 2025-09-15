@@ -89,8 +89,6 @@ public class StoreHomeProdResDTO {
     public static class StoreProdInfoDTO {
         @ApiModelProperty("档口商品ID")
         private Long storeProdId;
-        @ApiModelProperty("档口商品名称")
-        private String prodName;
         @ApiModelProperty(value = "商品货号")
         private String prodArtNum;
         @ApiModelProperty(value = "创建时间")

@@ -344,7 +344,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
                 .forEach(color -> color.setDelFlag(Constants.DELETED));
         // 新增的颜色。分为两种情况:1. 完全新增的颜色 2. 已存在，新加到商品中
         final List<String> updateProdColorNameList = updateDTO.getSizeList().stream().map(StoreProdDTO.SPCSizeDTO::getColorName).distinct().collect(Collectors.toList());
-        for (int i = 1; i <= updateProdColorNameList.size(); i++) {
+        for (int i = 0; i < updateProdColorNameList.size(); i++) {
             final Long updateProdColorId = storeColorMap.get(updateProdColorNameList.get(i));
             // 已存在的颜色则不新增
             if (exitProdColorIdList.contains(updateProdColorId)) {
@@ -352,7 +352,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
             }
             // 新增的商品颜色
             dbProdColorList.add(new StoreProductColor().setStoreColorId(updateProdColorId).setStoreProdId(storeProdId).setStoreId(storeId)
-                    .setColorName(updateProdColorNameList.get(i)).setOrderNum(i).setProdStatus(EProductStatus.ON_SALE.getValue()));
+                    .setColorName(updateProdColorNameList.get(i)).setOrderNum(i+1).setProdStatus(EProductStatus.ON_SALE.getValue()));
         }
         // 更新商品颜色或新增商品颜色
         this.storeProdColorMapper.insertOrUpdate(dbProdColorList);
@@ -454,9 +454,9 @@ public class StoreProductServiceImpl implements IStoreProductService {
         // 新增档口颜色尺码与价格
         List<StoreProductColor> prodColorList = new ArrayList<>();
         final List<String> prodColorNameList = createDTO.getSizeList().stream().map(StoreProdDTO.SPCSizeDTO::getColorName).distinct().collect(Collectors.toList());
-        for (int i = 1; i <= prodColorNameList.size(); i++) {
+        for (int i = 0; i < prodColorNameList.size(); i++) {
             prodColorList.add(new StoreProductColor().setStoreColorId(storeColorMap.get(prodColorNameList.get(i))).setStoreProdId(storeProdId)
-                    .setStoreId(storeId).setColorName(prodColorNameList.get(i)).setOrderNum(i).setProdStatus(EProductStatus.ON_SALE.getValue()));
+                    .setStoreId(storeId).setColorName(prodColorNameList.get(i)).setOrderNum(i+1).setProdStatus(EProductStatus.ON_SALE.getValue()));
         }
         this.storeProdColorMapper.insert(prodColorList);
         // 新增档口颜色尺码对应价格

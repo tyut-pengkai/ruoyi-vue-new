@@ -26,8 +26,6 @@ public class StoreProdResVO {
     private Long storeProdId;
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
-    @ApiModelProperty(value = "档口商品名称")
-    private String prodName;
     @ApiModelProperty(value = "商品分类ID")
     private Long prodCateId;
     @ApiModelProperty(value = "工厂货号")
