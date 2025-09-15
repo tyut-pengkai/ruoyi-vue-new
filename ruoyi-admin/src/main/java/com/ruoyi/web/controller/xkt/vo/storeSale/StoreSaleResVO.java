@@ -64,8 +64,6 @@ public class StoreSaleResVO {
         private String colorName;
         @ApiModelProperty(value = "尺码")
         private Integer size;
-        @ApiModelProperty(value = "大小码加价 0 不加 1加价")
-        private Integer addOverPrice;
         @ApiModelProperty(value = "商品货号")
         private String prodArtNum;
         @ApiModelProperty(value = "销售条码")

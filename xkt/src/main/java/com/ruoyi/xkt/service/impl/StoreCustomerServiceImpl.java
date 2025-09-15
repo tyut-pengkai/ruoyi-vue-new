@@ -56,23 +56,6 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
                 .map(x -> BeanUtil.toBean(x, StoreCusFuzzyResDTO.class).setStoreCusId(x.getId())).collect(Collectors.toList());
     }
 
-    /**
-     * 更改是否大小码加价
-     *
-     * @param addOverPriceDTO 入参
-     * @return Integer
-     */
-    @Override
-    @Transactional
-    public Integer updateAddOverPrice(StoreCusAddOverPriceDTO addOverPriceDTO) {
-        StoreCustomer storeCus = Optional.ofNullable(this.storeCusMapper.selectOne(new LambdaQueryWrapper<StoreCustomer>()
-                        .eq(StoreCustomer::getStoreId, addOverPriceDTO.getStoreId()).eq(StoreCustomer::getId, addOverPriceDTO.getStoreCusId())
-                        .eq(StoreCustomer::getDelFlag, Constants.UNDELETED)))
-                .orElseThrow(() -> new ServiceException("档口客户不存在!", HttpStatus.ERROR));
-        storeCus.setAddOverPrice(addOverPriceDTO.getAddOverPrice());
-        return this.storeCusMapper.updateById(storeCus);
-    }
-
     @Override
     @Transactional
     public int create(StoreCusDTO storeCusDTO) {

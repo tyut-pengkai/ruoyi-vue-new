@@ -27,7 +27,5 @@ public class StoreCusProdDiscountDTO {
     private String phone;
     @ApiModelProperty(value = "所有商品优惠金额")
     private Integer allProductDiscount;
-    @ApiModelProperty(value = "大小码加价 0 不加 1加价")
-    private Integer addOverPrice;
 
 }

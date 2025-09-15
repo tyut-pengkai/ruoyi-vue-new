@@ -15,6 +15,4 @@ public class StoreCusAddOverPriceDTO {
     private Long storeId;
     @ApiModelProperty(value = "档口客户ID")
     private Long storeCusId;
-    @ApiModelProperty(value = "是否大小码加价")
-    private Integer addOverPrice;
 }

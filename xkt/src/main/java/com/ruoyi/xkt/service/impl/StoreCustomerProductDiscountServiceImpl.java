@@ -240,7 +240,6 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
         storeCus.setPhone(cusProdDisDTO.getPhone());
         storeCus.setStoreId(cusProdDisDTO.getStoreId());
         storeCus.setAllProdDiscount(cusProdDisDTO.getAllProductDiscount());
-        storeCus.setAddOverPrice(cusProdDisDTO.getAddOverPrice());
         this.storeCusMapper.insert(storeCus);
         return storeCus;
     }

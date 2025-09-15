@@ -60,11 +60,4 @@ public interface IStoreCustomerService {
      */
     List<StoreCusFuzzyResDTO> fuzzyQueryList(Long storeId, String cusName);
 
-    /**
-     * 更改是否大小码加价
-     *
-     * @param addOverPriceDTO 入参
-     * @return Integer
-     */
-    Integer updateAddOverPrice(StoreCusAddOverPriceDTO addOverPriceDTO);
 }

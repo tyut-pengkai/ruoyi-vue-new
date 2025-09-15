@@ -86,7 +86,7 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
         // 新增档口 “现金客户”
         StoreCustomer storeCus = new StoreCustomer().setStoreId(store.getId()).setPhone(store.getContactPhone())
                 // 默认创建现金客户
-                .setCusName(Constants.STORE_CUS_CASH).setAddOverPrice(0);
+                .setCusName(Constants.STORE_CUS_CASH);
         this.storeCusMapper.insert(storeCus);
         return count;
     }

@@ -73,12 +73,6 @@ public class StoreProduct extends XktBaseEntity {
     private BigDecimal producePrice;
 
     /**
-     * 大小码加价
-     */
-    @Excel(name = "大小码加价")
-    private Integer overPrice;
-
-    /**
      * 发货时效
      */
     @Excel(name = "发货时效")

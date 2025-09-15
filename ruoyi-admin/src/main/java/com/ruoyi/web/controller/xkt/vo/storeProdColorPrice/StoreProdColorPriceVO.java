@@ -27,8 +27,6 @@ public class StoreProdColorPriceVO {
     private String colorName;
     @ApiModelProperty(value = "档口商品颜色定价")
     private BigDecimal price;
-    @ApiModelProperty(value = "大小码加价")
-    private Integer overPrice;
     @ApiModelProperty(value = "排序")
     private Integer orderNum;
 

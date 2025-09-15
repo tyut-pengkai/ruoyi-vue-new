@@ -96,8 +96,6 @@ public class StoreHomeProdResDTO {
         private Date createTime;
         @ApiModelProperty(value = "商品标题")
         private String prodTitle;
-        @ApiModelProperty(value = "大小码加价")
-        private Integer overPrice;
         @ApiModelProperty(value = "详情内容")
         private StoreProdDetailDTO detail;
         @ApiModelProperty(value = "档口商品尺码库存列表")

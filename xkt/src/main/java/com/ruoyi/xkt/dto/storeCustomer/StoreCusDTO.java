@@ -22,8 +22,6 @@ public class StoreCusDTO {
     private String cusName;
     @ApiModelProperty(value = "客户联系电话")
     private String phone;
-    @ApiModelProperty(value = "大小码加价 0 不加 1加价")
-    private Integer addOverPrice;
     @ApiModelProperty("备注")
     private String remark;
 

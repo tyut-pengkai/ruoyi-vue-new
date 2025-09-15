@@ -387,9 +387,7 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
                 .eq(StoreSaleDetail::getStoreSaleId, storeSaleId).eq(StoreSaleDetail::getDelFlag, Constants.UNDELETED));
         List<StoreProduct> storeProdList = this.storeProdMapper.selectByIds(saleDetailList.stream().map(StoreSaleDetail::getStoreProdId).collect(Collectors.toList()));
         Map<Long, StoreProduct> storeProdMap = storeProdList.stream().collect(Collectors.toMap(StoreProduct::getId, x -> x));
-        storeSaleDTO.setDetailList(saleDetailList.stream().map(x -> BeanUtil.toBean(x, StoreSaleResDTO.SSDetailDTO.class)
-                        .setAddOverPrice(ObjectUtils.isNotEmpty(storeProdMap.get(x.getStoreProdId())) ? storeProdMap.get(x.getStoreProdId()).getOverPrice() : 0))
-                .collect(Collectors.toList()));
+        storeSaleDTO.setDetailList(saleDetailList.stream().map(x -> BeanUtil.toBean(x, StoreSaleResDTO.SSDetailDTO.class)).collect(Collectors.toList()));
         return storeSaleDTO;
     }
 

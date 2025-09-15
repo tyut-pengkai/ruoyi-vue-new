@@ -22,8 +22,6 @@ public class ShopCartEditDetailResVO {
     private Long storeProdId;
     @ApiModelProperty(value = "商品货号")
     private String prodArtNum;
-    @ApiModelProperty(value = "大小码加价")
-    private Integer overPrice;
     @ApiModelProperty(value = "档口商品尺码库存列表")
     private List<StoreProdColorVO> colorList;
     @ApiModelProperty(value = "标准尺码")

@@ -43,8 +43,6 @@ public class StoreProdDTO {
     private BigDecimal prodWeight;
     @ApiModelProperty(value = "生产价格")
     private Integer producePrice;
-    @ApiModelProperty(value = "大小码加价")
-    private Integer overPrice;
     @ApiModelProperty(value = "发货时效")
     private Integer deliveryTime;
     @ApiModelProperty(value = "上架方式:1 立即上架 2 定时上架")

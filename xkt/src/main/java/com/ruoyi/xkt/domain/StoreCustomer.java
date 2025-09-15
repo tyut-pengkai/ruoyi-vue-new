@@ -58,11 +58,6 @@ public class StoreCustomer extends XktBaseEntity {
      */
     private Integer allProdDiscount;
 
-    /**
-     * 大小码加价 0 不加 1加价
-     */
-    private Integer addOverPrice;
-
 
     @Override
     public String toString() {

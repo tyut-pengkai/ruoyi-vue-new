@@ -20,7 +20,8 @@ public class StoreCusProdDiscountVO {
     @ApiModelProperty(value = "档口ID", required = true)
     @NotNull(message = "档口ID不能为空!")
     private Long storeId;
-    @ApiModelProperty(value = "档口客户ID")
+    @ApiModelProperty(value = "档口客户ID", required = true)
+    @NotNull(message = "档口客户ID不能为空!")
     private Long storeCusId;
     @NotBlank(message = "客户名称不能为空!")
     @ApiModelProperty(value = "客户名称", required = true)
@@ -30,8 +31,5 @@ public class StoreCusProdDiscountVO {
     @NotNull(message = "所有商品优惠金额不能为空!")
     @ApiModelProperty(value = "所有商品优惠金额", required = true)
     private Integer allProductDiscount;
-    @NotNull(message = "大小码加价不能为空!")
-    @ApiModelProperty(value = "大小码加价 0 不加 1加价", required = true)
-    private Integer addOverPrice;
 
 }

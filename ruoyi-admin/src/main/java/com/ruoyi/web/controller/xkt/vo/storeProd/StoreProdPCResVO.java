@@ -30,8 +30,6 @@ public class StoreProdPCResVO {
     private Date createTime;
     @ApiModelProperty(value = "是否已收藏商品")
     private Boolean collectProd;
-    @ApiModelProperty(value = "大小码加价")
-    private Integer overPrice;
     @ApiModelProperty(value = "颜色列表")
     private List<SPPCColorVO> colorList;
     @ApiModelProperty(value = "档口类目属性map")
