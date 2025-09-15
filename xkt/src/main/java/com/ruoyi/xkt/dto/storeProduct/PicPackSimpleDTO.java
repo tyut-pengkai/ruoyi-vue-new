@@ -22,4 +22,8 @@ public class PicPackSimpleDTO {
      * 文件大小(M)
      */
     private BigDecimal fileSize;
+    /**
+     * 文件类型（1主图、2视频、3下载）
+     */
+    private Integer fileType;
 }

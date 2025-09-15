@@ -28,4 +28,9 @@ public class PicPackSimpleVO {
      */
     @ApiModelProperty(value = "文件大小(M)")
     private BigDecimal fileSize;
+    /**
+     * 文件类型（1主图、2视频、3下载）
+     */
+    @ApiModelProperty(value = "文件类型[3:商品下载图片包 4:商品下载图片包450px 5:商品下载图片包750px]")
+    private Integer fileType;
 }
