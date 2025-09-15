@@ -67,8 +67,6 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
     @Autowired
     private StoreProductColorSizeMapper storeProductColorSizeMapper;
     @Autowired
-    private StoreProductColorPriceMapper storeProductColorPriceMapper;
-    @Autowired
     private StoreColorMapper storeColorMapper;
     @Autowired
     private StoreProductColorMapper storeProductColorMapper;
@@ -127,7 +125,6 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             StoreProduct sp = spMap.get(spcs.getStoreProdId());
             StoreColor sc = scMap.get(spcs.getStoreColorId());
             orderDetail.setStoreProdId(sp.getId());
-//            orderDetail.setProdName(sp.getProdName());
             orderDetail.setProdArtNum(sp.getProdArtNum());
             orderDetail.setProdTitle(sp.getProdTitle());
             orderDetail.setStoreColorId(sc.getId());
@@ -1836,14 +1833,8 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
      * @return
      */
     private BigDecimal calcPrice(Long orderUserId, StoreProductColorSize storeProductColorSize) {
-
-        StoreProductColorPrice productColorPrice = storeProductColorPriceMapper.selectOne(Wrappers
-                .lambdaQuery(StoreProductColorPrice.class)
-                .eq(StoreProductColorPrice::getStoreProdId, storeProductColorSize.getStoreProdId())
-                .eq(StoreProductColorPrice::getStoreColorId, storeProductColorSize.getStoreColorId())
-                .eq(XktBaseEntity::getDelFlag, Constants.UNDELETED));
-        Assert.notNull(productColorPrice, "无法获取商品定价");
-        BigDecimal price = productColorPrice.getPrice();
+        Assert.notNull(storeProductColorSize.getPrice(), "无法获取商品定价");
+        BigDecimal price = storeProductColorSize.getPrice();
         if (ProductSizeStatus.UN_STANDARD.getValue().equals(storeProductColorSize.getStandard())) {
             //非标准尺码
             throw new ServiceException("商品尺码异常");
