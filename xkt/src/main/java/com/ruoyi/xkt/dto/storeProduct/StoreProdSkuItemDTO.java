@@ -26,8 +26,6 @@ public class StoreProdSkuItemDTO {
     private String colorName;
     @ApiModelProperty(value = "排序")
     private Integer orderNum;
-    @ApiModelProperty(value = "档口商品定价")
-    private BigDecimal price;
     @ApiModelProperty(value = "尺码库存列表")
     List<SPSISizeStockDTO> sizeStockList;
 
@@ -39,6 +37,8 @@ public class StoreProdSkuItemDTO {
         private Long storeProdColorSizeId;
         @ApiModelProperty(value = "商品尺码")
         private Integer size;
+        @ApiModelProperty(value = "档口商品定价")
+        private BigDecimal price;
         @ApiModelProperty(value = "是否是标准尺码")
         private Integer standard;
         @ApiModelProperty(value = "尺码库存")

@@ -12,12 +12,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             scd.size,
             scd.store_color_id,
             scd.color_name,
-            scd.quantity,
-            spcp.price,
-            ( scd.quantity * spcp.price ) AS amount
+            scd.quantity
         FROM
             shopping_cart_detail scd
-                LEFT JOIN store_product_color_price spcp ON scd.store_prod_color_id = spcp.id
         WHERE
             scd.del_flag = 0
             AND scd.shopping_cart_id IN

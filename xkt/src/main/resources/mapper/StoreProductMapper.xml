@@ -44,7 +44,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             JOIN store_product_category_attribute spca ON sp.id = spca.store_prod_id
             JOIN sys_product_category spc1 ON sp.prod_cate_id = spc1.id
             JOIN sys_product_category spc2 ON spc1.parent_id = spc2.id
-            LEFT JOIN ( SELECT store_prod_id, MIN( price ) AS min_price FROM store_product_color_price GROUP BY store_prod_id ) spcp ON sp.id = spcp.store_prod_id
+            LEFT JOIN ( SELECT store_prod_id, MIN( price ) AS min_price FROM store_product_color_size GROUP BY store_prod_id ) spcp ON sp.id = spcp.store_prod_id
         WHERE
             sp.del_flag = 0 AND  sp.id IN
             <foreach item="id" collection="idList" open="(" separator="," close=")">
@@ -74,13 +74,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             spc.store_color_id,
             spc.color_name,
             spc.order_num,
-            spcp.price,
+            spcs.price,
             spcs.size,
             spcs.standard,
             spcs.id AS store_prod_color_size_id
         FROM
             store_product_color spc
-                JOIN store_product_color_price spcp ON spc.store_color_id = spcp.store_color_id AND spc.store_prod_id = spcp.store_prod_id AND spcp.del_flag = 0
                 JOIN store_product_color_size spcs ON spc.store_color_id = spcs.store_color_id AND spc.store_prod_id = spcs.store_prod_id AND spcs.del_flag = 0
         WHERE
             spc.del_flag = 0
@@ -95,10 +94,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             sp.prod_art_num AS prodArtNum,
             sf.file_url AS mainPicUrl,
             sp.prod_title,
-            MIN( spcp.price ) AS minPrice
+            MIN( spcs.price ) AS minPrice
         FROM
             store_product sp
-                JOIN store_product_color_price spcp ON sp.id = spcp.store_prod_id
+                JOIN store_product_color_size spcs ON sp.id = spcs.store_prod_id AND spcs.del_flag = 0
                 JOIN store_product_file spf ON sp.id = spf.store_prod_id AND spf.del_flag = 0 AND spf.file_type = 1 AND spf.order_num = 1
                 JOIN sys_file sf ON spf.file_id = sf.id
         WHERE
@@ -124,14 +123,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             sf.file_name AS mainPicName,
             sf.file_size AS mainPicSize,
             sp.prod_title,
-            MIN( spcp.price ) AS minPrice,
+            MIN( spcs.price ) AS minPrice,
             sp.store_id,
             s.store_name,
             GROUP_CONCAT( DISTINCT dpt.tag ORDER BY dpt.type ASC ) AS tagStr,
             EXISTS( SELECT 1 FROM store_product_file spf2 WHERE spf2.store_prod_id = sp.id AND spf2.del_flag = 0 AND spf2.file_type = 2 LIMIT 1 ) AS hasVideo
         FROM
             store_product sp
-            JOIN store_product_color_price spcp ON sp.id = spcp.store_prod_id
+            JOIN store_product_color_size spcs ON sp.id = spcs.store_prod_id AND spcs.del_flag = 0
             JOIN store_product_file spf ON sp.id = spf.store_prod_id AND spf.del_flag = 0 AND spf.file_type = 1 AND spf.order_num = 1
             JOIN sys_file sf ON spf.file_id = sf.id
             JOIN store s ON sp.store_id = s.id
@@ -161,14 +160,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             GROUP_CONCAT( DISTINCT dpt.tag ORDER BY dpt.type ) AS tagStr,
             sp.store_id,
             s.store_name,
-            MIN( spcp.price ) AS price
+            MIN( spcs.price ) AS price
         FROM
             store_product sp
                 LEFT JOIN store_product_statistics sps ON sp.id = sps.store_prod_id AND sps.voucher_date  BETWEEN #{voucherDateStart} AND #{voucherDateEnd}
                 LEFT JOIN store_product_file spf ON sp.id = spf.store_prod_id AND spf.del_flag = 0 AND spf.file_type = 1 AND spf.order_num = 1
                 LEFT JOIN sys_file sf ON spf.file_id = sf.id
                 LEFT JOIN store s ON sp.store_id = s.id
-                LEFT JOIN store_product_color_price spcp ON sp.id = spcp.store_prod_id AND spcp.del_flag = 0
+                LEFT JOIN store_product_color_size spcs ON sp.id = spcs.store_prod_id AND spcs.del_flag = 0
                 LEFT JOIN daily_prod_tag dpt ON sp.id = dpt.store_prod_id AND dpt.del_flag = 0
         WHERE
             sp.del_flag = 0
@@ -192,13 +191,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             GROUP_CONCAT( DISTINCT dpt.tag ORDER BY dpt.type ) AS tagStr,
             sp.store_id,
             s.store_name,
-            MIN( spcp.price ) AS price
+            MIN( spcs.price ) AS price
         FROM
             store_product sp
             JOIN store_product_file spf ON sp.id = spf.store_prod_id AND spf.del_flag = 0 AND spf.file_type = 1 AND spf.order_num = 1
             JOIN sys_file sf ON spf.file_id = sf.id
             JOIN store s ON sp.store_id = s.id
-            JOIN store_product_color_price spcp ON sp.id = spcp.store_prod_id AND spcp.del_flag = 0
+            JOIN store_product_color_size spcs ON sp.id = spcs.store_prod_id AND spcs.del_flag = 0
             LEFT JOIN daily_prod_tag dpt ON sp.id = dpt.store_prod_id AND dpt.del_flag = 0
         WHERE
             sp.del_flag = 0
@@ -290,7 +289,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             sp.prod_art_num,
             sp.prod_title,
             sp.create_time,
-            MIN( DISTINCT spcp.price ) AS minPrice,
+            MIN( DISTINCT spcs.price ) AS minPrice,
             GROUP_CONCAT( DISTINCT dpt.tag ORDER BY dpt.type ASC ) AS tagStr,
             spd.detail,
             <if test="userId != null">
@@ -300,7 +299,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             store_product sp
                 JOIN store s ON sp.store_id = s.id
                 JOIN store_product_detail spd ON sp.id = spd.store_prod_id AND spd.del_flag = 0
-                JOIN store_product_color_price spcp ON sp.id = spcp.store_prod_id AND spcp.del_flag = 0
+                JOIN store_product_color_size spcs ON sp.id = spcs.store_prod_id AND spcs.del_flag = 0
                 LEFT JOIN daily_prod_tag dpt ON sp.id = dpt.store_prod_id AND dpt.del_flag = 0
         WHERE
             sp.del_flag = 0 AND sp.id = #{storeProdId}

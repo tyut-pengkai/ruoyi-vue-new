@@ -174,6 +174,25 @@ public class StoreProductServiceImpl implements IStoreProductService {
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
         // 调用Mapper方法查询商店产品分页信息
         List<StoreProdPageResDTO> prodList = storeProdColorMapper.selectStoreProdColorPage(pageDTO);
+        if (CollectionUtils.isNotEmpty(prodList)) {
+            // 查询商品的 最低售价 及 价格尺码
+            List<StoreProductColorSize> prodColorSizeList = this.storeProdColorSizeMapper.selectList(new LambdaQueryWrapper<StoreProductColorSize>()
+                    .in(StoreProductColorSize::getStoreProdId, prodList.stream().map(StoreProdPageResDTO::getStoreProdId).collect(Collectors.toList()))
+                    .in(StoreProductColorSize::getStoreColorId, prodList.stream().map(StoreProdPageResDTO::getStoreColorId).collect(Collectors.toList()))
+                    .eq(StoreProductColorSize::getDelFlag, Constants.UNDELETED).eq(StoreProductColorSize::getStandard, 0));
+            // key storeProdId:storeColorId value list
+            Map<String, List<StoreProductColorSize>> prodColorSizeMap = prodColorSizeList.stream().collect(Collectors
+                    .groupingBy(x -> x.getStoreProdId() + ":" + x.getStoreColorId()));
+            prodList.forEach(x -> {
+                List<StoreProductColorSize> colorSizeList = prodColorSizeMap.get(x.getStoreProdId() + ":" + x.getStoreColorId());
+                if (CollectionUtils.isNotEmpty(colorSizeList)) {
+                    BigDecimal minPrice = colorSizeList.stream().map(size -> ObjectUtils.defaultIfNull(size.getPrice(), BigDecimal.ZERO))
+                            .min(Comparator.comparing(Function.identity())).get();
+                    String standardSize = colorSizeList.stream().map(size -> size.getSize().toString()).collect(Collectors.joining(","));
+                    x.setPrice(minPrice).setStandard(standardSize);
+                }
+            });
+        }
         return CollectionUtils.isEmpty(prodList) ? Page.empty(pageDTO.getPageSize(), pageDTO.getPageNum()) : Page.convert(new PageInfo<>(prodList));
     }
 
@@ -593,9 +612,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
         List<StoreProductFile> productFiles = storeProdFileMapper.selectList(Wrappers.lambdaQuery(StoreProductFile.class)
                         .eq(StoreProductFile::getStoreProdId, storeProductId)
                         .in(StoreProductFile::getFileType, FileType.picPackValues())
-                        .eq(XktBaseEntity::getDelFlag, UNDELETED))
-                .stream()
-                .collect(Collectors.toList());
+                        .eq(XktBaseEntity::getDelFlag, UNDELETED));
         if (CollUtil.isEmpty(productFiles)) {
             return ListUtil.empty();
         }
@@ -797,7 +814,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
         colorList.forEach(color -> {
             List<StoreProdSkuDTO> sizeList = Optional.ofNullable(colorSizeMap.get(color.getStoreColorId()))
                     .orElseThrow(() -> new ServiceException("获取商品sku失败，请联系客服!", HttpStatus.ERROR));
-            color.setSizeStockList(sizeList.stream().map(size -> new StoreProdSkuItemDTO.SPSISizeStockDTO()
+            color.setSizeStockList(sizeList.stream().map(size -> new StoreProdSkuItemDTO.SPSISizeStockDTO().setPrice(size.getPrice())
                             .setStoreProdColorSizeId(size.getStoreProdColorSizeId()).setSize(size.getSize()).setStandard(size.getStandard())
                             .setStock(colorSizeStockMap.get(color.getStoreColorId() + ":" + size.getSize())))
                     .collect(Collectors.toList()));
@@ -878,7 +895,8 @@ public class StoreProductServiceImpl implements IStoreProductService {
                             .setStock(colorSizeStockMap.get(color.getStoreColorId() + ":" + size.getSize())))
                     .collect(Collectors.toList()));
         });
-        final BigDecimal minPrice = Objects.requireNonNull(colorList.stream().min(Comparator.comparing(StoreProdSkuItemDTO::getPrice)).orElse(null)).getPrice();
+        final BigDecimal minPrice = prodSkuList.stream().map(x -> ObjectUtils.defaultIfNull(x.getPrice(), BigDecimal.ZERO))
+                .min(Comparator.comparing(x -> x)).orElse(null);
         final String mainPicUrl = fileList.stream().filter(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC.getValue()))
                 .filter(x -> Objects.equals(x.getOrderNum(), ORDER_NUM_1)).map(StoreProdFileResDTO::getFileUrl).findAny().orElse("");
         // 将用户浏览足迹添加到redis中

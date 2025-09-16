@@ -118,8 +118,8 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
                 .in(StoreProductColorSize::getStoreColorId, detailList.stream().map(ShopCartPageDetailResDTO::getStoreColorId).collect(Collectors.toList()))
                 .eq(StoreProductColorSize::getDelFlag, Constants.UNDELETED));
         // 商品价格尺码map
-        Map<String, Long> priceSizeMap = priceSizeList.stream().collect(Collectors
-                .toMap(x -> x.getStoreProdId().toString() + x.getStoreColorId().toString() + x.getSize(), StoreProductColorSize::getId));
+        Map<String, StoreProductColorSize> priceSizeMap = priceSizeList.stream().collect(Collectors
+                .toMap(x -> x.getStoreProdId().toString() + x.getStoreColorId().toString() + x.getSize(), x -> x));
         // 获取所有标准尺码
         List<StoreProductColorSize> standardSizeList = this.prodColorSizeMapper.selectList(new LambdaQueryWrapper<StoreProductColorSize>()
                 .in(StoreProductColorSize::getStoreProdId, shoppingCartList.stream().map(ShopCartPageResDTO::getStoreProdId).collect(Collectors.toList()))
@@ -144,8 +144,13 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
         shoppingCartList.forEach(x -> {
             x.setMainPicUrl(mainPicMap.getOrDefault(x.getStoreProdId(), null));
             x.getDetailList()
-                    .forEach(detail -> detail.setStandardSize(minAndMaxSizeMap.getOrDefault(x.getStoreProdId(), ""))
-                            .setStoreProdColorSizeId(priceSizeMap.get(x.getStoreProdId().toString() + detail.getStoreColorId().toString() + detail.getSize())));
+                    .forEach(detail -> {
+                        StoreProductColorSize prodColorSize = priceSizeMap.get(x.getStoreProdId().toString() + detail.getStoreColorId().toString() + detail.getSize());
+                        detail.setStandardSize(minAndMaxSizeMap.getOrDefault(x.getStoreProdId(), ""))
+                                .setAmount((ObjectUtils.isNotEmpty(prodColorSize) ? prodColorSize.getPrice() : BigDecimal.ZERO).multiply(new BigDecimal(detail.getQuantity())))
+                                .setPrice(ObjectUtils.isNotEmpty(prodColorSize) ? prodColorSize.getPrice() : null)
+                                .setStoreProdColorSizeId(ObjectUtils.isNotEmpty(prodColorSize) ? prodColorSize.getId() : null);
+                    });
         });
         return Page.convert(new PageInfo<>(shoppingCartList));
     }

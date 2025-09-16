@@ -3,97 +3,6 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.xkt.mapper.StoreCustomerProductDiscountMapper">
-    
-    <resultMap type="StoreCustomerProductDiscount" id="StoreCustomerProductDiscountResult">
-        <result property="id"    column="id"    />
-        <result property="storeProdId"    column="store_prod_id"    />
-        <result property="storeCusId"    column="store_cus_id"    />
-        <result property="storeProdColorId"    column="store_prod_color_id"    />
-        <result property="discount"    column="discount"    />
-        <result property="version"    column="version"    />
-        <result property="delFlag"    column="del_flag"    />
-        <result property="createBy"    column="create_by"    />
-        <result property="createTime"    column="create_time"    />
-        <result property="updateBy"    column="update_by"    />
-        <result property="updateTime"    column="update_time"    />
-    </resultMap>
-
-    <sql id="selectStoreCustomerProductDiscountVo">
-        select id, store_prod_id, store_cus_id, store_prod_color_id, discount, version, del_flag, create_by, create_time, update_by, update_time from store_customer_product_discount
-    </sql>
-
-    <select id="selectStoreCustomerProductDiscountList" parameterType="StoreCustomerProductDiscount" resultMap="StoreCustomerProductDiscountResult">
-        <include refid="selectStoreCustomerProductDiscountVo"/>
-        <where>  
-            <if test="storeProdId != null "> and store_prod_id = #{storeProdId}</if>
-            <if test="storeCusId != null "> and store_cus_id = #{storeCusId}</if>
-            <if test="storeProdColorId != null "> and store_prod_color_id = #{storeProdColorId}</if>
-            <if test="discount != null "> and discount = #{discount}</if>
-            <if test="version != null "> and version = #{version}</if>
-        </where>
-    </select>
-    
-    <select id="selectStoreCustomerProductDiscountByStoreCusProdDiscId" parameterType="Long" resultMap="StoreCustomerProductDiscountResult">
-        <include refid="selectStoreCustomerProductDiscountVo"/>
-        where id = #{id}
-    </select>
-
-    <insert id="insertStoreCustomerProductDiscount" parameterType="StoreCustomerProductDiscount" useGeneratedKeys="true" keyProperty="storeCusProdDiscId">
-        insert into store_customer_product_discount
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="storeProdId != null">store_prod_id,</if>
-            <if test="storeCusId != null">store_cus_id,</if>
-            <if test="storeProdColorId != null">store_prod_color_id,</if>
-            <if test="discount != null">discount,</if>
-            <if test="version != null">version,</if>
-            <if test="delFlag != null">del_flag,</if>
-            <if test="createBy != null">create_by,</if>
-            <if test="createTime != null">create_time,</if>
-            <if test="updateBy != null">update_by,</if>
-            <if test="updateTime != null">update_time,</if>
-         </trim>
-        <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="storeProdId != null">#{storeProdId},</if>
-            <if test="storeCusId != null">#{storeCusId},</if>
-            <if test="storeProdColorId != null">#{storeProdColorId},</if>
-            <if test="discount != null">#{discount},</if>
-            <if test="version != null">#{version},</if>
-            <if test="delFlag != null">#{delFlag},</if>
-            <if test="createBy != null">#{createBy},</if>
-            <if test="createTime != null">#{createTime},</if>
-            <if test="updateBy != null">#{updateBy},</if>
-            <if test="updateTime != null">#{updateTime},</if>
-         </trim>
-    </insert>
-
-    <update id="updateStoreCustomerProductDiscount" parameterType="StoreCustomerProductDiscount">
-        update store_customer_product_discount
-        <trim prefix="SET" suffixOverrides=",">
-            <if test="storeProdId != null">store_prod_id = #{storeProdId},</if>
-            <if test="storeCusId != null">store_cus_id = #{storeCusId},</if>
-            <if test="storeProdColorId != null">store_prod_color_id = #{storeProdColorId},</if>
-            <if test="discount != null">discount = #{discount},</if>
-            <if test="version != null">version = #{version},</if>
-            <if test="delFlag != null">del_flag = #{delFlag},</if>
-            <if test="createBy != null">create_by = #{createBy},</if>
-            <if test="createTime != null">create_time = #{createTime},</if>
-            <if test="updateBy != null">update_by = #{updateBy},</if>
-            <if test="updateTime != null">update_time = #{updateTime},</if>
-        </trim>
-        where id = #{id}
-    </update>
-
-    <delete id="deleteStoreCustomerProductDiscountByStoreCusProdDiscId" parameterType="Long">
-        delete from store_customer_product_discount where id = #{id}
-    </delete>
-
-    <delete id="deleteStoreCustomerProductDiscountByStoreCusProdDiscIds" parameterType="String">
-        delete from store_customer_product_discount where id in
-        <foreach item="id" collection="array" open="(" separator="," close=")">
-            #{id}
-        </foreach>
-    </delete>
-
 
     <select id="selectDiscPage" resultType="com.ruoyi.xkt.dto.storeCusProdDiscount.StoreCusProdDiscPageResDTO">
         SELECT DISTINCT
@@ -105,15 +14,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             scpd.store_cus_name AS storeCusName,
             scpd.store_prod_color_id AS storeProdColorId,
             spc.color_name,
-            spcp.price,
+            spcs.price,
             scpd.discount,
             scpd.update_time
         FROM
             store_customer_product_discount scpd
-                JOIN store_product sp ON scpd.store_prod_id = sp.id
-                JOIN store_product_color spc ON scpd.store_prod_color_id = spc.id
-                JOIN store_product_color_price spcp ON spc.store_prod_id = spcp.store_prod_id
-            AND spc.store_color_id = spcp.store_color_id
+                JOIN store_product sp ON scpd.store_prod_id = sp.id AND sp.del_flag = 0
+                JOIN store_product_color spc ON scpd.store_prod_color_id = spc.id AND spc.del_flag = 0
+                JOIN store_product_color_size spcs ON spc.store_prod_id = spcs.store_prod_id AND spcs.del_flag = 0 AND spc.store_color_id = spcs.store_color_id
         WHERE
             scpd.del_flag = 0 AND scpd.store_id = #{storeId}
             <if test="cusName != null  and cusName != ''"> AND scpd.store_cus_name = #{cusName}</if>
