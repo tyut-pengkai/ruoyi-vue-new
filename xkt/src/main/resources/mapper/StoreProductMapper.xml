@@ -235,7 +235,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             sp.prod_art_num,
             sp.prod_title,
             sp.create_time,
-            sp.over_price,
             spd.detail,
             EXISTS ( SELECT 1 FROM user_favorites uf WHERE sp.id = uf.store_prod_id AND uf.del_flag = 0 AND uf.user_id = #{userId} ) AS collectProd
         FROM

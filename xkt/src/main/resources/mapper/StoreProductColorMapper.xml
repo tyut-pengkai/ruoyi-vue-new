@@ -83,7 +83,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             spc.color_name,
             (SELECT MIN(spcs.price) FROM store_product_color_size spcs
                 WHERE spcs.store_prod_id = spc.store_prod_id AND spcs.store_color_id = spc.store_color_id AND spcs.del_flag = 0) AS price,
-            sp.over_price,
             spc.order_num
         FROM
             store_product_color spc
