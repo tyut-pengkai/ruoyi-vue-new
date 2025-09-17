@@ -30,6 +30,8 @@ public class PCStoreRecommendDTO {
     private Boolean advert;
     @ApiModelProperty(value = "联系电话")
     private String contactPhone;
+    @ApiModelProperty(value = "联系电话备选")
+    private String contactBackPhone;
     @ApiModelProperty(value = "微信账号")
     private String wechatAccount;
     @ApiModelProperty(value = "QQ账号")

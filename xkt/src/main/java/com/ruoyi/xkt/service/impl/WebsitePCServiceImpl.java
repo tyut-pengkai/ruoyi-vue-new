@@ -368,6 +368,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                             .setStoreName(ObjectUtils.isNotEmpty(store) ? store.getStoreName() : "").setAdvert(Boolean.TRUE)
                             .setTags(storeTagMap.getOrDefault(x.getStoreId(), new ArrayList<>()))
                             .setContactPhone(ObjectUtils.isNotEmpty(store) ? store.getContactPhone() : "")
+                            .setContactBackPhone(ObjectUtils.isNotEmpty(store) ? store.getContactBackPhone() : "")
                             .setWechatAccount(ObjectUtils.isNotEmpty(store) ? store.getWechatAccount() : "")
                             .setQqAccount(ObjectUtils.isNotEmpty(store) ? store.getQqAccount() : "")
                             .setStoreAddress(ObjectUtils.isNotEmpty(store) ? store.getStoreAddress() : "");
