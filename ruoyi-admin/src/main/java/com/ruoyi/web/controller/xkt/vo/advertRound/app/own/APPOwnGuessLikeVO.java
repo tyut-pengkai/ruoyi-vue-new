@@ -43,6 +43,6 @@ public class APPOwnGuessLikeVO {
     @ApiModelProperty(value = "是否有视频")
     private Boolean hasVideo;
     @ApiModelProperty(value = "标签列表")
-    private List<String> tagList;
+    private List<String> tags;
 
 }
