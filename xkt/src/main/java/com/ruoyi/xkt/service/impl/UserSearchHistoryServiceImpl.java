@@ -46,7 +46,7 @@ public class UserSearchHistoryServiceImpl implements IUserSearchHistoryService {
         }
         // 按照搜索时间倒序排列，最新的搜索数据展示在最前面
         return redisList.stream().sorted(Comparator.comparing(UserSearchHistoryDTO::getSearchTime).reversed())
-                .map(UserSearchHistoryDTO::getSearchContent).collect(Collectors.toList());
+                .map(UserSearchHistoryDTO::getSearchContent).distinct().collect(Collectors.toList());
     }
 
     /**
