@@ -26,6 +26,8 @@ public class APPOwnGuessLikeVO {
     private Long storeProdId;
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
+    @ApiModelProperty(value = "档口名称")
+    private String storeName;
     @ApiModelProperty(value = "排序")
     private Integer orderNum;
     @ApiModelProperty(value = "商品货号")
@@ -34,6 +36,10 @@ public class APPOwnGuessLikeVO {
     private BigDecimal price;
     @ApiModelProperty(value = "商品第一张主图路径")
     private String mainPicUrl;
+    @ApiModelProperty(value = "标题")
+    private String prodTitle;
+    @ApiModelProperty(value = "是否广告")
+    private Boolean advert;
     @ApiModelProperty(value = "是否有视频")
     private Boolean hasVideo;
     @ApiModelProperty(value = "标签列表")

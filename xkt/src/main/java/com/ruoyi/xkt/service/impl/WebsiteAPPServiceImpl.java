@@ -860,23 +860,10 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
             appOwnGuessLikeList = expiredList.stream().filter(x -> StringUtils.isNotBlank(x.getProdIdStr())).map(x -> {
                 final Long storeProdId = Long.parseLong(x.getProdIdStr());
                 StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(storeProdId);
-                return new APPOwnGuessLikeDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreProdId(storeProdId)
-                        .setProdTitle(ObjectUtils.isNotEmpty(dto) ? dto.getProdTitle() : "").setStoreId(x.getStoreId())
-                        .setHasVideo(ObjectUtils.isNotEmpty(dto) ? dto.getHasVideo() : Boolean.FALSE)
-                        .setTags(ObjectUtils.isNotEmpty(dto) ? dto.getTags() : null)
-                        .setPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
-                        .setProdArtNum(ObjectUtils.isNotEmpty(dto) ? dto.getProdArtNum() : "")
-                        .setMainPicUrl(ObjectUtils.isNotEmpty(dto) ? dto.getMainPicUrl() : "");
-            }).limit(20).collect(Collectors.toList());
-            for (int i = 0; i < appOwnGuessLikeList.size(); i++) {
-                appOwnGuessLikeList.get(i).setOrderNum(i + 1);
-            }
-        } else {
-            appOwnGuessLikeList = launchingList.stream().filter(x -> StringUtils.isNotBlank(x.getProdIdStr())).map(x -> {
-                final Long storeProdId = Long.parseLong(x.getProdIdStr());
-                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(storeProdId);
-                return new APPOwnGuessLikeDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreProdId(storeProdId)
-                        .setOrderNum(this.positionToNumber(x.getPosition())).setStoreId(x.getStoreId())
+                return new APPOwnGuessLikeDTO().setDisplayType(AdDisplayType.PRODUCT.getValue())
+                        .setStoreId(x.getStoreId()).setStoreProdId(storeProdId).setAdvert(Boolean.TRUE)
+                        .setStoreName(ObjectUtils.isNotEmpty(dto) ? dto.getStoreName() : "")
+                        .setProdTitle(ObjectUtils.isNotEmpty(dto) ? dto.getProdTitle() : "")
                         .setProdTitle(ObjectUtils.isNotEmpty(dto) ? dto.getProdTitle() : "")
                         .setHasVideo(ObjectUtils.isNotEmpty(dto) ? dto.getHasVideo() : Boolean.FALSE)
                         .setTags(ObjectUtils.isNotEmpty(dto) ? dto.getTags() : null)
@@ -884,6 +871,24 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                         .setProdArtNum(ObjectUtils.isNotEmpty(dto) ? dto.getProdArtNum() : "")
                         .setMainPicUrl(ObjectUtils.isNotEmpty(dto) ? dto.getMainPicUrl() : "");
             }).limit(20).collect(Collectors.toList());
+        } else {
+            appOwnGuessLikeList = launchingList.stream().filter(x -> StringUtils.isNotBlank(x.getProdIdStr())).map(x -> {
+                final Long storeProdId = Long.parseLong(x.getProdIdStr());
+                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(storeProdId);
+                return new APPOwnGuessLikeDTO().setDisplayType(AdDisplayType.PRODUCT.getValue())
+                        .setStoreId(x.getStoreId()).setStoreProdId(storeProdId).setAdvert(Boolean.TRUE)
+                        .setStoreName(ObjectUtils.isNotEmpty(dto) ? dto.getStoreName() : "")
+                        .setProdTitle(ObjectUtils.isNotEmpty(dto) ? dto.getProdTitle() : "")
+                        .setProdTitle(ObjectUtils.isNotEmpty(dto) ? dto.getProdTitle() : "")
+                        .setHasVideo(ObjectUtils.isNotEmpty(dto) ? dto.getHasVideo() : Boolean.FALSE)
+                        .setTags(ObjectUtils.isNotEmpty(dto) ? dto.getTags() : null)
+                        .setPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
+                        .setProdArtNum(ObjectUtils.isNotEmpty(dto) ? dto.getProdArtNum() : "")
+                        .setMainPicUrl(ObjectUtils.isNotEmpty(dto) ? dto.getMainPicUrl() : "");
+            }).limit(20).collect(Collectors.toList());
+        }
+        for (int i = 0; i < appOwnGuessLikeList.size(); i++) {
+            appOwnGuessLikeList.get(i).setOrderNum(i + 1);
         }
         appOwnGuessLikeList.forEach(x -> {
             // 查询档口会员等级
