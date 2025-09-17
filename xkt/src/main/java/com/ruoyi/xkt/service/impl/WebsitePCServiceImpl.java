@@ -25,6 +25,7 @@ import com.ruoyi.xkt.dto.advertRound.pc.PCUserCenterDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.index.*;
 import com.ruoyi.xkt.dto.advertRound.pc.newProd.*;
 import com.ruoyi.xkt.dto.advertRound.pc.store.PCStoreMidBannerDTO;
+import com.ruoyi.xkt.dto.advertRound.pc.store.PCStorePageDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.store.PCStoreRecommendDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.store.PCStoreTopBannerDTO;
 import com.ruoyi.xkt.dto.advertRound.picSearch.PicSearchAdvertDTO;
@@ -488,6 +489,26 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         // 放到redis中，过期时间为1天
         redisCache.setCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_SEARCH_RESULT_ADVERT, pcSearchResAdvertList, 1, TimeUnit.DAYS);
         return pcSearchResAdvertList;
+    }
+
+    /**
+     * PC档口商品列表
+     *
+     * @param searchDTO 搜索入参
+     * @return Page<PCStorePageDTO>
+     */
+    @Override
+    public Page<PCStorePageDTO> psStorePage(IndexSearchDTO searchDTO) throws IOException {
+        // 获取用户搜索结果列表
+        Page<ESProductDTO> page = this.search(searchDTO);
+        if (CollectionUtils.isEmpty(page.getList())) {
+            return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), Collections.emptyList());
+        }
+        // 筛选出真实的数据
+        List<PCStorePageDTO> realDataList = page.getList().stream()
+                .map(esProduct -> BeanUtil.toBean(esProduct, PCStorePageDTO.class)).collect(Collectors.toList());
+        // 暂时没有广告
+        return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), realDataList);
     }
 
     /**
@@ -1974,6 +1995,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
 
     /**
      * 获取父级分类ID Map，如果只有父级一级 则 parCateId和prodCateId一致
+     *
      * @return
      */
     private Map<Long, Long> getParCateIdMap() {

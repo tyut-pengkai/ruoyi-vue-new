@@ -34,6 +34,7 @@ import com.ruoyi.xkt.dto.advertRound.app.strength.APPStrengthStoreDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.PCSearchDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.index.PCIndexRecommendDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.newProd.PCNewRecommendDTO;
+import com.ruoyi.xkt.dto.advertRound.pc.store.PCStorePageDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.store.PCStoreRecommendDTO;
 import com.ruoyi.xkt.dto.website.AppStrengthSearchDTO;
 import com.ruoyi.xkt.dto.website.IndexSearchDTO;
@@ -81,6 +82,12 @@ public class WebsiteController extends XktBaseController {
     @PostMapping("/pc/search")
     public R<Page<PCSearchDTO>> psSearchPage(@Validated @RequestBody IndexSearchVO searchVO) throws IOException {
         return R.ok(websitePCService.psSearchPage(BeanUtil.toBean(searchVO, IndexSearchDTO.class)));
+    }
+
+    @ApiOperation(value = "PC 档口首页商品列表", httpMethod = "POST", response = R.class)
+    @PostMapping("/pc/store/page")
+    public R<Page<PCStorePageDTO>> psStorePage(@Validated @RequestBody IndexSearchVO searchVO) throws IOException {
+        return R.ok(websitePCService.psStorePage(BeanUtil.toBean(searchVO, IndexSearchDTO.class)));
     }
 
     @ApiOperation(value = "PC 首页 顶部通栏", httpMethod = "GET", response = R.class)

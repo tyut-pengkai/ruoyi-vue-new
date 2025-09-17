@@ -8,6 +8,7 @@ import com.ruoyi.xkt.dto.advertRound.pc.PCUserCenterDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.index.*;
 import com.ruoyi.xkt.dto.advertRound.pc.newProd.*;
 import com.ruoyi.xkt.dto.advertRound.pc.store.PCStoreMidBannerDTO;
+import com.ruoyi.xkt.dto.advertRound.pc.store.PCStorePageDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.store.PCStoreRecommendDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.store.PCStoreTopBannerDTO;
 import com.ruoyi.xkt.dto.advertRound.picSearch.PicSearchAdvertDTO;
@@ -211,4 +212,13 @@ public interface IWebsitePCService {
      * @return List<PCSearchResultAdvertDTO>
      */
     List<PCSearchResultAdvertDTO> getPcSearchAdvertList();
+
+    /**
+     * PC档口首页商品列表
+     *
+     * @param searchDTO 搜索入参
+     * @return Page<PCStorePageDTO>
+     */
+    Page<PCStorePageDTO> psStorePage(IndexSearchDTO searchDTO) throws IOException;
+
 }

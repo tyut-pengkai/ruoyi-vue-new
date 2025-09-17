@@ -159,4 +159,11 @@ public interface IStoreProductService {
      */
     PicPackInfoDTO getPicPackDownloadUrl(PicPackReqDTO picPackReqDTO);
 
+    /**
+     * 模糊查询系统所有商品
+     *
+     * @param prodArtNum 货号
+     * @return StoreProdFuzzyResDTO
+     */
+    List<StoreProdFuzzyResDTO> fuzzyQuery(String prodArtNum);
 }

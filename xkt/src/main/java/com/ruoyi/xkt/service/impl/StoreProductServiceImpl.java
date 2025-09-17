@@ -669,6 +669,25 @@ public class StoreProductServiceImpl implements IStoreProductService {
         return new PicPackInfoDTO(file.getId(), file.getFileName(), file.getFileUrl(), file.getFileSize(), downloadUrl, false);
     }
 
+    /**
+     * 模糊查询系统所有商品
+     *
+     * @param prodArtNum 货号
+     * @return StoreProdFuzzyResDTO
+     */
+    @Override
+    public List<StoreProdFuzzyResDTO> fuzzyQuery(String prodArtNum) {
+        LambdaQueryWrapper<StoreProduct> queryWrapper = new LambdaQueryWrapper<StoreProduct>()
+                .eq(StoreProduct::getDelFlag, Constants.UNDELETED);
+        if (StringUtils.isNotBlank(prodArtNum)) {
+            queryWrapper.like(StoreProduct::getProdArtNum, prodArtNum);
+        }
+        List<StoreProduct> storeProdList = this.storeProdMapper.selectList(queryWrapper);
+        return storeProdList.stream().map(x -> new StoreProdFuzzyResDTO()
+                        .setStoreProdId(x.getId()).setStoreId(x.getStoreId()).setProdArtNum(x.getProdArtNum()))
+                .collect(Collectors.toList());
+    }
+
 
     /**
      * 根据档口ID和商品货号模糊查询货号列表

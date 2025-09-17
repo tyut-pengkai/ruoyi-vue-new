@@ -57,6 +57,12 @@ public class StoreProductController extends XktBaseController {
         return R.ok(BeanUtil.copyToList(storeProdService.fuzzyQueryResPicList(storeId, prodArtNum), StoreProdFuzzyResPicVO.class));
     }
 
+    @ApiOperation(value = "模糊查询系统所有商品", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/fuzzy")
+    public R<List<StoreProdFuzzyResVO>> fuzzyQuery(@RequestParam(value = "prodArtNum", required = false) String prodArtNum) {
+        return R.ok(BeanUtil.copyToList(storeProdService.fuzzyQuery(prodArtNum), StoreProdFuzzyResVO.class));
+    }
+
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "推广营销（新品馆）模糊查询最新30天上新商品", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/fuzzy/latest30")
