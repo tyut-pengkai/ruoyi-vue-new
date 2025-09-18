@@ -142,6 +142,9 @@ public class SecurityConfig
                         .antMatchers("/rest/v1/prods/status/cate/num/**").permitAll()
                         // PC 商品详情
                         .antMatchers("/rest/v1/prods/pc/detail/**").permitAll()
+                        // 商城首页库存查询
+                        .antMatchers("/rest/v1/prod-stocks/website/**").permitAll()
+
 
 
                         // 除上面外的所有请求全部需要鉴权认证
