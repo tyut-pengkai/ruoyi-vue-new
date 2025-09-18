@@ -182,7 +182,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
             List<StoreProductColorSize> prodColorSizeList = this.storeProdColorSizeMapper.selectList(new LambdaQueryWrapper<StoreProductColorSize>()
                     .in(StoreProductColorSize::getStoreProdId, prodList.stream().map(StoreProdPageResDTO::getStoreProdId).collect(Collectors.toList()))
                     .in(StoreProductColorSize::getStoreColorId, prodList.stream().map(StoreProdPageResDTO::getStoreColorId).collect(Collectors.toList()))
-                    .eq(StoreProductColorSize::getDelFlag, Constants.UNDELETED).eq(StoreProductColorSize::getStandard, 0));
+                    .eq(StoreProductColorSize::getDelFlag, Constants.UNDELETED).eq(StoreProductColorSize::getStandard, 1));
             // key storeProdId:storeColorId value list
             Map<String, List<StoreProductColorSize>> prodColorSizeMap = prodColorSizeList.stream().collect(Collectors
                     .groupingBy(x -> x.getStoreProdId() + ":" + x.getStoreColorId()));
