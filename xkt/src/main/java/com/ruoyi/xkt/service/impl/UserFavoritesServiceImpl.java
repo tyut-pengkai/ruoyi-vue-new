@@ -73,22 +73,24 @@ public class UserFavoritesServiceImpl implements IUserFavoritesService {
         // 已经加入购物车的商品
         final List<Long> existStoreProdIdList = CollectionUtils.isNotEmpty(existList)
                 ? existList.stream().map(UserFavorites::getStoreProdId).collect(Collectors.toList()) : new ArrayList<>();
-        // 购物车列表
-        List<UserFavorites> list = favoriteDTO.getBatchList().stream()
-                .filter(x -> CollectionUtils.isNotEmpty(existStoreProdIdList) ? !existStoreProdIdList.contains(x.getStoreProdId()) : Boolean.TRUE)
+        List<UserFavorites> unFavList = favoriteDTO.getBatchList().stream()
+                .filter(x -> CollectionUtils.isEmpty(existStoreProdIdList) || !existStoreProdIdList.contains(x.getStoreProdId()))
                 .map(x -> BeanUtil.toBean(x, UserFavorites.class).setUserId(loginUser.getUserId()))
                 .collect(Collectors.toList());
-        int count = this.userFavMapper.insert(list).size();
+        if (CollectionUtils.isEmpty(unFavList)) {
+            return 0;
+        }
+        int count = this.userFavMapper.insert(unFavList).size();
         Map<Long, Store> storeMap = this.storeMapper.selectList(new LambdaQueryWrapper<Store>()
-                        .in(Store::getId, list.stream().map(UserFavorites::getStoreId).collect(Collectors.toList()))
+                        .in(Store::getId, unFavList.stream().map(UserFavorites::getStoreId).collect(Collectors.toList()))
                         .eq(Store::getDelFlag, Constants.UNDELETED)).stream()
                 .collect(Collectors.toMap(Store::getId, Function.identity()));
         Map<Long, StoreProduct> storeProdMap = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
-                        .in(StoreProduct::getId, list.stream().map(UserFavorites::getStoreProdId).collect(Collectors.toList()))
+                        .in(StoreProduct::getId, unFavList.stream().map(UserFavorites::getStoreProdId).collect(Collectors.toList()))
                         .eq(StoreProduct::getDelFlag, Constants.UNDELETED)).stream()
                 .collect(Collectors.toMap(StoreProduct::getId, Function.identity()));
         // 新增用户收藏商品通知
-        list.forEach(userFav -> {
+        unFavList.forEach(userFav -> {
             StoreProduct storeProd = storeProdMap.get(userFav.getStoreProdId());
             Store store = storeMap.get(userFav.getStoreId());
             // 新增用户收藏商品消息通知
