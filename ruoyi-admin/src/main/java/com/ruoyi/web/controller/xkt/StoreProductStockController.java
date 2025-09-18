@@ -52,7 +52,7 @@ public class StoreProductStockController extends XktBaseController {
         return R.ok(storeProdStockService.selectPage(BeanUtil.toBean(pageVO, StoreProdStockPageDTO.class)));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,seller,agent')")
     @ApiOperation(value = "商城首页库存查询", httpMethod = "POST", response = R.class)
     @PostMapping("/website/page")
     public R<Page<StoreProdStockWebsitePageResDTO>> selectWebsitePage(@Validated @RequestBody StoreProdWebsiteStockPageVO websitePageVO) {
