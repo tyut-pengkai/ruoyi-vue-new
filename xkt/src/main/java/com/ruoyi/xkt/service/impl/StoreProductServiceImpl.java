@@ -171,6 +171,9 @@ public class StoreProductServiceImpl implements IStoreProductService {
         if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(pageDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
+        // 如果是已删除状态，则只查询已删除数据
+        pageDTO.setDelFlag(pageDTO.getProdStatusList().stream().allMatch(x -> Objects.equals(x, EProductStatus.REMOVED.getValue()))
+                ? Constants.DELETED : Constants.UNDELETED);
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
         // 调用Mapper方法查询商店产品分页信息
         List<StoreProdPageResDTO> prodList = storeProdColorMapper.selectStoreProdColorPage(pageDTO);
@@ -371,7 +374,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
             }
             // 新增的商品颜色
             dbProdColorList.add(new StoreProductColor().setStoreColorId(updateProdColorId).setStoreProdId(storeProdId).setStoreId(storeId)
-                    .setColorName(updateProdColorNameList.get(i)).setOrderNum(i+1).setProdStatus(EProductStatus.ON_SALE.getValue()));
+                    .setColorName(updateProdColorNameList.get(i)).setOrderNum(i + 1).setProdStatus(EProductStatus.ON_SALE.getValue()));
         }
         // 更新商品颜色或新增商品颜色
         this.storeProdColorMapper.insertOrUpdate(dbProdColorList);
@@ -475,7 +478,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
         final List<String> prodColorNameList = createDTO.getSizeList().stream().map(StoreProdDTO.SPCSizeDTO::getColorName).distinct().collect(Collectors.toList());
         for (int i = 0; i < prodColorNameList.size(); i++) {
             prodColorList.add(new StoreProductColor().setStoreColorId(storeColorMap.get(prodColorNameList.get(i))).setStoreProdId(storeProdId)
-                    .setStoreId(storeId).setColorName(prodColorNameList.get(i)).setOrderNum(i+1).setProdStatus(EProductStatus.ON_SALE.getValue()));
+                    .setStoreId(storeId).setColorName(prodColorNameList.get(i)).setOrderNum(i + 1).setProdStatus(EProductStatus.ON_SALE.getValue()));
         }
         this.storeProdColorMapper.insert(prodColorList);
         // 新增档口颜色尺码对应价格
@@ -610,9 +613,9 @@ public class StoreProductServiceImpl implements IStoreProductService {
     public List<PicPackSimpleDTO> prepareGetPicPackDownloadUrl(Long storeProductId) {
         Assert.notNull(storeProductId);
         List<StoreProductFile> productFiles = storeProdFileMapper.selectList(Wrappers.lambdaQuery(StoreProductFile.class)
-                        .eq(StoreProductFile::getStoreProdId, storeProductId)
-                        .in(StoreProductFile::getFileType, FileType.picPackValues())
-                        .eq(XktBaseEntity::getDelFlag, UNDELETED));
+                .eq(StoreProductFile::getStoreProdId, storeProductId)
+                .in(StoreProductFile::getFileType, FileType.picPackValues())
+                .eq(XktBaseEntity::getDelFlag, UNDELETED));
         if (CollUtil.isEmpty(productFiles)) {
             return ListUtil.empty();
         }

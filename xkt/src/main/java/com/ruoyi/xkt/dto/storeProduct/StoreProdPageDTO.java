@@ -26,5 +26,7 @@ public class StoreProdPageDTO extends BasePageDTO {
     private Long storeId;
     @ApiModelProperty(value = "商品状态")
     private List<Integer> prodStatusList;
+    @ApiModelProperty(value = "删除标志")
+    private String delFlag;
 
 }

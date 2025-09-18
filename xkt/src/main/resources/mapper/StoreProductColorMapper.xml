@@ -42,7 +42,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 JOIN store_product_file spf ON sp.id = spf.store_prod_id AND spf.file_type = 1 AND spf.order_num = 1 AND spf.del_flag = 0
                 JOIN sys_file sf ON spf.file_id = sf.id
         WHERE
-            spc.del_flag = 0  AND spc.store_id = #{storeId}
+            spc.del_flag = #{delFlag}  AND spc.store_id = #{storeId}
             <if test="prodStatusList != null and prodStatusList.size() > 0">
                 AND spc.prod_status IN
                 <foreach item="item" collection="prodStatusList" separator="," open="(" close=")" index="">
