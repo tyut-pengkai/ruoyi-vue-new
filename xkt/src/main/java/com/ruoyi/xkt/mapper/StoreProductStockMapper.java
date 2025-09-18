@@ -3,10 +3,7 @@ package com.ruoyi.xkt.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProductStock;
 import com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO;
-import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockAppPageResDTO;
-import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockDownloadDTO;
-import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockPageDTO;
-import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockPageResDTO;
+import com.ruoyi.xkt.dto.storeProductStock.*;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
@@ -19,6 +16,7 @@ import java.util.List;
  * @date 2025-03-26
  */
 public interface StoreProductStockMapper extends BaseMapper<StoreProductStock> {
+
     /**
      * 档口商品库存分页查询
      *
@@ -29,6 +27,7 @@ public interface StoreProductStockMapper extends BaseMapper<StoreProductStock> {
 
     /**
      * 查询APP库存列表
+     *
      * @param pageDTO 入参
      * @return List<StoreProdStockPageResDTO>
      */
@@ -57,4 +56,13 @@ public interface StoreProductStockMapper extends BaseMapper<StoreProductStock> {
      * @return List<StoreProdStockDownloadDTO>
      */
     List<StoreProdStockDownloadDTO> selectAllStockList();
+
+    /**
+     * 筛选商城库存列表
+     *
+     * @param pageDTO 入参
+     * @return List<StoreProdStockPageResDTO>
+     */
+    List<StoreProdStockWebsitePageResDTO> selectWebsitePage(StoreProdWebsiteStockPageDTO pageDTO);
+
 }

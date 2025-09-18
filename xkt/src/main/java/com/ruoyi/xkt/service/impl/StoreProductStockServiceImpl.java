@@ -73,6 +73,23 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
         return Page.convert(new PageInfo<>(stockList));
     }
 
+    /**
+     * 商城首页库存查询
+     *
+     * @param pageDTO 查询入参
+     * @return Page<StoreProdStockWebsitePageResDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Page<StoreProdStockWebsitePageResDTO> selectWebsitePage(StoreProdWebsiteStockPageDTO pageDTO) {
+        PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
+        List<StoreProdStockWebsitePageResDTO> stockList = this.storeProdStockMapper.selectWebsitePage(pageDTO);
+        if (CollectionUtils.isEmpty(stockList)) {
+            return Page.empty(pageDTO.getPageSize(), pageDTO.getPageNum());
+        }
+        return CollectionUtils.isEmpty(stockList) ? Page.empty(pageDTO.getPageSize(), pageDTO.getPageNum()) : Page.convert(new PageInfo<>(stockList));
+    }
+
     @Override
     @Transactional(readOnly = true)
     public Page<StoreProdStockPageResDTO> selectPage(StoreProdStockPageDTO pageDTO) {

@@ -106,4 +106,13 @@ public interface IStoreProductStockService {
      * @return List<StoreProdStockPageResDTO>
      */
     Page<StoreProdStockAppPageResDTO> selectAppPage(StoreProdStockPageDTO pageDTO);
+
+    /**
+     * 商城首页库存查询
+     *
+     * @param pageDTO 查询入参
+     * @return Page<StoreProdStockWebsitePageResDTO>
+     */
+    Page<StoreProdStockWebsitePageResDTO> selectWebsitePage(StoreProdWebsiteStockPageDTO pageDTO);
+
 }
