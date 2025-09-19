@@ -97,11 +97,6 @@ public class StoreSaleDetail extends XktBaseEntity {
     @Excel(name = "总金额")
     private BigDecimal amount;
     /**
-     * 其它优惠
-     */
-    @Excel(name = "其它优惠")
-    private BigDecimal otherDiscount;
-    /**
      * 条码
      */
     @Excel(name = "条码")
@@ -124,7 +119,6 @@ public class StoreSaleDetail extends XktBaseEntity {
                 .append("discountedPrice", getDiscountedPrice())
                 .append("quantity", getQuantity())
                 .append("amount", getAmount())
-                .append("otherDiscount", getOtherDiscount())
                 .append("version", getVersion())
                 .append("delFlag", getDelFlag())
                 .append("createBy", getCreateBy())
