@@ -10,7 +10,10 @@ import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.StoreCustomer;
-import com.ruoyi.xkt.dto.storeCustomer.*;
+import com.ruoyi.xkt.dto.storeCustomer.StoreCusDTO;
+import com.ruoyi.xkt.dto.storeCustomer.StoreCusFuzzyResDTO;
+import com.ruoyi.xkt.dto.storeCustomer.StoreCusPageDTO;
+import com.ruoyi.xkt.dto.storeCustomer.StoreCusPageResDTO;
 import com.ruoyi.xkt.mapper.StoreCustomerMapper;
 import com.ruoyi.xkt.service.IStoreCustomerService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -75,6 +79,10 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
         // 用户是否为档口管理者或子账户
         if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(storeCus.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
+        // 不允许删现金客户
+        if (Objects.equals(storeCus.getCusName(), Constants.STORE_CUS_CASH)) {
+            throw new ServiceException("请勿删除现金客户!", HttpStatus.ERROR);
         }
         storeCus.setDelFlag(Constants.DELETED);
         this.storeCusMapper.updateById(storeCus);
