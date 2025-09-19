@@ -3963,7 +3963,6 @@ CREATE TABLE `store_sale_refund_record_detail`
     `discounted_price`            decimal(10, 2) UNSIGNED NULL DEFAULT NULL COMMENT '给客户优惠后单价',
     `quantity`                    int            NOT NULL COMMENT '数量',
     `amount`                      decimal(10, 2) NOT NULL COMMENT '总金额',
-    `other_discount`              decimal(10, 2) UNSIGNED NULL DEFAULT NULL COMMENT '其它优惠',
     `sns`                         varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '条码',
     `color_name`                  varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '颜色',
     `size`                        int UNSIGNED NULL DEFAULT NULL COMMENT '尺码',
