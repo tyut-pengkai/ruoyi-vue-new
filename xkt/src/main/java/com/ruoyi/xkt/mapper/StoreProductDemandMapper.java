@@ -33,15 +33,4 @@ public interface StoreProductDemandMapper extends BaseMapper<StoreProductDemand>
      */
     void deleteDemandList(@Param("deleteDemandIdList") List<Long> deleteDemandIdList);
 
-    /**
-     * 查询各状态数量
-     *
-     * @param storeId     档口ID
-     * @param sixMonthAgo 六个月前的时间
-     * @param now         当前时间
-     * @return StoreProdDemandStatusCountResDTO
-     */
-    StoreProdDemandStatusCountResDTO getStatusNum(@Param("storeId") Long storeId,
-                                                  @Param("sixMonthAgo") Date sixMonthAgo,
-                                                  @Param("now") Date now);
 }

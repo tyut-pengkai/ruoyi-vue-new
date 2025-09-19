@@ -41,9 +41,9 @@ public class StoreFactoryController extends XktBaseController {
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "生产需求管理 工厂下拉列表", httpMethod = "GET", response = R.class)
-    @GetMapping("/list")
-    public R<List<StoreFactoryResVO>> getList() {
-        return R.ok(BeanUtil.copyToList(storeFactoryService.getList(), StoreFactoryResVO.class));
+    @GetMapping("/list/{storeId}")
+    public R<List<StoreFactoryResVO>> getList(@PathVariable Long storeId) {
+        return R.ok(BeanUtil.copyToList(storeFactoryService.getList(storeId), StoreFactoryResVO.class));
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")

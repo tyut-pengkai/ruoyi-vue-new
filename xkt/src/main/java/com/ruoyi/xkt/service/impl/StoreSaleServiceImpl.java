@@ -33,8 +33,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.Period;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -221,14 +221,16 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
                 exportDTO.setVoucherDateEnd(java.sql.Date.valueOf(LocalDate.now()));
                 exportDTO.setVoucherDateEnd(java.sql.Date.valueOf(LocalDate.now().minusMonths(6)));
             } else {
-                // 开始时间和结束时间，相间隔不能超过6个月
                 LocalDate start = exportDTO.getVoucherDateStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                 LocalDate end = exportDTO.getVoucherDateEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                // 计算两个日期之间的年、月、日差值
-                Period period = Period.between(start, end);
-                // 如果总月数超过6个月，则返回 true
-                int totalMonths = period.getYears() * 12 + period.getMonths();
-                if (Math.abs(totalMonths) > 6) {
+                // 确保开始日期不大于结束日期
+                if (start.isAfter(end)) {
+                    throw new ServiceException("开始时间不能晚于结束时间!", HttpStatus.ERROR);
+                }
+                // 计算两个日期之间的确切月数差异
+                long monthsBetween = ChronoUnit.MONTHS.between(start, end);
+                // 检查是否超过6个月（允许恰好6个月）
+                if (monthsBetween > 6 || (monthsBetween == 6 && start.plusMonths(6).isBefore(end))) {
                     throw new ServiceException("导出时间间隔不能超过6个月!", HttpStatus.ERROR);
                 }
             }

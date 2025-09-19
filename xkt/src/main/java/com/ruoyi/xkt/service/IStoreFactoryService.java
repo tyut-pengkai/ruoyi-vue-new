@@ -75,8 +75,9 @@ public interface IStoreFactoryService {
     /**
      * 获取所有的工厂列表
      *
+     * @param storeId 档口ID
      * @return 生产需求管理 工厂下拉列表
      */
-    List<StoreFactoryResDTO> getList();
+    List<StoreFactoryResDTO> getList(Long storeId);
 
 }

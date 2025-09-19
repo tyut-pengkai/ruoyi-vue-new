@@ -13,6 +13,9 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 /**
@@ -43,8 +46,23 @@ public class StoreProductStorageDetailServiceImpl implements IStoreProductStorag
         if (CollectionUtils.isNotEmpty(exportDTO.getStoreProdStorageIdList())) {
             return this.storageDetailMapper.selectExportList(exportDTO.getStoreProdStorageIdList());
         } else {
+            // 没有传时间，则设置当前时间往前推半年
             if (ObjectUtils.isEmpty(exportDTO.getVoucherDateStart()) && ObjectUtils.isEmpty(exportDTO.getVoucherDateEnd())) {
-                throw new ServiceException("全量导出时，开始时间和结束时间不能为空!", HttpStatus.ERROR);
+                exportDTO.setVoucherDateEnd(java.sql.Date.valueOf(LocalDate.now()));
+                exportDTO.setVoucherDateEnd(java.sql.Date.valueOf(LocalDate.now().minusMonths(6)));
+            } else {
+                LocalDate start = exportDTO.getVoucherDateStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                LocalDate end = exportDTO.getVoucherDateEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                // 确保开始日期不大于结束日期
+                if (start.isAfter(end)) {
+                    throw new ServiceException("开始时间不能晚于结束时间!", HttpStatus.ERROR);
+                }
+                // 计算两个日期之间的确切月数差异
+                long monthsBetween = ChronoUnit.MONTHS.between(start, end);
+                // 检查是否超过6个月（允许恰好6个月）
+                if (monthsBetween > 6 || (monthsBetween == 6 && start.plusMonths(6).isBefore(end))) {
+                    throw new ServiceException("导出时间间隔不能超过6个月!", HttpStatus.ERROR);
+                }
             }
             return this.storageDetailMapper.selectExportListVoucherDateBetween(exportDTO.getVoucherDateStart(), exportDTO.getVoucherDateEnd());
         }

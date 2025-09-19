@@ -63,7 +63,7 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
     public StoreProdDemandStatusCountResDTO getStatusNum(Long storeId) {
         final Date now = java.sql.Date.valueOf(LocalDate.now().plusDays(1));
         final Date sixMonthAgo = java.sql.Date.valueOf(LocalDate.now().minusMonths(6));
-        return this.storeProdDemandMapper.getStatusNum(storeId, sixMonthAgo, now);
+        return this.storeProdDemandDetailMapper.getStatusNum(storeId, sixMonthAgo, now);
     }
 
     /**

@@ -95,12 +95,13 @@ public class StoreFactoryServiceImpl implements IStoreFactoryService {
      * 获取所有的工厂列表
      *
      * @return 生产需求管理 工厂下拉列表
+     * @param storeId 档口ID
      */
     @Override
     @Transactional(readOnly = true)
-    public List<StoreFactoryResDTO> getList() {
+    public List<StoreFactoryResDTO> getList(Long storeId) {
         List<StoreFactory> storeFactoryList = this.storeFactoryMapper.selectList(new LambdaQueryWrapper<StoreFactory>()
-                .eq(StoreFactory::getDelFlag, Constants.UNDELETED));
+                .eq(StoreFactory::getDelFlag, Constants.UNDELETED).eq(StoreFactory::getStoreId, storeId));
         return BeanUtil.copyToList(storeFactoryList, StoreFactoryResDTO.class);
     }
 

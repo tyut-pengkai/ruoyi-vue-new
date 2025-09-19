@@ -25,19 +25,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </foreach>
     </delete>
 
-    <select id="getStatusNum" resultType="com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandStatusCountResDTO">
-        SELECT
-            COALESCE(SUM(CASE WHEN spd.demand_status  = 1 THEN 1 ELSE 0 END),0) AS unProductionNum,
-            COALESCE(SUM(CASE WHEN spd.demand_status  = 2 THEN 1 ELSE 0 END),0) AS inProductionNum,
-            COALESCE(SUM(CASE WHEN spd.demand_status  = 3 THEN 1 ELSE 0 END),0) AS productionCompleteNum
-        FROM
-            store_product_demand spd
-        WHERE
-            spd.del_flag = 0 AND spd.store_id = #{storeId}
-            AND spd.create_time between #{sixMonthAgo} AND #{now}
-    </select>
-
-
 
 
 </mapper>

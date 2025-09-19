@@ -43,4 +43,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             </if>
     </select>
 
+    <select id="getStatusNum" resultType="com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandStatusCountResDTO">
+        SELECT
+            COALESCE ( SUM( CASE WHEN spdd.detail_status = 1 THEN 1 ELSE 0 END ), 0 ) AS unProductionNum,
+            COALESCE ( SUM( CASE WHEN spdd.detail_status = 2 THEN 1 ELSE 0 END ), 0 ) AS inProductionNum,
+            COALESCE ( SUM( CASE WHEN spdd.detail_status = 3 THEN 1 ELSE 0 END ), 0 ) AS productionCompleteNum
+        FROM
+            store_product_demand_detail spdd
+        WHERE
+            spdd.del_flag = 0 AND spdd.store_id = #{storeId}
+          AND spdd.create_time between #{sixMonthAgo} AND #{now}
+    </select>
+
+
 </mapper>
