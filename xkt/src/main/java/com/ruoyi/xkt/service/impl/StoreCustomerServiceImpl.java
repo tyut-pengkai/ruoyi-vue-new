@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -66,6 +67,12 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
         // 用户是否为档口管理者或子账户
         if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(storeCusDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
+        if (StringUtils.isNotBlank(storeCusDTO.getPhone())) {
+            final String regex = "^1[3-9]\\d{9}$";
+            if (!Pattern.matches(regex, storeCusDTO.getPhone().trim())) {
+                throw new ServiceException("请输入正确的手机号!", HttpStatus.ERROR);
+            }
         }
         return this.storeCusMapper.insert(BeanUtil.toBean(storeCusDTO, StoreCustomer.class));
     }
@@ -119,6 +126,12 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
         StoreCustomer storeCus = Optional.ofNullable(this.storeCusMapper.selectOne(new LambdaQueryWrapper<StoreCustomer>()
                         .eq(StoreCustomer::getId, storeCusDTO.getStoreCusId()).eq(StoreCustomer::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口客户不存在!"));
+        if (StringUtils.isNotBlank(storeCusDTO.getPhone())) {
+            final String regex = "^1[3-9]\\d{9}$";
+            if (!Pattern.matches(regex, storeCusDTO.getPhone().trim())) {
+                throw new ServiceException("请输入正确的手机号!", HttpStatus.ERROR);
+            }
+        }
         BeanUtil.copyProperties(storeCusDTO, storeCus);
         return storeCusMapper.updateById(storeCus);
     }
