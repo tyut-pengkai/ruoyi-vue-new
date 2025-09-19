@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -511,8 +512,16 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
             // 查询数据库 获取条码对应的商品信息
             barcodeResDTO = prodColorSizeMapper.selectOtherSn(prefixPart, snDTO.getStoreId(), snDTO.getStoreCusId());
         }
-        return ObjectUtils.isEmpty(barcodeResDTO) ? new StoreSaleSnResDTO().setSuccess(Boolean.FALSE).setSn(snDTO.getSn())
-                : barcodeResDTO.setSuccess(Boolean.TRUE).setSn(snDTO.getSn());
+        if (ObjectUtils.isEmpty(barcodeResDTO)) {
+            return new StoreSaleSnResDTO().setSuccess(Boolean.FALSE).setSn(snDTO.getSn());
+        }
+        // 设置档口客户优惠金额
+        final BigDecimal discountedPrice = barcodeResDTO.getPrice()
+                .subtract(ObjectUtils.defaultIfNull(barcodeResDTO.getDiscount(), BigDecimal.ZERO));
+        // 销售则数量为1 退货则数量为-1
+        final BigDecimal quantity = snDTO.getRefund() ? BigDecimal.ONE.negate() : BigDecimal.ONE;
+        return barcodeResDTO.setSuccess(Boolean.TRUE).setSn(snDTO.getSn()).setDiscountedPrice(discountedPrice)
+                .setQuantity(quantity).setAmount(discountedPrice.multiply(barcodeResDTO.getQuantity()));
     }
 
 

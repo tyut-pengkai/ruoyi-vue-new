@@ -44,7 +44,5 @@ public class StoreSaleSnResVO {
     private BigDecimal amount;
     @ApiModelProperty(value = "[退货扫码时才有]销售数量")
     private BigDecimal quantity;
-    @ApiModelProperty(value = "[退货扫码时才有]其它优惠")
-    private BigDecimal otherDiscount;
 
 }
