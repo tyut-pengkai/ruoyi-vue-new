@@ -92,7 +92,7 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
             // 先查storeSaleDetail中的sns条码是否存在[可能同一个条码，被一个客户多次销售、退货，则取最近的一条]
             StoreSaleSnResDTO barcodeResDTO = this.saleDetailMapper.selectBySn(snDTO);
             if (ObjectUtils.isNotEmpty(barcodeResDTO)) {
-                return barcodeResDTO.setSuccess(Boolean.TRUE).setSn(barcodeResDTO.getSn());
+                return barcodeResDTO.setSuccess(Boolean.TRUE).setSn(snDTO.getSn());
             } else {
                 // 若是没查询到数据，则走正常条码查询流程
                 return this.getSnInfo(snDTO, stockSys);
