@@ -634,7 +634,12 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
                 .eq(StoreProductDemandDetail::getDelFlag, Constants.UNDELETED).eq(StoreProductDemandDetail::getStoreId, finishAllDTO.getStoreId())
                 .in(StoreProductDemandDetail::getId, finishAllDTO.getStoreProdDemandDetailIdList()));
         if (CollectionUtils.isEmpty(demandDetailList)) {
-            throw new ServiceException("没有找到任何需求单!", HttpStatus.ERROR);
+            throw new ServiceException("生产需求单不存在!", HttpStatus.ERROR);
+        }
+        // 如果生产需求单本来就是：已完成 状态，则不可再完成
+        if (demandDetailList.stream().anyMatch(x -> Objects.equals(x.getDetailStatus(), DemandStatus.PRODUCTION_COMPLETE.getValue()))) {
+            throw new ServiceException(demandDetailList.stream().map(StoreProductDemandDetail::getProdArtNum).collect(Collectors.toList())
+                    + " 等生产需求单已处于已完成状态!", HttpStatus.ERROR);
         }
         // 调整状态为已完成
         demandDetailList.forEach(demandDetail -> demandDetail.setDetailStatus(DemandStatus.PRODUCTION_COMPLETE.getValue()));

@@ -69,10 +69,10 @@ public interface IStoreProductStockService {
      * 根据档口ID和商品货号查询档口商品库存
      *
      * @param storeId    档口ID
-     * @param prodArtNum 商品货号
+     * @param storeProdId 档口商品ID
      * @return String
      */
-    List<StoreProdStockResDTO> selectByStoreIdAndProdArtNum(Long storeId, String prodArtNum);
+    StoreProdStockTakeResDTO getByStoreIdAndStoreProdId(Long storeId, Long storeProdId);
 
     /**
      * 销售出库，输入货号，查询客户优惠信息及当前货号颜色的库存

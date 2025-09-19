@@ -9,6 +9,8 @@ import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.xkt.domain.StoreColor;
+import com.ruoyi.xkt.domain.StoreProduct;
 import com.ruoyi.xkt.domain.StoreProductColorSize;
 import com.ruoyi.xkt.domain.StoreProductStock;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
@@ -46,6 +48,7 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
     final StoreCustomerProductDiscountMapper storeCusProdDiscMapper;
     final StoreProductMapper storeProdMapper;
     final StoreProductColorSizeMapper prodColorSizeMapper;
+    final StoreColorMapper storeColorMapper;
 
 
     /**
@@ -116,18 +119,41 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
     /**
      * 根据档口ID和商品货号查询档口商品库存
      *
-     * @param storeId    档口ID
-     * @param prodArtNum 商品货号
-     * @return String
+     * @param storeId     档口ID
+     * @param storeProdId 商品ID
+     * @return StoreProdStockTakeResDTO
      */
     @Override
     @Transactional(readOnly = true)
-    public List<StoreProdStockResDTO> selectByStoreIdAndProdArtNum(Long storeId, String prodArtNum) {
+    public StoreProdStockTakeResDTO getByStoreIdAndStoreProdId(Long storeId, Long storeProdId) {
+        StoreProduct storeProd = Optional.ofNullable(this.storeProdMapper.selectById(storeProdId)).orElseThrow(() -> new ServiceException("该商品不存在", HttpStatus.ERROR));
+        // 查询该商品所有颜色的库存
         List<StoreProductStock> stockList = this.storeProdStockMapper.selectList(new LambdaQueryWrapper<StoreProductStock>()
-                .eq(StoreProductStock::getStoreId, storeId).eq(StoreProductStock::getProdArtNum, prodArtNum)
+                .eq(StoreProductStock::getStoreId, storeId).eq(StoreProductStock::getStoreProdId, storeProdId)
                 .eq(StoreProductStock::getDelFlag, Constants.UNDELETED));
-        return CollectionUtils.isEmpty(stockList) ? new ArrayList<>()
-                : stockList.stream().map(x -> BeanUtil.toBean(x, StoreProdStockResDTO.class).setStoreProdStockId(x.getId())).collect(Collectors.toList());
+        // 商品颜色对应的库存map
+        Map<Long, StoreProductStock> colorSizeStockMap = stockList.stream().collect(Collectors.toMap(StoreProductStock::getStoreColorId, x -> x));
+        // 档口商品颜色map
+        List<StoreColor> storeColorList = this.storeColorMapper.selectList(new LambdaQueryWrapper<StoreColor>()
+                .eq(StoreColor::getDelFlag, Constants.UNDELETED).eq(StoreColor::getStoreId, storeId));
+        Map<Long, StoreColor> storeColorMap = storeColorList.stream().collect(Collectors.toMap(StoreColor::getId, x -> x));
+        // 获取商品所有颜色的基础信息
+        List<StoreProductColorSize> prodColorSizeList = this.prodColorSizeMapper.selectList(new LambdaQueryWrapper<StoreProductColorSize>()
+                .eq(StoreProductColorSize::getDelFlag, Constants.UNDELETED).eq(StoreProductColorSize::getStoreProdId, storeProdId));
+        Map<Long, List<StoreProductColorSize>> colorSizeMap = prodColorSizeList.stream().collect(Collectors.groupingBy(StoreProductColorSize::getStoreColorId));
+        List<StoreProdStockTakeResDTO.SPSTColorSizeDTO> colorResList = new ArrayList<>();
+        colorSizeMap.forEach((colorId, colorSizeList) -> {
+            // 商品颜色数据
+            StoreProdStockTakeResDTO.SPSTColorSizeDTO color = new StoreProdStockTakeResDTO.SPSTColorSizeDTO()
+                    .setStoreColorId(colorId).setColorName(storeColorMap.containsKey(colorId) ? storeColorMap.get(colorId).getColorName() : "")
+                    // 商品对应颜色的库存
+                    .setSizeStockList(colorSizeList.stream().sorted(Comparator.comparing(StoreProductColorSize::getSize))
+                            .map(x -> new StoreProdStockTakeResDTO.SPSTSizeStockDTO().setStoreProdColorSizeId(x.getId()).setSize(x.getSize())
+                                    .setStock(this.getSizeStock(x.getSize(), colorSizeStockMap.get(colorId))))
+                            .collect(Collectors.toList()));
+            colorResList.add(color);
+        });
+        return new StoreProdStockTakeResDTO().setStoreProdId(storeProdId).setProdArtNum(storeProd.getProdArtNum()).setColorList(colorResList);
     }
 
     /**
@@ -516,33 +542,33 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
         if (ObjectUtils.isEmpty(stock)) {
             return null;
         }
-        if (size == 30) {
+        if (Objects.equals(size, SIZE_30)) {
             return stock.getSize30();
-        } else if (size == 31) {
+        } else if (Objects.equals(size, SIZE_31)) {
             return stock.getSize31();
-        } else if (size == 32) {
+        } else if (Objects.equals(size, SIZE_32)) {
             return stock.getSize32();
-        } else if (size == 33) {
+        } else if (Objects.equals(size, SIZE_33)) {
             return stock.getSize33();
-        } else if (size == 34) {
+        } else if (Objects.equals(size, SIZE_34)) {
             return stock.getSize34();
-        } else if (size == 35) {
+        } else if (Objects.equals(size, SIZE_35)) {
             return stock.getSize35();
-        } else if (size == 36) {
+        } else if (Objects.equals(size, SIZE_36)) {
             return stock.getSize36();
-        } else if (size == 37) {
+        } else if (Objects.equals(size, SIZE_37)) {
             return stock.getSize37();
-        } else if (size == 38) {
+        } else if (Objects.equals(size, SIZE_38)) {
             return stock.getSize38();
-        } else if (size == 39) {
+        } else if (Objects.equals(size, SIZE_39)) {
             return stock.getSize39();
-        } else if (size == 40) {
+        } else if (Objects.equals(size, SIZE_40)) {
             return stock.getSize40();
-        } else if (size == 41) {
+        } else if (Objects.equals(size, SIZE_41)) {
             return stock.getSize41();
-        } else if (size == 42) {
+        } else if (Objects.equals(size, SIZE_42)) {
             return stock.getSize42();
-        } else if (size == 43) {
+        } else if (Objects.equals(size, SIZE_43)) {
             return stock.getSize43();
         }
         return null;

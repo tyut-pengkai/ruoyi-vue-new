@@ -1,0 +1,50 @@
+package com.ruoyi.xkt.dto.storeProductStock;
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.experimental.Accessors;
+
+import java.util.List;
+
+/**
+ * @author liujiang
+ * @version v1.0
+ * @date 2025/3/27 15:12
+ */
+@Data
+@Accessors(chain = true)
+public class StoreProdStockTakeResDTO {
+
+    @ApiModelProperty(value = "档口商品ID")
+    private Long storeProdId;
+    @ApiModelProperty(value = "商品货号")
+    private String prodArtNum;
+    @ApiModelProperty(value = "颜色列表")
+    private List<SPSTColorSizeDTO> colorList;
+
+    @Data
+    @ApiModel
+    @Accessors(chain = true)
+    public static class SPSTColorSizeDTO {
+        @ApiModelProperty(value = "颜色ID")
+        private Long storeColorId;
+        @ApiModelProperty(value = "颜色名称")
+        private String colorName;
+        @ApiModelProperty(value = "尺码库存列表")
+        List<SPSTSizeStockDTO> sizeStockList;
+    }
+
+    @Data
+    @ApiModel
+    @Accessors(chain = true)
+    public static class SPSTSizeStockDTO {
+        @ApiModelProperty(value = "档口商品颜色尺码ID")
+        private Long storeProdColorSizeId;
+        @ApiModelProperty(value = "尺码尺码")
+        private Integer size;
+        @ApiModelProperty(value = "盘点库存")
+        private Integer stock;
+    }
+
+}
