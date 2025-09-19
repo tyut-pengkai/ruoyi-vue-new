@@ -82,9 +82,9 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         final Integer stockSys = this.stockSys(snDTO.getStoreId());
-        // 非纯数字 且 条码长度不合法
+        // 非纯数字 或 条码长度不合法
         if (!POSITIVE_PATTERN.matcher(snDTO.getSn()).matches()
-                && !STOCK_FIXED_LENGTHS_MAP.get(stockSys).contains(snDTO.getSn().length())) {
+                || !STOCK_FIXED_LENGTHS_MAP.get(stockSys).contains(snDTO.getSn().length())) {
             return new StoreSaleSnResDTO().setSuccess(Boolean.FALSE).setSn(snDTO.getSn());
         }
         // 销售出库[退货]
