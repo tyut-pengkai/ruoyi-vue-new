@@ -69,7 +69,8 @@ public class ShoppingCartController extends XktBaseController {
         return R.ok(BeanUtil.toBean(shopCartService.getEditInfo(shoppingCartId), ShopCartEditDetailResVO.class));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('seller,agent')")
+    // 如果进货车不对档口开放权限，则商城首页商品详情显示会有问题
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store,seller,agent')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "进货车下单时及商品下单时获取商品列表", httpMethod = "POST", response = R.class)
     @PostMapping("/list")
     public R<List<ShopCartResVO>> getList(@Validated @RequestBody ShopCartListVO listVO) {
