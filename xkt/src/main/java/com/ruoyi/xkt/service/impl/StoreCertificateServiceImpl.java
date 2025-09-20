@@ -230,6 +230,8 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
         store.setStoreWeight(Constants.STORE_WEIGHT_DEFAULT_ZERO);
         // 设置默认的库存系统为 步橘 ，后续可在条码迁移之处修改
         store.setStockSys(StockSysType.BU_JU.getValue());
+        // 档口浏览次数设置为0
+        store.setViewCount(0L);
         // 已使用的档口空间
         BigDecimal storageUsage = certDTO.getStoreCert().getFileList().stream().map(x -> ObjectUtils.defaultIfNull(x.getFileSize(), BigDecimal.ZERO))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
