@@ -96,7 +96,7 @@ public class UserFavoritesServiceImpl implements IUserFavoritesService {
             // 新增用户收藏商品消息通知
             this.noticeService.createSingleNotice(SecurityUtils.getUserId(), "收藏商品成功!", NoticeType.NOTICE.getValue(), NoticeOwnerType.SYSTEM.getValue(),
                     userFav.getStoreId(), UserNoticeType.FAVORITE_PRODUCT.getValue(),
-                    "恭喜您，收藏" + (ObjectUtils.isNotEmpty(store) ? store.getStoreName() : "") + " 家商品: " +
+                    "恭喜您，收藏 " + (ObjectUtils.isNotEmpty(store) ? store.getStoreName() : "") + " 家商品: " +
                             (ObjectUtils.isNotEmpty(storeProd) ? storeProd.getProdArtNum() : "") + "成功!");
         });
         return count;

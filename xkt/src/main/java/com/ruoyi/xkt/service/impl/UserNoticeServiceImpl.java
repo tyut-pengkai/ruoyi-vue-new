@@ -46,8 +46,12 @@ public class UserNoticeServiceImpl implements IUserNoticeService {
     @Override
     @Transactional(readOnly = true)
     public Page<UserNoticeResDTO> pcPage(UserNoticePageDTO pageDTO) {
+        final Long userId = SecurityUtils.getUserIdSafe();
+        if (ObjectUtils.isEmpty(userId)) {
+            throw new ServiceException("用户未登录，请先登录!", HttpStatus.ERROR);
+        }
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
-        List<UserNoticeResDTO> list = this.userNoticeMapper.selectUserNoticeList(SecurityUtils.getUserId(), pageDTO.getNoticeTitle(), pageDTO.getNoticeType());
+        List<UserNoticeResDTO> list = this.userNoticeMapper.selectUserNoticeList(userId, pageDTO.getNoticeTitle(), pageDTO.getNoticeType());
         list.forEach(x -> x.setTargetNoticeTypeName(UserNoticeType.of(x.getTargetNoticeType()).getLabel()));
         return Page.convert(new PageInfo<>(list));
     }
