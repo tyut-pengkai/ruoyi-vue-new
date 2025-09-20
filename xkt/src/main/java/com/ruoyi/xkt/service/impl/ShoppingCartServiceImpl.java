@@ -120,34 +120,20 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
         // 商品价格尺码map
         Map<String, StoreProductColorSize> priceSizeMap = priceSizeList.stream().collect(Collectors
                 .toMap(x -> x.getStoreProdId().toString() + x.getStoreColorId().toString() + x.getSize(), x -> x));
-        // 获取所有标准尺码
-        List<StoreProductColorSize> standardSizeList = this.prodColorSizeMapper.selectList(new LambdaQueryWrapper<StoreProductColorSize>()
-                .in(StoreProductColorSize::getStoreProdId, shoppingCartList.stream().map(ShopCartPageResDTO::getStoreProdId).collect(Collectors.toList()))
-                .eq(StoreProductColorSize::getDelFlag, Constants.UNDELETED).eq(StoreProductColorSize::getStandard, ProductSizeStatus.STANDARD.getValue()));
-        if (CollectionUtils.isEmpty(standardSizeList)) {
-            return Page.convert(new PageInfo<>(shoppingCartList));
-        }
-        // 以storeProdId为key, 取标准尺码的最大值和最小值组成字符串 eg: 34 - 40
-        Map<Long, String> minAndMaxSizeMap = standardSizeList.stream().collect(Collectors.groupingBy(
-                StoreProductColorSize::getStoreProdId,
-                Collectors.collectingAndThen(
-                        Collectors.mapping(StoreProductColorSize::getSize, Collectors.toList()),
-                        sizeList -> {
-                            if (sizeList.isEmpty()) {
-                                return ""; // 处理空列表的情况，返回空字符串或其他默认值
-                            }
-                            int minSize = Collections.min(sizeList);
-                            int maxSize = Collections.max(sizeList);
-                            return minSize + "-" + maxSize;
-                        })));
-        // 设置标准尺码
+        // 当前商品所有标准尺码
+        Map<Long, String> prodStandardSizeMap = priceSizeList.stream()
+                .filter(x -> Objects.equals(x.getStandard(), 1))
+                .collect(Collectors.groupingBy(StoreProductColorSize::getStoreProdId, Collectors
+                        .collectingAndThen(Collectors.mapping(StoreProductColorSize::getSize, Collectors.toSet()),
+                                sizes -> sizes.stream().sorted().map(String::valueOf).collect(Collectors.joining(",")))));
         shoppingCartList.forEach(x -> {
             x.setMainPicUrl(mainPicMap.getOrDefault(x.getStoreProdId(), null));
             x.getDetailList()
                     .forEach(detail -> {
                         StoreProductColorSize prodColorSize = priceSizeMap.get(x.getStoreProdId().toString() + detail.getStoreColorId().toString() + detail.getSize());
-                        detail.setStandardSize(minAndMaxSizeMap.getOrDefault(x.getStoreProdId(), ""))
-                                .setAmount((ObjectUtils.isNotEmpty(prodColorSize) ? prodColorSize.getPrice() : BigDecimal.ZERO).multiply(new BigDecimal(detail.getQuantity())))
+                        detail.setStandardSize(prodStandardSizeMap.getOrDefault(x.getStoreProdId(), ""))
+                                .setAmount((ObjectUtils.isNotEmpty(prodColorSize)
+                                        ? prodColorSize.getPrice() : BigDecimal.ZERO).multiply(new BigDecimal(detail.getQuantity())))
                                 .setPrice(ObjectUtils.isNotEmpty(prodColorSize) ? prodColorSize.getPrice() : null)
                                 .setStoreProdColorSizeId(ObjectUtils.isNotEmpty(prodColorSize) ? prodColorSize.getId() : null);
                     });
