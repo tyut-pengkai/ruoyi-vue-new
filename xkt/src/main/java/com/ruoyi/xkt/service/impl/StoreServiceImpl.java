@@ -217,6 +217,8 @@ public class StoreServiceImpl implements IStoreService {
     @Override
     @Transactional(readOnly = true)
     public StoreAppResDTO getAppInfo(Long storeId) {
+        // 档口访问次数+1
+        redisCache.valueIncr(CacheConstants.STORE_VISIT_COUNT, storeId);
         Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
                         .eq(Store::getId, storeId).eq(Store::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
@@ -480,6 +482,8 @@ public class StoreServiceImpl implements IStoreService {
     @Override
     @Transactional(readOnly = true)
     public StoreSimpleResDTO getSimpleInfo(Long storeId) {
+        // 档口访问次数+1
+        redisCache.valueIncr(CacheConstants.STORE_VISIT_COUNT, storeId);
         StoreSimpleResDTO simpleDTO = this.storeMapper.getSimpleInfo(storeId);
         // 获取档口LOGO
         if (ObjectUtils.isNotEmpty(simpleDTO.getStoreLogoId())) {

@@ -300,6 +300,9 @@ public class CacheConstants {
      * 充值单号缓存
      */
     public static final String RECHARGE_BILL_NO_CACHE = "recharge_bill_no_cache:";
-
+    /**
+     * 档口访问次数
+     */
+    public static final String STORE_VISIT_COUNT = "store_visit_count";
 
 }

@@ -804,6 +804,32 @@ public class XktTask {
         }
     }
 
+    /**
+     * 凌晨2:05更新档口访问量
+     */
+    @Transactional
+    public void updateStoreVisitCount() {
+        // 档口访问量
+        Map<String, Long> storeVisitMap = redisCache.getCacheMap(CacheConstants.STORE_VISIT_COUNT);
+        if (MapUtil.isEmpty(storeVisitMap)) {
+            return;
+        }
+        List<Store> storeList = this.storeMapper.selectList(new LambdaQueryWrapper<Store>()
+                .eq(Store::getDelFlag, Constants.UNDELETED));
+        if (CollectionUtils.isEmpty(storeList)) {
+            return;
+        }
+        storeList.forEach(store -> {
+            Long viewCount = storeVisitMap.getOrDefault(store.getId().toString(), 0L);
+            Long existViewCount = ObjectUtils.defaultIfNull(store.getViewCount(), 0L);
+            store.setViewCount(existViewCount + viewCount);
+            // 清除当日缓存
+            redisCache.deleteCacheMapValue(CacheConstants.STORE_VISIT_COUNT, store.getId().toString());
+        });
+        // 更新档口访问量
+        this.storeMapper.updateById(storeList);
+    }
+
 
     /**
      * 每晚22:00:10 更新广告位竞价状态 将biddingTempStatus赋值给biddingStatus
