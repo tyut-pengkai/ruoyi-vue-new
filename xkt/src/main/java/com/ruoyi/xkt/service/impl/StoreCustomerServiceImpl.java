@@ -9,12 +9,12 @@ import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
-import com.ruoyi.xkt.domain.StoreCustomer;
+import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusDTO;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusFuzzyResDTO;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusPageDTO;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusPageResDTO;
-import com.ruoyi.xkt.mapper.StoreCustomerMapper;
+import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IStoreCustomerService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -40,6 +40,11 @@ import java.util.stream.Collectors;
 public class StoreCustomerServiceImpl implements IStoreCustomerService {
 
     final StoreCustomerMapper storeCusMapper;
+    final StoreSaleMapper storeSaleMapper;
+    final StoreSaleDetailMapper saleDetailMapper;
+    final StoreCustomerProductDiscountMapper cusProdDiscMapper;
+    final StoreSaleRefundRecordMapper saleRefundRecordMapper;
+    final StoreSaleRefundRecordDetailMapper saleRefundRecordDetailMapper;
 
     /**
      * 模糊查询客户名称列表
@@ -133,6 +138,10 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
             }
         }
         BeanUtil.copyProperties(storeCusDTO, storeCus);
+        // 如果名称变更了，则需要调整关联表中的客户名称
+        if (!Objects.equals(storeCusDTO.getCusName(), storeCus.getCusName())) {
+            this.updateRelatedCusName(storeCusDTO.getCusName(), storeCus.getId(), storeCus.getStoreId());
+        }
         return storeCusMapper.updateById(storeCus);
     }
 
@@ -150,6 +159,47 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
                         .eq(StoreCustomer::getId, storeCusId).eq(StoreCustomer::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口客户不存在!", HttpStatus.ERROR));
         return BeanUtil.toBean(storeCus, StoreCusDTO.class);
+    }
+
+    /**
+     * 更新关联表的客户名称
+     * @param cusName 最新的客户名臣
+     * @param storeCusId 档口客户ID
+     * @param storeId 档口ID
+     */
+    private void updateRelatedCusName(String cusName, Long storeCusId, Long storeId) {
+        // 档口销售表
+        List<StoreSale> saleList = storeSaleMapper.selectList(new LambdaQueryWrapper<StoreSale>()
+                .eq(StoreSale::getStoreId, storeId).eq(StoreSale::getDelFlag, Constants.UNDELETED)
+                .eq(StoreSale::getStoreCusId, storeCusId));
+        if (CollectionUtils.isNotEmpty(saleList)) {
+            saleList.forEach(x -> x.setStoreCusName(cusName));
+            storeSaleMapper.updateById(saleList);
+        }
+        // 档口销售明细表
+        List<StoreSaleDetail> saleDetailList = this.saleDetailMapper.selectList(new LambdaQueryWrapper<StoreSaleDetail>()
+                .eq(StoreSaleDetail::getStoreId, storeId).eq(StoreSaleDetail::getDelFlag, Constants.UNDELETED)
+                .eq(StoreSaleDetail::getStoreCusId, storeCusId));
+        if (CollectionUtils.isNotEmpty(saleDetailList)) {
+            saleDetailList.forEach(x -> x.setStoreCusName(cusName));
+            this.saleDetailMapper.updateById(saleDetailList);
+        }
+        // 档口销售返单表
+        List<StoreSaleRefundRecord> refundList = this.saleRefundRecordMapper.selectList(new LambdaQueryWrapper<StoreSaleRefundRecord>()
+                .eq(StoreSaleRefundRecord::getStoreId, storeId).eq(StoreSaleRefundRecord::getDelFlag, Constants.UNDELETED)
+                .eq(StoreSaleRefundRecord::getStoreCusId, storeCusId));
+        if (CollectionUtils.isNotEmpty(refundList)) {
+            refundList.forEach(x -> x.setStoreCusName(cusName));
+            this.saleRefundRecordMapper.updateById(refundList);
+        }
+        // 档口销售返单明细表
+        List<StoreSaleRefundRecordDetail> refundDetailList = this.saleRefundRecordDetailMapper.selectList(new LambdaQueryWrapper<StoreSaleRefundRecordDetail>()
+                .eq(StoreSaleRefundRecordDetail::getStoreId, storeId).eq(StoreSaleRefundRecordDetail::getDelFlag, Constants.UNDELETED)
+                .eq(StoreSaleRefundRecordDetail::getStoreCusId, storeCusId));
+        if (CollectionUtils.isNotEmpty(refundDetailList)) {
+            refundDetailList.forEach(x -> x.setStoreCusName(cusName));
+            this.saleRefundRecordDetailMapper.updateById(refundDetailList);
+        }
     }
 
 }

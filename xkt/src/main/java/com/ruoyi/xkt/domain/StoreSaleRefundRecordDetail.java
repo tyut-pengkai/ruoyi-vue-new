@@ -35,7 +35,19 @@ public class StoreSaleRefundRecordDetail extends XktBaseEntity {
      */
     @Excel(name = "档口商品销售ID")
     private Long storeSaleRefundRecordId;
-
+    /**
+     * 档口客户ID
+     */
+    @Excel(name = "档口客户ID")
+    private Long storeCusId;
+    /**
+     * 档口客户名称呢
+     */
+    private String storeCusName;
+    /**
+     * 档口ID
+     */
+    private Long storeId;
     /**
      * 档口商品ID
      */
@@ -92,7 +104,7 @@ public class StoreSaleRefundRecordDetail extends XktBaseEntity {
      * 条码
      */
     @Excel(name = "条码")
-    private String sns;
+    private String sn;
 
     @Override
     public String toString() {
