@@ -97,7 +97,6 @@ public class StoreProductServiceImpl implements IStoreProductService {
     final StoreMapper storeMapper;
     final EsClientWrapper esClientWrapper;
     final SysProductCategoryMapper prodCateMapper;
-    final DailyProdTagMapper prodTagMapper;
     final StoreProductStockMapper prodStockMapper;
     final StoreCustomerMapper storeCusMapper;
     final StoreCustomerProductDiscountMapper storeCusProdDiscMapper;

@@ -75,7 +75,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
             Arrays.asList(AdLaunchStatus.LAUNCHING.getValue(), AdLaunchStatus.UN_LAUNCH.getValue());
     // 推广轮次 未出价 及 已出价
     private static final List<Integer> BIDDING_STATUS_LIST =
-    Arrays.asList(AdBiddingStatus.BIDDING.getValue(), AdBiddingStatus.UN_BIDDING.getValue());
+            Arrays.asList(AdBiddingStatus.BIDDING.getValue(), AdBiddingStatus.UN_BIDDING.getValue());
 
 
     /**

@@ -81,7 +81,6 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
     final AdvertStoreFileMapper advertStoreFileMapper;
     final StoreProductFileMapper prodFileMapper;
     final DailySaleProductMapper dailySaleProdMapper;
-    final DailyProdTagMapper dailyProdTagMapper;
     final StoreProductMapper storeProdMapper;
     final DailyStoreTagMapper dailyStoreTagMapper;
     final StoreMapper storeMapper;

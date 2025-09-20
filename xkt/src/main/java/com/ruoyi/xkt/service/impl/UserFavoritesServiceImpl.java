@@ -178,8 +178,7 @@ public class UserFavoritesServiceImpl implements IUserFavoritesService {
         // 找到当前商品的标准码
         List<StoreProductColorSize> colorSizeList = this.prodColorSizeMapper.selectList(new LambdaQueryWrapper<StoreProductColorSize>()
                 .in(StoreProductColorSize::getStoreProdId, notAddList.stream().map(UserFavBatchAddToShopCartDTO.BatchDTO::getStoreProdId).collect(Collectors.toList()))
-                .eq(StoreProductColorSize::getDelFlag, Constants.UNDELETED)
-                .eq(StoreProductColorSize::getStandard, ProductSizeStatus.STANDARD.getValue()));
+                .eq(StoreProductColorSize::getDelFlag, Constants.UNDELETED).eq(StoreProductColorSize::getStandard, ProductSizeStatus.STANDARD.getValue()));
         // key:storeProdId+storeColorId 并取最小的标准尺码
         Map<String, StoreProductColorSize> minSizeMap = colorSizeList.stream().collect(Collectors
                 .groupingBy(x -> x.getStoreProdId().toString() + x.getStoreColorId().toString(), Collectors

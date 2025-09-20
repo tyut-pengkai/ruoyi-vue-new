@@ -15,53 +15,6 @@ import java.util.List;
  */
 @Repository
 public interface StoreColorMapper extends BaseMapper<StoreColor> {
-    /**
-     * 查询档口所有颜色
-     *
-     * @param id 档口所有颜色主键
-     * @return 档口所有颜色
-     */
-    public StoreColor selectStoreColorByStoreColorId(Long id);
-
-    /**
-     * 查询档口所有颜色列表
-     *
-     * @param storeColor 档口所有颜色
-     * @return 档口所有颜色集合
-     */
-    public List<StoreColor> selectStoreColorList(StoreColor storeColor);
-
-    /**
-     * 新增档口所有颜色
-     *
-     * @param storeColor 档口所有颜色
-     * @return 结果
-     */
-    public int insertStoreColor(StoreColor storeColor);
-
-    /**
-     * 修改档口所有颜色
-     *
-     * @param storeColor 档口所有颜色
-     * @return 结果
-     */
-    public int updateStoreColor(StoreColor storeColor);
-
-    /**
-     * 删除档口所有颜色
-     *
-     * @param id 档口所有颜色主键
-     * @return 结果
-     */
-    public int deleteStoreColorByStoreColorId(Long id);
-
-    /**
-     * 批量删除档口所有颜色
-     *
-     * @param storeColorIds 需要删除的数据主键集合
-     * @return 结果
-     */
-    public int deleteStoreColorByStoreColorIds(Long[] storeColorIds);
 
     List<StoreColorDTO> selectListByStoreProdId(Long storeId);
 

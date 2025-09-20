@@ -38,7 +38,7 @@
                 END AS refundRate
         FROM
             daily_sale_customer dsc
-            JOIN store_customer sc ON dsc.store_cus_id = sc.id
+                JOIN store_customer sc ON dsc.store_cus_id = sc.id
         WHERE
             dsc.store_id = #{storeId}
             AND dsc.del_flag = 0

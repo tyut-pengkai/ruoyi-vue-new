@@ -47,11 +47,8 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
     final StoreMapper storeMapper;
     final RedisCache redisCache;
     final IAssetService assetService;
-    final DailySaleMapper dailySaleMapper;
-    final DailySaleCustomerMapper dailySaleCusMapper;
     final StoreSaleDetailMapper saleDetailMapper;
     final StoreProductMapper storeProdMapper;
-    final DailySaleProductMapper dailySaleProdMapper;
     final ISysUserService userService;
     final VoucherSequenceMapper vsMapper;
     final StoreCustomerMapper storeCusMapper;

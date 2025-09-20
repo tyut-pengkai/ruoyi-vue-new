@@ -116,7 +116,9 @@ CREATE TABLE `advert_round`
     `update_by`           varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '更新者',
     `update_time`         datetime NULL DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE,
-    INDEX                 `idx_advert_round_pay_pos`(`advert_id`, `round_id`, `pay_price`, `position`) USING BTREE
+    INDEX                 `idx_advert_round_pay_pos`(`advert_id`, `round_id`, `pay_price`, `position`) USING BTREE,
+    INDEX                 `idx_del_flag_launch_status_type_id`(`del_flag`, `launch_status`, `type_id`) USING BTREE,
+    INDEX                 `idx_del_flag_launch_status_round_id`(`del_flag`, `launch_status`, `round_id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '推广营销轮次位置' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
@@ -157,7 +159,9 @@ CREATE TABLE `advert_round_record`
     `update_by`           varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '更新者',
     `update_time`         datetime NULL DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE,
-    INDEX                 `idx_advert_store`(`advert_round_id`, `store_id`) USING BTREE
+    INDEX                 `idx_del_flag_store_id_advert_round_id_voucher_date_type_id`(`del_flag`, `store_id`, `advert_round_id`, `voucher_date`, `type_id`) USING BTREE,
+    INDEX                 `idx_del_flag_type_id_round_id_voucher_date_position`(`del_flag`, `type_id`, `round_id`, `voucher_date`, `position`) USING BTREE,
+    INDEX                 `idx_del_flag_store_id_voucher_date`(`del_flag`, `store_id`, `voucher_date`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '推广营销轮次位置' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
@@ -230,7 +234,7 @@ CREATE TABLE `daily_sale`
     `update_time`   datetime NULL DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '每天档口销量统计' ROW_FORMAT = DYNAMIC;
-
+CREATE INDEX idx_daily_sale_store_del_date ON daily_sale(store_id, del_flag, voucher_date);
 
 -- ----------------------------
 -- Table structure for daily_sale_customer
@@ -254,6 +258,8 @@ CREATE TABLE `daily_sale_customer`
     `update_time`   datetime NULL DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '每天档口客户销量统计' ROW_FORMAT = DYNAMIC;
+CREATE INDEX idx_dsc_store_del_date_cus_sale ON daily_sale_customer ( store_id, del_flag, voucher_date, store_cus_id, sale_amount );
+
 
 -- ----------------------------
 -- Table structure for daily_sale_product
@@ -278,6 +284,8 @@ CREATE TABLE `daily_sale_product`
     `update_time`   datetime NULL DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '档口商品销量统计' ROW_FORMAT = DYNAMIC;
+CREATE INDEX idx_dsp_store_del_date ON daily_sale_product(store_id, del_flag, voucher_date, store_prod_id);
+
 
 -- ----------------------------
 -- Table structure for daily_store_tag
@@ -3266,7 +3274,7 @@ CREATE TABLE `store_customer`
     `update_time`       datetime NULL DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '档口客户' ROW_FORMAT = DYNAMIC;
-
+CREATE INDEX idx_sc_id_cus_name ON store_customer(id, cus_name);
 
 -- ----------------------------
 -- Table structure for store_customer_product_discount
@@ -3289,6 +3297,8 @@ CREATE TABLE `store_customer_product_discount`
     `update_time`         datetime NULL DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '档口客户优惠' ROW_FORMAT = DYNAMIC;
+CREATE INDEX idx_scpd_store_del_cus_color ON store_customer_product_discount(store_id, del_flag, store_cus_id, store_prod_color_id);
+
 
 -- ----------------------------
 -- Table structure for store_factory
@@ -3497,6 +3507,9 @@ CREATE TABLE `store_product_color`
     PRIMARY KEY (`id`) USING BTREE,
     INDEX            `idx_spc_prodid_colorid_del`(`store_prod_id`, `store_color_id`, `del_flag`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '档口当前商品颜色' ROW_FORMAT = DYNAMIC;
+CREATE INDEX idx_spc_store_prod_del ON store_product_color(store_prod_id, del_flag, store_id);
+CREATE INDEX idx_spc_prod_status_del ON store_product_color(prod_status, del_flag);
+
 
 -- ----------------------------
 -- Table structure for store_product_color_size
@@ -3520,13 +3533,10 @@ CREATE TABLE `store_product_color_size`
     `update_by`       varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '更新者',
     `update_time`     datetime NULL DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE,
-    INDEX             `idx_spcs_del_snprefix`(`del_flag`, `sn_prefix`) USING BTREE,
-    INDEX             `idx_spcs_del_othersnprefix`(`del_flag`, `other_sn_prefix`) USING BTREE,
-    INDEX             `idx_snprefix`(`sn_prefix`) USING BTREE,
-    INDEX             `idx_othersnprefix`(`other_sn_prefix`) USING BTREE
+    INDEX             `idx_spcs_del_snprefix`(`sn_prefix`,`del_flag`) USING BTREE,
+    INDEX             `idx_spcs_del_othersnprefix`(`other_sn_prefix`,`del_flag`) USING BTREE,
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '档口商品颜色的尺码' ROW_FORMAT = DYNAMIC;
-
-
+CREATE INDEX idx_spcs_store_prod_color_del ON store_product_color_size(store_prod_id, store_color_id, del_flag);
 
 -- ----------------------------
 -- Table structure for store_product_demand
@@ -3632,8 +3642,7 @@ CREATE TABLE `store_product_file`
     `update_time`    datetime NULL DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '档口商品文件' ROW_FORMAT = DYNAMIC;
-
-
+CREATE INDEX idx_spf_store_prod_file_type ON store_product_file(store_prod_id, file_type);
 
 -- ----------------------------
 -- Table structure for store_product_process
@@ -3756,6 +3765,8 @@ CREATE TABLE `store_product_stock`
     `update_time`         datetime NULL DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '档口商品库存' ROW_FORMAT = DYNAMIC;
+CREATE INDEX idx_sps_store_prod_color_del ON store_product_stock(store_prod_id, store_prod_color_id, del_flag);
+
 
 
 -- ----------------------------
@@ -3782,6 +3793,7 @@ CREATE TABLE `store_product_storage`
     `voucher_date`     date                                                          NOT NULL COMMENT '单据日期',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '档口商品入库' ROW_FORMAT = DYNAMIC;
+CREATE INDEX idx_sps_code_store_del ON store_product_storage(code, store_id, del_flag);
 
 
 -- ----------------------------
@@ -3807,7 +3819,7 @@ CREATE TABLE `store_product_storage_demand_deduct`
     `update_time`                  datetime NULL DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '档口商品入库抵扣需求' ROW_FORMAT = DYNAMIC;
-
+CREATE INDEX idx_spsdd_del_storage_detail_id ON store_product_storage_demand_deduct(del_flag, store_prod_storage_detail_id);
 
 
 -- ----------------------------
@@ -3882,6 +3894,8 @@ CREATE TABLE `store_sale`
     `refund_quantity` int NULL DEFAULT NULL COMMENT '退货数量',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '档口销售出库' ROW_FORMAT = DYNAMIC;
+CREATE INDEX idx_ss_store_del_cus ON store_sale(store_id, del_flag, store_cus_id);
+
 
 -- ----------------------------
 -- Table structure for store_sale_detail

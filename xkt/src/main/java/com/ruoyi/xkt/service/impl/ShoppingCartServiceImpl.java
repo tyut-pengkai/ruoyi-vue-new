@@ -313,8 +313,8 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
     /**
      * 获取档口商品颜色尺码的库存
      *
-     * @param stockList        库存数量
-     * @param standardSizeList 当前商品的标准尺码
+     * @param stockList            库存数量
+     * @param standardSizeList     当前商品的标准尺码
      * @param standardSizePriceMap 颜色尺码对应的价格
      * @return Map<Long, Map < Integer, Integer>>
      */

@@ -42,7 +42,6 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
     final StoreCustomerMapper storeCusMapper;
     final StoreSaleMapper storeSaleMapper;
     final StoreSaleDetailMapper saleDetailMapper;
-    final StoreCustomerProductDiscountMapper cusProdDiscMapper;
     final StoreSaleRefundRecordMapper saleRefundRecordMapper;
     final StoreSaleRefundRecordDetailMapper saleRefundRecordDetailMapper;
 
@@ -163,9 +162,10 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
 
     /**
      * 更新关联表的客户名称
-     * @param cusName 最新的客户名臣
+     *
+     * @param cusName    最新的客户名臣
      * @param storeCusId 档口客户ID
-     * @param storeId 档口ID
+     * @param storeId    档口ID
      */
     private void updateRelatedCusName(String cusName, Long storeCusId, Long storeId) {
         // 档口销售表

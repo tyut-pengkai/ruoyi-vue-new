@@ -67,7 +67,7 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
         StoreCustomer storeCus = CollectionUtils.isNotEmpty(storeCusList) ? storeCusList.get(0) : this.createStoreCustomer(cusProdDisDTO);
         // 获取当前档口客户已有的优惠
         List<StoreCustomerProductDiscount> cusProdDiscList = Optional.ofNullable(cusProdDiscMapper.selectList(new LambdaQueryWrapper<StoreCustomerProductDiscount>()
-                .eq(StoreCustomerProductDiscount::getStoreCusName, cusProdDisDTO.getStoreCusName()).eq(StoreCustomerProductDiscount::getDelFlag, Constants.UNDELETED)
+                .eq(StoreCustomerProductDiscount::getStoreCusId, cusProdDisDTO.getStoreCusId()).eq(StoreCustomerProductDiscount::getDelFlag, Constants.UNDELETED)
                 .eq(StoreCustomerProductDiscount::getStoreId, cusProdDisDTO.getStoreId()))).orElse(new ArrayList<>());
         // 已存在优惠但优惠额度低于当前优惠，则更新该部分优惠
         List<StoreCustomerProductDiscount> updateList = cusProdDiscList.stream()

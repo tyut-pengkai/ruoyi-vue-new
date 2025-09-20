@@ -45,7 +45,6 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
     final StoreProductStockMapper storeProdStockMapper;
     final StoreProductFileMapper storeProdFileMapper;
     final SysFileMapper fileMapper;
-    final StoreCustomerProductDiscountMapper storeCusProdDiscMapper;
     final StoreProductMapper storeProdMapper;
     final StoreProductColorSizeMapper prodColorSizeMapper;
     final StoreColorMapper storeColorMapper;

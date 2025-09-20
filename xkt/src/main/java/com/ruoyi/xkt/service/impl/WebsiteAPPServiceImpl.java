@@ -74,14 +74,9 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
     final RedisCache redisCache;
     final AdvertRoundMapper advertRoundMapper;
     final SysFileMapper fileMapper;
-    final AdvertStoreFileMapper advertStoreFileMapper;
     final StoreProductFileMapper prodFileMapper;
-    final DailySaleProductMapper dailySaleProdMapper;
-    final DailyProdTagMapper dailyProdTagMapper;
     final StoreProductMapper storeProdMapper;
-    final DailyStoreTagMapper dailyStoreTagMapper;
     final StoreMapper storeMapper;
-    final StoreProductStatisticsMapper prodStatsMapper;
     final UserSubscriptionsMapper userSubMapper;
     final UserFavoritesMapper userFavMapper;
 
