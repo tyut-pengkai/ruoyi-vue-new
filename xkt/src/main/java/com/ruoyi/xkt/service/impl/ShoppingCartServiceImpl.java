@@ -122,7 +122,7 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
                 .toMap(x -> x.getStoreProdId().toString() + x.getStoreColorId().toString() + x.getSize(), x -> x));
         // 当前商品所有标准尺码
         Map<Long, String> prodStandardSizeMap = priceSizeList.stream()
-                .filter(x -> Objects.equals(x.getStandard(), 1))
+                .filter(x -> Objects.equals(x.getStandard(), ProductSizeStatus.STANDARD.getValue()))
                 .collect(Collectors.groupingBy(StoreProductColorSize::getStoreProdId, Collectors
                         .collectingAndThen(Collectors.mapping(StoreProductColorSize::getSize, Collectors.toSet()),
                                 sizes -> sizes.stream().sorted().map(String::valueOf).collect(Collectors.joining(",")))));

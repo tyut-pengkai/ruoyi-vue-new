@@ -134,20 +134,12 @@ public class UserFavoritesServiceImpl implements IUserFavoritesService {
                 .in(StoreProductColorSize::getStoreProdId, favoriteList.stream().map(UserFavoritePageResDTO::getStoreProdId).collect(Collectors.toList()))
                 .eq(StoreProductColorSize::getDelFlag, Constants.UNDELETED)
                 .eq(StoreProductColorSize::getStandard, ProductSizeStatus.STANDARD.getValue()));
-        // 以storeProdId为key, 取标准尺码的最大值和最小值组成字符串 eg: 34 - 40
-        Map<Long, String> minAndMaxSizeMap = standardSizeList.stream().collect(Collectors.groupingBy(
-                StoreProductColorSize::getStoreProdId,
-                Collectors.collectingAndThen(
-                        Collectors.mapping(StoreProductColorSize::getSize, Collectors.toList()),
-                        sizeList -> {
-                            if (sizeList.isEmpty()) {
-                                return ""; // 处理空列表的情况，返回空字符串或其他默认值
-                            }
-                            int minSize = Collections.min(sizeList);
-                            int maxSize = Collections.max(sizeList);
-                            return minSize + "-" + maxSize;
-                        })));
-        favoriteList.forEach(x -> x.setStandardSize(minAndMaxSizeMap.getOrDefault(x.getStoreProdId(), ""))
+        // 当前商品所有标准尺码
+        Map<Long, String> prodStandardSizeMap = standardSizeList.stream()
+                .collect(Collectors.groupingBy(StoreProductColorSize::getStoreProdId, Collectors
+                        .collectingAndThen(Collectors.mapping(StoreProductColorSize::getSize, Collectors.toSet()),
+                                sizes -> sizes.stream().sorted().map(String::valueOf).collect(Collectors.joining(",")))));
+        favoriteList.forEach(x -> x.setStandardSize(prodStandardSizeMap.getOrDefault(x.getStoreProdId(), ""))
                 .setMainPicUrl(mainPicMap.getOrDefault(x.getStoreProdId(), null))
                 .setPrice(prodMinPriceMap.getOrDefault(x.getStoreProdId(), null)));
         return Page.convert(new PageInfo<>(favoriteList));
