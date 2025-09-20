@@ -32,6 +32,8 @@ public class ShopCartPageResDTO {
     private String prodTitle;
     @ApiModelProperty(value = "商品状态")
     private String prodStatus;
+    @ApiModelProperty(value = "标注尺码")
+    private String standardSize;
     @ApiModelProperty(value = "进货车明细列表")
     List<ShopCartPageDetailResDTO> detailList;
 

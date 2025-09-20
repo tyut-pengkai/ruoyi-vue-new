@@ -2,6 +2,7 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProductStatistics;
+import com.ruoyi.xkt.dto.StoreProductStatistics.StoreProdAppViewRankResDTO;
 import com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO;
 import com.ruoyi.xkt.dto.picture.ProductImgSearchCountDTO;
 import org.apache.ibatis.annotations.Param;
@@ -44,5 +45,12 @@ public interface StoreProductStatisticsMapper extends BaseMapper<StoreProductSta
      */
     List<DailyStoreTagDTO> downloadTop10Prod(@Param("oneMonthAgo") Date oneMonthAgo, @Param("yesterday") Date yesterday);
 
-
+    /**
+     * 筛选近三月APP商品浏览量前10
+     *
+     * @param threeMonthAgo 三月前
+     * @param yesterday     昨天
+     * @return List<StoreProdAppViewRankResDTO.SPAVRViewCountDTO>
+     */
+    List<StoreProdAppViewRankResDTO.SPAVRViewCountDTO> selectTop10ProdViewCount(@Param("threeMonthAgo") Date threeMonthAgo, @Param("yesterday") Date yesterday);
 }

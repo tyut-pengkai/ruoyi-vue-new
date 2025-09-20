@@ -128,11 +128,11 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
                                 sizes -> sizes.stream().sorted().map(String::valueOf).collect(Collectors.joining(",")))));
         shoppingCartList.forEach(x -> {
             x.setMainPicUrl(mainPicMap.getOrDefault(x.getStoreProdId(), null));
+            x.setStandardSize(prodStandardSizeMap.getOrDefault(x.getStoreProdId(), ""));
             x.getDetailList()
                     .forEach(detail -> {
                         StoreProductColorSize prodColorSize = priceSizeMap.get(x.getStoreProdId().toString() + detail.getStoreColorId().toString() + detail.getSize());
-                        detail.setStandardSize(prodStandardSizeMap.getOrDefault(x.getStoreProdId(), ""))
-                                .setAmount((ObjectUtils.isNotEmpty(prodColorSize)
+                        detail.setAmount((ObjectUtils.isNotEmpty(prodColorSize)
                                         ? prodColorSize.getPrice() : BigDecimal.ZERO).multiply(new BigDecimal(detail.getQuantity())))
                                 .setPrice(ObjectUtils.isNotEmpty(prodColorSize) ? prodColorSize.getPrice() : null)
                                 .setStoreProdColorSizeId(ObjectUtils.isNotEmpty(prodColorSize) ? prodColorSize.getId() : null);
