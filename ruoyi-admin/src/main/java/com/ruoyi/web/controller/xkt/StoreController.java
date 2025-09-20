@@ -92,12 +92,14 @@ public class StoreController extends XktBaseController {
         return R.ok(storeService.updateStoreWeight(BeanUtil.toBean(storeWeightUpdateVO, StoreWeightUpdateDTO.class)));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "获取档口详细信息", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{storeId}")
     public R<StoreResVO> getInfo(@PathVariable("storeId") Long storeId) {
         return R.ok(BeanUtil.toBean(storeService.getInfo(storeId), StoreResVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store,seller,agent')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "PC 商城首页 获取档口基础信息", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/simple/{storeId}")
     public R<StoreSimpleResVO> getSimpleInfo(@PathVariable("storeId") Long storeId) {
@@ -111,6 +113,7 @@ public class StoreController extends XktBaseController {
         return R.ok(BeanUtil.toBean(storeService.getApproveInfo(storeId), StoreApproveResVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store,seller,agent')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "APP获取档口基本信息", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/app/{storeId}")
     public R<StoreAppResVO> getAppInfo(@PathVariable("storeId") Long storeId) {
@@ -179,5 +182,13 @@ public class StoreController extends XktBaseController {
     public R<Integer> updateStockSys(@Validated @RequestBody StoreUpdateStockSysVO stockSysVO) {
         return R.ok(storeService.updateStockSys(BeanUtil.toBean(stockSysVO, StoreUpdateStockSysDTO.class)));
     }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store,seller,agent')||@ss.hasSupplierSubRole()")
+    @ApiOperation(value = "APP档口访问榜", httpMethod = "GET", response = R.class)
+    @GetMapping("/app/view-rank")
+    public R<StoreAppViewRankResVO> getAppViewRank() {
+        return R.ok(BeanUtil.toBean(storeService.getAppViewRank(), StoreAppViewRankResVO.class));
+    }
+
 
 }

@@ -304,5 +304,13 @@ public class CacheConstants {
      * 档口访问次数
      */
     public static final String STORE_VISIT_COUNT = "store_visit_count";
+    /**
+     * 档口访问次数缓存
+     */
+    public static final String STORE_VISIT_COUNT_CACHE = "store_visit_count_cache";
+    /**
+     * 档口商品访问次数缓存
+     */
+    public static final String STORE_PROD_VIEW_COUNT_CACHE = "store_prod_view_count_cache";
 
 }

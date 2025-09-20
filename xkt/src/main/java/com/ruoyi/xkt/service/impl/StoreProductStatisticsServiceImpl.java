@@ -1,14 +1,20 @@
 package com.ruoyi.xkt.service.impl;
 
+import com.ruoyi.common.constant.CacheConstants;
+import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.xkt.dto.StoreProductStatistics.StoreProdAppViewRankResDTO;
 import com.ruoyi.xkt.mapper.StoreProductStatisticsMapper;
 import com.ruoyi.xkt.service.IStoreProductStatisticsService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 档口商品统计 服务层实现
@@ -20,6 +26,7 @@ import java.util.Date;
 public class StoreProductStatisticsServiceImpl implements IStoreProductStatisticsService {
 
     final StoreProductStatisticsMapper prodStatisticsMapper;
+    final RedisCache redisCache;
 
     /**
      * 档口商品访问榜
@@ -29,9 +36,22 @@ public class StoreProductStatisticsServiceImpl implements IStoreProductStatistic
     @Override
     @Transactional(readOnly = true)
     public StoreProdAppViewRankResDTO getAppViewRank() {
+        // 从redis中获取商品访问量
+        StoreProdAppViewRankResDTO redisAppViewRank = redisCache.getCacheObject(CacheConstants.STORE_PROD_VIEW_COUNT_CACHE);
+        if (ObjectUtils.isNotEmpty(redisAppViewRank)) {
+            return redisAppViewRank;
+        }
+        redisAppViewRank = new StoreProdAppViewRankResDTO();
         final Date yesterday = java.sql.Date.valueOf(LocalDate.now().minusDays(1));
         final Date threeMonthAgo = java.sql.Date.valueOf(LocalDate.now().minusDays(1).minusMonths(3));
-        return new StoreProdAppViewRankResDTO().setViewCountList(prodStatisticsMapper.selectTop10ProdViewCount(threeMonthAgo, yesterday));
+        List<StoreProdAppViewRankResDTO.SPAVRViewCountDTO> viewCountList = prodStatisticsMapper.selectTop10ProdViewCount(threeMonthAgo, yesterday);
+        if (CollectionUtils.isEmpty(viewCountList)) {
+            return redisAppViewRank;
+        }
+        redisAppViewRank.setViewCountList(viewCountList);
+        // 放到redis中
+        redisCache.setCacheObject(CacheConstants.STORE_PROD_VIEW_COUNT_CACHE, redisAppViewRank, 1, TimeUnit.DAYS);
+        return redisAppViewRank;
     }
 
 }

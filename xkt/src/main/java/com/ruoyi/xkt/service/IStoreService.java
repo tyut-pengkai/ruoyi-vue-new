@@ -191,4 +191,10 @@ public interface IStoreService {
      */
     Integer updateStockSys(StoreUpdateStockSysDTO stockSysDTO);
 
+    /**
+     * 获取APP档口浏览量排行榜
+     *
+     * @return StoreAppViewRankResDTO
+     */
+    StoreAppViewRankResDTO getAppViewRank();
 }

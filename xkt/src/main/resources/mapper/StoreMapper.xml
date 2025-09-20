@@ -41,5 +41,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             s.id = #{storeId}
     </select>
 
+    <select id="selectTop10AppViewCount">
+        SELECT
+            s.id AS storeId,
+            s.store_name,
+            sf.file_url AS logo,
+            s.view_count
+        FROM
+            store s
+                LEFT JOIN sys_file sf ON s.store_logo_id = sf.id
+        WHERE
+            s.del_flag = 0
+        ORDER BY
+            s.view_count DESC
+            LIMIT 10
+    </select>
+
 
 </mapper>

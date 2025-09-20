@@ -2,12 +2,14 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.Store;
+import com.ruoyi.xkt.dto.store.StoreAppViewRankResDTO;
 import com.ruoyi.xkt.dto.store.StorePageDTO;
 import com.ruoyi.xkt.dto.store.StorePageResDTO;
 import com.ruoyi.xkt.dto.store.StoreSimpleResDTO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -35,4 +37,11 @@ public interface StoreMapper extends BaseMapper<Store> {
      */
     StoreSimpleResDTO getSimpleInfo(@Param("storeId") Long storeId);
 
+    /**
+     * 获取档口访问榜  过去3个月到现在
+     * @param threeMonthAgo 三个月前
+     * @param yesterday 昨天
+     * @return
+     */
+    List<StoreAppViewRankResDTO.SAVRViewCountDTO> selectTop10AppViewCount(@Param("threeMonthAgo") Date threeMonthAgo, @Param("yesterday") Date yesterday);
 }

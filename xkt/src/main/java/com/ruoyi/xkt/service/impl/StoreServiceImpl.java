@@ -46,6 +46,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -390,6 +391,44 @@ public class StoreServiceImpl implements IStoreService {
                 .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
         store.setStockSys(stockSysDTO.getStockSys());
         return this.storeMapper.updateById(store);
+    }
+
+    /**
+     * 获取APP档口浏览量排行榜
+     *
+     * @return StoreAppViewRankResDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public StoreAppViewRankResDTO getAppViewRank() {
+        // 从redis中获取档口访问量
+        StoreAppViewRankResDTO redisAppViewRank = redisCache.getCacheObject(CacheConstants.STORE_VISIT_COUNT_CACHE);
+        if (ObjectUtils.isNotEmpty(redisAppViewRank)) {
+            return redisAppViewRank;
+        }
+        final Date yesterday = java.sql.Date.valueOf(LocalDate.now().minusDays(1));
+        final Date threeMonthAgo = java.sql.Date.valueOf(LocalDate.now().minusDays(1).minusMonths(3));
+        List<StoreAppViewRankResDTO.SAVRViewCountDTO> viewCountList = this.storeMapper.selectTop10AppViewCount(threeMonthAgo, yesterday);
+        redisAppViewRank = new StoreAppViewRankResDTO();
+        if (CollectionUtils.isEmpty(viewCountList)) {
+            return redisAppViewRank;
+        }
+        // 获取档口商品总数
+        List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+                .in(StoreProduct::getStoreId, viewCountList.stream().map(StoreAppViewRankResDTO.SAVRViewCountDTO::getStoreId).collect(Collectors.toList()))
+                .eq(StoreProduct::getDelFlag, Constants.UNDELETED));
+        Map<Long, Integer> prodCountMap = storeProdList.stream().collect(Collectors.groupingBy(StoreProduct::getStoreId, Collectors.summingInt(x -> 1)));
+        // 获取档口会员
+        viewCountList.forEach(x -> {
+            // 查询档口会员等级
+            StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId());
+            x.setMemberLevel(ObjectUtils.isNotEmpty(member) ? member.getLevel() : null);
+            x.setProdCount(prodCountMap.getOrDefault(x.getStoreId(), 0));
+        });
+        redisAppViewRank.setViewCountList(viewCountList);
+        // 放到redis中
+        redisCache.setCacheObject(CacheConstants.STORE_VISIT_COUNT_CACHE, redisAppViewRank, 1, TimeUnit.DAYS);
+        return redisAppViewRank;
     }
 
     /**
