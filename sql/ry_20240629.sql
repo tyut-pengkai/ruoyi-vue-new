@@ -459,7 +459,6 @@ INSERT INTO `sys_menu` VALUES (1022, '维修入库', 1018, 4, '', '', '', '', 1,
 INSERT INTO `sys_menu` VALUES (1023, '库存管理', 1, 6, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:06:15', 'admin', '2025-07-15 16:06:15', '', '0', 0);
 INSERT INTO `sys_menu` VALUES (1024, '库存查询', 1023, 1, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:06:24', 'admin', '2025-07-15 16:06:24', '', '0', 0);
 INSERT INTO `sys_menu` VALUES (1025, '库存盘点', 1023, 2, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:06:35', 'admin', '2025-07-15 16:06:35', '', '0', 0);
-INSERT INTO `sys_menu` VALUES (1026, '库存一键迁移', 1023, 3, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:06:47', 'admin', '2025-07-15 16:06:47', '', '0', 0);
 INSERT INTO `sys_menu` VALUES (1027, '生产需求', 1, 7, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:07:05', 'admin', '2025-07-15 16:07:05', '', '0', 0);
 INSERT INTO `sys_menu` VALUES (1028, '提交生产需求', 1027, 1, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:07:15', 'admin', '2025-07-15 16:07:15', '', '0', 0);
 INSERT INTO `sys_menu` VALUES (1029, '生产需求列表', 1027, 2, '', '', '', '', 1, 1, 'C', '0', '0', '', '', 'admin', '2025-07-15 16:07:24', 'admin', '2025-07-15 16:07:24', '', '0', 0);
@@ -570,7 +569,6 @@ INSERT INTO `sys_role_menu` VALUES (3, 1021);
 INSERT INTO `sys_role_menu` VALUES (3, 1022);
 INSERT INTO `sys_role_menu` VALUES (3, 1024);
 INSERT INTO `sys_role_menu` VALUES (3, 1025);
-INSERT INTO `sys_role_menu` VALUES (3, 1026);
 INSERT INTO `sys_role_menu` VALUES (3, 1028);
 INSERT INTO `sys_role_menu` VALUES (3, 1029);
 INSERT INTO `sys_role_menu` VALUES (3, 1030);
