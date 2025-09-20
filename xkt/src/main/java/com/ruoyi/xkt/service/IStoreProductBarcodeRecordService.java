@@ -1,9 +1,5 @@
 package com.ruoyi.xkt.service;
 
-import com.ruoyi.xkt.domain.StoreProductBarcodeRecord;
-
-import java.util.List;
-
 /**
  * 档口打印条形码记录Service接口
  *
@@ -11,51 +7,5 @@ import java.util.List;
  * @date 2025-03-26
  */
 public interface IStoreProductBarcodeRecordService {
-    /**
-     * 查询档口打印条形码记录
-     *
-     * @param storeProdBarcodeRecordId 档口打印条形码记录主键
-     * @return 档口打印条形码记录
-     */
-    public StoreProductBarcodeRecord selectStoreProductBarcodeRecordByStoreProdBarcodeRecordId(Long storeProdBarcodeRecordId);
 
-    /**
-     * 查询档口打印条形码记录列表
-     *
-     * @param storeProductBarcodeRecord 档口打印条形码记录
-     * @return 档口打印条形码记录集合
-     */
-    public List<StoreProductBarcodeRecord> selectStoreProductBarcodeRecordList(StoreProductBarcodeRecord storeProductBarcodeRecord);
-
-    /**
-     * 新增档口打印条形码记录
-     *
-     * @param storeProductBarcodeRecord 档口打印条形码记录
-     * @return 结果
-     */
-    public int insertStoreProductBarcodeRecord(StoreProductBarcodeRecord storeProductBarcodeRecord);
-
-    /**
-     * 修改档口打印条形码记录
-     *
-     * @param storeProductBarcodeRecord 档口打印条形码记录
-     * @return 结果
-     */
-    public int updateStoreProductBarcodeRecord(StoreProductBarcodeRecord storeProductBarcodeRecord);
-
-    /**
-     * 批量删除档口打印条形码记录
-     *
-     * @param storeProdBarcodeRecordIds 需要删除的档口打印条形码记录主键集合
-     * @return 结果
-     */
-    public int deleteStoreProductBarcodeRecordByStoreProdBarcodeRecordIds(Long[] storeProdBarcodeRecordIds);
-
-    /**
-     * 删除档口打印条形码记录信息
-     *
-     * @param storeProdBarcodeRecordId 档口打印条形码记录主键
-     * @return 结果
-     */
-    public int deleteStoreProductBarcodeRecordByStoreProdBarcodeRecordId(Long storeProdBarcodeRecordId);
 }

@@ -94,8 +94,8 @@ public class StoreFactoryServiceImpl implements IStoreFactoryService {
     /**
      * 获取所有的工厂列表
      *
-     * @return 生产需求管理 工厂下拉列表
      * @param storeId 档口ID
+     * @return 生产需求管理 工厂下拉列表
      */
     @Override
     @Transactional(readOnly = true)
@@ -131,31 +131,6 @@ public class StoreFactoryServiceImpl implements IStoreFactoryService {
     @Transactional(readOnly = true)
     public List<StoreFactory> selectStoreFactoryList(StoreFactory storeFactory) {
         return storeFactoryMapper.selectStoreFactoryList(storeFactory);
-    }
-
-
-    /**
-     * 批量删除档口合作工厂
-     *
-     * @param storeFacIds 需要删除的档口合作工厂主键
-     * @return 结果
-     */
-    @Override
-    @Transactional
-    public int deleteStoreFactoryByStoreFacIds(Long[] storeFacIds) {
-        return storeFactoryMapper.deleteStoreFactoryByStoreFacIds(storeFacIds);
-    }
-
-    /**
-     * 删除档口合作工厂信息
-     *
-     * @param storeFacId 档口合作工厂主键
-     * @return 结果
-     */
-    @Override
-    @Transactional
-    public int deleteStoreFactoryByStoreFacId(Long storeFacId) {
-        return storeFactoryMapper.deleteStoreFactoryByStoreFacId(storeFacId);
     }
 
 

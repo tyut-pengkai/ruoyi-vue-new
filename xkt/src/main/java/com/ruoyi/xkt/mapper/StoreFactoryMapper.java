@@ -12,13 +12,6 @@ import java.util.List;
  * @date 2025-03-26
  */
 public interface StoreFactoryMapper extends BaseMapper<StoreFactory> {
-    /**
-     * 查询档口合作工厂
-     *
-     * @param id 档口合作工厂主键
-     * @return 档口合作工厂
-     */
-    public StoreFactory selectStoreFactoryByStoreFacId(Long id);
 
     /**
      * 查询档口合作工厂列表
@@ -28,21 +21,6 @@ public interface StoreFactoryMapper extends BaseMapper<StoreFactory> {
      */
     public List<StoreFactory> selectStoreFactoryList(StoreFactory storeFactory);
 
-    /**
-     * 新增档口合作工厂
-     *
-     * @param storeFactory 档口合作工厂
-     * @return 结果
-     */
-    public int insertStoreFactory(StoreFactory storeFactory);
-
-    /**
-     * 修改档口合作工厂
-     *
-     * @param storeFactory 档口合作工厂
-     * @return 结果
-     */
-    public int updateStoreFactory(StoreFactory storeFactory);
 
     /**
      * 删除档口合作工厂

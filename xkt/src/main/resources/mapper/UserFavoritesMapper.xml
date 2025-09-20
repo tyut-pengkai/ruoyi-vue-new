@@ -3,19 +3,6 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.xkt.mapper.UserFavoritesMapper">
-    
-    <resultMap type="UserFavorites" id="UserFavoritesResult">
-        <result property="id"    column="id"    />
-        <result property="userId"    column="user_id"    />
-        <result property="storeId"    column="store_id"    />
-        <result property="storeProdId"    column="store_prod_id"    />
-        <result property="version"    column="version"    />
-        <result property="delFlag"    column="del_flag"    />
-        <result property="createBy"    column="create_by"    />
-        <result property="createTime"    column="create_time"    />
-        <result property="updateBy"    column="update_by"    />
-        <result property="updateTime"    column="update_time"    />
-    </resultMap>
 
     <select id="selectUserFavPage"  resultType="com.ruoyi.xkt.dto.userFavorite.UserFavoritePageResDTO">
         SELECT
@@ -33,7 +20,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
              JOIN store s ON uf.store_id = s.id
         WHERE
             uf.del_flag = 0 AND uf.user_id = #{userId}
-            <if test="storeName != null  and storeName != ''"> AND s.store_name = #{storeName}</if>
+            <if test="storeName != null  and storeName != ''"> AND s.store_name like concat('%', #{storeName}, '%')</if>
             <if test="prodArtNum != null  and prodArtNum != ''"> AND sp.prod_art_num like concat('%', #{prodArtNum}, '%')</if>
     </select>
 

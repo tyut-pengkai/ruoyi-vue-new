@@ -15,6 +15,7 @@ import java.util.List;
  * @date 2025-03-26
  */
 public interface IStoreFactoryService {
+
     /**
      * 查询档口合作工厂
      *
@@ -22,7 +23,7 @@ public interface IStoreFactoryService {
      * @param storeFacId 档口合作工厂主键
      * @return 档口合作工厂
      */
-    public StoreFactoryResDTO selectByStoreFacId(Long storeId, Long storeFacId);
+    StoreFactoryResDTO selectByStoreFacId(Long storeId, Long storeFacId);
 
     /**
      * 查询档口合作工厂列表
@@ -30,7 +31,7 @@ public interface IStoreFactoryService {
      * @param storeFactory 档口合作工厂
      * @return 档口合作工厂集合
      */
-    public List<StoreFactory> selectStoreFactoryList(StoreFactory storeFactory);
+    List<StoreFactory> selectStoreFactoryList(StoreFactory storeFactory);
 
     /**
      * 新增档口合作工厂
@@ -38,7 +39,7 @@ public interface IStoreFactoryService {
      * @param storeFactoryDTO 档口合作工厂
      * @return 结果
      */
-    public int insertStoreFactory(StoreFactoryDTO storeFactoryDTO);
+    int insertStoreFactory(StoreFactoryDTO storeFactoryDTO);
 
     /**
      * 修改档口合作工厂
@@ -46,23 +47,7 @@ public interface IStoreFactoryService {
      * @param storeFactoryDTO 档口合作工厂
      * @return 结果
      */
-    public int updateStoreFactory(StoreFactoryDTO storeFactoryDTO);
-
-    /**
-     * 批量删除档口合作工厂
-     *
-     * @param storeFacIds 需要删除的档口合作工厂主键集合
-     * @return 结果
-     */
-    public int deleteStoreFactoryByStoreFacIds(Long[] storeFacIds);
-
-    /**
-     * 删除档口合作工厂信息
-     *
-     * @param storeFacId 档口合作工厂主键
-     * @return 结果
-     */
-    public int deleteStoreFactoryByStoreFacId(Long storeFacId);
+    int updateStoreFactory(StoreFactoryDTO storeFactoryDTO);
 
     /**
      * 根据条件分页查询工厂信息

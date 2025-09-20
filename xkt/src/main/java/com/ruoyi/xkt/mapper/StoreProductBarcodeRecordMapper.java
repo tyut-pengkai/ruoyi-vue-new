@@ -12,51 +12,5 @@ import java.util.List;
  * @date 2025-03-26
  */
 public interface StoreProductBarcodeRecordMapper extends BaseMapper<StoreProductBarcodeRecord> {
-    /**
-     * 查询档口打印条形码记录
-     *
-     * @param id 档口打印条形码记录主键
-     * @return 档口打印条形码记录
-     */
-    public StoreProductBarcodeRecord selectStoreProductBarcodeRecordByStoreProdBarcodeRecordId(Long id);
 
-    /**
-     * 查询档口打印条形码记录列表
-     *
-     * @param storeProductBarcodeRecord 档口打印条形码记录
-     * @return 档口打印条形码记录集合
-     */
-    public List<StoreProductBarcodeRecord> selectStoreProductBarcodeRecordList(StoreProductBarcodeRecord storeProductBarcodeRecord);
-
-    /**
-     * 新增档口打印条形码记录
-     *
-     * @param storeProductBarcodeRecord 档口打印条形码记录
-     * @return 结果
-     */
-    public int insertStoreProductBarcodeRecord(StoreProductBarcodeRecord storeProductBarcodeRecord);
-
-    /**
-     * 修改档口打印条形码记录
-     *
-     * @param storeProductBarcodeRecord 档口打印条形码记录
-     * @return 结果
-     */
-    public int updateStoreProductBarcodeRecord(StoreProductBarcodeRecord storeProductBarcodeRecord);
-
-    /**
-     * 删除档口打印条形码记录
-     *
-     * @param id 档口打印条形码记录主键
-     * @return 结果
-     */
-    public int deleteStoreProductBarcodeRecordByStoreProdBarcodeRecordId(Long id);
-
-    /**
-     * 批量删除档口打印条形码记录
-     *
-     * @param storeProdBarcodeRecordIds 需要删除的数据主键集合
-     * @return 结果
-     */
-    public int deleteStoreProductBarcodeRecordByStoreProdBarcodeRecordIds(Long[] storeProdBarcodeRecordIds);
 }
