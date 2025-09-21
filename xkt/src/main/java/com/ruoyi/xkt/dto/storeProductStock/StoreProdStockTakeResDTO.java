@@ -20,6 +20,8 @@ public class StoreProdStockTakeResDTO {
     private Long storeProdId;
     @ApiModelProperty(value = "商品货号")
     private String prodArtNum;
+    @ApiModelProperty(value = "商品主图")
+    private String mainPicUrl;
     @ApiModelProperty(value = "颜色列表")
     private List<SPSTColorSizeDTO> colorList;
 
@@ -27,6 +29,10 @@ public class StoreProdStockTakeResDTO {
     @ApiModel
     @Accessors(chain = true)
     public static class SPSTColorSizeDTO {
+        @ApiModelProperty(value = "档口商品库存ID")
+        private Long storeProdStockId;
+        @ApiModelProperty(value = "档口商品颜色ID")
+        private Long storeProdColorId;
         @ApiModelProperty(value = "颜色ID")
         private Long storeColorId;
         @ApiModelProperty(value = "颜色名称")

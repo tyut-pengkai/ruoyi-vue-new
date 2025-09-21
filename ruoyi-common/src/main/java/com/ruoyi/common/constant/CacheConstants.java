@@ -312,5 +312,9 @@ public class CacheConstants {
      * 档口商品访问次数缓存
      */
     public static final String STORE_PROD_VIEW_COUNT_CACHE = "store_prod_view_count_cache";
+    /**
+     * 供应商缓存
+     */
+    public static final String SUPPLIER_KEY = "supplier:";
 
 }

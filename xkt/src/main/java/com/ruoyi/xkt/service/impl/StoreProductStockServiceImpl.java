@@ -9,8 +9,8 @@ import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
-import com.ruoyi.xkt.domain.StoreColor;
 import com.ruoyi.xkt.domain.StoreProduct;
+import com.ruoyi.xkt.domain.StoreProductColor;
 import com.ruoyi.xkt.domain.StoreProductColorSize;
 import com.ruoyi.xkt.domain.StoreProductStock;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
@@ -48,6 +48,7 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
     final StoreProductMapper storeProdMapper;
     final StoreProductColorSizeMapper prodColorSizeMapper;
     final StoreColorMapper storeColorMapper;
+    final StoreProductColorMapper prodColorMapper;
 
 
     /**
@@ -126,33 +127,42 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
     @Transactional(readOnly = true)
     public StoreProdStockTakeResDTO getByStoreIdAndStoreProdId(Long storeId, Long storeProdId) {
         StoreProduct storeProd = Optional.ofNullable(this.storeProdMapper.selectById(storeProdId)).orElseThrow(() -> new ServiceException("该商品不存在", HttpStatus.ERROR));
+        // 获取商品主图
+        List<StoreProdMainPicDTO> mainPicList = this.storeProdFileMapper
+                .selectMainPicByStoreProdIdList(Collections.singletonList(storeProdId), FileType.MAIN_PIC.getValue(), ORDER_NUM_1);
         // 查询该商品所有颜色的库存
         List<StoreProductStock> stockList = this.storeProdStockMapper.selectList(new LambdaQueryWrapper<StoreProductStock>()
                 .eq(StoreProductStock::getStoreId, storeId).eq(StoreProductStock::getStoreProdId, storeProdId)
                 .eq(StoreProductStock::getDelFlag, Constants.UNDELETED));
+        Map<Long, StoreProductStock> storeProdColorStockMap = stockList.stream().collect(Collectors.toMap(StoreProductStock::getStoreColorId, x -> x));
         // 商品颜色对应的库存map
         Map<Long, StoreProductStock> colorSizeStockMap = stockList.stream().collect(Collectors.toMap(StoreProductStock::getStoreColorId, x -> x));
-        // 档口商品颜色map
-        List<StoreColor> storeColorList = this.storeColorMapper.selectList(new LambdaQueryWrapper<StoreColor>()
-                .eq(StoreColor::getDelFlag, Constants.UNDELETED).eq(StoreColor::getStoreId, storeId));
-        Map<Long, StoreColor> storeColorMap = storeColorList.stream().collect(Collectors.toMap(StoreColor::getId, x -> x));
+        // 档口商品颜色
+        List<StoreProductColor> storeProdColorList = this.prodColorMapper.selectList(new LambdaQueryWrapper<StoreProductColor>()
+                .eq(StoreProductColor::getDelFlag, Constants.UNDELETED).eq(StoreProductColor::getStoreId, storeId)
+                .eq(StoreProductColor::getStoreProdId, storeProdId));
+        Map<Long, StoreProductColor> storeProdColorMap = storeProdColorList.stream().collect(Collectors.toMap(StoreProductColor::getStoreColorId, x -> x));
         // 获取商品所有颜色的基础信息
         List<StoreProductColorSize> prodColorSizeList = this.prodColorSizeMapper.selectList(new LambdaQueryWrapper<StoreProductColorSize>()
                 .eq(StoreProductColorSize::getDelFlag, Constants.UNDELETED).eq(StoreProductColorSize::getStoreProdId, storeProdId));
         Map<Long, List<StoreProductColorSize>> colorSizeMap = prodColorSizeList.stream().collect(Collectors.groupingBy(StoreProductColorSize::getStoreColorId));
         List<StoreProdStockTakeResDTO.SPSTColorSizeDTO> colorResList = new ArrayList<>();
-        colorSizeMap.forEach((colorId, colorSizeList) -> {
+        colorSizeMap.forEach((storeColorId, colorSizeList) -> {
             // 商品颜色数据
-            StoreProdStockTakeResDTO.SPSTColorSizeDTO color = new StoreProdStockTakeResDTO.SPSTColorSizeDTO()
-                    .setStoreColorId(colorId).setColorName(storeColorMap.containsKey(colorId) ? storeColorMap.get(colorId).getColorName() : "")
+            StoreProdStockTakeResDTO.SPSTColorSizeDTO color = new StoreProdStockTakeResDTO.SPSTColorSizeDTO().setStoreColorId(storeColorId)
+                    .setStoreProdStockId(storeProdColorStockMap.containsKey(storeColorId) ? storeProdColorStockMap.get(storeColorId).getId() : null)
+                    .setStoreProdColorId(storeProdColorMap.containsKey(storeColorId) ? storeProdColorMap.get(storeColorId).getId() : null)
+                    .setColorName(storeProdColorMap.containsKey(storeColorId) ? storeProdColorMap.get(storeColorId).getColorName() : "")
                     // 商品对应颜色的库存
                     .setSizeStockList(colorSizeList.stream().sorted(Comparator.comparing(StoreProductColorSize::getSize))
                             .map(x -> new StoreProdStockTakeResDTO.SPSTSizeStockDTO().setStoreProdColorSizeId(x.getId()).setSize(x.getSize())
-                                    .setStock(this.getSizeStock(x.getSize(), colorSizeStockMap.get(colorId))))
+                                    .setStock(this.getSizeStock(x.getSize(), colorSizeStockMap.get(storeColorId))))
                             .collect(Collectors.toList()));
             colorResList.add(color);
         });
-        return new StoreProdStockTakeResDTO().setStoreProdId(storeProdId).setProdArtNum(storeProd.getProdArtNum()).setColorList(colorResList);
+        return new StoreProdStockTakeResDTO().setStoreProdId(storeProdId).setProdArtNum(storeProd.getProdArtNum())
+                .setMainPicUrl(CollectionUtils.isNotEmpty(mainPicList) ? mainPicList.get(0).getFileUrl() : "")
+                .setColorList(colorResList);
     }
 
     /**
