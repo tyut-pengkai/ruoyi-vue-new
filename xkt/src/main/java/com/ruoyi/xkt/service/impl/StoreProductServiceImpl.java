@@ -1375,9 +1375,25 @@ public class StoreProductServiceImpl implements IStoreProductService {
         if (ObjectUtils.isNotEmpty(cateAttr.getUpperMaterial())) {
             cateAttrMap.put(Constants.CATE_RELATE_MAP.get(UPPER_MATERIAL), cateAttr.getUpperMaterial());
         }
-        // 2. 内里材质
-        if (ObjectUtils.isNotEmpty(cateAttr.getLiningMaterial())) {
-            cateAttrMap.put(Constants.CATE_RELATE_MAP.get(LINING_MATERIAL), cateAttr.getLiningMaterial());
+        // 2. 靴筒内里材质
+        if (ObjectUtils.isNotEmpty(cateAttr.getShaftLiningMaterial())) {
+            cateAttrMap.put(Constants.CATE_RELATE_MAP.get(SHAFT_LINING_MATERIAL), cateAttr.getShaftLiningMaterial());
+        }
+        // 靴筒面材质
+        if (ObjectUtils.isNotEmpty(cateAttr.getShaftMaterial())) {
+            cateAttrMap.put(Constants.CATE_RELATE_MAP.get(SHAFT_MATERIAL), cateAttr.getShaftMaterial());
+        }
+        // 鞋面内里材质
+        if (ObjectUtils.isNotEmpty(cateAttr.getShoeUpperLiningMaterial())) {
+            cateAttrMap.put(Constants.CATE_RELATE_MAP.get(SHOE_UPPER_LINING_MATERIAL), cateAttr.getShoeUpperLiningMaterial());
+        }
+        // 靴款品名
+        if (ObjectUtils.isNotEmpty(cateAttr.getShoeStyleName())) {
+            cateAttrMap.put(Constants.CATE_RELATE_MAP.get(SHOE_STYLE_NAME), cateAttr.getShoeStyleName());
+        }
+        // 筒高
+        if (ObjectUtils.isNotEmpty(cateAttr.getShaftHeight())) {
+            cateAttrMap.put(Constants.CATE_RELATE_MAP.get(SHAFT_HEIGHT), cateAttr.getShaftHeight());
         }
         // 3. 鞋垫材质
         if (ObjectUtils.isNotEmpty(cateAttr.getInsoleMaterial())) {

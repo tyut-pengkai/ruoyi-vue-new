@@ -15,12 +15,20 @@ public class StoreProdCateAttrDTO {
 
     @ApiModelProperty(value = "帮面材质")
     private String upperMaterial;
-    @ApiModelProperty(value = "内里材质")
-    private String liningMaterial;
     @ApiModelProperty(value = "鞋垫材质")
     private String insoleMaterial;
     @ApiModelProperty(value = "上市季节年份")
     private String releaseYearSeason;
+    @ApiModelProperty(value = "靴筒内里材质")
+    private String shaftLiningMaterial;
+    @ApiModelProperty(value = "靴筒面材质")
+    private String shaftMaterial;
+    @ApiModelProperty(value = "鞋面内里材质")
+    private String shoeUpperLiningMaterial;
+    @ApiModelProperty(value = "靴款品名")
+    private String shoeStyleName;
+    @ApiModelProperty(value = "筒高")
+    private String shaftHeight;
     @ApiModelProperty(value = "后跟高")
     private String heelHeight;
     @ApiModelProperty(value = "跟底款式")

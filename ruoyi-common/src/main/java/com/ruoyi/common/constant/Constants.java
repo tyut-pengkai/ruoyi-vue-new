@@ -318,7 +318,14 @@ public class Constants
     public static final BigDecimal ALI_SERVICE_FEE_RATE = BigDecimal.valueOf(0.006);
 
     public static final String UPPER_MATERIAL = "upperMaterial";
-    public static final String LINING_MATERIAL = "liningMaterial";
+    public static final String SHAFT_LINING_MATERIAL = "shaftLiningMaterial";
+    public static final String SHAFT_MATERIAL = "shaftMaterial";
+    public static final String SHOE_UPPER_LINING_MATERIAL = "shoeUpperLiningMaterial";
+    public static final String SHOE_STYLE_NAME = "shoeStyleName";
+    public static final String SHAFT_HEIGHT = "shaftHeight";
+
+
+
     public static final String INSOLE_MATERIAL = "insoleMaterial";
     public static final String RELEASE_YEAR_SEASON = "releaseYearSeason";
     public static final String HEEL_HEIGHT = "heelHeight";
@@ -344,7 +351,11 @@ public class Constants
      */
     public static final Map<String, String> CATE_RELATE_MAP = new ConcurrentHashMap<String, String>() {{
         put(UPPER_MATERIAL, "帮面材质");
-        put(LINING_MATERIAL, "内里材质");
+        put(SHAFT_LINING_MATERIAL, "靴筒内里材质");
+        put(SHAFT_MATERIAL, "靴筒面材质");
+        put(SHOE_UPPER_LINING_MATERIAL, "鞋面内里材质");
+        put(SHOE_STYLE_NAME, "靴款品名");
+        put(SHAFT_HEIGHT, "筒高");
         put(INSOLE_MATERIAL, "鞋垫材质");
         put(RELEASE_YEAR_SEASON, "上市季节年份");
         put(HEEL_HEIGHT, "后跟高");
