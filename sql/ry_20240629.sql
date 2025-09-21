@@ -2017,7 +2017,7 @@ INSERT INTO `sys_dict_data`
 VALUES (1054, 44, '流苏', '流苏', 'fashion_elements', '0', 'admin', '2025-07-03 21:21:50', '', '2025-07-03 21:21:50', '', 0,
         '0');
 INSERT INTO `sys_dict_data`
-VALUES (1055, 1, '不想要了', '不想要了', 'refund_reason', '0', 'admin', '2025-07-18 22:57:09', '', '2025-07-18 22:57:11', NULL,
+VALUES (1055, 5, '不想要了', '不想要了', 'refund_reason', '0', 'admin', '2025-07-18 22:57:09', '', '2025-07-18 22:57:11', NULL,
         0, '0');
 INSERT INTO `sys_dict_data`
 VALUES (1056, 1, '2017年春季', '2017年春季', 'release_year_season', '0', 'admin', '2025-08-03 20:52:38', '',
@@ -2127,6 +2127,13 @@ VALUES (1090, 35, '2025年秋季', '2025年秋季', 'release_year_season', '0', 
 INSERT INTO `sys_dict_data`
 VALUES (1092, 37, '2025年冬季', '2025年冬季', 'release_year_season', '0', 'admin', '2025-09-01 03:00:00', '',
         '2025-09-01 03:00:00', NULL, 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1093, 1, '档口缺货', '档口缺货', 'refund_reason', '0', 'admin', '2025-09-21 13:26:39', '', '2025-09-21 13:26:39', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1094, 2, '协商一致退款', '协商一致退款', 'refund_reason', '0', 'admin', '2025-09-21 13:26:54', '', '2025-09-21 13:26:54', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1095, 3, '订单信息拍错', '订单信息拍错', 'refund_reason', '0', 'admin', '2025-09-21 13:27:13', '', '2025-09-21 13:27:13', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1096, 4, '商品破损，已拒收', '商品破损，已拒收', 'refund_reason', '0', 'admin', '2025-09-21 13:27:30', 'admin', '2025-09-21 13:27:44', '', 1, '0');
+INSERT INTO `sys_dict_data` VALUES (1097, 6, '物流状态异常', '物流状态异常', 'refund_reason', '0', 'admin', '2025-09-21 13:28:12', '', '2025-09-21 13:28:12', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1098, 7, '商品质量问题', '商品质量问题', 'refund_reason', '0', 'admin', '2025-09-21 13:28:28', '', '2025-09-21 13:28:28', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1099, 8, '其他', '其他', 'refund_reason', '0', 'admin', '2025-09-21 13:28:34', '', '2025-09-21 13:28:34', '', 0, '0');
 
 
 -- ----------------------------
