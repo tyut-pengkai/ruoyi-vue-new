@@ -1855,7 +1855,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         if (StringUtils.isNotBlank(searchDTO.getSearch())) {
             MultiMatchQuery multiMatchQuery = MultiMatchQuery.of(m -> m
                     .query(searchDTO.getSearch())
-                    .fields("prodTitle", "prodArtNum", "storeName", "prodCateName", "parCateName")
+                    .fields( "prodArtNum", "storeName", "prodCateName", "parCateName")
             );
             boolQuery.must(multiMatchQuery._toQuery());
         }
