@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import co.elastic.clients.elasticsearch._types.FieldValue;
+import co.elastic.clients.elasticsearch._types.SortOptions;
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.*;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
@@ -1933,8 +1934,10 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                                 .query(query)
                                 .from((searchDTO.getPageNum() - 1) * searchDTO.getPageSize())
                                 .size(searchDTO.getPageSize())
-                                .sort(sort -> sort.field(f -> f.field("storeWeight").order(SortOrder.Desc)))
-                                .sort(sort -> sort.field(f -> f.field(searchDTO.getSort()).order(searchDTO.getOrder()))),
+                                .sort(Arrays.asList(
+                                        SortOptions.of(so -> so.field(f -> f.field("storeWeight").order(SortOrder.Desc))),
+                                        SortOptions.of(so -> so.field(f -> f.field(searchDTO.getSort()).order(searchDTO.getOrder())))
+                                )),
                         ESProductDTO.class);
         final long total = resList.hits().total().value();
         final List<ESProductDTO> esProdList = resList.hits().hits().stream().map(x -> x.source().setStoreProdId(x.id())).collect(Collectors.toList());
