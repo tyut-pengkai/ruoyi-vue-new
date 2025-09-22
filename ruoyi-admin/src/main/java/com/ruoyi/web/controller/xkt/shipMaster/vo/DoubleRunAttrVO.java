@@ -10,7 +10,7 @@ import java.util.Map;
  * @date 2025-05-11 23:46
  */
 @Data
-public class DoubleRunAttrRQVO {
+public class DoubleRunAttrVO {
 
     private Map<String, DRAAttrVO> data;
 

@@ -11,7 +11,7 @@ import java.util.List;
  * @date 2025-05-11 23:46
  */
 @Data
-public class DoubleRunRQVO {
+public class DoubleRunVO {
 
     private DRIDataVO data;
 

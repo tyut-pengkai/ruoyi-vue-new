@@ -319,6 +319,10 @@ public class CacheConstants {
     /**
      * 主网站缓存
      */
-    public static final String DOUBLE_RUN_KEY = "double_run:";
+    public static final String DOUBLE_RUN_BASIC_KEY = "double_run_basic:";
+    /**
+     * 档口属性缓存
+     */
+    public static final String DOUBLE_RUN_ATTR_KEY = "double_run_attr:";
 
 }

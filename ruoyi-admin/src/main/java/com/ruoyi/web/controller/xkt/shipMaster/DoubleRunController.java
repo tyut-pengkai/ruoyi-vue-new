@@ -1,20 +1,24 @@
 package com.ruoyi.web.controller.xkt.shipMaster;
 
 import com.ruoyi.common.constant.CacheConstants;
+import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.redis.RedisCache;
-import com.ruoyi.web.controller.xkt.shipMaster.vo.DoubleRunAttrRQVO;
-import com.ruoyi.web.controller.xkt.shipMaster.vo.DoubleRunRQVO;
+import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.web.controller.xkt.shipMaster.vo.DoubleRunAttrVO;
+import com.ruoyi.web.controller.xkt.shipMaster.vo.DoubleRunVO;
 import com.ruoyi.xkt.service.shipMaster.IShipMasterService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -32,39 +36,31 @@ public class DoubleRunController extends BaseController {
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @PostMapping("/cache")
-    public R<Integer> createCache(@Validated @RequestBody DoubleRunRQVO importVO) {
-        List<DoubleRunRQVO.DRIArtNoVO> artNoList = importVO.getData().getData();
+    public R<Integer> createCache(@Validated @RequestBody DoubleRunVO importVO) {
+        List<DoubleRunVO.DRIArtNoVO> artNoList = importVO.getData().getData();
         final Integer userId = importVO.getData().getData().get(0).getUser_id();
         // 先从redis中获取列表数据
-        List<DoubleRunRQVO.DRIArtNoSkuVO> cacheList = ObjectUtils.defaultIfNull(redisCache
-                .getCacheObject(CacheConstants.DOUBLE_RUN_KEY + userId), new ArrayList<>());
-//        Map<String, Map<String, List<DoubleRunImportVO.DRIArtNoSkuVO>>> artNoMap = new LinkedHashMap<>();
+        List<DoubleRunVO.DRIArtNoSkuVO> cacheList = ObjectUtils.defaultIfNull(redisCache
+                .getCacheObject(CacheConstants.DOUBLE_RUN_BASIC_KEY + userId), new ArrayList<>());
         artNoList.forEach(artNoInfo -> {
             artNoInfo.getSkus().forEach(x -> x.setColor(this.decodeUnicode(x.getColor()))
                     .setArticle_number(artNoInfo.getArticle_number()).setProduct_id(artNoInfo.getId()));
             cacheList.addAll(artNoInfo.getSkus());
-//            artNoMap.put(artNoInfo.getArticle_number(), artNoInfo.getSkus().stream().collect(Collectors
-//                    .groupingBy(DoubleRunImportVO.DRIArtNoSkuVO::getColor)));
         });
-//        CollectionUtils.addAll(cacheList, artNoList);
         // 存到redis中
-        redisCache.setCacheObject(CacheConstants.DOUBLE_RUN_KEY + userId, cacheList);
-
-//        Map<String, List<String>> artNoColorMap = new LinkedHashMap<>();
-//        artNoMap.forEach((artNo, colorSkuMap) -> {
-//            artNoColorMap.put(artNo, new ArrayList<>(colorSkuMap.keySet()));
-//            colorSkuMap.forEach((color, skuList) -> {
-//                skuList.sort(Comparator.comparing(DoubleRunImportVO.DRIArtNoSkuVO::getSize));
-//                System.err.println(artNo + ":" + color + ":" + skuList);
-//            });
-//        });
-
+        redisCache.setCacheObject(CacheConstants.DOUBLE_RUN_BASIC_KEY + userId, cacheList);
         return R.ok();
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @PostMapping("/attr/cache/{product_id}")
-    public R<Integer> createAttrCache(@PathVariable Integer product_id, @Validated @RequestBody DoubleRunAttrRQVO attrVO) {
+    @PostMapping("/attr/cache/{user_id}/{product_id}")
+    public R<Integer> createAttrCache(@PathVariable(value = "user_id") Integer user_id, @PathVariable("product_id") Integer product_id,
+                                      @Validated @RequestBody DoubleRunAttrVO attrVO) {
+        // 判断缓存中是否有该product_id
+        Map<String, String> existMap = redisCache.getCacheMap(CacheConstants.DOUBLE_RUN_ATTR_KEY + user_id + "_" + product_id);
+        if (MapUtils.isNotEmpty(existMap)) {
+            throw new ServiceException("该商品已设置过类目属性", HttpStatus.ERROR);
+        }
         Map<String, String> attrMap = new HashMap<>();
         attrVO.getData().forEach((itemId,  attr) -> {
             // 不处理 multi=1 的属性
@@ -73,15 +69,11 @@ public class DoubleRunController extends BaseController {
             }
             // 有值
             if (attr.getHas_value() == 1) {
-                attr.getAttr().stream().filter(x -> x.getChoosed() == 1).forEach(x -> attrMap.put(this.decodeUnicode(x.getProps_name()), this.decodeUnicode(x.getPropsvalue_name())));
+                attr.getAttr().stream().filter(x -> x.getChoosed() == 1).forEach(x -> attrMap
+                        .put(this.decodeUnicode(x.getProps_name()), this.decodeUnicode(x.getPropsvalue_name())));
             }
         });
-
-        Map<Integer, Map<String, String>> productIdAttrMap = new HashMap<>();
-        productIdAttrMap.put(product_id, attrMap);
-
-
-
+        redisCache.setCacheMap(CacheConstants.DOUBLE_RUN_ATTR_KEY + user_id + "_" + product_id, attrMap);
         return R.ok();
     }
 
@@ -90,20 +82,20 @@ public class DoubleRunController extends BaseController {
     @GetMapping("/cache/{userId}")
     public R<Integer> getCache(@PathVariable Integer userId) {
         // 从redis中获取数据
-        List<DoubleRunRQVO.DRIArtNoSkuVO> cacheList = ObjectUtils.defaultIfNull(redisCache
-                .getCacheObject(CacheConstants.DOUBLE_RUN_KEY + userId), new ArrayList<>());
+        List<DoubleRunVO.DRIArtNoSkuVO> cacheList = ObjectUtils.defaultIfNull(redisCache
+                .getCacheObject(CacheConstants.DOUBLE_RUN_BASIC_KEY + userId), new ArrayList<>());
         if (CollectionUtils.isEmpty(cacheList)) {
             return R.fail();
         }
-        Map<String, List<DoubleRunRQVO.DRIArtNoSkuVO>> artNoGroup = cacheList.stream()
-                .sorted(Comparator.comparing(DoubleRunRQVO.DRIArtNoSkuVO::getArticle_number)
-                        .thenComparing(DoubleRunRQVO.DRIArtNoSkuVO::getColor))
+        Map<String, List<DoubleRunVO.DRIArtNoSkuVO>> artNoGroup = cacheList.stream()
+                .sorted(Comparator.comparing(DoubleRunVO.DRIArtNoSkuVO::getArticle_number)
+                        .thenComparing(DoubleRunVO.DRIArtNoSkuVO::getColor))
                 .collect(Collectors
-                        .groupingBy(DoubleRunRQVO.DRIArtNoSkuVO::getArticle_number, LinkedHashMap::new, Collectors.toList()));
+                        .groupingBy(DoubleRunVO.DRIArtNoSkuVO::getArticle_number, LinkedHashMap::new, Collectors.toList()));
         // 货号 颜色 map
         Map<String, List<String>> artNoColorMap = new LinkedHashMap<>();
         artNoGroup.forEach((artNo, colorList) -> {
-            artNoColorMap.put(artNo, colorList.stream().map(DoubleRunRQVO.DRIArtNoSkuVO::getColor).collect(Collectors.toList()));
+            artNoColorMap.put(artNo, colorList.stream().map(DoubleRunVO.DRIArtNoSkuVO::getColor).collect(Collectors.toList()));
         });
 
         artNoColorMap.forEach((k,v) -> {
@@ -111,7 +103,6 @@ public class DoubleRunController extends BaseController {
         });
 
         // TODO 如何对比？？
-
 
         return R.ok();
     }
