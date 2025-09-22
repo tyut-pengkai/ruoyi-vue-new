@@ -65,23 +65,37 @@ public class SameUrlDataInterceptor extends RepeatSubmitInterceptor
         // 唯一标识（指定key + url + 消息头）
         String cacheRepeatKey = CacheConstants.REPEAT_SUBMIT_KEY + url + submitKey;
 
-        Object sessionObj = redisCache.getCacheObject(cacheRepeatKey);
-        if (sessionObj != null)
-        {
-            Map<String, Object> sessionMap = (Map<String, Object>) sessionObj;
-            if (sessionMap.containsKey(url))
-            {
-                Map<String, Object> preDataMap = (Map<String, Object>) sessionMap.get(url);
-                if (compareParams(nowDataMap, preDataMap) && compareTime(nowDataMap, preDataMap, annotation.interval()))
-                {
-                    return true;
+        // 使用原子操作检查并设置，避免竞态条件
+        String lockKey = cacheRepeatKey + "_lock";
+
+        // 先尝试获取分布式锁，防止并发问题
+        Boolean lockResult = redisCache.redisTemplate.opsForValue().setIfAbsent(lockKey, "1", 1, TimeUnit.SECONDS);
+        if (lockResult == null || !lockResult) {
+            // 获取锁失败，说明有并发请求，直接返回重复提交
+            return true;
+        }
+
+        try {
+            Object sessionObj = redisCache.getCacheObject(cacheRepeatKey);
+
+            if (sessionObj != null) {
+                Map<String, Object> sessionMap = (Map<String, Object>) sessionObj;
+                if (sessionMap.containsKey(url)) {
+                    Map<String, Object> preDataMap = (Map<String, Object>) sessionMap.get(url);
+                    if (compareParams(nowDataMap, preDataMap) && compareTime(nowDataMap, preDataMap, annotation.interval())) {
+                        return true;
+                    }
                 }
             }
+
+            Map<String, Object> cacheMap = new HashMap<String, Object>();
+            cacheMap.put(url, nowDataMap);
+            redisCache.setCacheObject(cacheRepeatKey, cacheMap, annotation.interval(), TimeUnit.MILLISECONDS);
+            return false;
+        } finally {
+            // 释放锁
+            redisCache.deleteObject(lockKey);
         }
-        Map<String, Object> cacheMap = new HashMap<String, Object>();
-        cacheMap.put(url, nowDataMap);
-        redisCache.setCacheObject(cacheRepeatKey, cacheMap, annotation.interval(), TimeUnit.MILLISECONDS);
-        return false;
     }
 
     /**
