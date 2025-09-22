@@ -12,6 +12,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * 档口商品库存对象 store_product_stock
+ * 全部统一在新增商品时，创建默认的库存
  *
  * @author ruoyi
  * @date 2025-03-26

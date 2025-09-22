@@ -9,7 +9,7 @@ import java.util.List;
  * @date 2025-05-11 23:46
  */
 @Data
-public class ShipMasterImportVO {
+public class ShipMasterRQVO {
 
     private SMIDataVO data;
 

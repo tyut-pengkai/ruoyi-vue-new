@@ -11,7 +11,7 @@ import java.util.List;
  * @date 2025-05-11 23:46
  */
 @Data
-public class DoubleRunImportVO {
+public class DoubleRunRQVO {
 
     private DRIDataVO data;
 
@@ -22,7 +22,8 @@ public class DoubleRunImportVO {
 
     @Data
     public static class DRIArtNoVO {
-        private Integer userId;
+        private Integer id;
+        private Integer user_id;
         private String article_number;
         private List<DRIArtNoSkuVO> skus;
     }
@@ -30,6 +31,7 @@ public class DoubleRunImportVO {
     @Data
     @Accessors(chain = true)
     public static class DRIArtNoSkuVO {
+        private Integer product_id;
         private String article_number;
         private String color;
         private Integer size;

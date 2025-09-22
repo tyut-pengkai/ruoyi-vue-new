@@ -4,7 +4,7 @@ import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.redis.RedisCache;
-import com.ruoyi.web.controller.xkt.shipMaster.vo.ShipMasterImportVO;
+import com.ruoyi.web.controller.xkt.shipMaster.vo.ShipMasterRQVO;
 import com.ruoyi.xkt.service.shipMaster.IShipMasterService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -31,11 +31,11 @@ public class ShipMasterController extends BaseController {
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @PostMapping("/cache")
-    public R<Integer> createCache(@Validated @RequestBody ShipMasterImportVO importVO) {
+    public R<Integer> createCache(@Validated @RequestBody ShipMasterRQVO importVO) {
         // 供应商ID
         final Integer supplierId = importVO.getData().getRecords().get(0).getSupplierId();
         // 先从redis中获取列表数据
-        List<ShipMasterImportVO.SMIVO> cacheList = ObjectUtils.defaultIfNull(redisCache
+        List<ShipMasterRQVO.SMIVO> cacheList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.SUPPLIER_KEY + supplierId), new ArrayList<>());
         CollectionUtils.addAll(cacheList, importVO.getData().getRecords());
         // 存到redis中
@@ -47,23 +47,23 @@ public class ShipMasterController extends BaseController {
     @GetMapping("/cache/{supplierId}")
     public R<Integer> getCache(@PathVariable Integer supplierId) {
         // 从redis中获取数据
-        List<ShipMasterImportVO.SMIVO> cacheList = ObjectUtils.defaultIfNull(redisCache
+        List<ShipMasterRQVO.SMIVO> cacheList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.SUPPLIER_KEY + supplierId), new ArrayList<>());
         if (CollectionUtils.isEmpty(cacheList)) {
             return R.fail();
         }
         // 按照artNo分组
-        Map<String, List<ShipMasterImportVO.SMIVO>> artNoGroup = cacheList.stream()
-                .sorted(Comparator.comparing(ShipMasterImportVO.SMIVO::getArtNo)
-                        .thenComparing(ShipMasterImportVO.SMIVO::getColor))
+        Map<String, List<ShipMasterRQVO.SMIVO>> artNoGroup = cacheList.stream()
+                .sorted(Comparator.comparing(ShipMasterRQVO.SMIVO::getArtNo)
+                        .thenComparing(ShipMasterRQVO.SMIVO::getColor))
                 .collect(Collectors
-                        .groupingBy(ShipMasterImportVO.SMIVO::getArtNo, LinkedHashMap::new, Collectors.toList()));
+                        .groupingBy(ShipMasterRQVO.SMIVO::getArtNo, LinkedHashMap::new, Collectors.toList()));
         // 货号 颜色 对应的条码前缀
         Map<String, Map<String, String>> artSnPrefixMap = new LinkedHashMap<>();
         // 货号 颜色 map
         Map<String, List<String>> artNoColorMap = new LinkedHashMap<>();
         artNoGroup.forEach((artNo, colorList) -> {
-            artNoColorMap.put(artNo, colorList.stream().map(ShipMasterImportVO.SMIVO::getColor).collect(Collectors.toList()));
+            artNoColorMap.put(artNo, colorList.stream().map(ShipMasterRQVO.SMIVO::getColor).collect(Collectors.toList()));
             Map<String, String> snPrefixMap = new LinkedHashMap<>();
             // 按照颜色设置条码前缀
             colorList.forEach(color -> snPrefixMap

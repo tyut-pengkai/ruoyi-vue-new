@@ -220,7 +220,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
                 .setRecommendWeight(0L).setSaleWeight(0L).setPopularityWeight(0L);
         int count = this.storeProdMapper.insert(storeProd);
         // 新增档口商品颜色相关
-        this.createProdColor(createDTO, storeProd.getId(), storeProd.getStoreId());
+        this.createProdColor(createDTO, storeProd.getId(), storeProd.getStoreId(), storeProd.getProdArtNum());
         // 新增档口商品其它属性
         this.createOtherProperties(createDTO, storeProd);
         // 立即发布 将商品同步到 ES 商品文档，并将商品主图同步到 以图搜款服务中
@@ -279,7 +279,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
         // 档口工艺信息的del_flag置为2
         this.storeProdProcMapper.updateDelFlagByStoreProdId(storeProdId);
         // 更新档口商品颜色价格及尺码等
-        this.updateColorRelation(updateDTO, storeProd.getId(), storeProd.getStoreId());
+        this.updateColorRelation(updateDTO, storeProd.getId(), storeProd.getStoreId(), storeProd.getProdArtNum());
         // 处理更新逻辑
         this.updateOtherProperties(updateDTO, storeProd);
         // 只有在售和尾货状态，更新ES 信息 及 图搜
@@ -337,12 +337,12 @@ public class StoreProductServiceImpl implements IStoreProductService {
 
     /**
      * 更新档口商品其它属性
-     *
-     * @param updateDTO   更新入参
+     *  @param updateDTO   更新入参
      * @param storeProdId 档口商品ID
      * @param storeId     档口ID
+     * @param prodArtNum 货号
      */
-    private void updateColorRelation(StoreProdDTO updateDTO, Long storeProdId, Long storeId) {
+    private void updateColorRelation(StoreProdDTO updateDTO, Long storeProdId, Long storeId, String prodArtNum) {
         // 处理档口所有颜色
         Map<String, Long> storeColorMap = updateDTO.getAllColorList().stream().filter(x -> ObjectUtils.isNotEmpty(x.getStoreColorId()))
                 .collect(Collectors.toMap(StoreColorDTO::getColorName, StoreColorDTO::getStoreColorId));
@@ -415,6 +415,20 @@ public class StoreProductServiceImpl implements IStoreProductService {
         if (CollectionUtils.isNotEmpty(nullSnPrefixList)) {
             this.storeProdColorSizeMapper.updateById(nullSnPrefixList);
         }
+
+        // 正在生效的颜色
+        List<StoreProductColor> validColorList = dbProdColorList.stream().filter(x -> Objects.equals(x.getDelFlag(), UNDELETED)).collect(Collectors.toList());
+        final List<Long> validColorIdList = validColorList.stream().map(StoreProductColor::getId).collect(Collectors.toList());
+        // 如果数据库不存在该商品颜色的库存，则初始化
+        List<StoreProductStock> dbProdStockList = Optional.ofNullable(this.prodStockMapper.selectList(new LambdaQueryWrapper<StoreProductStock>()
+                .eq(StoreProductStock::getStoreProdId, storeProdId).eq(StoreProductStock::getDelFlag, Constants.UNDELETED))).orElse(new ArrayList<>());
+        final List<Long> dbExistStockColorIdList = dbProdStockList.stream().map(StoreProductStock::getStoreProdColorId).collect(Collectors.toList());
+        // 有哪些颜色是删除的
+        dbProdStockList.stream().filter(x -> !validColorIdList.contains(x.getStoreProdColorId())).forEach(x -> x.setDelFlag(Constants.DELETED));
+        // 有哪些是新增的颜色
+        validColorList.stream().filter(x -> !dbExistStockColorIdList.contains(x.getId()))
+                .forEach(x -> dbProdStockList.add(BeanUtil.toBean(x, StoreProductStock.class).setProdArtNum(prodArtNum).setStoreProdColorId(x.getId())));
+        this.prodStockMapper.insertOrUpdate(dbProdStockList);
     }
 
     /**
@@ -456,12 +470,12 @@ public class StoreProductServiceImpl implements IStoreProductService {
 
     /**
      * 新增档口商品颜色等
-     *
-     * @param createDTO   入参
+     *  @param createDTO   入参
      * @param storeProdId 档口商品ID
      * @param storeId     档口ID
+     * @param prodArtNum 货号
      */
-    private void createProdColor(StoreProdDTO createDTO, Long storeProdId, Long storeId) {
+    private void createProdColor(StoreProdDTO createDTO, Long storeProdId, Long storeId, String prodArtNum) {
         // 处理档口所有颜色
         Map<String, Long> storeColorMap = createDTO.getAllColorList().stream().filter(x -> ObjectUtils.isNotEmpty(x.getStoreColorId()))
                 .collect(Collectors.toMap(StoreColorDTO::getColorName, StoreColorDTO::getStoreColorId));
@@ -488,6 +502,10 @@ public class StoreProductServiceImpl implements IStoreProductService {
         // 设置档口商品价格尺码的barcode_prefix
         prodColorSizeList.forEach(x -> x.setSnPrefix(storeId + String.format("%08d", x.getId())));
         this.storeProdColorSizeMapper.updateById(prodColorSizeList);
+        // 新增档口库存初始化数据
+        List<StoreProductStock> prodStockList = prodColorList.stream().map(x -> BeanUtil.toBean(x, StoreProductStock.class)
+                        .setProdArtNum(prodArtNum).setStoreProdColorId(x.getId())).collect(Collectors.toList());
+        this.prodStockMapper.insert(prodStockList);
         // 设置了档口商品全部优惠的客户，新增商品优惠
         this.createStoreCusDiscount(prodColorList, storeProdId);
     }
