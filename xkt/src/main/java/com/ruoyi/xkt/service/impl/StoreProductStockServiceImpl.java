@@ -134,9 +134,8 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
         List<StoreProductStock> stockList = this.storeProdStockMapper.selectList(new LambdaQueryWrapper<StoreProductStock>()
                 .eq(StoreProductStock::getStoreId, storeId).eq(StoreProductStock::getStoreProdId, storeProdId)
                 .eq(StoreProductStock::getDelFlag, Constants.UNDELETED));
-        Map<Long, StoreProductStock> storeProdColorStockMap = stockList.stream().collect(Collectors.toMap(StoreProductStock::getStoreColorId, x -> x));
         // 商品颜色对应的库存map
-        Map<Long, StoreProductStock> colorSizeStockMap = stockList.stream().collect(Collectors.toMap(StoreProductStock::getStoreColorId, x -> x));
+        Map<Long, StoreProductStock> storeProdColorStockMap = stockList.stream().collect(Collectors.toMap(StoreProductStock::getStoreColorId, x -> x));
         // 档口商品颜色
         List<StoreProductColor> storeProdColorList = this.prodColorMapper.selectList(new LambdaQueryWrapper<StoreProductColor>()
                 .eq(StoreProductColor::getDelFlag, Constants.UNDELETED).eq(StoreProductColor::getStoreId, storeId)
@@ -156,7 +155,7 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
                     // 商品对应颜色的库存
                     .setSizeStockList(colorSizeList.stream().sorted(Comparator.comparing(StoreProductColorSize::getSize))
                             .map(x -> new StoreProdStockTakeResDTO.SPSTSizeStockDTO().setStoreProdColorSizeId(x.getId()).setSize(x.getSize())
-                                    .setStock(this.getSizeStock(x.getSize(), colorSizeStockMap.get(storeColorId))))
+                                    .setStock(this.getSizeStock(x.getSize(), storeProdColorStockMap.get(storeColorId))))
                             .collect(Collectors.toList()));
             colorResList.add(color);
         });

@@ -316,5 +316,9 @@ public class CacheConstants {
      * 供应商缓存
      */
     public static final String SUPPLIER_KEY = "supplier:";
+    /**
+     * 主网站缓存
+     */
+    public static final String DOUBLE_RUN_KEY = "double_run:";
 
 }

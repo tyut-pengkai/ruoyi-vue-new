@@ -5,7 +5,6 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.web.controller.xkt.shipMaster.vo.DoubleRunImportVO;
-import com.ruoyi.web.controller.xkt.shipMaster.vo.ShipMasterImportVO;
 import com.ruoyi.xkt.service.shipMaster.IShipMasterService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -34,60 +33,61 @@ public class DoubleRunController extends BaseController {
     @PostMapping("/cache")
     public R<Integer> createCache(@Validated @RequestBody DoubleRunImportVO importVO) {
         List<DoubleRunImportVO.DRIArtNoVO> artNoList = importVO.getData().getData();
-        Map<String, Map<String, List<DoubleRunImportVO.DRIArtNoSkuVO>>> artNoMap = new LinkedHashMap<>();
-        artNoList.forEach(artNoInfo -> {
-            artNoInfo.getSkus().forEach(x -> x.setColor(this.decodeUnicode(x.getColor())));
-            artNoMap.put(artNoInfo.getArticle_number(), artNoInfo.getSkus().stream().collect(Collectors
-                    .groupingBy(DoubleRunImportVO.DRIArtNoSkuVO::getColor)));
-        });
-
-
-        artNoMap.forEach((artNo, colorSkuMap) -> {
-            colorSkuMap.forEach((color, skuList) -> {
-                skuList.sort(Comparator.comparing(DoubleRunImportVO.DRIArtNoSkuVO::getSize));
-                System.err.println(artNo + ":" + color + ":" + skuList);
-            });
-        });
-
-
-     /*   // 供应商ID
-        final Integer supplierId = importVO.getData().getRecords().get(0).getSupplierId();
+        final Integer userId = importVO.getData().getData().get(0).getUserId();
         // 先从redis中获取列表数据
-        List<ShipMasterImportVO.SMIVO> cacheList = ObjectUtils.defaultIfNull(redisCache
-                .getCacheObject(CacheConstants.SUPPLIER_KEY + supplierId), new ArrayList<>());
-        CollectionUtils.addAll(cacheList, importVO.getData().getRecords());
+        List<DoubleRunImportVO.DRIArtNoSkuVO> cacheList = ObjectUtils.defaultIfNull(redisCache
+                .getCacheObject(CacheConstants.DOUBLE_RUN_KEY + userId), new ArrayList<>());
+//        Map<String, Map<String, List<DoubleRunImportVO.DRIArtNoSkuVO>>> artNoMap = new LinkedHashMap<>();
+        artNoList.forEach(artNoInfo -> {
+            artNoInfo.getSkus().forEach(x -> x.setColor(this.decodeUnicode(x.getColor()))
+                    .setArticle_number(artNoInfo.getArticle_number()));
+            cacheList.addAll(artNoInfo.getSkus());
+//            artNoMap.put(artNoInfo.getArticle_number(), artNoInfo.getSkus().stream().collect(Collectors
+//                    .groupingBy(DoubleRunImportVO.DRIArtNoSkuVO::getColor)));
+        });
+//        CollectionUtils.addAll(cacheList, artNoList);
         // 存到redis中
-        redisCache.setCacheObject(CacheConstants.SUPPLIER_KEY + supplierId, cacheList);*/
+        redisCache.setCacheObject(CacheConstants.DOUBLE_RUN_KEY + userId, cacheList);
+
+//        Map<String, List<String>> artNoColorMap = new LinkedHashMap<>();
+//        artNoMap.forEach((artNo, colorSkuMap) -> {
+//            artNoColorMap.put(artNo, new ArrayList<>(colorSkuMap.keySet()));
+//            colorSkuMap.forEach((color, skuList) -> {
+//                skuList.sort(Comparator.comparing(DoubleRunImportVO.DRIArtNoSkuVO::getSize));
+//                System.err.println(artNo + ":" + color + ":" + skuList);
+//            });
+//        });
+
         return R.ok();
     }
 
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @GetMapping("/cache/{supplierId}")
-    public R<Integer> getCache(@PathVariable Integer supplierId) {
-        /*// 从redis中获取数据
-        List<ShipMasterImportVO.SMIVO> cacheList = ObjectUtils.defaultIfNull(redisCache
-                .getCacheObject(CacheConstants.SUPPLIER_KEY + supplierId), new ArrayList<>());
+    @GetMapping("/cache/{userId}")
+    public R<Integer> getCache(@PathVariable Integer userId) {
+        // 从redis中获取数据
+        List<DoubleRunImportVO.DRIArtNoSkuVO> cacheList = ObjectUtils.defaultIfNull(redisCache
+                .getCacheObject(CacheConstants.DOUBLE_RUN_KEY + userId), new ArrayList<>());
         if (CollectionUtils.isEmpty(cacheList)) {
             return R.fail();
         }
-        // 按照artNo分组
-        Map<String, List<ShipMasterImportVO.SMIVO>> artNoGroup = cacheList.stream()
-                .sorted(Comparator.comparing(ShipMasterImportVO.SMIVO::getArtNo)
-                        .thenComparing(ShipMasterImportVO.SMIVO::getColor))
+        Map<String, List<DoubleRunImportVO.DRIArtNoSkuVO>> artNoGroup = cacheList.stream()
+                .sorted(Comparator.comparing(DoubleRunImportVO.DRIArtNoSkuVO::getArticle_number)
+                        .thenComparing(DoubleRunImportVO.DRIArtNoSkuVO::getColor))
                 .collect(Collectors
-                        .groupingBy(ShipMasterImportVO.SMIVO::getArtNo, LinkedHashMap::new, Collectors.toList()));
-        Map<String, Map<String, String>> artSnPrefixMap = new LinkedHashMap<>();
+                        .groupingBy(DoubleRunImportVO.DRIArtNoSkuVO::getArticle_number, LinkedHashMap::new, Collectors.toList()));
+        // 货号 颜色 map
+        Map<String, List<String>> artNoColorMap = new LinkedHashMap<>();
         artNoGroup.forEach((artNo, colorList) -> {
-            Map<String, String> snPrefixMap = new LinkedHashMap<>();
-            // 按照颜色设置条码前缀
-            colorList.forEach(color -> snPrefixMap
-                    .put(color.getColor(), color.getSupplierId() + String.format("%05d", color.getSupplierSkuId())));
-            artSnPrefixMap.put(artNo, snPrefixMap);
+            artNoColorMap.put(artNo, colorList.stream().map(DoubleRunImportVO.DRIArtNoSkuVO::getColor).collect(Collectors.toList()));
         });
-        artSnPrefixMap.forEach((k,v) -> {
-            System.err.println(k + ":" + v);
-        });*/
+
+        // TODO 如何对比？？
+
+
+
+
+
         return R.ok();
     }
 

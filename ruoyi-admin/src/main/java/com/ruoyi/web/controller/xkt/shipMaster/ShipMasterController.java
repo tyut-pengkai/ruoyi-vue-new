@@ -58,8 +58,12 @@ public class ShipMasterController extends BaseController {
                         .thenComparing(ShipMasterImportVO.SMIVO::getColor))
                 .collect(Collectors
                         .groupingBy(ShipMasterImportVO.SMIVO::getArtNo, LinkedHashMap::new, Collectors.toList()));
+        // 货号 颜色 对应的条码前缀
         Map<String, Map<String, String>> artSnPrefixMap = new LinkedHashMap<>();
+        // 货号 颜色 map
+        Map<String, List<String>> artNoColorMap = new LinkedHashMap<>();
         artNoGroup.forEach((artNo, colorList) -> {
+            artNoColorMap.put(artNo, colorList.stream().map(ShipMasterImportVO.SMIVO::getColor).collect(Collectors.toList()));
             Map<String, String> snPrefixMap = new LinkedHashMap<>();
             // 按照颜色设置条码前缀
             colorList.forEach(color -> snPrefixMap
@@ -67,6 +71,9 @@ public class ShipMasterController extends BaseController {
             artSnPrefixMap.put(artNo, snPrefixMap);
         });
         artSnPrefixMap.forEach((k,v) -> {
+            System.err.println(k + ":" + v);
+        });
+        artNoColorMap.forEach((k,v) -> {
             System.err.println(k + ":" + v);
         });
         return R.ok();

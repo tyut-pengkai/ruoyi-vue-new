@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.xkt.shipMaster.vo;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -21,12 +22,15 @@ public class DoubleRunImportVO {
 
     @Data
     public static class DRIArtNoVO {
+        private Integer userId;
         private String article_number;
         private List<DRIArtNoSkuVO> skus;
     }
 
     @Data
+    @Accessors(chain = true)
     public static class DRIArtNoSkuVO {
+        private String article_number;
         private String color;
         private Integer size;
         private BigDecimal weight;
