@@ -1,4 +1,4 @@
-package com.ruoyi.web.controller.xkt.shipMaster;
+package com.ruoyi.web.controller.xkt.migartion;
 
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.HttpStatus;
@@ -6,8 +6,9 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.web.controller.xkt.shipMaster.vo.doubRun.DoubleRunAttrVO;
-import com.ruoyi.web.controller.xkt.shipMaster.vo.doubRun.DoubleRunProdVO;
+import com.ruoyi.web.controller.xkt.migartion.vo.gt.GtAttrVO;
+import com.ruoyi.web.controller.xkt.migartion.vo.gt.GtProdSkuVO;
+import com.ruoyi.web.controller.xkt.migartion.vo.gt.GtProdVO;
 import com.ruoyi.xkt.service.shipMaster.IShipMasterService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -27,59 +28,59 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/rest/v1/double-run")
-public class DoubleRunController extends BaseController {
+@RequestMapping("/rest/v1/gt")
+public class GtController extends BaseController {
 
     final IShipMasterService shipMasterService;
     final RedisCache redisCache;
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @PostMapping("/sale/cache")
-    public R<Integer> createSaleCache(@Validated @RequestBody DoubleRunProdVO doubleRunVO) {
-        List<DoubleRunProdVO.DRIArtNoVO> artNoList = doubleRunVO.getData().getData();
+    public R<Integer> createSaleCache(@Validated @RequestBody GtProdVO doubleRunVO) {
+        List<GtProdVO.DRIArtNoVO> artNoList = doubleRunVO.getData().getData();
         final Integer userId = doubleRunVO.getData().getData().get(0).getUser_id();
         // 先从redis中获取列表数据
-        List<DoubleRunProdVO.DRIArtNoSkuVO> cacheList = ObjectUtils.defaultIfNull(redisCache
-                .getCacheObject(CacheConstants.MIGRATION_DOUBLE_RUN_SALE_BASIC_KEY + userId), new ArrayList<>());
+        List<GtProdSkuVO> cacheList = ObjectUtils.defaultIfNull(redisCache
+                .getCacheObject(CacheConstants.MIGRATION_GT_SALE_BASIC_KEY + userId), new ArrayList<>());
         artNoList.forEach(artNoInfo -> {
             artNoInfo.getSkus().forEach(x -> x.setColor(this.decodeUnicode(x.getColor()))
                     .setArticle_number(artNoInfo.getArticle_number()).setProduct_id(artNoInfo.getId()));
             cacheList.addAll(artNoInfo.getSkus());
         });
         // 存到redis中
-        redisCache.setCacheObject(CacheConstants.MIGRATION_DOUBLE_RUN_SALE_BASIC_KEY + userId, cacheList);
+        redisCache.setCacheObject(CacheConstants.MIGRATION_GT_SALE_BASIC_KEY + userId, cacheList);
         return R.ok();
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @PostMapping("/off-sale/cache")
-    public R<Integer> createOffSaleCache(@Validated @RequestBody DoubleRunProdVO doubleRunVO) {
-        List<DoubleRunProdVO.DRIArtNoVO> artNoList = doubleRunVO.getData().getData();
+    public R<Integer> createOffSaleCache(@Validated @RequestBody GtProdVO doubleRunVO) {
+        List<GtProdVO.DRIArtNoVO> artNoList = doubleRunVO.getData().getData();
         final Integer userId = doubleRunVO.getData().getData().get(0).getUser_id();
         // 先从redis中获取列表数据
-        List<DoubleRunProdVO.DRIArtNoSkuVO> cacheList = ObjectUtils.defaultIfNull(redisCache
-                .getCacheObject(CacheConstants.MIGRATION_DOUBLE_RUN_OFF_SALE_BASIC_KEY + userId), new ArrayList<>());
+        List<GtProdSkuVO> cacheList = ObjectUtils.defaultIfNull(redisCache
+                .getCacheObject(CacheConstants.MIGRATION_GT_OFF_SALE_BASIC_KEY + userId), new ArrayList<>());
         artNoList.forEach(artNoInfo -> {
             artNoInfo.getSkus().forEach(x -> x.setColor(this.decodeUnicode(x.getColor()))
                     .setArticle_number(artNoInfo.getArticle_number()).setProduct_id(artNoInfo.getId()));
             cacheList.addAll(artNoInfo.getSkus());
         });
         // 存到redis中
-        redisCache.setCacheObject(CacheConstants.MIGRATION_DOUBLE_RUN_OFF_SALE_BASIC_KEY + userId, cacheList);
+        redisCache.setCacheObject(CacheConstants.MIGRATION_GT_OFF_SALE_BASIC_KEY + userId, cacheList);
         return R.ok();
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @PostMapping("/attr/cache/{user_id}/{product_id}")
     public R<Integer> createAttrCache(@PathVariable(value = "user_id") Integer user_id, @PathVariable("product_id") Integer product_id,
-                                      @Validated @RequestBody DoubleRunAttrVO attrVO) {
+                                      @Validated @RequestBody GtAttrVO attrVO) {
         // 判断缓存中是否有该product_id
-        Map<String, String> existMap = redisCache.getCacheMap(CacheConstants.MIGRATION_DOUBLE_RUN_SALE_ATTR_KEY + user_id + "_" + product_id);
+        Map<String, String> existMap = redisCache.getCacheMap(CacheConstants.MIGRATION_GT_SALE_ATTR_KEY + user_id + "_" + product_id);
         if (MapUtils.isNotEmpty(existMap)) {
             throw new ServiceException("该商品已设置过类目属性", HttpStatus.ERROR);
         }
         Map<String, String> attrMap = new HashMap<>();
-        attrVO.getData().forEach((itemId,  attr) -> {
+        attrVO.getData().forEach((itemId, attr) -> {
             // 不处理 multi=1 的属性
             if (attr.getMulti() == 1) {
                 return;
@@ -90,7 +91,7 @@ public class DoubleRunController extends BaseController {
                         .put(this.decodeUnicode(x.getProps_name()), this.decodeUnicode(x.getPropsvalue_name())));
             }
         });
-        redisCache.setCacheMap(CacheConstants.MIGRATION_DOUBLE_RUN_SALE_ATTR_KEY + user_id + "_" + product_id, attrMap);
+        redisCache.setCacheMap(CacheConstants.MIGRATION_GT_SALE_ATTR_KEY + user_id + "_" + product_id, attrMap);
         return R.ok();
     }
 
@@ -99,23 +100,23 @@ public class DoubleRunController extends BaseController {
     @GetMapping("/cache/{userId}")
     public R<Integer> getCache(@PathVariable Integer userId) {
         // 从redis中获取数据
-        List<DoubleRunProdVO.DRIArtNoSkuVO> cacheList = ObjectUtils.defaultIfNull(redisCache
-                .getCacheObject(CacheConstants.MIGRATION_DOUBLE_RUN_SALE_BASIC_KEY + userId), new ArrayList<>());
+        List<GtProdSkuVO> cacheList = ObjectUtils.defaultIfNull(redisCache
+                .getCacheObject(CacheConstants.MIGRATION_GT_SALE_BASIC_KEY + userId), new ArrayList<>());
         if (CollectionUtils.isEmpty(cacheList)) {
             return R.fail();
         }
-        Map<String, List<DoubleRunProdVO.DRIArtNoSkuVO>> artNoGroup = cacheList.stream()
-                .sorted(Comparator.comparing(DoubleRunProdVO.DRIArtNoSkuVO::getArticle_number)
-                        .thenComparing(DoubleRunProdVO.DRIArtNoSkuVO::getColor))
+        Map<String, List<GtProdSkuVO>> artNoGroup = cacheList.stream()
+                .sorted(Comparator.comparing(GtProdSkuVO::getArticle_number)
+                        .thenComparing(GtProdSkuVO::getColor))
                 .collect(Collectors
-                        .groupingBy(DoubleRunProdVO.DRIArtNoSkuVO::getArticle_number, LinkedHashMap::new, Collectors.toList()));
+                        .groupingBy(GtProdSkuVO::getArticle_number, LinkedHashMap::new, Collectors.toList()));
         // 货号 颜色 map
         Map<String, List<String>> artNoColorMap = new LinkedHashMap<>();
         artNoGroup.forEach((artNo, colorList) -> {
-            artNoColorMap.put(artNo, colorList.stream().map(DoubleRunProdVO.DRIArtNoSkuVO::getColor).collect(Collectors.toList()));
+            artNoColorMap.put(artNo, colorList.stream().map(GtProdSkuVO::getColor).collect(Collectors.toList()));
         });
 
-        artNoColorMap.forEach((k,v) -> {
+        artNoColorMap.forEach((k, v) -> {
             System.err.println(k + ":" + v);
         });
 
@@ -125,9 +126,9 @@ public class DoubleRunController extends BaseController {
     }
 
 
-
     /**
      * Unicode解码方法
+     *
      * @param unicodeStr 包含Unicode编码的字符串
      * @return 解码后的字符串
      */

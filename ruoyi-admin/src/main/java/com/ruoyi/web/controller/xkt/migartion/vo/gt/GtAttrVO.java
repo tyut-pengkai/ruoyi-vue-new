@@ -1,4 +1,4 @@
-package com.ruoyi.web.controller.xkt.shipMaster.vo.doubRun;
+package com.ruoyi.web.controller.xkt.migartion.vo.gt;
 
 import lombok.Data;
 
@@ -10,7 +10,7 @@ import java.util.Map;
  * @date 2025-05-11 23:46
  */
 @Data
-public class DoubleRunAttrVO {
+public class GtAttrVO {
 
     private Map<String, DRAAttrVO> data;
 

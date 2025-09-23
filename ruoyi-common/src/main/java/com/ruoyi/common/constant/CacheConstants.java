@@ -329,16 +329,16 @@ public class CacheConstants {
      */
     public static final String MIGRATION_SUPPLIER_CUS_DISCOUNT_KEY = "mig_supplier_cus_discount:";
     /**
-     * double_run在售缓存
+     * GT在售缓存
      */
-    public static final String MIGRATION_DOUBLE_RUN_SALE_BASIC_KEY = "mig_double_run_sale_basic:";
+    public static final String MIGRATION_GT_SALE_BASIC_KEY = "mig_gt_sale_basic:";
     /**
-     * double_run下架缓存
+     * GT下架缓存
      */
-    public static final String MIGRATION_DOUBLE_RUN_OFF_SALE_BASIC_KEY = "mig_double_run_off_sale_basic:";
+    public static final String MIGRATION_GT_OFF_SALE_BASIC_KEY = "mig_gt_off_sale_basic:";
     /**
-     * 档口属性缓存
+     * GT档口属性缓存
      */
-    public static final String MIGRATION_DOUBLE_RUN_SALE_ATTR_KEY = "mig_double_run_sale_attr:";
+    public static final String MIGRATION_GT_SALE_ATTR_KEY = "mig_gt_sale_attr:";
 
 }

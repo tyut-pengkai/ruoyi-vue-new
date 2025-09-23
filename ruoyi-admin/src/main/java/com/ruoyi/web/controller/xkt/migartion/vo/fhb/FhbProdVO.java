@@ -1,7 +1,8 @@
-package com.ruoyi.web.controller.xkt.shipMaster.vo.shipMaster;
+package com.ruoyi.web.controller.xkt.migartion.vo.fhb;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -9,7 +10,7 @@ import java.util.List;
  * @date 2025-05-11 23:46
  */
 @Data
-public class ShipMasterProdVO {
+public class FhbProdVO {
 
     private SMIDataVO data;
 
@@ -25,6 +26,8 @@ public class ShipMasterProdVO {
         private String artNo;
         private String color;
         private String size;
+        private BigDecimal addPrice;
+        private String addPriceSize;
         private String snPrefix;
     }
 
