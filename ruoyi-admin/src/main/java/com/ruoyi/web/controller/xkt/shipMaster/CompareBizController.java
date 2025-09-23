@@ -31,6 +31,11 @@ public class CompareBizController extends BaseController {
     final IShipMasterService shipMasterService;
     final RedisCache redisCache;
 
+    // TODO 档口注册的时候，会创建现金客户，在插入客户时，需要注意
+    // TODO 档口注册的时候，会创建现金客户，在插入客户时，需要注意
+    // TODO 档口注册的时候，会创建现金客户，在插入客户时，需要注意
+
+
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @PutMapping("/double/ship/{userId}/{supplierId}")
     public R<Integer> compare(@PathVariable("userId") Integer userId, @PathVariable("supplierId") Integer supplierId) {
@@ -45,7 +50,7 @@ public class CompareBizController extends BaseController {
         doubleRunSaleArtNoList.forEach(article_number -> {
             // 只保留数字，去除其他所有符号
             String cleanArtNo = article_number.replaceAll("[^0-9]", "");
-            List<String> existList = multiSaleSameGoMap.containsKey(cleanArtNo) ?  multiSaleSameGoMap.get(cleanArtNo) : new ArrayList<>();
+            List<String> existList = multiSaleSameGoMap.containsKey(cleanArtNo) ? multiSaleSameGoMap.get(cleanArtNo) : new ArrayList<>();
             existList.add(article_number);
             multiSaleSameGoMap.put(cleanArtNo, existList);
         });
@@ -58,7 +63,7 @@ public class CompareBizController extends BaseController {
         doubleRunOffSaleArtNoList.forEach(article_number -> {
             // 只保留数字，去除其他所有符号
             String cleanArtNo = article_number.replaceAll("[^0-9]", "");
-            List<String> existList = multiOffSaleSameGoMap.containsKey(cleanArtNo) ?  multiOffSaleSameGoMap.get(cleanArtNo) : new ArrayList<>();
+            List<String> existList = multiOffSaleSameGoMap.containsKey(cleanArtNo) ? multiOffSaleSameGoMap.get(cleanArtNo) : new ArrayList<>();
             existList.add(article_number);
             multiOffSaleSameGoMap.put(cleanArtNo, existList);
         });
@@ -72,12 +77,10 @@ public class CompareBizController extends BaseController {
         shipArtNoList.forEach(artNo -> {
             // 只保留数字，去除其他所有符号
             String cleanArtNo = artNo.replaceAll("[^0-9]", "");
-            List<String> existList = multiSameFMap.containsKey(cleanArtNo) ?  multiSameFMap.get(cleanArtNo) : new ArrayList<>();
+            List<String> existList = multiSameFMap.containsKey(cleanArtNo) ? multiSameFMap.get(cleanArtNo) : new ArrayList<>();
             existList.add(artNo);
             multiSameFMap.put(cleanArtNo, existList);
         });
-
-
 
 
         multiSaleSameGoMap.forEach((key, value) -> {

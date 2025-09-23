@@ -321,6 +321,14 @@ public class CacheConstants {
      */
     public static final String MIGRATION_SUPPLIER_CUS_KEY = "mig_supplier_cus:";
     /**
+     * FHB商品库存缓存
+     */
+    public static final String MIGRATION_SUPPLIER_PROD_STOCK_KEY = "mig_supplier_prod_stock:";
+    /**
+     * FHB客户优惠缓存
+     */
+    public static final String MIGRATION_SUPPLIER_CUS_DISCOUNT_KEY = "mig_supplier_cus_discount:";
+    /**
      * double_run在售缓存
      */
     public static final String MIGRATION_DOUBLE_RUN_SALE_BASIC_KEY = "mig_double_run_sale_basic:";
