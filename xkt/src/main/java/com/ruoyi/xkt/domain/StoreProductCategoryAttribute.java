@@ -117,10 +117,6 @@ public class StoreProductCategoryAttribute extends XktBaseEntity {
      */
     private String occasion;
     /**
-     * 适用年龄
-     */
-    private String suitableAge;
-    /**
      * 厚薄
      */
     private String thickness;

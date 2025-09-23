@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -53,7 +54,7 @@ public class GtController extends BaseController {
         List<GtProdSkuVO> cacheList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_GT_SALE_BASIC_KEY + userId), new ArrayList<>());
         artNoList.forEach(artNoInfo -> {
-            artNoInfo.getSkus().forEach(x -> x.setColor(this.decodeUnicode(x.getColor()))
+            artNoInfo.getSkus().forEach(x -> x.setColor(this.decodeUnicode(x.getColor())).setCharacters(artNoInfo.getCharacters())
                     .setArticle_number(artNoInfo.getArticle_number()).setProduct_id(artNoInfo.getId()));
             cacheList.addAll(artNoInfo.getSkus());
         });
@@ -151,6 +152,19 @@ public class GtController extends BaseController {
         artNoColorMap.forEach((k, v) -> {
             System.err.println(k + ":" + v);
         });
+
+        // cacheList 按照货号分组，获取所有价格，价格去重
+        Map<String, Set<BigDecimal>> artNoPriceMap = cacheList.stream().collect(Collectors.groupingBy(
+                GtProdSkuVO::getArticle_number, Collectors.mapping(GtProdSkuVO::getPrice, Collectors.toSet())));
+        artNoPriceMap.forEach((k, v) -> {
+            System.out.println(k + ":" + v);
+            if (v.size() > 1) {
+                System.err.println(k + ":" + v);
+            }
+        });
+
+//        Map<String, List<Integer>> artNoPriceMap =
+
 
         // TODO 如何对比？？
 

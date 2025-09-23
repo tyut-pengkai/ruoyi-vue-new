@@ -192,6 +192,11 @@ public class Constants
     public static final Integer SIZE_41 = 41;
     public static final Integer SIZE_42 = 42;
     public static final Integer SIZE_43 = 43;
+
+    // 系统所有的尺码
+    public static final List<Integer> SIZE_LIST = new ArrayList<>(Arrays
+            .asList(SIZE_30, SIZE_31, SIZE_32, SIZE_33, SIZE_34, SIZE_35, SIZE_36, SIZE_37, SIZE_38, SIZE_39, SIZE_40, SIZE_41, SIZE_42, SIZE_43));
+
     /**
      * 平台内部账户ID
      */
@@ -318,63 +323,82 @@ public class Constants
     public static final BigDecimal ALI_SERVICE_FEE_RATE = BigDecimal.valueOf(0.006);
 
     public static final String UPPER_MATERIAL = "upperMaterial";
+    public static final String UPPER_MATERIAL_NAME = "帮面材质";
     public static final String SHAFT_LINING_MATERIAL = "shaftLiningMaterial";
+    public static final String SHAFT_LINING_MATERIAL_NAME = "靴筒内里材质";
     public static final String SHAFT_MATERIAL = "shaftMaterial";
+    public static final String SHAFT_MATERIAL_NAME = "靴筒面材质";
     public static final String SHOE_UPPER_LINING_MATERIAL = "shoeUpperLiningMaterial";
+    public static final String SHOE_UPPER_LINING_MATERIAL_NAME = "鞋面内里材质";
     public static final String SHOE_STYLE_NAME = "shoeStyleName";
+    public static final String SHOE_STYLE_NAME_NAME = "靴款品名";
     public static final String SHAFT_HEIGHT = "shaftHeight";
-
-
-
+    public static final String SHAFT_HEIGHT_NAME = "筒高";
     public static final String INSOLE_MATERIAL = "insoleMaterial";
+    public static final String INSOLE_MATERIAL_NAME = "鞋垫材质";
     public static final String RELEASE_YEAR_SEASON = "releaseYearSeason";
+    public static final String RELEASE_YEAR_SEASON_NAME = "上市季节年份";
     public static final String HEEL_HEIGHT = "heelHeight";
+    public static final String HEEL_HEIGHT_NAME = "后跟高";
     public static final String HEEL_TYPE = "heelType";
+    public static final String HEEL_TYPE_NAME = "跟底款式";
     public static final String TOE_STYLE = "toeStyle";
+    public static final String TOE_STYLE_NAME = "鞋头款式";
     public static final String SUITABLE_SEASON = "suitableSeason";
+    public static final String SUITABLE_SEASON_NAME = "适合季节";
     public static final String COLLAR_DEPTH = "collarDepth";
+    public static final String COLLAR_DEPTH_NAME = "开口深度";
     public static final String OUTSOLE_MATERIAL = "outsoleMaterial";
+    public static final String OUTSOLE_MATERIAL_NAME = "鞋底材质";
     public static final String STYLE = "style";
+    public static final String STYLE_NAME = "风格";
     public static final String DESIGN = "design";
+    public static final String DESIGN_NAME = "款式";
     public static final String LEATHER_FEATURES = "leatherFeatures";
+    public static final String LEATHER_FEATURES_NAME = "皮质特征";
     public static final String MANUFACTURING_PROCESS = "manufacturingProcess";
+    public static final String MANUFACTURING_PROCESS_NAME = "制作工艺";
     public static final String PATTERN = "pattern";
+    public static final String PATTERN_NAME = "图案";
     public static final String CLOSURE_TYPE = "closureType";
+    public static final String CLOSURE_TYPE_NAME = "闭合方式";
     public static final String OCCASION = "occasion";
-    public static final String SUITABLE_AGE = "suitableAge";
+    public static final String OCCASION_NAME = "适用场景";
     public static final String THICKNESS = "thickness";
+    public static final String THICKNESS_NAME = "厚薄";
     public static final String FASHION_ELEMENTS = "fashionElements";
+    public static final String FASHION_ELEMENTS_NAME = "流行元素";
     public static final String SUITABLE_PERSON = "suitablePerson";
+    public static final String SUITABLE_PERSON_NAME = "适用对象";
 
     /**
      * app 类目属性的key value匹配值
      */
     public static final Map<String, String> CATE_RELATE_MAP = new ConcurrentHashMap<String, String>() {{
-        put(UPPER_MATERIAL, "帮面材质");
-        put(SHAFT_LINING_MATERIAL, "靴筒内里材质");
-        put(SHAFT_MATERIAL, "靴筒面材质");
-        put(SHOE_UPPER_LINING_MATERIAL, "鞋面内里材质");
-        put(SHOE_STYLE_NAME, "靴款品名");
-        put(SHAFT_HEIGHT, "筒高");
-        put(INSOLE_MATERIAL, "鞋垫材质");
-        put(RELEASE_YEAR_SEASON, "上市季节年份");
-        put(HEEL_HEIGHT, "后跟高");
-        put(HEEL_TYPE, "跟底款式");
-        put(TOE_STYLE, "鞋头款式");
-        put(SUITABLE_SEASON, "适合季节");
-        put(COLLAR_DEPTH, "开口深度");
-        put(OUTSOLE_MATERIAL, "鞋底材质");
-        put(STYLE, "风格");
-        put(DESIGN, "款式");
-        put(LEATHER_FEATURES, "皮质特征");
-        put(MANUFACTURING_PROCESS, "制作工艺");
-        put(PATTERN, "图案");
-        put(CLOSURE_TYPE, "闭合方式");
-        put(OCCASION, "适用场景");
-        put(SUITABLE_AGE, "适用年龄");
-        put(THICKNESS, "厚薄");
-        put(FASHION_ELEMENTS, "流行元素");
-        put(SUITABLE_PERSON, "适用对象");
+        put(UPPER_MATERIAL, UPPER_MATERIAL_NAME);
+        put(SHAFT_LINING_MATERIAL, SHAFT_LINING_MATERIAL_NAME);
+        put(SHAFT_MATERIAL, SHAFT_MATERIAL_NAME);
+        put(SHOE_UPPER_LINING_MATERIAL, SHOE_UPPER_LINING_MATERIAL_NAME);
+        put(SHOE_STYLE_NAME, SHOE_STYLE_NAME_NAME);
+        put(SHAFT_HEIGHT, SHAFT_HEIGHT_NAME);
+        put(INSOLE_MATERIAL, INSOLE_MATERIAL_NAME);
+        put(RELEASE_YEAR_SEASON, RELEASE_YEAR_SEASON_NAME);
+        put(HEEL_HEIGHT, HEEL_HEIGHT_NAME);
+        put(HEEL_TYPE, HEEL_TYPE_NAME);
+        put(TOE_STYLE, TOE_STYLE_NAME);
+        put(SUITABLE_SEASON, SUITABLE_SEASON_NAME);
+        put(COLLAR_DEPTH, COLLAR_DEPTH_NAME);
+        put(OUTSOLE_MATERIAL, OUTSOLE_MATERIAL_NAME);
+        put(STYLE, STYLE_NAME);
+        put(DESIGN, DESIGN_NAME);
+        put(LEATHER_FEATURES, LEATHER_FEATURES_NAME);
+        put(MANUFACTURING_PROCESS, MANUFACTURING_PROCESS_NAME);
+        put(PATTERN, PATTERN_NAME);
+        put(CLOSURE_TYPE, CLOSURE_TYPE_NAME);
+        put(OCCASION, OCCASION_NAME);
+        put(THICKNESS, THICKNESS_NAME);
+        put(FASHION_ELEMENTS, FASHION_ELEMENTS_NAME);
+        put(SUITABLE_PERSON, SUITABLE_PERSON_NAME);
     }};
 
 }
