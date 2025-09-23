@@ -4,8 +4,8 @@ import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.redis.RedisCache;
-import com.ruoyi.web.controller.xkt.shipMaster.vo.DoubleRunVO;
-import com.ruoyi.web.controller.xkt.shipMaster.vo.ShipMasterVO;
+import com.ruoyi.web.controller.xkt.shipMaster.vo.doubRun.DoubleRunProdVO;
+import com.ruoyi.web.controller.xkt.shipMaster.vo.shipMaster.ShipMasterProdVO;
 import com.ruoyi.xkt.service.shipMaster.IShipMasterService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
@@ -37,9 +37,9 @@ public class CompareBizController extends BaseController {
         Map<String, List<String>> multiSaleSameGoMap = new HashMap<>();
         Map<String, List<String>> multiOffSaleSameGoMap = new HashMap<>();
         Map<String, List<String>> multiSameFMap = new HashMap<>();
-        List<DoubleRunVO.DRIArtNoSkuVO> doubleRunSaleBasicList = ObjectUtils.defaultIfNull(redisCache
+        List<DoubleRunProdVO.DRIArtNoSkuVO> doubleRunSaleBasicList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_DOUBLE_RUN_SALE_BASIC_KEY + userId), new ArrayList<>());
-        List<String> doubleRunSaleArtNoList = doubleRunSaleBasicList.stream().map(DoubleRunVO.DRIArtNoSkuVO::getArticle_number)
+        List<String> doubleRunSaleArtNoList = doubleRunSaleBasicList.stream().map(DoubleRunProdVO.DRIArtNoSkuVO::getArticle_number)
                 .distinct().collect(Collectors.toList());
         // 查看double_run 在售的商品 这边有多少相似的货号
         doubleRunSaleArtNoList.forEach(article_number -> {
@@ -51,9 +51,9 @@ public class CompareBizController extends BaseController {
         });
 
         // 查看double_run 下架的商品有多少相似的货号
-        List<DoubleRunVO.DRIArtNoSkuVO> doubleRunOffSaleBasicList = ObjectUtils.defaultIfNull(redisCache
+        List<DoubleRunProdVO.DRIArtNoSkuVO> doubleRunOffSaleBasicList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_DOUBLE_RUN_OFF_SALE_BASIC_KEY + userId), new ArrayList<>());
-        List<String> doubleRunOffSaleArtNoList = doubleRunOffSaleBasicList.stream().map(DoubleRunVO.DRIArtNoSkuVO::getArticle_number)
+        List<String> doubleRunOffSaleArtNoList = doubleRunOffSaleBasicList.stream().map(DoubleRunProdVO.DRIArtNoSkuVO::getArticle_number)
                 .distinct().collect(Collectors.toList());
         doubleRunOffSaleArtNoList.forEach(article_number -> {
             // 只保留数字，去除其他所有符号
@@ -65,9 +65,9 @@ public class CompareBizController extends BaseController {
 
 
         // 查看ShipMaster 这边有多少相似的货号
-        List<ShipMasterVO.SMIVO> shipMasterProdList = ObjectUtils.defaultIfNull(redisCache
+        List<ShipMasterProdVO.SMIVO> shipMasterProdList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_PROD_KEY + supplierId), new ArrayList<>());
-        List<String> shipArtNoList = shipMasterProdList.stream().map(ShipMasterVO.SMIVO::getArtNo)
+        List<String> shipArtNoList = shipMasterProdList.stream().map(ShipMasterProdVO.SMIVO::getArtNo)
                 .distinct().collect(Collectors.toList());
         shipArtNoList.forEach(artNo -> {
             // 只保留数字，去除其他所有符号

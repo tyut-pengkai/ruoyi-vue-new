@@ -1,4 +1,4 @@
-package com.ruoyi.web.controller.xkt.shipMaster.vo;
+package com.ruoyi.web.controller.xkt.shipMaster.vo.shipMaster;
 
 import lombok.Data;
 
@@ -9,7 +9,7 @@ import java.util.List;
  * @date 2025-05-11 23:46
  */
 @Data
-public class ShipMasterVO {
+public class ShipMasterProdVO {
 
     private SMIDataVO data;
 

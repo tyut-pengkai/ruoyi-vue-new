@@ -1,4 +1,4 @@
-package com.ruoyi.web.controller.xkt.shipMaster.vo;
+package com.ruoyi.web.controller.xkt.shipMaster.vo.doubRun;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -11,7 +11,7 @@ import java.util.List;
  * @date 2025-05-11 23:46
  */
 @Data
-public class DoubleRunVO {
+public class DoubleRunProdVO {
 
     private DRIDataVO data;
 

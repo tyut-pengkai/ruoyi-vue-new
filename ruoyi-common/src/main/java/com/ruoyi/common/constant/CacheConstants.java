@@ -313,9 +313,13 @@ public class CacheConstants {
      */
     public static final String STORE_PROD_VIEW_COUNT_CACHE = "store_prod_view_count_cache";
     /**
-     * 供应商缓存
+     * FHB商品缓存
      */
     public static final String MIGRATION_SUPPLIER_PROD_KEY = "mig_supplier_prod:";
+    /**
+     * FHB客户缓存
+     */
+    public static final String MIGRATION_SUPPLIER_CUS_KEY = "mig_supplier_cus:";
     /**
      * double_run在售缓存
      */

@@ -6,8 +6,8 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.web.controller.xkt.shipMaster.vo.DoubleRunAttrVO;
-import com.ruoyi.web.controller.xkt.shipMaster.vo.DoubleRunVO;
+import com.ruoyi.web.controller.xkt.shipMaster.vo.doubRun.DoubleRunAttrVO;
+import com.ruoyi.web.controller.xkt.shipMaster.vo.doubRun.DoubleRunProdVO;
 import com.ruoyi.xkt.service.shipMaster.IShipMasterService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -18,7 +18,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -36,11 +35,11 @@ public class DoubleRunController extends BaseController {
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @PostMapping("/sale/cache")
-    public R<Integer> createSaleCache(@Validated @RequestBody DoubleRunVO doubleRunVO) {
-        List<DoubleRunVO.DRIArtNoVO> artNoList = doubleRunVO.getData().getData();
+    public R<Integer> createSaleCache(@Validated @RequestBody DoubleRunProdVO doubleRunVO) {
+        List<DoubleRunProdVO.DRIArtNoVO> artNoList = doubleRunVO.getData().getData();
         final Integer userId = doubleRunVO.getData().getData().get(0).getUser_id();
         // 先从redis中获取列表数据
-        List<DoubleRunVO.DRIArtNoSkuVO> cacheList = ObjectUtils.defaultIfNull(redisCache
+        List<DoubleRunProdVO.DRIArtNoSkuVO> cacheList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_DOUBLE_RUN_SALE_BASIC_KEY + userId), new ArrayList<>());
         artNoList.forEach(artNoInfo -> {
             artNoInfo.getSkus().forEach(x -> x.setColor(this.decodeUnicode(x.getColor()))
@@ -54,11 +53,11 @@ public class DoubleRunController extends BaseController {
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @PostMapping("/off-sale/cache")
-    public R<Integer> createOffSaleCache(@Validated @RequestBody DoubleRunVO doubleRunVO) {
-        List<DoubleRunVO.DRIArtNoVO> artNoList = doubleRunVO.getData().getData();
+    public R<Integer> createOffSaleCache(@Validated @RequestBody DoubleRunProdVO doubleRunVO) {
+        List<DoubleRunProdVO.DRIArtNoVO> artNoList = doubleRunVO.getData().getData();
         final Integer userId = doubleRunVO.getData().getData().get(0).getUser_id();
         // 先从redis中获取列表数据
-        List<DoubleRunVO.DRIArtNoSkuVO> cacheList = ObjectUtils.defaultIfNull(redisCache
+        List<DoubleRunProdVO.DRIArtNoSkuVO> cacheList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_DOUBLE_RUN_OFF_SALE_BASIC_KEY + userId), new ArrayList<>());
         artNoList.forEach(artNoInfo -> {
             artNoInfo.getSkus().forEach(x -> x.setColor(this.decodeUnicode(x.getColor()))
@@ -100,20 +99,20 @@ public class DoubleRunController extends BaseController {
     @GetMapping("/cache/{userId}")
     public R<Integer> getCache(@PathVariable Integer userId) {
         // 从redis中获取数据
-        List<DoubleRunVO.DRIArtNoSkuVO> cacheList = ObjectUtils.defaultIfNull(redisCache
+        List<DoubleRunProdVO.DRIArtNoSkuVO> cacheList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_DOUBLE_RUN_SALE_BASIC_KEY + userId), new ArrayList<>());
         if (CollectionUtils.isEmpty(cacheList)) {
             return R.fail();
         }
-        Map<String, List<DoubleRunVO.DRIArtNoSkuVO>> artNoGroup = cacheList.stream()
-                .sorted(Comparator.comparing(DoubleRunVO.DRIArtNoSkuVO::getArticle_number)
-                        .thenComparing(DoubleRunVO.DRIArtNoSkuVO::getColor))
+        Map<String, List<DoubleRunProdVO.DRIArtNoSkuVO>> artNoGroup = cacheList.stream()
+                .sorted(Comparator.comparing(DoubleRunProdVO.DRIArtNoSkuVO::getArticle_number)
+                        .thenComparing(DoubleRunProdVO.DRIArtNoSkuVO::getColor))
                 .collect(Collectors
-                        .groupingBy(DoubleRunVO.DRIArtNoSkuVO::getArticle_number, LinkedHashMap::new, Collectors.toList()));
+                        .groupingBy(DoubleRunProdVO.DRIArtNoSkuVO::getArticle_number, LinkedHashMap::new, Collectors.toList()));
         // 货号 颜色 map
         Map<String, List<String>> artNoColorMap = new LinkedHashMap<>();
         artNoGroup.forEach((artNo, colorList) -> {
-            artNoColorMap.put(artNo, colorList.stream().map(DoubleRunVO.DRIArtNoSkuVO::getColor).collect(Collectors.toList()));
+            artNoColorMap.put(artNo, colorList.stream().map(DoubleRunProdVO.DRIArtNoSkuVO::getColor).collect(Collectors.toList()));
         });
 
         artNoColorMap.forEach((k,v) -> {

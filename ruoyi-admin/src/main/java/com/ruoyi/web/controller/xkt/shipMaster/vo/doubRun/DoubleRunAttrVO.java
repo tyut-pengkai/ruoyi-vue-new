@@ -1,4 +1,4 @@
-package com.ruoyi.web.controller.xkt.shipMaster.vo;
+package com.ruoyi.web.controller.xkt.shipMaster.vo.doubRun;
 
 import lombok.Data;
 
