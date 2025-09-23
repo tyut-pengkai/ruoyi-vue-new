@@ -24,7 +24,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 AND n.notice_title LIKE concat('%', #{noticeTitle}, '%')
             </if>
             <if test="noticeType != null">
-                AND n.notice
+                AND n.notice_type
             </if>
             AND un.user_id = #{userId}
         ORDER BY

@@ -315,14 +315,18 @@ public class CacheConstants {
     /**
      * 供应商缓存
      */
-    public static final String SUPPLIER_KEY = "supplier:";
+    public static final String MIGRATION_SUPPLIER_PROD_KEY = "mig_supplier_prod:";
     /**
-     * 主网站缓存
+     * double_run在售缓存
      */
-    public static final String DOUBLE_RUN_BASIC_KEY = "double_run_basic:";
+    public static final String MIGRATION_DOUBLE_RUN_SALE_BASIC_KEY = "mig_double_run_sale_basic:";
+    /**
+     * double_run下架缓存
+     */
+    public static final String MIGRATION_DOUBLE_RUN_OFF_SALE_BASIC_KEY = "mig_double_run_off_sale_basic:";
     /**
      * 档口属性缓存
      */
-    public static final String DOUBLE_RUN_ATTR_KEY = "double_run_attr:";
+    public static final String MIGRATION_DOUBLE_RUN_SALE_ATTR_KEY = "mig_double_run_sale_attr:";
 
 }

@@ -37,10 +37,10 @@ public class ShipMasterController extends BaseController {
         final Integer supplierId = importVO.getData().getRecords().get(0).getSupplierId();
         // 先从redis中获取列表数据
         List<ShipMasterVO.SMIVO> cacheList = ObjectUtils.defaultIfNull(redisCache
-                .getCacheObject(CacheConstants.SUPPLIER_KEY + supplierId), new ArrayList<>());
+                .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_PROD_KEY + supplierId), new ArrayList<>());
         CollectionUtils.addAll(cacheList, importVO.getData().getRecords());
         // 存到redis中
-        redisCache.setCacheObject(CacheConstants.SUPPLIER_KEY + supplierId, cacheList, 5, TimeUnit.DAYS);
+        redisCache.setCacheObject(CacheConstants.MIGRATION_SUPPLIER_PROD_KEY + supplierId, cacheList, 5, TimeUnit.DAYS);
         return R.ok();
     }
 
@@ -49,7 +49,7 @@ public class ShipMasterController extends BaseController {
     public R<Integer> getCache(@PathVariable Integer supplierId) {
         // 从redis中获取数据
         List<ShipMasterVO.SMIVO> cacheList = ObjectUtils.defaultIfNull(redisCache
-                .getCacheObject(CacheConstants.SUPPLIER_KEY + supplierId), new ArrayList<>());
+                .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_PROD_KEY + supplierId), new ArrayList<>());
         if (CollectionUtils.isEmpty(cacheList)) {
             return R.fail();
         }

@@ -35,20 +35,38 @@ public class DoubleRunController extends BaseController {
     final RedisCache redisCache;
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @PostMapping("/cache")
-    public R<Integer> createCache(@Validated @RequestBody DoubleRunVO importVO) {
-        List<DoubleRunVO.DRIArtNoVO> artNoList = importVO.getData().getData();
-        final Integer userId = importVO.getData().getData().get(0).getUser_id();
+    @PostMapping("/sale/cache")
+    public R<Integer> createSaleCache(@Validated @RequestBody DoubleRunVO doubleRunVO) {
+        List<DoubleRunVO.DRIArtNoVO> artNoList = doubleRunVO.getData().getData();
+        final Integer userId = doubleRunVO.getData().getData().get(0).getUser_id();
         // 先从redis中获取列表数据
         List<DoubleRunVO.DRIArtNoSkuVO> cacheList = ObjectUtils.defaultIfNull(redisCache
-                .getCacheObject(CacheConstants.DOUBLE_RUN_BASIC_KEY + userId), new ArrayList<>());
+                .getCacheObject(CacheConstants.MIGRATION_DOUBLE_RUN_SALE_BASIC_KEY + userId), new ArrayList<>());
         artNoList.forEach(artNoInfo -> {
             artNoInfo.getSkus().forEach(x -> x.setColor(this.decodeUnicode(x.getColor()))
                     .setArticle_number(artNoInfo.getArticle_number()).setProduct_id(artNoInfo.getId()));
             cacheList.addAll(artNoInfo.getSkus());
         });
         // 存到redis中
-        redisCache.setCacheObject(CacheConstants.DOUBLE_RUN_BASIC_KEY + userId, cacheList);
+        redisCache.setCacheObject(CacheConstants.MIGRATION_DOUBLE_RUN_SALE_BASIC_KEY + userId, cacheList);
+        return R.ok();
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @PostMapping("/off-sale/cache")
+    public R<Integer> createOffSaleCache(@Validated @RequestBody DoubleRunVO doubleRunVO) {
+        List<DoubleRunVO.DRIArtNoVO> artNoList = doubleRunVO.getData().getData();
+        final Integer userId = doubleRunVO.getData().getData().get(0).getUser_id();
+        // 先从redis中获取列表数据
+        List<DoubleRunVO.DRIArtNoSkuVO> cacheList = ObjectUtils.defaultIfNull(redisCache
+                .getCacheObject(CacheConstants.MIGRATION_DOUBLE_RUN_OFF_SALE_BASIC_KEY + userId), new ArrayList<>());
+        artNoList.forEach(artNoInfo -> {
+            artNoInfo.getSkus().forEach(x -> x.setColor(this.decodeUnicode(x.getColor()))
+                    .setArticle_number(artNoInfo.getArticle_number()).setProduct_id(artNoInfo.getId()));
+            cacheList.addAll(artNoInfo.getSkus());
+        });
+        // 存到redis中
+        redisCache.setCacheObject(CacheConstants.MIGRATION_DOUBLE_RUN_OFF_SALE_BASIC_KEY + userId, cacheList);
         return R.ok();
     }
 
@@ -57,7 +75,7 @@ public class DoubleRunController extends BaseController {
     public R<Integer> createAttrCache(@PathVariable(value = "user_id") Integer user_id, @PathVariable("product_id") Integer product_id,
                                       @Validated @RequestBody DoubleRunAttrVO attrVO) {
         // 判断缓存中是否有该product_id
-        Map<String, String> existMap = redisCache.getCacheMap(CacheConstants.DOUBLE_RUN_ATTR_KEY + user_id + "_" + product_id);
+        Map<String, String> existMap = redisCache.getCacheMap(CacheConstants.MIGRATION_DOUBLE_RUN_SALE_ATTR_KEY + user_id + "_" + product_id);
         if (MapUtils.isNotEmpty(existMap)) {
             throw new ServiceException("该商品已设置过类目属性", HttpStatus.ERROR);
         }
@@ -73,7 +91,7 @@ public class DoubleRunController extends BaseController {
                         .put(this.decodeUnicode(x.getProps_name()), this.decodeUnicode(x.getPropsvalue_name())));
             }
         });
-        redisCache.setCacheMap(CacheConstants.DOUBLE_RUN_ATTR_KEY + user_id + "_" + product_id, attrMap);
+        redisCache.setCacheMap(CacheConstants.MIGRATION_DOUBLE_RUN_SALE_ATTR_KEY + user_id + "_" + product_id, attrMap);
         return R.ok();
     }
 
@@ -83,7 +101,7 @@ public class DoubleRunController extends BaseController {
     public R<Integer> getCache(@PathVariable Integer userId) {
         // 从redis中获取数据
         List<DoubleRunVO.DRIArtNoSkuVO> cacheList = ObjectUtils.defaultIfNull(redisCache
-                .getCacheObject(CacheConstants.DOUBLE_RUN_BASIC_KEY + userId), new ArrayList<>());
+                .getCacheObject(CacheConstants.MIGRATION_DOUBLE_RUN_SALE_BASIC_KEY + userId), new ArrayList<>());
         if (CollectionUtils.isEmpty(cacheList)) {
             return R.fail();
         }
