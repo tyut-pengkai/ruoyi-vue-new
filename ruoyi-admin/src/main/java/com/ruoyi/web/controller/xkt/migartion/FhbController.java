@@ -4,10 +4,7 @@ import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.redis.RedisCache;
-import com.ruoyi.web.controller.xkt.migartion.vo.fhb.FhbCusDiscountVO;
-import com.ruoyi.web.controller.xkt.migartion.vo.fhb.FhbCusVO;
-import com.ruoyi.web.controller.xkt.migartion.vo.fhb.FhbProdStockVO;
-import com.ruoyi.web.controller.xkt.migartion.vo.fhb.FhbProdVO;
+import com.ruoyi.web.controller.xkt.migartion.vo.fhb.*;
 import com.ruoyi.xkt.service.shipMaster.IShipMasterService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -98,6 +95,14 @@ public class FhbController extends BaseController {
         CollectionUtils.addAll(cacheList, cusDiscountVO.getData().getRecords());
         // 存到redis中
         redisCache.setCacheObject(CacheConstants.MIGRATION_SUPPLIER_CUS_DISCOUNT_KEY + supplierId, cacheList, 5, TimeUnit.DAYS);
+        return R.ok();
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @PostMapping("/colors/cache/{supplierId}")
+    public R<Integer> createColorsCache(@PathVariable Integer supplierId, @Validated @RequestBody FhbColorVO colorVO) {
+        // 存到redis中
+        redisCache.setCacheObject(CacheConstants.MIGRATION_SUPPLIER_PROD_COLOR_KEY + supplierId, colorVO.getData(), 5, TimeUnit.DAYS);
         return R.ok();
     }
 

@@ -23,6 +23,7 @@ public class GtProdVO {
         private Integer id;
         private Integer user_id;
         private String article_number;
+        private String characters;
         private List<GtProdSkuVO> skus;
     }
 

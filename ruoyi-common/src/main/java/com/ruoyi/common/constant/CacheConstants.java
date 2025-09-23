@@ -329,6 +329,10 @@ public class CacheConstants {
      */
     public static final String MIGRATION_SUPPLIER_CUS_DISCOUNT_KEY = "mig_fhb_cus_discount:";
     /**
+     * FHB商品颜色缓存
+     */
+    public static final String MIGRATION_SUPPLIER_PROD_COLOR_KEY = "mig_fhb_prod_color:";
+    /**
      * GT在售缓存
      */
     public static final String MIGRATION_GT_SALE_BASIC_KEY = "mig_gt_sale_basic:";
@@ -340,5 +344,9 @@ public class CacheConstants {
      * GT档口属性缓存
      */
     public static final String MIGRATION_GT_SALE_ATTR_KEY = "mig_gt_sale_attr:";
+    /**
+     * GT档口分类缓存
+     */
+    public static final String MIGRATION_GT_SALE_CATE_KEY = "mig_gt_sale_cate:";
 
 }

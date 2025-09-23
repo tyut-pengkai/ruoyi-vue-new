@@ -1,14 +1,20 @@
 package com.ruoyi.web.controller.xkt.migartion;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruoyi.common.constant.CacheConstants;
+import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.web.controller.xkt.migartion.vo.gt.GtAttrVO;
+import com.ruoyi.web.controller.xkt.migartion.vo.gt.GtCateVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.gt.GtProdSkuVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.gt.GtProdVO;
+import com.ruoyi.xkt.domain.SysProductCategory;
+import com.ruoyi.xkt.mapper.SysProductCategoryMapper;
 import com.ruoyi.xkt.service.shipMaster.IShipMasterService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -17,8 +23,11 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -33,6 +42,7 @@ public class GtController extends BaseController {
 
     final IShipMasterService shipMasterService;
     final RedisCache redisCache;
+    final SysProductCategoryMapper prodCateMapper;
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @PostMapping("/sale/cache")
@@ -92,6 +102,28 @@ public class GtController extends BaseController {
             }
         });
         redisCache.setCacheMap(CacheConstants.MIGRATION_GT_SALE_ATTR_KEY + user_id + "_" + product_id, attrMap);
+        return R.ok();
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @PostMapping("/cate/cache/{user_id}")
+    public R<Integer> createCateCache(@PathVariable(value = "user_id") Integer user_id, MultipartFile file) throws IOException {
+        ExcelUtil<GtCateVO> util = new ExcelUtil<>(GtCateVO.class);
+        List<GtCateVO> artNoCateList = util.importExcel(file.getInputStream());
+        // 步橘网获取所有的分类
+        List<SysProductCategory> cateList = this.prodCateMapper.selectList(new LambdaQueryWrapper<SysProductCategory>()
+                .eq(SysProductCategory::getDelFlag, Constants.UNDELETED).ne(SysProductCategory::getId, Constants.TOPMOST_PRODUCT_CATEGORY_ID));
+        Map<String, Long> cateNameMap = cateList.stream().collect(Collectors.toMap(SysProductCategory::getName, SysProductCategory::getId));
+        artNoCateList.forEach(x -> {
+            // 必须用trim()
+            x.setArticle_number(x.getArticle_number().trim()).setCate_name(x.getCate_name().trim());
+            if (!cateNameMap.containsKey(x.getCate_name())) {
+                throw new ServiceException("分类不存在：" + x.getCate_name(), HttpStatus.ERROR);
+            }
+            x.setBuju_cate_id(cateNameMap.get(x.getCate_name().trim()));
+        });
+        // 放到缓存中
+        redisCache.setCacheObject(CacheConstants.MIGRATION_GT_SALE_CATE_KEY + user_id, artNoCateList, 5, TimeUnit.DAYS);
         return R.ok();
     }
 

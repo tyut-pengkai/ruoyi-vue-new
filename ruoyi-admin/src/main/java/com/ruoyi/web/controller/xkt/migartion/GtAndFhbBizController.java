@@ -33,8 +33,8 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/rest/v1/compare")
-public class CompareBizController extends BaseController {
+@RequestMapping("/rest/v1/gt-fhb")
+public class GtAndFhbBizController extends BaseController {
 
     final IShipMasterService shipMasterService;
     final RedisCache redisCache;
@@ -45,7 +45,7 @@ public class CompareBizController extends BaseController {
 
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @PutMapping("/double/ship/{userId}/{supplierId}")
+    @PutMapping("/compare/{userId}/{supplierId}")
     public void compare(HttpServletResponse response, @PathVariable("userId") Integer userId, @PathVariable("supplierId") Integer supplierId) throws UnsupportedEncodingException {
         Map<String, List<String>> multiSaleSameGoMap = new HashMap<>();
         Map<String, List<String>> multiOffSaleSameGoMap = new HashMap<>();
@@ -150,16 +150,42 @@ public class CompareBizController extends BaseController {
         String encodedFileName = URLEncoder.encode("GT与FHB差异" + DateUtils.getDate(), "UTF-8").replaceAll("\\+", "%20");
         response.setHeader("Content-disposition", "attachment;filename=" + encodedFileName + ".xlsx");
         util.exportExcel(response, downloadList, "差异");
+    }
+
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @PutMapping("/save/{userId}/{supplierId}")
+    public void autoSaveToDB(@PathVariable("userId") Integer userId, @PathVariable("supplierId") Integer supplierId) throws UnsupportedEncodingException {
+        // 步骤1: 准备数据，新建颜色
+
+        // 步骤2: 准备数据，新建客户
+
+        // 步骤3: GT 和 FHB 货号对应关系，然后直接copy 对应的属性关系
+            // a. 商品与颜色对应关系
+            // b. 库存初始化
+            // c. 商品颜色尺码对应关系
+            // d. 同步到ES中 ？？ 这步还不能做 因为没有 商品主图
+            // e.
+
+        // 步骤4: 客户与货号的优惠关系
+
+        // 步骤5: 货号的初始库存
+
+
+
 
     }
 
-    /**
-     * 提取货号中的核心数字部分
-     * 例如: z1104 -> 1104, z1087高 -> 1087, z1003-1 -> 1003, 922- -> 922, -8072 -> 8072
-     *
-     * @param articleNumber 货号
-     * @return 核心数字部分
-     */
+
+
+
+        /**
+         * 提取货号中的核心数字部分
+         * 例如: z1104 -> 1104, z1087高 -> 1087, z1003-1 -> 1003, 922- -> 922, -8072 -> 8072
+         *
+         * @param articleNumber 货号
+         * @return 核心数字部分
+         */
     private String extractCoreArticleNumber(String articleNumber) {
         if (articleNumber == null || articleNumber.isEmpty()) {
             return "";
