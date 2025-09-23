@@ -315,19 +315,19 @@ public class CacheConstants {
     /**
      * FHB商品缓存
      */
-    public static final String MIGRATION_SUPPLIER_PROD_KEY = "mig_supplier_prod:";
+    public static final String MIGRATION_SUPPLIER_PROD_KEY = "mig_fhb_prod:";
     /**
      * FHB客户缓存
      */
-    public static final String MIGRATION_SUPPLIER_CUS_KEY = "mig_supplier_cus:";
+    public static final String MIGRATION_SUPPLIER_CUS_KEY = "mig_fhb_cus:";
     /**
      * FHB商品库存缓存
      */
-    public static final String MIGRATION_SUPPLIER_PROD_STOCK_KEY = "mig_supplier_prod_stock:";
+    public static final String MIGRATION_SUPPLIER_PROD_STOCK_KEY = "mig_fhb_prod_stock:";
     /**
      * FHB客户优惠缓存
      */
-    public static final String MIGRATION_SUPPLIER_CUS_DISCOUNT_KEY = "mig_supplier_cus_discount:";
+    public static final String MIGRATION_SUPPLIER_CUS_DISCOUNT_KEY = "mig_fhb_cus_discount:";
     /**
      * GT在售缓存
      */
