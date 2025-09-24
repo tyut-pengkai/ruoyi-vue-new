@@ -109,6 +109,16 @@ public class GtController extends BaseController {
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @PostMapping("/cate/cache/{user_id}")
     public R<Integer> createCateCache(@PathVariable(value = "user_id") Integer user_id, MultipartFile file) throws IOException {
+
+
+        // TODO GT分类基础数据导入，然后从商品属性那儿解决
+        // TODO GT分类基础数据导入，然后从商品属性那儿解决
+        // TODO GT分类基础数据导入，然后从商品属性那儿解决
+
+
+
+
+
         ExcelUtil<GtCateVO> util = new ExcelUtil<>(GtCateVO.class);
         List<GtCateVO> artNoCateList = util.importExcel(file.getInputStream());
         // 步橘网获取所有的分类

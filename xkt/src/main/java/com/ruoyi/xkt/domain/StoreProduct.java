@@ -7,8 +7,6 @@ import com.ruoyi.common.core.domain.XktBaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -106,18 +104,21 @@ public class StoreProduct extends XktBaseEntity {
 
     /**
      * 推荐数值
+     *
      * @return
      */
     private Long recommendWeight;
 
     /**
      * 销量数值
+     *
      * @return
      */
     private Long saleWeight;
 
     /**
      * 人气数值
+     *
      * @return
      */
     private Long popularityWeight;

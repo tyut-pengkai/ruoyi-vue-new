@@ -58,6 +58,20 @@ public class FhbController extends BaseController {
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @PostMapping("/colors/cache/{supplierId}")
+    public R<Integer> createColorsCache(@PathVariable Integer supplierId) {
+        // 先从redis中获取列表数据
+        List<FhbProdVO.SMIVO> cacheList = ObjectUtils.defaultIfNull(redisCache
+                .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_PROD_KEY + supplierId), new ArrayList<>());
+        if (CollectionUtils.isEmpty(cacheList)) {
+            throw new ServiceException("FHB商品列表为空", HttpStatus.ERROR);
+        }
+        List<String> colorNameList = cacheList.stream().map(FhbProdVO.SMIVO::getColor).distinct().collect(Collectors.toList());
+
+        return R.ok();
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @PostMapping("/cus/cache")
     public R<Integer> createCusCache(@Validated @RequestBody FhbCusVO cusVO) {
         final Integer supplierId = cusVO.getData().getRecords().get(0).getSupplierId();
@@ -115,13 +129,7 @@ public class FhbController extends BaseController {
         return R.ok();
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @PostMapping("/colors/cache/{supplierId}")
-    public R<Integer> createColorsCache(@PathVariable Integer supplierId, @Validated @RequestBody FhbColorVO colorVO) {
-        // 存到redis中
-        redisCache.setCacheObject(CacheConstants.MIGRATION_SUPPLIER_PROD_COLOR_KEY + supplierId, colorVO.getData(), 5, TimeUnit.DAYS);
-        return R.ok();
-    }
+
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @GetMapping("/prod/cache/{supplierId}")

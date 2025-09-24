@@ -337,7 +337,7 @@ public class Constants
     public static final String INSOLE_MATERIAL = "insoleMaterial";
     public static final String INSOLE_MATERIAL_NAME = "鞋垫材质";
     public static final String RELEASE_YEAR_SEASON = "releaseYearSeason";
-    public static final String RELEASE_YEAR_SEASON_NAME = "上市季节年份";
+    public static final String RELEASE_YEAR_SEASON_NAME = "上市年份季节";
     public static final String HEEL_HEIGHT = "heelHeight";
     public static final String HEEL_HEIGHT_NAME = "后跟高";
     public static final String HEEL_TYPE = "heelType";
@@ -357,7 +357,7 @@ public class Constants
     public static final String LEATHER_FEATURES = "leatherFeatures";
     public static final String LEATHER_FEATURES_NAME = "皮质特征";
     public static final String MANUFACTURING_PROCESS = "manufacturingProcess";
-    public static final String MANUFACTURING_PROCESS_NAME = "制作工艺";
+    public static final String MANUFACTURING_PROCESS_NAME = "鞋制作工艺";
     public static final String PATTERN = "pattern";
     public static final String PATTERN_NAME = "图案";
     public static final String CLOSURE_TYPE = "closureType";
