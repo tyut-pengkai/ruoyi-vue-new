@@ -22,6 +22,7 @@ public class GtProdVO {
     public static class DRIArtNoVO {
         private Integer id;
         private Integer user_id;
+        private Integer category_nid;
         private String article_number;
         private String characters;
         private List<GtProdSkuVO> skus;

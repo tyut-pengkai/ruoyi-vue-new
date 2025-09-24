@@ -15,6 +15,7 @@ public class GtProdSkuVO {
 
     private Integer product_id;
     private String article_number;
+    private Integer category_nid;
     private String color;
     private Integer size;
     private String characters;

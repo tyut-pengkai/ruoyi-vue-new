@@ -61,6 +61,7 @@ public class GtAndFhbBizController extends BaseController {
     final StoreMapper storeMapper;
     final StoreProductServiceMapper prodSvcMapper;
     final StoreProductCategoryAttributeMapper prodCateAttrMapper;
+    final SysProductCategoryMapper prodCateMapper;
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @PutMapping("/sync-es/{storeId}")
@@ -94,8 +95,8 @@ public class GtAndFhbBizController extends BaseController {
         List<GtProdSkuVO> doubleRunSaleBasicList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_GT_SALE_BASIC_KEY + userId), new ArrayList<>());
         Map<String, String> articleNoColorMap = doubleRunSaleBasicList.stream().collect(Collectors.groupingBy(GtProdSkuVO::getArticle_number,
-                        Collectors.collectingAndThen(Collectors.mapping(GtProdSkuVO::getColor, Collectors.toList()),
-                                list -> "(" + list.stream().distinct().collect(Collectors.joining(",")) + ")")));
+                Collectors.collectingAndThen(Collectors.mapping(GtProdSkuVO::getColor, Collectors.toList()),
+                        list -> "(" + list.stream().distinct().collect(Collectors.joining(",")) + ")")));
         List<String> doubleRunSaleArtNoList = doubleRunSaleBasicList.stream().map(GtProdSkuVO::getArticle_number)
                 .distinct().collect(Collectors.toList());
         // 查看double_run 在售的商品 这边有多少相似的货号
@@ -124,8 +125,8 @@ public class GtAndFhbBizController extends BaseController {
         List<FhbProdVO.SMIVO> shipMasterProdList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_PROD_KEY + supplierId), new ArrayList<>());
         Map<String, String> shipMasterArticleNoColorMap = shipMasterProdList.stream().collect(Collectors.groupingBy(FhbProdVO.SMIVO::getArtNo,
-                        Collectors.collectingAndThen(Collectors.mapping(FhbProdVO.SMIVO::getColor, Collectors.toList()),
-                                list -> "(" + list.stream().distinct().collect(Collectors.joining(",")) + ")")));
+                Collectors.collectingAndThen(Collectors.mapping(FhbProdVO.SMIVO::getColor, Collectors.toList()),
+                        list -> "(" + list.stream().distinct().collect(Collectors.joining(",")) + ")")));
         List<String> shipArtNoList = shipMasterProdList.stream().map(FhbProdVO.SMIVO::getArtNo)
                 .distinct().collect(Collectors.toList());
         shipArtNoList.forEach(artNo -> {
@@ -201,7 +202,6 @@ public class GtAndFhbBizController extends BaseController {
      * 步骤3: 准备数据，新建客户
      * 步骤4: 客户与货号的优惠关系
      * 步骤5: 批量创建数据到ES服务器
-     *
      */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @PutMapping("/init")
@@ -215,13 +215,12 @@ public class GtAndFhbBizController extends BaseController {
         // 步骤1: 准备数据，新建颜色
         Map<String, StoreColor> storeColorMap = this.initStoreColorList(initVO.getStoreId(), initVO.getSupplierId());
         // 步骤2: GT 和 FHB 货号对应关系，然后直接copy 对应的属性关系
-            // a. 商品与颜色对应关系
-            // b. 商品颜色尺码 + 价格 对应关系
-            // c. 库存初始化
-            // d. 服务承诺初始化
-            // e. 类目属性初始化
+        // a. 商品与颜色对应关系
+        // b. 商品颜色尺码 + 价格 对应关系
+        // c. 库存初始化
+        // d. 服务承诺初始化
+        // e. 类目属性初始化
         this.init(initVO, storeColorMap);
-
 
 
         // 步骤x: 查看有哪些货号价格是有多个的，单独设置差异的价格
@@ -233,18 +232,18 @@ public class GtAndFhbBizController extends BaseController {
     }
 
 
-
     /**
      * 初始化档口商品列表
+     *
      * @param storeColorMap 档口颜色map
      */
     private R<Integer> init(GtAndFHBInitVO initVO, Map<String, StoreColor> storeColorMap) {
         // 步骤2: GT 和 FHB 货号对应关系，然后直接copy 对应的属性关系
-            // a. 商品与颜色对应关系
-            // b. 商品颜色尺码 + 价格 对应关系
-            // c. 库存初始化
-            // d. 服务承诺初始化
-            // e. 类目属性初始化
+        // a. 商品与颜色对应关系
+        // b. 商品颜色尺码 + 价格 对应关系
+        // c. 库存初始化
+        // d. 服务承诺初始化
+        // e. 类目属性初始化
         Map<String, List<String>> multiSaleSameGoMap = new HashMap<>();
         Map<String, List<String>> multiOffSaleSameGoMap = new HashMap<>();
         Map<String, List<String>> multiSameFhbMap = new HashMap<>();
@@ -283,16 +282,21 @@ public class GtAndFhbBizController extends BaseController {
             multiSameFhbMap.put(cleanArtNo, existList);
         });
 
-        // 商品所有的分类
-        List<GtCateVO> artNoCateList = redisCache.getCacheObject(CacheConstants.MIGRATION_GT_SALE_CATE_KEY + initVO.getUserId());
-        if (CollectionUtils.isEmpty(artNoCateList)) {
-            throw new ServiceException("GT商品分类为空!", HttpStatus.ERROR);
-        }
-        Map<String, GtCateVO> artNoCateMap = artNoCateList.stream().collect(Collectors.toMap(GtCateVO::getArticle_number, x -> x));
-
-
         // gt按照货号分组
         Map<String, List<GtProdSkuVO>> gtSaleGroupMap = gtSaleBasicList.stream().collect(Collectors.groupingBy(GtProdSkuVO::getArticle_number));
+
+        // GT分类
+        List<GtCateVO.GCIDataVO> cacheList = ObjectUtils.defaultIfNull(redisCache
+                .getCacheObject(CacheConstants.MIGRATION_GT_SALE_CATE_KEY + initVO.getUserId()), new ArrayList<>());
+        List<SysProductCategory> prodCateList = this.prodCateMapper.selectList(new LambdaQueryWrapper<SysProductCategory>()
+                .eq(SysProductCategory::getDelFlag, Constants.UNDELETED));
+        Map<String, Long> dbCateNameMap = prodCateList.stream().collect(Collectors.toMap(SysProductCategory::getName, SysProductCategory::getId));
+        // GT商品分类和步橘分类映射
+        Map<Integer, Long> cateRelationMap = new HashMap<>();
+        cacheList.forEach(gtCate -> {
+            final Long cateId = Optional.ofNullable(dbCateNameMap.get(gtCate.getName())).orElseThrow(() -> new ServiceException("GT分类不存在!", HttpStatus.ERROR));
+            cateRelationMap.put(gtCate.getId(), cateId);
+        });
 
         System.err.println("============ 两边系统“一致”的货号 ============");
         // 清洗后，相同货号映射
@@ -310,11 +314,8 @@ public class GtAndFhbBizController extends BaseController {
                 .forEach(cleanArtNo -> {
                     // 获取GT匹配的商品中的第一个商品
                     List<GtProdSkuVO> gtMatchSkuList = this.getGtFirstSku(multiSaleSameGoMap, gtSaleGroupMap, cleanArtNo);
-                    // 商品分类
-                    final GtCateVO gtCateVO = Optional.ofNullable(artNoCateMap.get(gtMatchSkuList.get(0).getArticle_number()))
-                            .orElseThrow(() -> new ServiceException("没有GT商品分类!", HttpStatus.ERROR));
                     // 初始化档口商品
-                    StoreProduct storeProd = new StoreProduct().setStoreId(initVO.getStoreId()).setProdCateId(gtCateVO.getBuju_cate_id())
+                    StoreProduct storeProd = new StoreProduct().setStoreId(initVO.getStoreId()).setProdCateId(cateRelationMap.get(gtMatchSkuList.get(0).getCategory_nid()))
                             .setProdArtNum(cleanArtNo).setProdTitle(gtMatchSkuList.get(0).getCharacters()).setListingWay(ListingType.RIGHT_NOW.getValue())
                             .setVoucherDate(voucherDate).setProdStatus(EProductStatus.ON_SALE.getValue()).setRecommendWeight(0L).setSaleWeight(0L).setPopularityWeight(0L);
                     // 提前设置档口商品的类目属性
@@ -400,10 +401,10 @@ public class GtAndFhbBizController extends BaseController {
     /**
      * 新建档口客户对应产品的优惠
      *
-     * @param initVO        入参
-     * @param storeProdList 档口商品列表
-     * @param storeCusList  档口客户列表
-     * @param prodColorList 商品颜色列表
+     * @param initVO          入参
+     * @param storeProdList   档口商品列表
+     * @param storeCusList    档口客户列表
+     * @param prodColorList   商品颜色列表
      * @param multiSameFhbMap 步橘货号和FHB货号对应关系
      * @param fhbProdGroupMap FHB货号和颜色对应关系
      */
@@ -452,6 +453,7 @@ public class GtAndFhbBizController extends BaseController {
 
     /**
      * 初始化客户列表
+     *
      * @param initVO 入参
      * @return List<StoreCustomer>
      */
@@ -474,8 +476,9 @@ public class GtAndFhbBizController extends BaseController {
 
     /**
      * 提前匹配类目属性
-     * @param product_id GT商品ID
-     * @param userId GT用户ID
+     *
+     * @param product_id  GT商品ID
+     * @param userId      GT用户ID
      * @param prodAttrMap 类目属性
      */
     private void preMatchAttr(Integer product_id, Integer userId, Map<Integer, StoreProductCategoryAttribute> prodAttrMap) {
@@ -587,6 +590,7 @@ public class GtAndFhbBizController extends BaseController {
 
     /**
      * 取GT匹配的多个货号中的第一个商品
+     *
      * @param multiSaleSameGoMap
      * @param gtSaleGroupMap
      * @param cleanArtNo
@@ -604,7 +608,7 @@ public class GtAndFhbBizController extends BaseController {
     /**
      * 初始化档口颜色
      *
-     * @param storeId 档口ID
+     * @param storeId    档口ID
      * @param supplierId 供应商ID
      */
     private Map<String, StoreColor> initStoreColorList(Long storeId, Integer supplierId) {

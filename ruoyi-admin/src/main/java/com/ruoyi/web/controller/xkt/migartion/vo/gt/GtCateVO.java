@@ -1,8 +1,9 @@
 package com.ruoyi.web.controller.xkt.migartion.vo.gt;
 
-import com.ruoyi.common.annotation.Excel;
 import lombok.Data;
 import lombok.experimental.Accessors;
+
+import java.util.List;
 
 /**
  * @author liangyq
@@ -12,11 +13,13 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class GtCateVO {
 
-    @Excel(name = "货号")
-    private String article_number;
-    @Excel(name = "分类")
-    private String cate_name;
-    // 步橘的分类id
-    private Long buju_cate_id;
+    private List<GCIDataVO> data;
+
+    @Data
+    public static class GCIDataVO {
+        private Integer id;
+        private Integer has_child;
+        private String name;
+    }
 
 }

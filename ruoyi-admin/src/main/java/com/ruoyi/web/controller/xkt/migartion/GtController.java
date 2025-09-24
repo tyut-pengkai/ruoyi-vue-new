@@ -1,19 +1,15 @@
 package com.ruoyi.web.controller.xkt.migartion;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruoyi.common.constant.CacheConstants;
-import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.web.controller.xkt.migartion.vo.gt.GtAttrVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.gt.GtCateVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.gt.GtProdSkuVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.gt.GtProdVO;
-import com.ruoyi.xkt.domain.SysProductCategory;
 import com.ruoyi.xkt.mapper.SysProductCategoryMapper;
 import com.ruoyi.xkt.service.shipMaster.IShipMasterService;
 import lombok.RequiredArgsConstructor;
@@ -23,12 +19,9 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -45,6 +38,7 @@ public class GtController extends BaseController {
     final RedisCache redisCache;
     final SysProductCategoryMapper prodCateMapper;
 
+
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @PostMapping("/sale/cache")
     public R<Integer> createSaleCache(@Validated @RequestBody GtProdVO doubleRunVO) {
@@ -55,7 +49,7 @@ public class GtController extends BaseController {
                 .getCacheObject(CacheConstants.MIGRATION_GT_SALE_BASIC_KEY + userId), new ArrayList<>());
         artNoList.forEach(artNoInfo -> {
             artNoInfo.getSkus().forEach(x -> x.setColor(this.decodeUnicode(x.getColor())).setCharacters(artNoInfo.getCharacters())
-                    .setArticle_number(artNoInfo.getArticle_number()).setProduct_id(artNoInfo.getId()));
+                    .setArticle_number(artNoInfo.getArticle_number()).setProduct_id(artNoInfo.getId()).setCategory_nid(artNoInfo.getCategory_nid()));
             cacheList.addAll(artNoInfo.getSkus());
         });
         // 存到redis中
@@ -108,33 +102,20 @@ public class GtController extends BaseController {
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @PostMapping("/cate/cache/{user_id}")
-    public R<Integer> createCateCache(@PathVariable(value = "user_id") Integer user_id, MultipartFile file) throws IOException {
-
-
-        // TODO GT分类基础数据导入，然后从商品属性那儿解决
-        // TODO GT分类基础数据导入，然后从商品属性那儿解决
-        // TODO GT分类基础数据导入，然后从商品属性那儿解决
-
-
-
-
-
-        ExcelUtil<GtCateVO> util = new ExcelUtil<>(GtCateVO.class);
-        List<GtCateVO> artNoCateList = util.importExcel(file.getInputStream());
-        // 步橘网获取所有的分类
-        List<SysProductCategory> cateList = this.prodCateMapper.selectList(new LambdaQueryWrapper<SysProductCategory>()
-                .eq(SysProductCategory::getDelFlag, Constants.UNDELETED).ne(SysProductCategory::getId, Constants.TOPMOST_PRODUCT_CATEGORY_ID));
-        Map<String, Long> cateNameMap = cateList.stream().collect(Collectors.toMap(SysProductCategory::getName, SysProductCategory::getId));
-        artNoCateList.forEach(x -> {
-            // 必须用trim()
-            x.setArticle_number(x.getArticle_number().trim()).setCate_name(x.getCate_name().trim());
-            if (!cateNameMap.containsKey(x.getCate_name())) {
-                throw new ServiceException("分类不存在：" + x.getCate_name(), HttpStatus.ERROR);
-            }
-            x.setBuju_cate_id(cateNameMap.get(x.getCate_name().trim()));
-        });
+    public R<Integer> createCateCache(@PathVariable(value = "user_id") Integer user_id, @Validated @RequestBody GtCateVO cateInitVO) {
+        if (CollectionUtils.isEmpty(cateInitVO.getData())) {
+            throw new ServiceException("入参GT分类数据为空!", HttpStatus.ERROR);
+        }
+        List<GtCateVO.GCIDataVO> cateList = cateInitVO.getData().stream()
+                .filter(x -> x.getHas_child() == 0)
+                .map(x -> Objects.equals(x.getName(), "时尚雪地靴") ? x.setName("雪地靴") : x)
+                .collect(Collectors.toList());
+        // 先从redis中获取列表数据
+        List<GtCateVO.GCIDataVO> cacheList = ObjectUtils.defaultIfNull(redisCache
+                .getCacheObject(CacheConstants.MIGRATION_GT_SALE_CATE_KEY + user_id), new ArrayList<>());
+        CollectionUtils.addAll(cacheList, cateList);
         // 放到缓存中
-        redisCache.setCacheObject(CacheConstants.MIGRATION_GT_SALE_CATE_KEY + user_id, artNoCateList, 5, TimeUnit.DAYS);
+        redisCache.setCacheObject(CacheConstants.MIGRATION_GT_SALE_CATE_KEY + user_id, cacheList);
         return R.ok();
     }
 
