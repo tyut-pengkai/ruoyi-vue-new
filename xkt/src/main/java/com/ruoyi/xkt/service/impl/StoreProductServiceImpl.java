@@ -1473,19 +1473,15 @@ public class StoreProductServiceImpl implements IStoreProductService {
         if (ObjectUtils.isNotEmpty(cateAttr.getOccasion())) {
             cateAttrMap.put(Constants.CATE_RELATE_MAP.get(OCCASION), cateAttr.getOccasion());
         }
-        // 18. 适用年龄
-        if (ObjectUtils.isNotEmpty(cateAttr.getSuitableAge())) {
-            cateAttrMap.put(Constants.CATE_RELATE_MAP.get(SUITABLE_AGE), cateAttr.getSuitableAge());
-        }
-        // 19. 厚薄
+        // 18. 厚薄
         if (ObjectUtils.isNotEmpty(cateAttr.getThickness())) {
             cateAttrMap.put(Constants.CATE_RELATE_MAP.get(THICKNESS), cateAttr.getThickness());
         }
-        // 20. 流行元素
+        // 19. 流行元素
         if (ObjectUtils.isNotEmpty(cateAttr.getFashionElements())) {
             cateAttrMap.put(Constants.CATE_RELATE_MAP.get(FASHION_ELEMENTS), cateAttr.getFashionElements());
         }
-        // 21. 适用对象
+        // 20. 适用对象
         if (ObjectUtils.isNotEmpty(cateAttr.getSuitablePerson())) {
             cateAttrMap.put(Constants.CATE_RELATE_MAP.get(SUITABLE_PERSON), cateAttr.getSuitablePerson());
         }

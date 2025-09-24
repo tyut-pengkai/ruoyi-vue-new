@@ -190,6 +190,8 @@ public class GtAndFhbBizController extends BaseController {
      * // a. 商品与颜色对应关系
      * // b. 商品颜色尺码 + 价格 对应关系
      * // c. 库存初始化
+     * // d. 服务承诺初始化
+     * // e. 类目属性初始化
      * 步骤3: 准备数据，新建客户
      * 步骤4: 客户与货号的优惠关系
      * 步骤5: 批量创建数据到ES服务器
@@ -207,11 +209,13 @@ public class GtAndFhbBizController extends BaseController {
             // a. 商品与颜色对应关系
             // b. 商品颜色尺码 + 价格 对应关系
             // c. 库存初始化
-        this.initStoreProdList(initVO, storeColorMap);
-
-
+            // d. 服务承诺初始化
+            // e. 类目属性初始化
+        List<StoreProduct> storeProdList = this.initStoreProdList(initVO, storeColorMap);
 
         // 步骤3: 准备数据，新建客户
+        List<StoreCustomer> storeCusList = this.initStoreCusList(initVO);
+
 
         // 步骤4: 客户与货号的优惠关系
 
@@ -224,14 +228,27 @@ public class GtAndFhbBizController extends BaseController {
     }
 
     /**
+     * 初始化客户列表
+     * @param initVO 入参
+     * @return
+     */
+    private List<StoreCustomer> initStoreCusList(GtAndFHBInitVO initVO) {
+
+        return null;
+
+    }
+
+    /**
      * 初始化档口商品列表
      * @param storeColorMap 档口颜色map
      */
-    private void initStoreProdList(GtAndFHBInitVO initVO, Map<String, StoreColor> storeColorMap) {
+    private List<StoreProduct> initStoreProdList(GtAndFHBInitVO initVO, Map<String, StoreColor> storeColorMap) {
         // 步骤2: GT 和 FHB 货号对应关系，然后直接copy 对应的属性关系
-        // a. 商品与颜色对应关系
-        // b. 商品颜色尺码 + 价格 对应关系
-        // c. 库存初始化
+            // a. 商品与颜色对应关系
+            // b. 商品颜色尺码 + 价格 对应关系
+            // c. 库存初始化
+            // d. 服务承诺初始化
+            // e. 类目属性初始化
         Map<String, List<String>> multiSaleSameGoMap = new HashMap<>();
         Map<String, List<String>> multiOffSaleSameGoMap = new HashMap<>();
         Map<String, List<String>> multiSameFhbMap = new HashMap<>();
@@ -354,7 +371,6 @@ public class GtAndFhbBizController extends BaseController {
             StoreProductCategoryAttribute cateAttr = Optional.ofNullable(prodAttrMap.get(gtMatchSkuList.get(0).getProduct_id()))
                     .orElseThrow(() -> new ServiceException("没有GT商品类目属性!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
             prodAttrList.add(cateAttr);
-
         });
         // 插入商品颜色及颜色对应的尺码，档口服务承诺
         this.prodColorMapper.insert(prodColorList);
@@ -372,6 +388,7 @@ public class GtAndFhbBizController extends BaseController {
                         .setStoreProdColorId(color.getId()).setStoreColorId(color.getStoreColorId()).setColorName(color.getColorName()))
                 .collect(Collectors.toList());
         this.prodStockMapper.insert(prodStockList);
+        return storeProdList;
     }
 
     /**
