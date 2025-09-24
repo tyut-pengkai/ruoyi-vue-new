@@ -11,6 +11,8 @@ import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.web.controller.xkt.migartion.vo.GtAndFHBCompareDownloadVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.GtAndFHBInitVO;
+import com.ruoyi.web.controller.xkt.migartion.vo.fhb.FhbCusDiscountVO;
+import com.ruoyi.web.controller.xkt.migartion.vo.fhb.FhbCusVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.fhb.FhbProdVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.gt.GtCateVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.gt.GtProdSkuVO;
@@ -63,18 +65,25 @@ public class GtAndFhbBizController extends BaseController {
     // TODO 档口注册的时候，会创建现金客户，在插入客户时，需要注意
 
 
-    // TODO 上传到ES之后还需要确认
-    // TODO 上传到ES之后还需要确认
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @PutMapping("/sync-es/{storeId}")
+    public void syncToEs(@PathVariable("storeId") Long storeId) {
+        // 同步主图 到 图搜 服务器
 
-    // TODO 上传到图搜服务器之后还要确认
-    // TODO 上传到图搜服务器之后还要确认
+        // TODO 上传到ES之后还需要确认
+        // TODO 上传到ES之后还需要确认
+        // TODO 上传到ES之后还需要确认
 
+    }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @PutMapping("/sync-pic/{storeId}")
-    public void syncToEsAndPicSearch(@PathVariable("storeId") Long storeId) {
+    public void syncToPicSearch(@PathVariable("storeId") Long storeId) {
         // 同步主图 到 图搜 服务器
 
+        // TODO 上传到图搜服务器之后还要确认
+        // TODO 上传到图搜服务器之后还要确认
+        // TODO 上传到图搜服务器之后还要确认
 
     }
 
@@ -211,13 +220,9 @@ public class GtAndFhbBizController extends BaseController {
             // c. 库存初始化
             // d. 服务承诺初始化
             // e. 类目属性初始化
-        List<StoreProduct> storeProdList = this.initStoreProdList(initVO, storeColorMap);
-
-        // 步骤3: 准备数据，新建客户
-        List<StoreCustomer> storeCusList = this.initStoreCusList(initVO);
+        this.initStoreProdList(initVO, storeColorMap);
 
 
-        // 步骤4: 客户与货号的优惠关系
 
         // 步骤x: 查看有哪些货号价格是有多个的，单独设置差异的价格
 
@@ -227,22 +232,13 @@ public class GtAndFhbBizController extends BaseController {
 
     }
 
-    /**
-     * 初始化客户列表
-     * @param initVO 入参
-     * @return
-     */
-    private List<StoreCustomer> initStoreCusList(GtAndFHBInitVO initVO) {
 
-        return null;
-
-    }
 
     /**
      * 初始化档口商品列表
      * @param storeColorMap 档口颜色map
      */
-    private List<StoreProduct> initStoreProdList(GtAndFHBInitVO initVO, Map<String, StoreColor> storeColorMap) {
+    private void initStoreProdList(GtAndFHBInitVO initVO, Map<String, StoreColor> storeColorMap) {
         // 步骤2: GT 和 FHB 货号对应关系，然后直接copy 对应的属性关系
             // a. 商品与颜色对应关系
             // b. 商品颜色尺码 + 价格 对应关系
@@ -254,7 +250,7 @@ public class GtAndFhbBizController extends BaseController {
         Map<String, List<String>> multiSameFhbMap = new HashMap<>();
         List<GtProdSkuVO> gtSaleBasicList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_GT_SALE_BASIC_KEY + initVO.getUserId()), new ArrayList<>());
-        // 查看double_run 在售的商品 这边有多少相似的货号
+        // 查看gt 在售的商品 这边有多少相似的货号
         gtSaleBasicList.stream().map(GtProdSkuVO::getArticle_number).distinct().forEach(article_number -> {
             // 只保留核心连续的数字，去除其他所有符号
             String cleanArtNo = this.extractCoreArticleNumber(article_number);
@@ -263,7 +259,7 @@ public class GtAndFhbBizController extends BaseController {
             multiSaleSameGoMap.put(cleanArtNo, existList);
         });
 
-        // 查看double_run 下架的商品有多少相似的货号
+        // 查看gt 下架的商品有多少相似的货号
         List<GtProdSkuVO> gtOffSaleBasicList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_GT_OFF_SALE_BASIC_KEY + initVO.getUserId()), new ArrayList<>());
         gtOffSaleBasicList.stream().map(GtProdSkuVO::getArticle_number).distinct().forEach(article_number -> {
@@ -388,8 +384,95 @@ public class GtAndFhbBizController extends BaseController {
                         .setStoreProdColorId(color.getId()).setStoreColorId(color.getStoreColorId()).setColorName(color.getColorName()))
                 .collect(Collectors.toList());
         this.prodStockMapper.insert(prodStockList);
-        return storeProdList;
+
+        // 步骤3: 准备数据，新建客户
+        List<StoreCustomer> storeCusList = this.initStoreCusList(initVO);
+
+        // 步骤4: 客户与货号的优惠关系
+        this.initStoreCusProdDiscList(initVO, storeProdList, storeCusList, prodColorList, multiSameFhbMap, fhbProdGroupMap);
     }
+
+
+    /**
+     * 新建档口客户对应产品的优惠
+     *
+     * @param initVO        入参
+     * @param storeProdList 档口商品列表
+     * @param storeCusList  档口客户列表
+     * @param prodColorList 商品颜色列表
+     * @param multiSameFhbMap 步橘货号和FHB货号对应关系
+     * @param fhbProdGroupMap FHB货号和颜色对应关系
+     */
+    private void initStoreCusProdDiscList(GtAndFHBInitVO initVO, List<StoreProduct> storeProdList, List<StoreCustomer> storeCusList,
+                                          List<StoreProductColor> prodColorList, Map<String, List<String>> multiSameFhbMap,
+                                          Map<String, List<FhbProdVO.SMIVO>> fhbProdGroupMap) {
+        // 从redis中获取客户优惠数据
+        List<FhbCusDiscountVO.SMCDRecordVO> fhbCusDiscCacheList = ObjectUtils.defaultIfNull(redisCache
+                .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_CUS_DISCOUNT_KEY + initVO.getSupplierId()), new ArrayList<>());
+        if (CollectionUtils.isEmpty(fhbCusDiscCacheList)) {
+            throw new ServiceException("fhb供应商客户优惠列表为空!" + initVO.getSupplierId(), HttpStatus.ERROR);
+        }
+        // FHB 货号颜色优惠对应关系
+        Map<String, Map<String, List<FhbCusDiscountVO.SMCDRecordVO>>> fhbCusDiscGroupMap = fhbCusDiscCacheList.stream().collect(Collectors
+                .groupingBy(FhbCusDiscountVO.SMCDRecordVO::getArtNo, Collectors.groupingBy(FhbCusDiscountVO.SMCDRecordVO::getColor)));
+        // 步橘系统商品所有颜色maps
+        Map<Long, Map<String, StoreProductColor>> prodColorGroupMap = prodColorList.stream().collect(Collectors
+                .groupingBy(StoreProductColor::getStoreProdId, Collectors.toMap(StoreProductColor::getColorName, x -> x)));
+        // 步橘系统客户名称map
+        Map<String, StoreCustomer> buJuStoreCusMap = storeCusList.stream().collect(Collectors.toMap(StoreCustomer::getCusName, x -> x));
+        List<StoreCustomerProductDiscount> prodCusDiscList = new ArrayList<>();
+        // 依次遍历商品列表，找到货号和FHB货号对应关系，然后用颜色进行匹配，建立客户优惠关系
+        storeProdList.forEach(storeProd -> {
+            // 当前商品颜色列表
+            Map<String, StoreProductColor> buJuProdColorMap = Optional.ofNullable(prodColorGroupMap.get(storeProd.getId())).orElseThrow(() -> new ServiceException("没有商品颜色!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
+            // FHB货号下颜色优惠列表
+            Map<String, List<FhbCusDiscountVO.SMCDRecordVO>> fhbColorCusDiscMap = Optional.ofNullable(fhbCusDiscGroupMap.get(storeProd.getProdArtNum())).orElseThrow(() -> new ServiceException("没有FHB货号对应的颜色的客户优惠!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
+            // 根据步橘货号 找到FHB对应的货号，可能是列表
+            List<String> fhbAtrNoList = Optional.ofNullable(multiSameFhbMap.get(storeProd.getProdArtNum())).orElseThrow(() -> new ServiceException("没有FHB货号!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
+            fhbAtrNoList.forEach(fhbAtrNo -> {
+                // 找到FHB货号对应的颜色
+                List<FhbProdVO.SMIVO> fhbProdColorList = Optional.ofNullable(fhbProdGroupMap.get(fhbAtrNo)).orElseThrow(() -> new ServiceException("没有FHB货号对应的颜色!" + fhbAtrNo, HttpStatus.ERROR));
+                fhbProdColorList.forEach(fhbProdColor -> {
+                    // 获取FHB颜色有哪些客户优惠
+                    List<FhbCusDiscountVO.SMCDRecordVO> fhbCurColorCusDiscList  = fhbColorCusDiscMap.get(fhbProdColor.getColor());
+                    if (CollectionUtils.isEmpty(fhbCurColorCusDiscList)) {
+                        return;
+                    }
+                    fhbCurColorCusDiscList.forEach(fhbCusDisc -> {
+                        StoreProductColor buJuProdColor = Optional.ofNullable(buJuProdColorMap.get(fhbProdColor.getColor())).orElseThrow(() -> new ServiceException("没有步橘系统对应的颜色!" + fhbProdColor.getColor(), HttpStatus.ERROR));
+                        StoreCustomer storeCus = Optional.ofNullable(buJuStoreCusMap.get(fhbCusDisc.getCustomerName())).orElseThrow(() -> new ServiceException("没有步橘系统对应的客户!" + fhbCusDisc.getCustomerName(), HttpStatus.ERROR));
+                        // 将FHB客户优惠 转为步橘系统优惠
+                        prodCusDiscList.add(new StoreCustomerProductDiscount().setStoreId(storeProd.getStoreId()).setStoreProdId(storeProd.getId()).setStoreCusId(storeCus.getId())
+                                .setStoreCusName(storeCus.getCusName()).setStoreProdColorId(buJuProdColor.getId()).setDiscount(fhbCusDisc.getDiscount()));
+                    });
+                });
+            });
+
+            this.storeCusProdDiscMapper.insert(prodCusDiscList);
+        });
+    }
+
+    /**
+     * 初始化客户列表
+     * @param initVO 入参
+     * @return List<StoreCustomer>
+     */
+    private List<StoreCustomer> initStoreCusList(GtAndFHBInitVO initVO) {
+        List<FhbCusVO.SMCVO> cacheList = ObjectUtils.defaultIfNull(redisCache
+                .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_CUS_KEY + initVO.getSupplierId()), new ArrayList<>());
+        if (CollectionUtils.isEmpty(cacheList)) {
+            throw new ServiceException("供应商客户列表为空!", HttpStatus.ERROR);
+        }
+        List<StoreCustomer> storeCusList = cacheList.stream()
+                // 排除掉现金客户 因为档口入驻时，会自动创建现金客户
+                .filter(x -> !Objects.equals(x.getName(), Constants.STORE_CUS_CASH))
+                .map(x -> new StoreCustomer()
+                        .setStoreId(initVO.getStoreId()).setCusName(x.getName()))
+                .collect(Collectors.toList());
+        this.storeCusMapper.insert(storeCusList);
+        return storeCusList;
+    }
+
 
     /**
      * 提前匹配类目属性

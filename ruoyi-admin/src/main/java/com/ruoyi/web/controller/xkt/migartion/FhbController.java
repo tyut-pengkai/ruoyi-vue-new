@@ -1,9 +1,11 @@
 package com.ruoyi.web.controller.xkt.migartion;
 
 import com.ruoyi.common.constant.CacheConstants;
+import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.redis.RedisCache;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.web.controller.xkt.migartion.vo.fhb.*;
 import com.ruoyi.xkt.service.shipMaster.IShipMasterService;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +40,14 @@ public class FhbController extends BaseController {
         if (ObjectUtils.isEmpty(prodVO.getData()) || CollectionUtils.isEmpty(prodVO.getData().getRecords())) {
             return R.ok();
         }
+        // 前置校验 判断同一货号中是否存在相同的颜色
+        Map<String, Map<String, List<FhbProdVO.SMIVO>>> fhbProdColorMap = prodVO.getData().getRecords().stream().collect(Collectors
+                .groupingBy(FhbProdVO.SMIVO::getArtNo, Collectors.groupingBy(FhbProdVO.SMIVO::getColor)));
+        fhbProdColorMap.forEach((artNo, colorMap) -> colorMap.forEach((color, list) -> {
+            if (list.size() > 1) {
+                throw new ServiceException("同一货号中存在相同的颜色" + artNo, HttpStatus.ERROR);
+            }
+        }));
         // 先从redis中获取列表数据
         List<FhbProdVO.SMIVO> cacheList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_PROD_KEY + supplierId), new ArrayList<>());
@@ -88,7 +98,14 @@ public class FhbController extends BaseController {
             return R.ok();
         }
         // 设置优惠价格
-        cusDiscountVO.getData().getRecords().forEach(record -> record.setDiscount(record.getSupplyPrice() - record.getCustomerPrice()));
+        cusDiscountVO.getData().getRecords().forEach(record -> {
+            final Integer supplyPrice = ObjectUtils.defaultIfNull(record.getSupplyPrice(), 0);
+            final Integer customerPrice = ObjectUtils.defaultIfNull(record.getCustomerPrice(), 0);
+            if (supplyPrice - customerPrice < 0) {
+                throw new ServiceException("供应商商品价格有误" + record.getArtNo(), HttpStatus.ERROR);
+            }
+            record.setDiscount(supplyPrice - customerPrice);
+        });
         // 先从redis中获取列表数据
         List<FhbCusDiscountVO.SMCDRecordVO> cacheList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_CUS_DISCOUNT_KEY + supplierId), new ArrayList<>());
@@ -155,6 +172,23 @@ public class FhbController extends BaseController {
         Map<Integer, List<FhbCusVO.SMCVO>> cusGroupMap = cacheList.stream().collect(Collectors
                 .groupingBy(FhbCusVO.SMCVO::getSupplierId, LinkedHashMap::new, Collectors.toList()));
         System.err.println(cusGroupMap);
+        return R.ok();
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @GetMapping("/cus/discount/cache/{supplierId}")
+    public R<Integer> getCusDiscountCache(@PathVariable Integer supplierId) {
+        // 从redis中获取数据
+        List<FhbCusDiscountVO.SMCDRecordVO> cacheList = ObjectUtils.defaultIfNull(redisCache
+                .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_CUS_DISCOUNT_KEY + supplierId), new ArrayList<>());
+        if (CollectionUtils.isEmpty(cacheList)) {
+            return R.fail();
+        }
+        Map<String, Map<String, List<FhbCusDiscountVO.SMCDRecordVO>>> cusDiscGroupMap = cacheList.stream().collect(Collectors
+                .groupingBy(FhbCusDiscountVO.SMCDRecordVO::getArtNo, Collectors.groupingBy(FhbCusDiscountVO.SMCDRecordVO::getColor)));
+        cusDiscGroupMap.forEach((k, v) -> {
+            System.out.println(k + ":" + v);
+        });
         return R.ok();
     }
 
