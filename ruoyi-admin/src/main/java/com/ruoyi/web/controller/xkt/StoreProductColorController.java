@@ -4,14 +4,12 @@ import cn.hutool.core.bean.BeanUtil;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.web.controller.xkt.vo.storePordColor.StoreProdColorResVO;
+import com.ruoyi.web.controller.xkt.vo.storePordColor.StoreProdColorSnResVO;
 import com.ruoyi.xkt.service.IStoreProductColorService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -34,6 +32,12 @@ public class StoreProductColorController extends XktBaseController {
     public R<List<StoreProdColorResVO>> fuzzyQueryColorList(@RequestParam(value = "prodArtNum", required = false) String prodArtNum,
                                                             @RequestParam("storeId") Long storeId) {
         return success(BeanUtil.copyToList(storeProdColorService.fuzzyQueryColorList(storeId, prodArtNum), StoreProdColorResVO.class));
+    }
+
+    @ApiOperation(value = "根据商品ID查询颜色及已设置颜色条码", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/sn/{storeId}/{storeProdId}")
+    public R<List<StoreProdColorSnResVO>> queryColorAndSetSnList(@PathVariable("storeId") Long storeId, @PathVariable("storeProdId") Long storeProdId) {
+        return success(BeanUtil.copyToList(storeProdColorService.queryColorAndSetSnList(storeId, storeProdId), StoreProdColorSnResVO.class));
     }
 
 }

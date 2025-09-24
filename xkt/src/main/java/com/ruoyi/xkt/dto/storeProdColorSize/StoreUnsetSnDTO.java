@@ -17,10 +17,27 @@ import java.util.List;
 @Accessors(chain = true)
 public class StoreUnsetSnDTO {
 
-    /**
-     * 未设置条码商品列表
-     */
     @ApiModelProperty(value = "未设置条码商品列表")
-    List<String> unsetSnList;
+    List<SNSProdDTO> unsetList;
+
+    @Data
+    @Accessors(chain = true)
+    public static class SNSProdDTO {
+        @ApiModelProperty(value = "档口商品ID")
+        private Long storeProdId;
+        @ApiModelProperty(value = "商品货号")
+        private String prodArtNum;
+        @ApiModelProperty(value = "商品颜色列表")
+        private List<SNSProdColorDTO> colorList;
+    }
+
+    @Data
+    @Accessors(chain = true)
+    public static class SNSProdColorDTO {
+        @ApiModelProperty(value = "档口颜色ID")
+        private Long storeColorId;
+        @ApiModelProperty(value = "颜色名称")
+        private String colorName;
+    }
 
 }

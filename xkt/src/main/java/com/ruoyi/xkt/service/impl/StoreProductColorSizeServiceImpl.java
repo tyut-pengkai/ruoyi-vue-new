@@ -421,7 +421,7 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
     public StoreUnsetSnDTO getUnSetSnProdList(Long storeId) {
         List<StoreUnsetSnTempDTO> unsetList = this.prodColorSizeMapper.selectUnsetProdList(storeId);
         if (CollectionUtils.isEmpty(unsetList)) {
-            return new StoreUnsetSnDTO().setUnsetSnList(Collections.emptyList());
+            return new StoreUnsetSnDTO();
         }
         final List<Long> storeProdIdList = unsetList.stream().map(StoreUnsetSnTempDTO::getStoreProdId).collect(Collectors.toList());
         List<StoreProduct> storeProdList = this.storeProdMapper.selectByIds(storeProdIdList);
@@ -429,16 +429,16 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
                 : storeProdList.stream().collect(Collectors.toMap(StoreProduct::getId, Function.identity()));
         final List<Long> storeColorIdList = unsetList.stream().map(StoreUnsetSnTempDTO::getStoreColorId).collect(Collectors.toList());
         List<StoreColor> storeColorList = this.storeColorMapper.selectByIds(storeColorIdList);
-        Map<Long, String> storeColorMap = CollectionUtils.isEmpty(storeColorList) ? new HashMap<>()
-                : storeColorList.stream().collect(Collectors.toMap(StoreColor::getId, StoreColor::getColorName));
-        List<String> unsetSnList = new ArrayList<>();
+        Map<Long, StoreColor> storeColorMap = CollectionUtils.isEmpty(storeColorList) ? new HashMap<>()
+                : storeColorList.stream().collect(Collectors.toMap(StoreColor::getId, x -> x));
+        List<StoreUnsetSnDTO.SNSProdDTO> unsetResList = new ArrayList<>();
         unsetList.stream().collect(Collectors.groupingBy(StoreUnsetSnTempDTO::getStoreProdId))
-                .forEach((storeProdId, groupList) -> {
-                    String str = groupList.stream().map(x -> storeColorMap.get(x.getStoreColorId())).filter(Objects::nonNull).collect(Collectors.joining("、"));
-                    // 商品名称 + 颜色名称
-                    unsetSnList.add(storeProdMap.get(storeProdId).getProdArtNum() + ":" + str);
-                });
-        return new StoreUnsetSnDTO().setUnsetSnList(unsetSnList);
+                .forEach((storeProdId, colorIdList) -> unsetResList.add(new StoreUnsetSnDTO.SNSProdDTO()
+                        .setStoreProdId(storeProdId).setProdArtNum(storeProdMap.get(storeProdId).getProdArtNum())
+                        .setColorList(colorIdList.stream().map(x -> storeColorMap.get(x.getStoreColorId()))
+                                .map(x -> new StoreUnsetSnDTO.SNSProdColorDTO().setStoreColorId(x.getId()).setColorName(x.getColorName()))
+                                .collect(Collectors.toList()))));
+        return new StoreUnsetSnDTO().setUnsetList(unsetResList);
     }
 
     /**

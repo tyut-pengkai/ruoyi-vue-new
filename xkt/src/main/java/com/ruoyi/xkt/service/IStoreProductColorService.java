@@ -2,6 +2,7 @@ package com.ruoyi.xkt.service;
 
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.xkt.dto.storeProdColor.StoreProdColorResDTO;
+import com.ruoyi.xkt.dto.storeProdColor.StoreProdColorSnResDTO;
 import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPricePageDTO;
 import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceResDTO;
 
@@ -40,4 +41,12 @@ public interface IStoreProductColorService {
      */
     Page<StoreProdColorPriceResDTO> page(StoreProdColorPricePageDTO pageDTO);
 
+    /**
+     * 获取商品颜色及已设置颜色条码
+     *
+     * @param storeId     档口ID
+     * @param storeProdId 档口商品ID
+     * @return
+     */
+    List<StoreProdColorSnResDTO> queryColorAndSetSnList(Long storeId, Long storeProdId);
 }
