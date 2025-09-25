@@ -21,6 +21,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -47,11 +48,16 @@ public class GtController extends BaseController {
         // 先从redis中获取列表数据
         List<GtProdSkuVO> cacheList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_GT_SALE_BASIC_KEY + userId), new ArrayList<>());
-        artNoList.forEach(artNoInfo -> {
-            artNoInfo.getSkus().forEach(x -> x.setColor(this.decodeUnicode(x.getColor())).setCharacters(artNoInfo.getCharacters())
-                    .setArticle_number(artNoInfo.getArticle_number()).setProduct_id(artNoInfo.getId()).setCategory_nid(artNoInfo.getCategory_nid()));
-            cacheList.addAll(artNoInfo.getSkus());
-        });
+        // 三年前的时间
+        Date threeYearsBefore = java.sql.Date.valueOf(LocalDate.now().minusYears(3));
+        artNoList
+                // 只处理近3年商品
+                .stream().filter(x -> x.getCreate_time().after(threeYearsBefore) || x.getUpdate_time().after(threeYearsBefore))
+                .forEach(artNoInfo -> {
+                    artNoInfo.getSkus().forEach(x -> x.setColor(this.decodeUnicode(x.getColor())).setCharacters(artNoInfo.getCharacters())
+                            .setArticle_number(artNoInfo.getArticle_number()).setProduct_id(artNoInfo.getId()).setCategory_nid(artNoInfo.getCategory_nid()));
+                    cacheList.addAll(artNoInfo.getSkus());
+                });
         // 存到redis中
         redisCache.setCacheObject(CacheConstants.MIGRATION_GT_SALE_BASIC_KEY + userId, cacheList);
         return R.ok();

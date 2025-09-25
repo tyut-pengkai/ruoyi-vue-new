@@ -2,6 +2,7 @@ package com.ruoyi.web.controller.xkt.migartion.vo.gt;
 
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -25,6 +26,8 @@ public class GtProdVO {
         private Integer category_nid;
         private String article_number;
         private String characters;
+        private Date create_time;
+        private Date update_time;
         private List<GtProdSkuVO> skus;
     }
 

@@ -337,7 +337,8 @@ public class GtAndFhbBizController extends BaseController {
             // 获取GT匹配的商品sku列表
             List<GtProdSkuVO> gtMatchSkuList = this.getGtFirstSku(multiSaleSameGoMap, gtSaleGroupMap, storeProd.getProdArtNum());
             // 当前货号在GT的所有尺码，作为标准尺码
-            List<Integer> gtStandardSizeList = gtMatchSkuList.stream().map(GtProdSkuVO::getSize).collect(Collectors.toList());
+            List<Integer> gtStandardSizeList = gtMatchSkuList.stream().map(sku -> (int) Math.floor(Double.parseDouble(sku.getSize())))
+                    .collect(Collectors.toList());
             // 先获取最低价格，然后给所有颜色和尺码添加初始值，之后再来单独改，这是最方便的方式了
             final BigDecimal minPrice = gtMatchSkuList.stream().map(GtProdSkuVO::getPrice).min(Comparator.comparing(x -> x))
                     .orElseThrow(() -> new ServiceException("没有GT商品价格!", HttpStatus.ERROR));
