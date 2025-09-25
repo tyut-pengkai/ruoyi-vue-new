@@ -344,5 +344,13 @@ public class CacheConstants {
      * GT档口分类缓存
      */
     public static final String MIGRATION_GT_SALE_CATE_KEY = "mig_gt_sale_cate:";
+    /**
+     * TY商品缓存
+     */
+    public static final String MIGRATION_TY_PROD_KEY = "mig_ty_prod:";
+    /**
+     * TY客户缓存
+     */
+    public static final String MIGRATION_TY_CUS_KEY = "mig_ty_cus:";
 
 }

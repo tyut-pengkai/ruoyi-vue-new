@@ -197,4 +197,12 @@ public interface IStoreService {
      * @return StoreAppViewRankResDTO
      */
     StoreAppViewRankResDTO getAppViewRank();
+
+    /**
+     * 获取档口库存系统
+     *
+     * @return
+     * @param storeId
+     */
+    Integer getStockSys(Long storeId);
 }

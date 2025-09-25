@@ -432,6 +432,19 @@ public class StoreServiceImpl implements IStoreService {
     }
 
     /**
+     * 获取档口库存系统
+     *
+     * @param storeId 档口ID
+     * @return
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Integer getStockSys(Long storeId) {
+        Store store = Optional.ofNullable(storeMapper.selectById(storeId)).orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
+        return store.getStockSys();
+    }
+
+    /**
      * 档口首页今日销售额
      *
      * @param storeId 档口ID

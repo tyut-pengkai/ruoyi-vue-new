@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -127,8 +128,8 @@ public class GtController extends BaseController {
 
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @GetMapping("/cache/{userId}")
-    public R<Integer> getCache(@PathVariable Integer userId) {
+    @GetMapping("/prod/cache/{userId}")
+    public R<Integer> getProdCache(@PathVariable Integer userId) {
         // 从redis中获取数据
         List<GtProdSkuVO> cacheList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_GT_SALE_BASIC_KEY + userId), new ArrayList<>());
@@ -141,9 +142,9 @@ public class GtController extends BaseController {
                 .collect(Collectors
                         .groupingBy(GtProdSkuVO::getArticle_number, LinkedHashMap::new, Collectors.toList()));
         // 货号 颜色 map
-        Map<String, List<String>> artNoColorMap = new LinkedHashMap<>();
+        Map<String, Set<String>> artNoColorMap = new LinkedHashMap<>();
         artNoGroup.forEach((artNo, colorList) -> {
-            artNoColorMap.put(artNo, colorList.stream().map(GtProdSkuVO::getColor).collect(Collectors.toList()));
+            artNoColorMap.put(artNo, colorList.stream().map(GtProdSkuVO::getColor).collect(Collectors.toSet()));
         });
 
         artNoColorMap.forEach((k, v) -> {
@@ -153,12 +154,14 @@ public class GtController extends BaseController {
         // cacheList 按照货号分组，获取所有价格，价格去重
         Map<String, Set<BigDecimal>> artNoPriceMap = cacheList.stream().collect(Collectors.groupingBy(
                 GtProdSkuVO::getArticle_number, Collectors.mapping(GtProdSkuVO::getPrice, Collectors.toSet())));
+        AtomicInteger count = new AtomicInteger();
         artNoPriceMap.forEach((k, v) -> {
-            System.out.println(k + ":" + v);
             if (v.size() > 1) {
+                count.addAndGet(1);
                 System.err.println(k + ":" + v);
             }
         });
+        System.err.println(count);
 
 //        Map<String, List<Integer>> artNoPriceMap =
 

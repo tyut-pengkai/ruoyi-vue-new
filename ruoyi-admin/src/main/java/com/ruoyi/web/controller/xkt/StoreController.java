@@ -190,5 +190,11 @@ public class StoreController extends XktBaseController {
         return R.ok(BeanUtil.toBean(storeService.getAppViewRank(), StoreAppViewRankResVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store,seller,agent')||@ss.hasSupplierSubRole()")
+    @ApiOperation(value = "获取档口库存系统", httpMethod = "GET", response = R.class)
+    @GetMapping("/stock-sys/{storeId}")
+    public R<Integer> getStockSys(@PathVariable Long storeId) {
+        return R.ok(storeService.getStockSys(storeId));
+    }
 
 }
