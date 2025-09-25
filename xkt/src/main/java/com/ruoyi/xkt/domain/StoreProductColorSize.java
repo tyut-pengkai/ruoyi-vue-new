@@ -6,15 +6,13 @@ import com.ruoyi.common.core.domain.XktBaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.math.BigDecimal;
 
 /**
  * 档口商品颜色的尺码对象 store_product_color_size
  * 条码规则 5位档口ID + 8位 store_product_color_size.id + 8位 nextBarcode
- *        eg: 100010000000100000001
+ * eg: 100010000000100000001
  *
  * @author ruoyi
  * @date 2025-03-26
@@ -40,6 +38,10 @@ public class StoreProductColorSize extends XktBaseEntity {
      */
     @Excel(name = "档口商品ID")
     private Long storeProdId;
+    /**
+     * 档口ID
+     */
+    private Long storeId;
     /**
      * 商品尺码
      */

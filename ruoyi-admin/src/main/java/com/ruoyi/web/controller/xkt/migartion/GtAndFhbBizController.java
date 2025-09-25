@@ -356,7 +356,7 @@ public class GtAndFhbBizController extends BaseController {
                         final String otherSnPrefix = fhbMatchSkuList.get(i).getSupplierId()
                                 + String.format("%05d", fhbMatchSkuList.get(i).getSupplierSkuId()) + Constants.SIZE_LIST.get(j);
                         prodColorSizeList.add(new StoreProductColorSize().setSize(Constants.SIZE_LIST.get(j)).setStoreColorId(storeColor.getId())
-                                .setStoreProdId(storeProd.getId()).setPrice(minPrice).setOtherSnPrefix(otherSnPrefix).setNextSn(0)
+                                .setStoreProdId(storeProd.getId()).setPrice(minPrice).setOtherSnPrefix(otherSnPrefix).setNextSn(0).setStoreId(storeProd.getStoreId())
                                 .setStandard(gtStandardSizeList.contains(Constants.SIZE_LIST.get(j)) ? 1 : 0));
                     }
                 }

@@ -3526,6 +3526,7 @@ CREATE TABLE `store_product_color_size`
     `id`              bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '档口商品颜色尺码ID',
     `store_color_id`  bigint UNSIGNED NOT NULL COMMENT '档口商品颜色ID',
     `store_prod_id`   bigint UNSIGNED NOT NULL COMMENT '档口商品ID',
+    `store_id`        bigint UNSIGNED NOT NULL COMMENT '档口ID',
     `size`            int UNSIGNED NOT NULL COMMENT '商品尺码',
     `price`           decimal(10, 2) UNSIGNED NOT NULL COMMENT '档口商品定价',
     `sn_prefix`       varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '档口商品颜色尺码的前缀',

@@ -43,7 +43,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         WHERE
             spcs.del_flag = 0
             AND spcs.sn_prefix = #{snPrefix}
-            AND sp.store_id = #{storeId}
+            AND spcs.store_id = #{storeId}
     </select>
 
     <select id="selectOtherSn" resultType="com.ruoyi.xkt.dto.storeProdColorSize.StoreSaleSnResDTO">
@@ -63,7 +63,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         WHERE
             spcs.del_flag = 0
           AND spcs.other_sn_prefix = #{snPrefix}
-          AND sp.store_id = #{storeId}
+          AND spcs.store_id = #{storeId}
     </select>
 
     <select id="selectStorageBuJuSnList">
@@ -82,7 +82,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 JOIN store_product_color spc ON spcs.store_color_id = spc.store_color_id AND spcs.store_prod_id = spc.store_prod_id AND spc.del_flag = 0
         WHERE
             spcs.del_flag = 0
-            AND sp.store_id = #{storeId}
+            AND spcs.store_id = #{storeId}
             <if test="buJuPrefixSnList != null and buJuPrefixSnList.size() > 0">
                 AND spcs.sn_prefix IN
                 <foreach item="item" index="index" collection="buJuPrefixSnList" separator="," open="(" close=")" >
@@ -107,7 +107,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 JOIN store_product_color spc ON spcs.store_color_id = spc.store_color_id AND spcs.store_prod_id = spc.store_prod_id AND spc.del_flag = 0
         WHERE
             spcs.del_flag = 0
-            AND sp.store_id = #{storeId}
+            AND spcs.store_id = #{storeId}
             <if test="otherPrefixSnList != null and otherPrefixSnList.size() > 0">
                 AND spcs.other_sn_prefix IN
                 <foreach item="item" index="index" collection="otherPrefixSnList" separator="," open="(" close=")" >
@@ -129,6 +129,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 JOIN store_product_color spc ON spcs.store_color_id = spc.store_color_id AND spcs.store_prod_id = spc.store_prod_id AND spc.del_flag = 0
         WHERE
             spcs.del_flag = 0
+            AND spcs.store_id = #{storeId}
             <if test="buJuPrefixSnList != null and buJuPrefixSnList.size() > 0">
                 AND spcs.sn_prefix IN
                 <foreach item="item" index="index" collection="buJuPrefixSnList" separator="," open="(" close=")" >
@@ -150,6 +151,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 JOIN store_product_color spc ON spcs.store_color_id = spc.store_color_id AND spcs.store_prod_id = spc.store_prod_id AND spc.del_flag = 0
         WHERE
             spcs.del_flag = 0
+            AND spcs.store_id = #{storeId}
             <if test="otherPrefixSnList != null and otherPrefixSnList.size() > 0">
                 AND spcs.other_sn_prefix IN
                 <foreach item="item" index="index" collection="otherPrefixSnList" separator="," open="(" close=")" >
