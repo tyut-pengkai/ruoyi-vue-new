@@ -352,5 +352,9 @@ public class CacheConstants {
      * TY客户缓存
      */
     public static final String MIGRATION_TY_CUS_KEY = "mig_ty_cus:";
+    /**
+     * TY客户优惠缓存
+     */
+    public static final String MIGRATION_TY_CUS_DISCOUNT_KEY = "mig_ty_cus_discount:";
 
 }

@@ -356,7 +356,7 @@ public class GtAndFhbBizController extends BaseController {
                         final String otherSnPrefix = fhbMatchSkuList.get(i).getSupplierId()
                                 + String.format("%05d", fhbMatchSkuList.get(i).getSupplierSkuId()) + Constants.SIZE_LIST.get(j);
                         prodColorSizeList.add(new StoreProductColorSize().setSize(Constants.SIZE_LIST.get(j)).setStoreColorId(storeColor.getId())
-                                .setStoreProdId(storeProd.getId()).setPrice(minPrice).setOtherSnPrefix(otherSnPrefix).setNextSn(0).setStoreId(storeProd.getStoreId())
+                                .setStoreProdId(storeProd.getId()).setPrice(minPrice).setOtherSnPrefix(otherSnPrefix).setNextSn(0)
                                 .setStandard(gtStandardSizeList.contains(Constants.SIZE_LIST.get(j)) ? 1 : 0));
                     }
                 }
@@ -618,10 +618,10 @@ public class GtAndFhbBizController extends BaseController {
         if (CollectionUtils.isEmpty(cacheList)) {
             throw new ServiceException("FHB商品列表为空", HttpStatus.ERROR);
         }
-        List<String> gtColorList = cacheList.stream().map(FhbProdVO.SMIVO::getColor).distinct().collect(Collectors.toList());
+        List<String> fhbColorList = cacheList.stream().map(FhbProdVO.SMIVO::getColor).distinct().collect(Collectors.toList());
         List<StoreColor> storeColorList = new ArrayList<>();
-        for (int i = 0; i < gtColorList.size(); i++) {
-            storeColorList.add(new StoreColor().setStoreId(storeId).setColorName(gtColorList.get(i)).setOrderNum(i + 1));
+        for (int i = 0; i < fhbColorList.size(); i++) {
+            storeColorList.add(new StoreColor().setStoreId(storeId).setColorName(fhbColorList.get(i)).setOrderNum(i + 1));
         }
         this.storeColorMapper.insert(storeColorList);
         return storeColorList.stream().collect(Collectors.toMap(StoreColor::getColorName, x -> x));

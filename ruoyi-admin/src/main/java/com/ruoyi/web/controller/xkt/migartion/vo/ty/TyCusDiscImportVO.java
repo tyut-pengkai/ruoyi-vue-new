@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.math.BigDecimal;
+
 /**
  * @author liujiang
  * @version v1.0
@@ -13,15 +15,17 @@ import lombok.experimental.Accessors;
 @ApiModel
 @Data
 @Accessors(chain = true)
-public class TyProdImportVO {
+public class TyCusDiscImportVO {
 
-    @Excel(name = "HUOH")
+    // 客户名称
+    private String cusName;
+    @Excel(name = "货号")
     private String prodArtNum;
-    @Excel(name = "COL")
+    @Excel(name = "颜色")
     private String colorName;
-    @Excel(name = "jg")
-    private Integer price;
-    @Excel(name = "SN")
-    private String otherSnPrefix;
+    @Excel(name = "基础价格")
+    private BigDecimal basicPrice;
+    @Excel(name = "客户价格")
+    private BigDecimal customerPrice;
 
 }

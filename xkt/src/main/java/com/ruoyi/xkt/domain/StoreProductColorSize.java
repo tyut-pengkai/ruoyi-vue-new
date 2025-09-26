@@ -39,10 +39,6 @@ public class StoreProductColorSize extends XktBaseEntity {
     @Excel(name = "档口商品ID")
     private Long storeProdId;
     /**
-     * 档口ID
-     */
-    private Long storeId;
-    /**
      * 商品尺码
      */
     @Excel(name = "商品尺码")

@@ -6,7 +6,10 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.web.controller.xkt.migartion.vo.fhb.*;
+import com.ruoyi.web.controller.xkt.migartion.vo.fhb.FhbCusDiscountVO;
+import com.ruoyi.web.controller.xkt.migartion.vo.fhb.FhbCusVO;
+import com.ruoyi.web.controller.xkt.migartion.vo.fhb.FhbProdStockVO;
+import com.ruoyi.web.controller.xkt.migartion.vo.fhb.FhbProdVO;
 import com.ruoyi.xkt.service.shipMaster.IShipMasterService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -48,10 +51,15 @@ public class FhbController extends BaseController {
                 throw new ServiceException("同一货号中存在相同的颜色" + artNo, HttpStatus.ERROR);
             }
         }));
+        // 去除空格
+        List<FhbProdVO.SMIVO> fhbProdList = prodVO.getData().getRecords().stream()
+                .map(x -> x.setArtNo(x.getArtNo().trim()).setColor(x.getColor().trim()).setSize(x.getSize().trim())
+                        .setAddPriceSize(x.getAddPriceSize().trim()).setSnPrefix(x.getSnPrefix().trim()))
+                .collect(Collectors.toList());
         // 先从redis中获取列表数据
         List<FhbProdVO.SMIVO> cacheList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_PROD_KEY + supplierId), new ArrayList<>());
-        CollectionUtils.addAll(cacheList, prodVO.getData().getRecords());
+        CollectionUtils.addAll(cacheList, fhbProdList);
         // 存到redis中
         redisCache.setCacheObject(CacheConstants.MIGRATION_SUPPLIER_PROD_KEY + supplierId, cacheList, 5, TimeUnit.DAYS);
         return R.ok();

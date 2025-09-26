@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.xkt.migartion.vo.fhb;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -20,6 +21,7 @@ public class FhbProdVO {
     }
 
     @Data
+    @Accessors(chain = true)
     public static class SMIVO {
         private Integer supplierId;
         private Integer supplierSkuId;
