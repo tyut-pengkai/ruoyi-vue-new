@@ -78,6 +78,13 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
                 throw new ServiceException("请输入正确的手机号!", HttpStatus.ERROR);
             }
         }
+        // 根据客户名称查询，不允许重复
+        List<StoreCustomer> storeCusList = this.storeCusMapper.selectList(new LambdaQueryWrapper<StoreCustomer>()
+                .eq(StoreCustomer::getStoreId, storeCusDTO.getStoreId()).eq(StoreCustomer::getDelFlag, Constants.UNDELETED)
+                .eq(StoreCustomer::getCusName, storeCusDTO.getCusName()));
+        if (CollectionUtils.isNotEmpty(storeCusList)) {
+            throw new ServiceException("客户名称已存在，请修改后重新提交!", HttpStatus.ERROR);
+        }
         return this.storeCusMapper.insert(BeanUtil.toBean(storeCusDTO, StoreCustomer.class));
     }
 
@@ -136,11 +143,18 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
                 throw new ServiceException("请输入正确的手机号!", HttpStatus.ERROR);
             }
         }
-        BeanUtil.copyProperties(storeCusDTO, storeCus);
         // 如果名称变更了，则需要调整关联表中的客户名称
         if (!Objects.equals(storeCusDTO.getCusName(), storeCus.getCusName())) {
+            // 判断客户名称是否已存在
+            List<StoreCustomer> storeCusList = this.storeCusMapper.selectList(new LambdaQueryWrapper<StoreCustomer>()
+                    .eq(StoreCustomer::getStoreId, storeCus.getStoreId()).eq(StoreCustomer::getDelFlag, Constants.UNDELETED)
+                    .eq(StoreCustomer::getCusName, storeCusDTO.getCusName()).ne(StoreCustomer::getId, storeCus.getId()));
+            if (CollectionUtils.isNotEmpty(storeCusList)) {
+                throw new ServiceException("客户名称已存在，请修改后重新提交!", HttpStatus.ERROR);
+            }
             this.updateRelatedCusName(storeCusDTO.getCusName(), storeCus.getId(), storeCus.getStoreId());
         }
+        BeanUtil.copyProperties(storeCusDTO, storeCus);
         return storeCusMapper.updateById(storeCus);
     }
 

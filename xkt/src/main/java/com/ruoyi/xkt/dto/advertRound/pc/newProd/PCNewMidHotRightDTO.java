@@ -22,6 +22,8 @@ public class PCNewMidHotRightDTO {
     private Integer displayType;
     @ApiModelProperty(value = "档口商品ID")
     private Long storeProdId;
+    @ApiModelProperty(value = "档口ID")
+    private Long storeId;
     @ApiModelProperty(value = "商品货号")
     private String prodArtNum;
     @ApiModelProperty(value = "排序")

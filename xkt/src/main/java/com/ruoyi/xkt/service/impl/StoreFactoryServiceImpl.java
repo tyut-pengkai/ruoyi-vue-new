@@ -15,12 +15,14 @@ import com.ruoyi.xkt.dto.storeFactory.StoreFactoryResDTO;
 import com.ruoyi.xkt.mapper.StoreFactoryMapper;
 import com.ruoyi.xkt.service.IStoreFactoryService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -44,6 +46,12 @@ public class StoreFactoryServiceImpl implements IStoreFactoryService {
     @Override
     @Transactional
     public int insertStoreFactory(StoreFactoryDTO storeFactoryDTO) {
+        // 判断工厂名称是否已存在
+        List<StoreFactory> storeFacList = this.storeFactoryMapper.selectList(new LambdaQueryWrapper<StoreFactory>()
+                .eq(StoreFactory::getFacName, storeFactoryDTO.getFacName()).eq(StoreFactory::getDelFlag, Constants.UNDELETED));
+        if (CollectionUtils.isNotEmpty(storeFacList)) {
+            throw new ServiceException("工厂名称已存在，请修改后重新提交!", HttpStatus.ERROR);
+        }
         StoreFactory storeFactory = BeanUtil.toBean(storeFactoryDTO, StoreFactory.class);
         return storeFactoryMapper.insert(storeFactory);
     }
@@ -63,6 +71,15 @@ public class StoreFactoryServiceImpl implements IStoreFactoryService {
         StoreFactory storeFactory = Optional.ofNullable(this.storeFactoryMapper.selectOne(new LambdaQueryWrapper<StoreFactory>()
                         .eq(StoreFactory::getId, storeFactoryDTO.getStoreFactoryId()).eq(StoreFactory::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口合作工厂不存在!", HttpStatus.ERROR));
+        // 如果修改了名称，则判断是否已存在
+        if (!Objects.equals(storeFactoryDTO.getFacName(), storeFactory.getFacName())) {
+            List<StoreFactory> storeFacList = this.storeFactoryMapper.selectList(new LambdaQueryWrapper<StoreFactory>()
+                    .ne(StoreFactory::getId, storeFactoryDTO.getStoreFactoryId()).eq(StoreFactory::getFacName, storeFactoryDTO.getFacName())
+                    .eq(StoreFactory::getDelFlag, Constants.UNDELETED));
+            if (CollectionUtils.isNotEmpty(storeFacList)) {
+                throw new ServiceException("工厂名称已存在，请修改后重新提交!", HttpStatus.ERROR);
+            }
+        }
         BeanUtil.copyProperties(storeFactoryDTO, storeFactory);
         return storeFactoryMapper.updateById(storeFactory);
     }

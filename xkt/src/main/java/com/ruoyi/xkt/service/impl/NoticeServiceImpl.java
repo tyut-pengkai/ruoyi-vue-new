@@ -158,6 +158,14 @@ public class NoticeServiceImpl implements INoticeService {
         }
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
         List<Notice> noticeList = this.noticeMapper.selectList(queryWrapper);
+        if (CollectionUtils.isNotEmpty(noticeList)) {
+            List<Long> userIdList = noticeList.stream().map(Notice::getUserId).collect(Collectors.toList());
+            List<SysUser> userList = this.userMapper.selectList(new LambdaQueryWrapper<SysUser>()
+                    .in(SysUser::getUserId, userIdList).eq(SysUser::getDelFlag, Constants.UNDELETED));
+            Map<Long, SysUser> userMap = userList.stream().collect(Collectors.toMap(SysUser::getUserId, x -> x));
+            noticeList.forEach(x -> x.setCreateBy(userMap.containsKey(x.getUserId()) ?
+                    userMap.get(x.getUserId()).getUserName() : ""));
+        }
         return Page.convert(new PageInfo<>(noticeList), BeanUtil.copyToList(noticeList, NoticeResDTO.class));
     }
 

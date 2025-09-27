@@ -20,6 +20,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
              JOIN store s ON uf.store_id = s.id
         WHERE
             uf.del_flag = 0 AND uf.user_id = #{userId}
+            <if test="statusList != null and statusList.size() > 0">
+                AND sp.prod_status IN
+                <foreach item="item" collection="statusList" separator="," open="(" close=")" index="">
+                    #{item}
+                </foreach>
+            </if>
             <if test="storeName != null  and storeName != ''"> AND s.store_name like concat('%', #{storeName}, '%')</if>
             <if test="prodArtNum != null  and prodArtNum != ''"> AND sp.prod_art_num like concat('%', #{prodArtNum}, '%')</if>
     </select>

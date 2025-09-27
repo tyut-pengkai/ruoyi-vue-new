@@ -57,14 +57,9 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
         if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(cusProdDisDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
-        List<StoreCustomer> storeCusList = this.storeCusMapper.selectList(new LambdaQueryWrapper<StoreCustomer>()
-                .eq(StoreCustomer::getStoreId, cusProdDisDTO.getStoreId()).eq(StoreCustomer::getDelFlag, Constants.UNDELETED)
-                .eq(StoreCustomer::getCusName, cusProdDisDTO.getStoreCusName()));
-        if (ObjectUtils.isNotEmpty(storeCusList) && storeCusList.size() > 1) {
-            throw new ServiceException("客户名称重复，请修改客户名称!", HttpStatus.ERROR);
-        }
-        // 若存在，则取第一个；若不存在，则新增
-        StoreCustomer storeCus = CollectionUtils.isNotEmpty(storeCusList) ? storeCusList.get(0) : this.createStoreCustomer(cusProdDisDTO);
+        StoreCustomer storeCus = Optional.ofNullable(this.storeCusMapper.selectOne(new LambdaQueryWrapper<StoreCustomer>()
+                        .eq(StoreCustomer::getId, cusProdDisDTO.getStoreCusId()).eq(StoreCustomer::getDelFlag, Constants.UNDELETED)))
+                .orElseThrow(() -> new ServiceException("当前客户不存在!", HttpStatus.ERROR));
         // 获取当前档口客户已有的优惠
         List<StoreCustomerProductDiscount> cusProdDiscList = Optional.ofNullable(cusProdDiscMapper.selectList(new LambdaQueryWrapper<StoreCustomerProductDiscount>()
                 .eq(StoreCustomerProductDiscount::getStoreCusId, cusProdDisDTO.getStoreCusId()).eq(StoreCustomerProductDiscount::getDelFlag, Constants.UNDELETED)

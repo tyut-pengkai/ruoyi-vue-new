@@ -19,6 +19,8 @@ public class PCNewMidHotRightVO {
     private Integer displayType;
     @ApiModelProperty(value = "档口商品ID")
     private Long storeProdId;
+    @ApiModelProperty(value = "档口ID")
+    private Long storeId;
     @ApiModelProperty(value = "商品货号")
     private String prodArtNum;
     @ApiModelProperty(value = "排序")
@@ -27,5 +29,6 @@ public class PCNewMidHotRightVO {
     private BigDecimal price;
     @ApiModelProperty(value = "商品第一张主图路径")
     private String mainPicUrl;
+
 
 }
