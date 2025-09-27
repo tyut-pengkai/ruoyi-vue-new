@@ -24,8 +24,10 @@ public class TyCusDiscImportVO {
     @Excel(name = "颜色")
     private String colorName;
     @Excel(name = "基础价格")
-    private BigDecimal basicPrice;
+    private Integer basicPrice;
     @Excel(name = "客户价格")
-    private BigDecimal customerPrice;
+    private Integer customerPrice;
+    // 客户优惠diff
+    private Integer discount;
 
 }

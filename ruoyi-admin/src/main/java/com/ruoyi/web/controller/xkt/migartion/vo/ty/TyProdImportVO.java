@@ -22,6 +22,6 @@ public class TyProdImportVO {
     @Excel(name = "jg")
     private Integer price;
     @Excel(name = "SN")
-    private String otherSnPrefix;
+    private String tySnPrefix;
 
 }
