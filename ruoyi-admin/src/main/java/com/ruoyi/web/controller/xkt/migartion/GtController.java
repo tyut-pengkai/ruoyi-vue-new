@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -49,16 +50,23 @@ public class GtController extends BaseController {
         // 先从redis中获取列表数据
         List<GtProdSkuVO> cacheList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_GT_SALE_BASIC_KEY + userId), new ArrayList<>());
+        // 已存入的map，增加个校验 如果已导入则不重复导入 避免误操作
+        Map<String, String> cacheMap = cacheList.stream().collect(Collectors.toMap(GtProdSkuVO::getArticle_number, GtProdSkuVO::getArticle_number));
         // 三年前的时间
         Date threeYearsBefore = java.sql.Date.valueOf(LocalDate.now().minusYears(3));
-        artNoList
+        artNoList.stream()
                 // 只处理近3年商品
-                .stream().filter(x -> x.getCreate_time().after(threeYearsBefore) || x.getUpdate_time().after(threeYearsBefore))
+                .filter(x -> x.getCreate_time().after(threeYearsBefore) || x.getUpdate_time().after(threeYearsBefore))
+                // 避免误操作
+                .filter(x -> !cacheMap.containsKey(x.getArticle_number()))
                 .forEach(artNoInfo -> {
-                    artNoInfo.getSkus().forEach(x -> x.setColor(this.decodeUnicode(x.getColor().trim())).setCharacters(artNoInfo.getCharacters().trim())
-                            .setSize(x.getSize().trim().replaceAll("[^0-9.]", "")).setArticle_number(artNoInfo.getArticle_number().trim())
+                    artNoInfo.getSkus().forEach(x -> x.setColor(StringUtils.isNotBlank(x.getColor()) ? this.decodeUnicode(x.getColor().trim()) : "")
+                            .setCharacters(StringUtils.isNotBlank(artNoInfo.getCharacters()) ? artNoInfo.getCharacters().trim() : "")
+                            .setArticle_number(StringUtils.isNotBlank(artNoInfo.getArticle_number()) ? artNoInfo.getArticle_number().trim() : "")
+                            .setSize(x.getSize().trim().replaceAll("[^0-9.]", ""))
                             .setProduct_id(artNoInfo.getId()).setCategory_nid(artNoInfo.getCategory_nid()));
                     cacheList.addAll(artNoInfo.getSkus());
+                    cacheMap.put(artNoInfo.getArticle_number(), artNoInfo.getArticle_number());
                 });
         // 存到redis中
         redisCache.setCacheObject(CacheConstants.MIGRATION_GT_SALE_BASIC_KEY + userId, cacheList);
@@ -73,12 +81,18 @@ public class GtController extends BaseController {
         // 先从redis中获取列表数据
         List<GtProdSkuVO> cacheList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_GT_OFF_SALE_BASIC_KEY + userId), new ArrayList<>());
-        artNoList.forEach(artNoInfo -> {
-            artNoInfo.getSkus().forEach(x -> x.setColor(this.decodeUnicode(x.getColor()))
-                    .setSize(x.getSize().trim().replaceAll("[^0-9.]", ""))
-                    .setArticle_number(artNoInfo.getArticle_number().trim()).setProduct_id(artNoInfo.getId()));
-            cacheList.addAll(artNoInfo.getSkus());
-        });
+        // 已存入的map，增加个校验 如果已导入则不重复导入 避免误操作
+        Map<String, String> cacheMap = cacheList.stream().collect(Collectors.toMap(GtProdSkuVO::getArticle_number, GtProdSkuVO::getArticle_number));
+        artNoList.stream()
+                // 避免误操作
+                .filter(x -> !cacheMap.containsKey(x.getArticle_number()))
+                .forEach(artNoInfo -> {
+                    artNoInfo.getSkus().forEach(x -> x.setColor(StringUtils.isNotBlank(x.getColor()) ? this.decodeUnicode(x.getColor().trim()) : "")
+                            .setSize(x.getSize().trim().replaceAll("[^0-9.]", "")).setProduct_id(artNoInfo.getId())
+                            .setArticle_number(StringUtils.isNotBlank(artNoInfo.getArticle_number()) ? artNoInfo.getArticle_number().trim() : ""));
+                    cacheList.addAll(artNoInfo.getSkus());
+                    cacheMap.put(artNoInfo.getArticle_number(), artNoInfo.getArticle_number());
+                });
         // 存到redis中
         redisCache.setCacheObject(CacheConstants.MIGRATION_GT_OFF_SALE_BASIC_KEY + userId, cacheList);
         return R.ok();

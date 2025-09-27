@@ -18,6 +18,7 @@ import com.ruoyi.web.controller.xkt.migartion.vo.fhb.FhbProdStockVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.fhb.FhbProdVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.gt.GtCateVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.gt.GtProdSkuVO;
+import com.ruoyi.web.controller.xkt.migartion.vo.ty.TyProdStockVO;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.enums.EProductStatus;
 import com.ruoyi.xkt.enums.ListingType;
@@ -37,6 +38,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -318,7 +321,7 @@ public class GtAndFhbBizController extends BaseController {
             List<GtProdSkuVO> gtMatchSkuList = this.getGtFirstSku(multiSaleSameGoMap, gtSaleGroupMap, cleanArtNo);
             // 初始化档口商品
             StoreProduct storeProd = new StoreProduct().setStoreId(initVO.getStoreId()).setProdCateId(cateRelationMap.get(gtMatchSkuList.get(0).getCategory_nid()))
-                    .setProdArtNum(cleanArtNo).setProdTitle(gtMatchSkuList.get(0).getCharacters()).setListingWay(ListingType.RIGHT_NOW.getValue())
+                    .setProdArtNum(gtMatchSkuList.get(0).getArticle_number()).setProdTitle(gtMatchSkuList.get(0).getCharacters()).setListingWay(ListingType.RIGHT_NOW.getValue())
                     .setVoucherDate(voucherDate).setProdStatus(EProductStatus.ON_SALE.getValue()).setRecommendWeight(0L).setSaleWeight(0L).setPopularityWeight(0L);
             // 提前设置档口商品的类目属性
             this.preMatchAttr(gtMatchSkuList.get(0).getProduct_id(), initVO.getUserId(), prodAttrMap);
@@ -332,19 +335,22 @@ public class GtAndFhbBizController extends BaseController {
         List<StoreProductService> prodSvcList = new ArrayList<>();
         List<StoreProductCategoryAttribute> prodAttrList = new ArrayList<>();
         storeProdList.forEach(storeProd -> {
+            // 获取clearArtNo
+            String clearArtNo = this.extractCoreArticleNumber(storeProd.getProdArtNum());
             // FHB匹配的货号
-            List<String> fhbMatchArtNoList = multiSameFhbMap.get(storeProd.getProdArtNum());
+            List<String> fhbMatchArtNoList = multiSameFhbMap.get(clearArtNo);
             // 获取GT匹配的商品sku列表
-            List<GtProdSkuVO> gtMatchSkuList = this.getGtFirstSku(multiSaleSameGoMap, gtSaleGroupMap, storeProd.getProdArtNum());
+            List<GtProdSkuVO> gtMatchSkuList = this.getGtFirstSku(multiSaleSameGoMap, gtSaleGroupMap, clearArtNo);
             // 当前货号在GT的所有尺码，作为标准尺码
             List<Integer> gtStandardSizeList = gtMatchSkuList.stream().map(sku -> (int) Math.floor(Double.parseDouble(sku.getSize()))).collect(Collectors.toList());
+            AtomicInteger orderNum = new AtomicInteger();
             fhbMatchArtNoList.forEach(fhbArtNo -> {
                 List<FhbProdVO.SMIVO> fhbMatchSkuList = fhbProdGroupMap.get(fhbArtNo);
                 for (int i = 0; i < fhbMatchSkuList.size(); i++) {
                     StoreColor storeColor = Optional.ofNullable(storeColorMap.get(fhbMatchSkuList.get(i).getColor()))
                             .orElseThrow(() -> new ServiceException("没有FHB商品颜色!" + fhbArtNo, HttpStatus.ERROR));
                     // 该商品的颜色
-                    prodColorList.add(new StoreProductColor().setStoreId(storeProd.getStoreId()).setStoreProdId(storeProd.getId()).setOrderNum(i + 1)
+                    prodColorList.add(new StoreProductColor().setStoreId(storeProd.getStoreId()).setStoreProdId(storeProd.getId()).setOrderNum(orderNum.addAndGet(1))
                             .setColorName(storeColor.getColorName()).setStoreColorId(storeColor.getId()).setProdStatus(EProductStatus.ON_SALE.getValue()));
                     // 该颜色所有的尺码
                     for (int j = 0; j < Constants.SIZE_LIST.size(); j++) {
@@ -372,6 +378,7 @@ public class GtAndFhbBizController extends BaseController {
         });
         // 插入商品颜色及颜色对应的尺码，档口服务承诺
         this.prodColorMapper.insert(prodColorList);
+        prodColorSizeList.sort(Comparator.comparing(StoreProductColorSize::getStoreProdId).thenComparing(StoreProductColorSize::getSize));
         this.prodColorSizeMapper.insert(prodColorSizeList);
         this.prodSvcMapper.insert(prodSvcList);
         this.prodCateAttrMapper.insert(prodAttrList);
@@ -427,10 +434,11 @@ public class GtAndFhbBizController extends BaseController {
         List<StoreProductStock> prodStockList = new ArrayList<>();
         // 依次遍历商品列表，找到货号和FHB货号对应关系，然后用颜色进行匹配，建立客户优惠关系
         storeProdList.forEach(storeProd -> {
+            final String cleanArtNo = this.extractCoreArticleNumber(storeProd.getProdArtNum());
             // 当前商品颜色列表 key 颜色中文名称
             Map<String, StoreProductColor> buJuProdColorMap = Optional.ofNullable(prodColorGroupMap.get(storeProd.getId())).orElseThrow(() -> new ServiceException("没有商品颜色!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
             // 根据步橘货号 找到FHB对应的货号，可能是列表
-            List<String> fhbAtrNoList = Optional.ofNullable(multiSameFhbMap.get(storeProd.getProdArtNum())).orElseThrow(() -> new ServiceException("没有FHB货号!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
+            List<String> fhbAtrNoList = Optional.ofNullable(multiSameFhbMap.get(cleanArtNo)).orElseThrow(() -> new ServiceException("没有FHB货号!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
             fhbAtrNoList.forEach(fhbAtrNo -> {
                 // 处理档口客户商品优惠
                 this.handleCusDisc(fhbAtrNo, fhbCusDiscGroupMap, buJuProdColorMap, buJuStoreCusMap, storeProd.getStoreId(), storeProd.getId(), prodCusDiscList);
@@ -458,7 +466,7 @@ public class GtAndFhbBizController extends BaseController {
      */
     private void handleProdStock(String fhbAtrNo, Map<String, Map<String, FhbProdStockVO.SMPSRecordVO>> fhbStockGroupMap, Map<String, StoreProductColor> buJuProdColorMap,
                                  Long storeId, Long storeProdId, String prodArtNum, List<StoreProductStock> prodStockList) {
-        Map<String, FhbProdStockVO.SMPSRecordVO> fhbColorStockMap = fhbStockGroupMap.get(fhbAtrNo);
+        Map<String, FhbProdStockVO.SMPSRecordVO> fhbColorStockMap = fhbStockGroupMap.getOrDefault(fhbAtrNo, new HashMap<>());
         buJuProdColorMap.forEach((buJuColor, buJuProdColor) -> {
             StoreProductStock stock = new StoreProductStock().setStoreId(storeId).setStoreProdId(storeProdId).setProdArtNum(prodArtNum)
                     .setColorName(buJuProdColorMap.get(buJuColor).getColorName()).setStoreProdColorId(buJuProdColorMap.get(buJuColor).getId())
@@ -649,9 +657,10 @@ public class GtAndFhbBizController extends BaseController {
     private List<GtProdSkuVO> getGtFirstSku(Map<String, List<String>> multiSaleSameGoMap, Map<String, List<GtProdSkuVO>> gtSaleGroupMap, String cleanArtNo) {
         // GT匹配的货号
         List<String> gtMatchArtNoList = multiSaleSameGoMap.get(cleanArtNo);
-        // 逻辑：如果FHB有多个货号，则都要加到系统中来，因为要扫描条码；如果GT有多个，则只取第一个，匹配相关的属性
-        List<GtProdSkuVO> gtMatchSkuList = gtSaleGroupMap.get(gtMatchArtNoList.get(0));
-        return gtMatchSkuList;
+        // GT 最短的货号
+        String shortestArtNo = gtMatchArtNoList.stream().min(Comparator.comparingInt(String::length))
+                .orElse(gtMatchArtNoList.get(0));
+        return gtSaleGroupMap.get(shortestArtNo);
     }
 
 

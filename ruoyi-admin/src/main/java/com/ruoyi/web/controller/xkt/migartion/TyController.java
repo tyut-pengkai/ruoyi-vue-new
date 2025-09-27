@@ -48,16 +48,20 @@ public class TyController extends BaseController {
         ExcelUtil<TyProdImportVO> util = new ExcelUtil<>(TyProdImportVO.class);
         List<TyProdImportVO> tyProdVOList = util.importExcel(file.getInputStream());
         // 去掉空格
-        tyProdVOList.forEach(x -> {
-            String prodArtNum = x.getProdArtNum().trim();
-            String colorName = x.getColorName().trim();
-            String tySnPrefix = x.getTySnPrefix().trim();
-            // 如果货号包括-R 则表明是 货号为绒里，手动给颜色添加后缀“绒里”
-            if (prodArtNum.contains("-R")) {
-                colorName = colorName.contains("绒里") ? colorName : (colorName + "绒里");
-            }
-            x.setProdArtNum(prodArtNum).setColorName(colorName).setTySnPrefix(tySnPrefix);
-        });
+        tyProdVOList = tyProdVOList.stream()
+                // 只导入价格不能为空的存货
+                .filter(x -> ObjectUtils.isNotEmpty(x.getPrice()))
+                .map(x -> {
+                    String prodArtNum = x.getProdArtNum().trim();
+                    String colorName = x.getColorName().trim();
+                    String tySnPrefix = x.getTySnPrefix().trim();
+                    // 如果货号包括-R 则表明是 货号为绒里，手动给颜色添加后缀“绒里”
+                    if (prodArtNum.contains("-R")) {
+                        colorName = colorName.contains("绒里") ? colorName : (colorName + "绒里");
+                    }
+                    return x.setProdArtNum(prodArtNum).setColorName(colorName).setTySnPrefix(tySnPrefix);
+                })
+                .collect(Collectors.toList());
         Map<String, List<TyProdImportVO>> prodMap = tyProdVOList.stream().collect(Collectors.groupingBy(TyProdImportVO::getProdArtNum));
         prodMap.forEach((k, v) -> {
             System.err.println(k + ":" + v);
@@ -114,7 +118,7 @@ public class TyController extends BaseController {
                         if (prodArtNum.contains("-R")) {
                             colorName = colorName.contains("绒里") ? colorName : (colorName + "绒里");
                         }
-                        x.setProdArtNum(prodArtNum).setColorName(colorName).setCusName(cusName);
+                        x.setProdArtNum(prodArtNum).setColorName(colorName).setCusName(cusName).setDiscount(discount);
                         importCusDiscMap.put(x.getProdArtNum() + ":" + x.getColorName(), x);
                         importList.add(x);
                     }
