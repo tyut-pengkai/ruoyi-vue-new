@@ -49,15 +49,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="getStatusNum">
         SELECT
-            COUNT( CASE WHEN sp.prod_status IN (2) THEN 1 ELSE 0 END ) AS on_sale_num,
-            COUNT( CASE WHEN sp.prod_status IN (4,5) THEN 1 ELSE 0 END ) AS expired_num
+            COUNT(CASE WHEN sp.prod_status IN (2) THEN 1 ELSE NULL END) AS on_sale_num,
+            COUNT(CASE WHEN sp.prod_status IN (4,5) THEN 1 ELSE NULL END) AS expired_num
         FROM
             user_favorites uf
-            JOIN store_product sp ON uf.store_prod_id = sp.id
+                JOIN store_product sp ON uf.store_prod_id = sp.id
         WHERE
             uf.del_flag = 0
-            AND uf.user_id = #{userId}
-            AND uf.create_time BETWEEN #{sixMonthAgo} AND #{now}
+          AND uf.user_id = #{userId}
+          AND uf.create_time BETWEEN #{sixMonthAgo} AND #{now}
+          AND sp.prod_status IN (2,4,5)
     </select>
 
 
