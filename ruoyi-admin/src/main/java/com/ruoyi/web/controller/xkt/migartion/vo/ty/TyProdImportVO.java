@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.math.BigDecimal;
+
 /**
  * @author liujiang
  * @version v1.0
@@ -20,7 +22,7 @@ public class TyProdImportVO {
     @Excel(name = "COL")
     private String colorName;
     @Excel(name = "jg")
-    private Integer price;
+    private BigDecimal price;
     @Excel(name = "SN")
     private String tySnPrefix;
 

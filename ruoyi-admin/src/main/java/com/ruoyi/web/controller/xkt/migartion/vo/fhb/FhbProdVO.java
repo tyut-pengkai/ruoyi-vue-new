@@ -31,6 +31,7 @@ public class FhbProdVO {
         private BigDecimal addPrice;
         private String addPriceSize;
         private String snPrefix;
+        private BigDecimal salePrice;
     }
 
 }

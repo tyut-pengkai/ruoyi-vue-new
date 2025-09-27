@@ -56,7 +56,8 @@ public class GtController extends BaseController {
                 .stream().filter(x -> x.getCreate_time().after(threeYearsBefore) || x.getUpdate_time().after(threeYearsBefore))
                 .forEach(artNoInfo -> {
                     artNoInfo.getSkus().forEach(x -> x.setColor(this.decodeUnicode(x.getColor().trim())).setCharacters(artNoInfo.getCharacters().trim())
-                            .setArticle_number(artNoInfo.getArticle_number().trim()).setProduct_id(artNoInfo.getId()).setCategory_nid(artNoInfo.getCategory_nid()));
+                            .setSize(x.getSize().trim().replaceAll("[^0-9.]", "")).setArticle_number(artNoInfo.getArticle_number().trim())
+                            .setProduct_id(artNoInfo.getId()).setCategory_nid(artNoInfo.getCategory_nid()));
                     cacheList.addAll(artNoInfo.getSkus());
                 });
         // 存到redis中
@@ -74,6 +75,7 @@ public class GtController extends BaseController {
                 .getCacheObject(CacheConstants.MIGRATION_GT_OFF_SALE_BASIC_KEY + userId), new ArrayList<>());
         artNoList.forEach(artNoInfo -> {
             artNoInfo.getSkus().forEach(x -> x.setColor(this.decodeUnicode(x.getColor()))
+                    .setSize(x.getSize().trim().replaceAll("[^0-9.]", ""))
                     .setArticle_number(artNoInfo.getArticle_number().trim()).setProduct_id(artNoInfo.getId()));
             cacheList.addAll(artNoInfo.getSkus());
         });

@@ -7,7 +7,6 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.web.controller.xkt.migartion.vo.fhb.FhbProdStockVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.ty.TyCusDiscImportVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.ty.TyCusImportVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.ty.TyProdImportVO;
@@ -16,12 +15,13 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -104,7 +104,7 @@ public class TyController extends BaseController {
                     if (importCusDiscMap.containsKey(x.getProdArtNum() + ":" + x.getColorName())) {
                         System.err.println(x.getProdArtNum() + ":" + x.getColorName());
                     } else {
-                        final Integer discount = x.getBasicPrice() - x.getCustomerPrice();
+                        final int discount = x.getBasicPrice() - x.getCustomerPrice();
                         if (discount < 0) {
                             errorList.add(cusName + ":" + x.getProdArtNum() + ":" + x.getColorName() + ":优惠金额不能小于0");
                         }
@@ -130,18 +130,28 @@ public class TyController extends BaseController {
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @PostMapping("/-R/prod/stock/cache/{userId}")
-    public R<Integer> createTyProdStockCache(@PathVariable Integer userId, @Validated @RequestBody TyProdStockVO stockVO) {
-      /*  // 供应商ID
-        if (ObjectUtils.isEmpty(stockVO.getData()) || ObjectUtils.isEmpty(stockVO.getData().getList())) {
-            return R.ok();
-        }
-        // 先从redis中获取列表数据
-        List<FhbProdStockVO.SMPSRecordVO> cacheList = ObjectUtils.defaultIfNull(redisCache
-                .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_PROD_STOCK_KEY + supplierId), new ArrayList<>());
-        CollectionUtils.addAll(cacheList, stockVO.getData().getList().getRecords());
-        // 存到redis中
-        redisCache.setCacheObject(CacheConstants.MIGRATION_SUPPLIER_PROD_STOCK_KEY + supplierId, cacheList, 5, TimeUnit.DAYS);*/
+    @PostMapping("/-R/stock/cache/{userId}")
+    public R<Integer> createTyProdStockCache(@PathVariable Integer userId, MultipartFile file) throws IOException {
+        ExcelUtil<TyProdStockVO> util = new ExcelUtil<>(TyProdStockVO.class);
+        List<TyProdStockVO> tyStockList = util.importExcel(file.getInputStream());
+        // 因为是采用的截图转excel方式，所以每个张图会冗余部分数据长度，导入是需要判断是否已存在
+        Map<String, TyProdStockVO> importStockMap = new ConcurrentHashMap<>();
+        List<TyProdStockVO> cacheList = new ArrayList<>();
+        tyStockList.forEach(x -> {
+            String prodArtNum = x.getProdArtNum().trim();
+            String colorName = x.getColorName().trim();
+            // 如果货号包括-R 则表明是 货号为绒里，手动给颜色添加后缀“绒里”
+            if (prodArtNum.contains("-R")) {
+                colorName = colorName.contains("绒里") ? colorName : (colorName + "绒里");
+            }
+            if (importStockMap.containsKey(prodArtNum + ":" + colorName)) {
+                System.err.println(prodArtNum + ":" + colorName);
+            } else {
+                importStockMap.put(prodArtNum + ":" + colorName, x);
+                cacheList.add(x.setProdArtNum(prodArtNum).setColorName(colorName));
+            }
+        });
+        redisCache.setCacheObject(CacheConstants.MIGRATION_TY_PROD_STOCK_KEY + userId, cacheList, 5, TimeUnit.DAYS);
         return R.ok();
     }
 

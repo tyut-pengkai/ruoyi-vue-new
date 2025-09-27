@@ -356,5 +356,9 @@ public class CacheConstants {
      * TY客户优惠缓存
      */
     public static final String MIGRATION_TY_CUS_DISCOUNT_KEY = "mig_ty_cus_discount:";
+    /**
+     * TY商品库存缓存
+     */
+    public static final String MIGRATION_TY_PROD_STOCK_KEY = "mig_ty_prod_stock:";
 
 }
