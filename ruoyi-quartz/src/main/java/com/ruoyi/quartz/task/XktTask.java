@@ -989,8 +989,8 @@ public class XktTask {
                 StoreOrderRefund storeOrderRefund = storeOrderService.prepareRefundByOriginOrder(storeOrderId);
                 callRefund(storeOrderRefund);
             } catch (Exception e) {
-                log.error("自动完成订单异常", e);
-                fsNotice.sendMsg2DefaultChat("自动完成订单异常", "订单ID:" + storeOrderId);
+                log.error("自动订单退款异常", e);
+                fsNotice.sendMsg2DefaultChat("自动订单退款异常", "订单ID:" + storeOrderId);
             }
         }
         log.info("-------------自动订单退款结束-------------");
