@@ -192,7 +192,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
     <select id="selectStockAndCusDiscount" resultType="com.ruoyi.xkt.dto.storeProductStock.StoreProdStockAndDiscountResDTO">
-        SELECT
+        SELECT DISTINCT
             spc.id AS storeProdColorId,
             spc.store_color_id,
             spc.color_name,

@@ -13,7 +13,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum EProductStatus {
 
-    UN_PUBLISHED(1, "未发布"),
+    UN_PUBLISHED(1, "待发布"),
     ON_SALE(2, "在售"),
     TAIL_GOODS(3, "尾货"),
     OFF_SALE(4, "已下架"),
