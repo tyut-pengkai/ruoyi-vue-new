@@ -16,7 +16,6 @@ import java.util.List;
  */
 @Data
 @ApiModel
-
 public class StoreSaleResVO {
 
     @ApiModelProperty(value = "是否为返单:true 是返单  false 不是返单")
@@ -64,6 +63,8 @@ public class StoreSaleResVO {
         private String colorName;
         @ApiModelProperty(value = "尺码")
         private Integer size;
+        @ApiModelProperty(value = "是否是标准尺码")
+        private Integer standard;
         @ApiModelProperty(value = "商品货号")
         private String prodArtNum;
         @ApiModelProperty(value = "销售条码")

@@ -56,6 +56,7 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
     final StoreSaleRefundRecordDetailMapper refundRecordDetailMapper;
     final IStoreProductStockService storeProdStockService;
     final StoreProductMapper storeProdMapper;
+    final StoreProductColorSizeMapper prodColorSizeMapper;
 
     /**
      * 获取当前档口客户的销售业绩
@@ -383,14 +384,21 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
         if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(storeSale.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
-        StoreSaleResDTO storeSaleDTO = BeanUtil.toBean(storeSale, StoreSaleResDTO.class);
+        StoreSaleResDTO storeSaleDTO = BeanUtil.toBean(storeSale, StoreSaleResDTO.class).setStoreSaleId(storeSaleId);
         // 查询销售出库明细
         List<StoreSaleDetail> saleDetailList = this.storeSaleDetailMapper.selectList(new LambdaQueryWrapper<StoreSaleDetail>()
                 .eq(StoreSaleDetail::getStoreSaleId, storeSaleId).eq(StoreSaleDetail::getDelFlag, Constants.UNDELETED));
-        List<StoreProduct> storeProdList = this.storeProdMapper.selectByIds(saleDetailList.stream().map(StoreSaleDetail::getStoreProdId).collect(Collectors.toList()));
-        Map<Long, StoreProduct> storeProdMap = storeProdList.stream().collect(Collectors.toMap(StoreProduct::getId, x -> x));
-        storeSaleDTO.setDetailList(saleDetailList.stream().map(x -> BeanUtil.toBean(x, StoreSaleResDTO.SSDetailDTO.class)).collect(Collectors.toList()));
-        return storeSaleDTO;
+        // 获取有哪些是标准尺码
+        List<StoreProductColorSize> standardSizeList = this.prodColorSizeMapper.selectList(new LambdaQueryWrapper<StoreProductColorSize>()
+                .in(StoreProductColorSize::getStoreProdId, saleDetailList.stream().map(StoreSaleDetail::getStoreProdId).collect(Collectors.toList()))
+                .eq(StoreProductColorSize::getDelFlag, Constants.UNDELETED));
+        Map<Long, Map<Integer, Integer>> sizeMap = standardSizeList.stream().collect(Collectors
+                .groupingBy(StoreProductColorSize::getStoreProdId, Collectors
+                        .toMap(StoreProductColorSize::getSize, StoreProductColorSize::getStandard, (v1, v2) -> v2)));
+        return storeSaleDTO.setDetailList(saleDetailList.stream().map(x -> {
+                    Map<Integer, Integer> tempSizeMap = sizeMap.getOrDefault(x.getStoreProdId(), new HashMap<>());
+                    return BeanUtil.toBean(x, StoreSaleResDTO.SSDetailDTO.class).setStandard(tempSizeMap.get(x.getSize()));
+                }).collect(Collectors.toList()));
     }
 
     /**
