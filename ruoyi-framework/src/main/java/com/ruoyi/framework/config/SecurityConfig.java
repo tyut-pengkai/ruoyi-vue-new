@@ -111,7 +111,7 @@ public class SecurityConfig
             .authorizeHttpRequests((requests) -> {
                 permitAllUrl.getUrls().forEach(url -> requests.antMatchers(url).permitAll());
                 // 对于登录login 注册register 验证码captchaImage 允许匿名访问
-                requests.antMatchers("/rest/v1/login/loginByUname", "/rest/v1/login/loginBySms",
+                requests.antMatchers("/rest/v1/login/loginByUname", "/rest/v1/login/loginByUname0", "/rest/v1/login/loginBySms",
                         "/rest/v1/login/sendSmsVerificationCode", "/rest/v1/reg/registerStore", "/rest/v1/reg/registerSeller", "/rest/v1/reg/registerAgent",
                         "/rest/v1/reg/sendSmsVerificationCode", "/rest/v1/reg/isPhoneNumberRegistered", "/rest/v1/captcha/image",
                         "/rest/v1/login/getBrowserId", "/rest/v1/login/getTokenByBrowserId", "/rest/v1/login/changePassword").permitAll()

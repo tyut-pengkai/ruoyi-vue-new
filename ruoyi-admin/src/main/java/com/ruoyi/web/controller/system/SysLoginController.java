@@ -97,6 +97,21 @@ public class SysLoginController {
         return ajax;
     }
 
+    @ApiOperation(value = "用户名密码登录（临时）")
+    @PostMapping("/loginByUname0")
+    public AjaxResult login(@Validated @RequestBody LoginByUsername0VO loginBody) {
+        AjaxResult ajax = AjaxResult.success();
+        // 生成令牌
+        LoginCredential credential = LoginCredential.builder()
+                .loginType(ELoginType.USERNAME)
+                .username(loginBody.getUsername())
+                .password(loginBody.getPassword())
+                .build();
+        String token = loginService.login(credential);
+        ajax.put(Constants.TOKEN, token);
+        return ajax;
+    }
+
     @ApiOperation(value = "短信验证码登录")
     @PostMapping("/loginBySms")
     public AjaxResult loginBySms(@Validated @RequestBody LoginBySmsCodeVO loginBody) {
