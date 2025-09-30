@@ -65,6 +65,11 @@ public class GtAndTyBizController extends BaseController {
     final SysProductCategoryMapper prodCateMapper;
 
 
+    // TODO 提供导出测试环境数据的接口，不然迁移到生产还要重新来一遍
+    // TODO 提供导出测试环境数据的接口，不然迁移到生产还要重新来一遍
+    // TODO 提供导出测试环境数据的接口，不然迁移到生产还要重新来一遍
+
+
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @PutMapping("/sync-es/{storeId}")
     public void syncToEs(@PathVariable("storeId") Long storeId) {

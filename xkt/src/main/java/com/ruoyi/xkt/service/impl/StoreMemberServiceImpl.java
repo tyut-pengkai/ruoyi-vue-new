@@ -1,5 +1,6 @@
 package com.ruoyi.xkt.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -12,7 +13,9 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.Store;
 import com.ruoyi.xkt.domain.StoreMember;
+import com.ruoyi.xkt.dto.advertRound.AdRoundStoreBoughtResDTO;
 import com.ruoyi.xkt.dto.storeMember.StoreMemberCreateDTO;
+import com.ruoyi.xkt.dto.storeMember.StoreMemberExpireResDTO;
 import com.ruoyi.xkt.dto.storeMember.StoreMemberPageDTO;
 import com.ruoyi.xkt.dto.storeMember.StoreMemberPageResDTO;
 import com.ruoyi.xkt.enums.NoticeOwnerType;
@@ -31,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -108,6 +112,21 @@ public class StoreMemberServiceImpl implements IStoreMemberService {
         List<StoreMemberPageResDTO> list = this.storeMemberMapper.selectStoreMemberPage(pageDTO);
         return CollectionUtils.isEmpty(list) ? Page.empty(pageDTO.getPageSize(), pageDTO.getPageNum())
                 : Page.convert(new PageInfo<>(list));
+    }
+
+    /**
+     * 获取档口会员过期时间
+     *
+     * @param storeId 档口ID
+     * @return StoreMemberExpireResDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public StoreMemberExpireResDTO expire(Long storeId) {
+        StoreMember storeMember = this.storeMemberMapper.selectOne(new LambdaQueryWrapper<StoreMember>()
+                .eq(StoreMember::getStoreId, storeId).eq(StoreMember::getDelFlag, Constants.UNDELETED)
+                .gt(StoreMember::getStartTime, new Date()).le(StoreMember::getEndTime, new Date()));
+        return BeanUtil.toBean(storeMember, StoreMemberExpireResDTO.class);
     }
 
 

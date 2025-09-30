@@ -2,6 +2,7 @@ package com.ruoyi.xkt.service;
 
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.xkt.dto.storeMember.StoreMemberCreateDTO;
+import com.ruoyi.xkt.dto.storeMember.StoreMemberExpireResDTO;
 import com.ruoyi.xkt.dto.storeMember.StoreMemberPageDTO;
 import com.ruoyi.xkt.dto.storeMember.StoreMemberPageResDTO;
 
@@ -28,4 +29,12 @@ public interface IStoreMemberService {
      * @return Page<StoreMemberPageResDTO>
      */
     Page<StoreMemberPageResDTO> page(StoreMemberPageDTO pageDTO);
+
+    /**
+     * 获取档口会员过期时间
+     *
+     * @param storeId 档口ID
+     * @return StoreMemberExpireResDTO
+     */
+    StoreMemberExpireResDTO expire(Long storeId);
 }

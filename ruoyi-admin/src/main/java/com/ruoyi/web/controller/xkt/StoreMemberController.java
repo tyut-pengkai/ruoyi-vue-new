@@ -6,7 +6,9 @@ import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.web.controller.xkt.vo.storeFactory.StoreFactoryResVO;
 import com.ruoyi.web.controller.xkt.vo.storeMember.StoreMemberCreateVO;
+import com.ruoyi.web.controller.xkt.vo.storeMember.StoreMemberExpireResVO;
 import com.ruoyi.web.controller.xkt.vo.storeMember.StoreMemberPageVO;
 import com.ruoyi.xkt.dto.storeMember.StoreMemberCreateDTO;
 import com.ruoyi.xkt.dto.storeMember.StoreMemberPageDTO;
@@ -17,10 +19,9 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 档口购买会员controller
@@ -49,6 +50,14 @@ public class StoreMemberController extends XktBaseController {
     @PostMapping("/page")
     public R<Page<StoreMemberPageResDTO>> page(@Validated @RequestBody StoreMemberPageVO pageVO) {
         return R.ok(storeMemberService.page(BeanUtil.toBean(pageVO, StoreMemberPageDTO.class)));
+    }
+
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
+    @ApiOperation(value = "获取档口会员过期时间", httpMethod = "GET", response = R.class)
+    @GetMapping("/expire/{storeId}")
+    public R<StoreMemberExpireResVO> expire(@PathVariable Long storeId) {
+        return R.ok(BeanUtil.toBean(storeMemberService.expire(storeId), StoreMemberExpireResVO.class));
     }
 
     // TODO 每天获取档口会员过期提醒
