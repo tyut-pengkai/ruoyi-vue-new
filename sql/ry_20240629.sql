@@ -2891,14 +2891,7 @@ INSERT INTO external_account (`id`, `owner_type`, `owner_id`, `account_status`, 
 VALUES (1, 1, -1, 1, 1, '', '', '', 1, '平台支付宝账户', '0', 'SYSTEM', NOW(), 'SYSTEM', NOW());
 
 -- 快递?
-INSERT INTO `express`(`id`, `express_code`, `express_name`, `system_deliver_access`, `store_deliver_access`,
-                      `user_refund_access`, `system_config`, `del_flag`, `create_by`, `create_time`, `update_by`,
-                      `update_time`, `version`)
-VALUES (1, 'ZTO', '中通', b'1', b'1', b'1', NULL, '0', '', NULL, '', NULL, 0);
-INSERT INTO `express`(`id`, `express_code`, `express_name`, `system_deliver_access`, `store_deliver_access`,
-                      `user_refund_access`, `system_config`, `del_flag`, `create_by`, `create_time`, `update_by`,
-                      `update_time`, `version`)
-VALUES (2, 'YTO', '圆通', b'1', b'1', b'1', NULL, '0', '', NULL, '', NULL, 0);
+
 
 
 DROP TABLE IF EXISTS `voucher_sequence`;
@@ -3541,7 +3534,7 @@ CREATE TABLE `store_product_color_size`
     `update_time`     datetime NULL DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE,
     INDEX             `idx_spcs_del_snprefix`(`sn_prefix`,`del_flag`) USING BTREE,
-    INDEX             `idx_spcs_del_othersnprefix`(`other_sn_prefix`,`del_flag`) USING BTREE,
+    INDEX             `idx_spcs_del_othersnprefix`(`other_sn_prefix`,`del_flag`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '档口商品颜色的尺码' ROW_FORMAT = DYNAMIC;
 CREATE INDEX idx_spcs_store_prod_color_del ON store_product_color_size(store_prod_id, store_color_id, del_flag);
 
