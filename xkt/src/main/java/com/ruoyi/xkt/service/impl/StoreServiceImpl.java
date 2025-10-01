@@ -274,6 +274,13 @@ public class StoreServiceImpl implements IStoreService {
                 throw new ServiceException("备选手机号格式错误，请重新输入!", HttpStatus.ERROR);
             }
         }
+        // 判断更改的档口名称是否已存在
+        List<Store> storeList = this.storeMapper.selectList(new LambdaQueryWrapper<Store>()
+                .eq(Store::getStoreName, storeUpdateDTO.getStoreName()).ne(Store::getId, storeUpdateDTO.getStoreId())
+                .eq(Store::getDelFlag, Constants.UNDELETED));
+        if (ObjectUtils.isNotEmpty(storeList)) {
+            throw new ServiceException("该档口名称已存在，请修改后重新提交!", HttpStatus.ERROR);
+        }
         Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
                         .eq(Store::getId, storeUpdateDTO.getStoreId()).eq(Store::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));

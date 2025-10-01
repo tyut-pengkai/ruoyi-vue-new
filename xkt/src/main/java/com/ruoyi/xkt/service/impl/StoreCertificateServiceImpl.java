@@ -211,6 +211,12 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
      * @param certDTO
      */
     private Store createStore(StoreCertDTO certDTO) {
+        // 判断档口名称是否已存在
+        List<Store> storeList = this.storeMapper.selectList(new LambdaQueryWrapper<Store>()
+                .eq(Store::getDelFlag, Constants.UNDELETED).eq(Store::getStoreName, certDTO.getStoreBasic().getStoreName().trim()));
+        if (ObjectUtils.isNotEmpty(storeList)) {
+            throw new ServiceException("该档口名称已存在，请修改后重新提交!", HttpStatus.ERROR);
+        }
         Store store = BeanUtil.toBean(certDTO.getStoreBasic(), Store.class);
         // 初始化注册时只需绑定用户ID即可
         store.setUserId(SecurityUtils.getUserId());

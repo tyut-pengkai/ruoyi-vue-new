@@ -64,6 +64,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.rmi.ServerException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -215,6 +216,12 @@ public class StoreProductServiceImpl implements IStoreProductService {
             // 清理 HTML
             createDTO.setDetail(HtmlValidator.sanitizeHtml(createDTO.getDetail()));
         }
+        // 判断同档口商品货号是否重复
+        List<StoreProduct> existProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+                .eq(StoreProduct::getStoreId, createDTO.getStoreId()).eq(StoreProduct::getProdArtNum, createDTO.getProdArtNum().trim()));
+        if (CollectionUtils.isNotEmpty(existProdList)) {
+            throw new ServiceException("商品货号重复，请修改后重新提交!", HttpStatus.ERROR);
+        }
         // 组装StoreProduct数据
         StoreProduct storeProd = BeanUtil.toBean(createDTO, StoreProduct.class).setVoucherDate(DateUtils.getNowDate())
                 .setRecommendWeight(0L).setSaleWeight(0L).setPopularityWeight(0L);
@@ -261,6 +268,12 @@ public class StoreProductServiceImpl implements IStoreProductService {
         if (!isValid) {
             // 清理 HTML
             updateDTO.setDetail(HtmlValidator.sanitizeHtml(updateDTO.getDetail()));
+        }
+        List<StoreProduct> existProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+                .eq(StoreProduct::getStoreId, updateDTO.getStoreId()).ne(StoreProduct::getId, storeProdId)
+                .eq(StoreProduct::getProdArtNum, updateDTO.getProdArtNum().trim()));
+        if (CollectionUtils.isNotEmpty(existProdList)) {
+            throw new ServiceException("商品货号重复，请修改后重新提交!", HttpStatus.ERROR);
         }
         StoreProduct storeProd = Optional.ofNullable(this.storeProdMapper.selectOne(new LambdaQueryWrapper<StoreProduct>()
                         .eq(StoreProduct::getId, storeProdId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)))
