@@ -25,13 +25,13 @@ oss:
   tempDir: /temp/
   stsCacheDuration: 1800
 img-search:
-  endPoint: imagesearch.cn-hangzhou.aliyuncs.com
-  accessKeyId: LTAI5tBFXhTu7Di1ZumRPYZs
-  accessKeySecret: HJqVUr8UoFRzYDAiBf2pn55rE2TLbu
+  endPoint: imagesearch-vpc.cn-hangzhou.aliyuncs.com
+  accessKeyId: LTAI5t9e53VpzuR22AFtppMR
+  accessKeySecret: 5pxzQtfGRK6q3CXmuFBy7KuL6T8zPs
   regionId: cn-hangzhou
-  instanceName: search20250826
+  instanceName: buju0115
   # 如果是内网访问图像搜索服务，则endpointType为必填项，值统一为"internal"
-  endpointType:
+  endpointType: internal
 sms:
   accessKeyId: LTAI5tFmJ5DiJ1iq2hNe9PPB
   accessKeySecret: lCoSOQPkxgdQ6bDoi3TbAlsKXmOLp1
@@ -51,8 +51,8 @@ es:
   ssl: false
   username: elastic
   password: 0tP&3!GZZDMrglBm&kWJyw
-  maxConnTotal: 4
-  maxConnPerRoute: 2
+  maxConnTotal: 100
+  maxConnPerRoute: 50
 # 开发环境配置
 server:
   # 服务器的HTTP端口，默认为9310
@@ -121,11 +121,11 @@ spring:
         username:
         password:
       # 初始连接数
-      initialSize: 5
+      initialSize: 100
       # 最小连接池数量
-      minIdle: 10
+      minIdle: 100
       # 最大连接池数量
-      maxActive: 20
+      maxActive: 200
       # 配置获取连接等待超时的时间
       maxWait: 60000
       # 配置连接超时时间
@@ -178,11 +178,11 @@ spring:
     lettuce:
       pool:
         # 连接池中的最小空闲连接
-        min-idle: 0
+        min-idle: 50
         # 连接池中的最大空闲连接
-        max-idle: 8
+        max-idle: 100
         # 连接池的最大数据库连接数
-        max-active: 8
+        max-active: 200
         # #连接池最大阻塞等待时间（使用负值表示没有限制）
         max-wait: -1ms
   mvc:
