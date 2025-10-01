@@ -161,6 +161,8 @@ public class StoreServiceImpl implements IStoreService {
             this.updateStoreCert(auditDTO.getStoreCert());
             store.setStoreStatus(StoreStatus.TRIAL_PERIOD.getValue());
             store.setRejectReason("");
+            // 将store存到redis中
+            redisCache.setCacheObject(CacheConstants.STORE_KEY + store.getId(), store);
         } else {
             store.setStoreStatus(StoreStatus.AUDIT_REJECTED.getValue());
             store.setRejectReason(auditDTO.getRejectReason());
