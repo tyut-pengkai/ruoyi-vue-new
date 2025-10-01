@@ -21,7 +21,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="storeFactoryId != null "> and sf.id = #{storeFactoryId}</if>
             <if test="remark != null  and remark != ''"> and sf.remark like concat('%', #{remark}, '%')</if>
             <if test="emergency != null "> and spdd.emergency = #{emergency}</if>
-            <if test="demandStatus != null "> and spd.demand_status = #{demandStatus}</if>
+            <if test="demandStatus != null "> and spdd.detail_status = #{demandStatus}</if>
         ORDER BY
             spdd.create_time DESC
     </select>

@@ -3406,6 +3406,7 @@ CREATE TABLE `store_product`
     PRIMARY KEY (`id`) USING BTREE,
     INDEX                  `idx_storeid`(`store_id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '档口商品' ROW_FORMAT = DYNAMIC;
+CREATE INDEX idx_store_product_store_status_del ON store_product(store_id, prod_status, del_flag);
 
 
 -- ----------------------------
