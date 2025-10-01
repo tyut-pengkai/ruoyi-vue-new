@@ -252,19 +252,19 @@ express:
 
 # 中通配置
 zto:
-  appKey: 95dc4ecf72fce1a2fbe79
-  appSecret: 694ea7e3ea89e3b6aa21aea1a0285d25
-  gatewayUrl: https://japi-test.zto.com/
-  accountId: test
-  accountPassword: ZTO123
+  appKey: 1907975e6c6eadc096284
+  appSecret: f67e08e72825d857495105c7ed78bf14
+  gatewayUrl: https://japi.zto.com/
+  accountId: ZTO761752114633049
+  accountPassword: AJXVWZMM
 
 # 圆通配置
 yto:
-  appKey: K9991024989
-  appSecret: u2Z1F7Fh
-  appKey2: TEST
-  appSecret2: 123456
-  gatewayUrl: https://openuat.yto56test.com:6443/
+  appKey: K280280756
+  appSecret: iplud2s6
+  appKey2: ZCBJ_STD
+  appSecret2: xJa1tc2A
+  gatewayUrl: https://openapi.yto.net.cn:11443/
 
 # 支付宝配置
 alipay:
