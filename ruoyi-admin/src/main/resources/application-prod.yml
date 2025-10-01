@@ -25,7 +25,7 @@ oss:
   tempDir: /temp/
   stsCacheDuration: 1800
 img-search:
-  endPoint: imagesearch.cn-hangzhou.aliyuncs.com
+  endPoint: imagesearch-vpc.cn-hangzhou.aliyuncs.com
   accessKeyId: LTAI5t9e53VpzuR22AFtppMR
   accessKeySecret: 5pxzQtfGRK6q3CXmuFBy7KuL6T8zPs
   regionId: cn-hangzhou
