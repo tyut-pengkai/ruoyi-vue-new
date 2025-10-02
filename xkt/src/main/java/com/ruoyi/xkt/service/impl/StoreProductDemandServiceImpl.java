@@ -203,7 +203,7 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
         // 更新需求列表中的每个项，设置库存数量和生产中数量
         demandList.forEach(x -> {
             final Integer deductQuantity = deductQuantityMap.getOrDefault(x.getStoreProdDemandDetailId(), 0);
-            x.setStorageQuantity(deductQuantity).setInProdQuantity(x.getQuantity() - deductQuantity);
+            x.setStorageQuantity(deductQuantity).setInProdQuantity(x.getQuantity());
         });
         // 将查询结果转换为分页对象并返回
         return Page.convert(new PageInfo<>(demandList));
