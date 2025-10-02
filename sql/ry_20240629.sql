@@ -2891,7 +2891,14 @@ INSERT INTO external_account (`id`, `owner_type`, `owner_id`, `account_status`, 
 VALUES (1, 1, -1, 1, 1, '', '', '', 1, '平台支付宝账户', '0', 'SYSTEM', NOW(), 'SYSTEM', NOW());
 
 -- 快递?
-
+INSERT INTO `express`(`id`, `express_code`, `express_name`, `system_deliver_access`, `store_deliver_access`,
+                      `user_refund_access`, `system_config`, `del_flag`, `create_by`, `create_time`, `update_by`,
+                      `update_time`, `version`)
+VALUES (1, 'ZTO', '中通', b'1', b'1', b'1', NULL, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express`(`id`, `express_code`, `express_name`, `system_deliver_access`, `store_deliver_access`,
+                      `user_refund_access`, `system_config`, `del_flag`, `create_by`, `create_time`, `update_by`,
+                      `update_time`, `version`)
+VALUES (2, 'YTO', '圆通', b'1', b'1', b'1', NULL, '0', '', NULL, '', NULL, 0);
 
 
 DROP TABLE IF EXISTS `voucher_sequence`;
