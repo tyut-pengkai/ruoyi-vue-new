@@ -2,7 +2,6 @@ package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.model.ESystemRole;
@@ -67,7 +66,7 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
         StoreCertificate storeCert = BeanUtil.toBean(certDTO.getStoreCert(), StoreCertificate.class)
                 .setStoreId(store.getId());
         // 新增档口认证的文件列表
-        this.handleStoreCertFileList(certDTO, storeCert);
+        storeCert = this.handleStoreCertFileList(certDTO, storeCert);
         int count = this.storeCertMapper.insert(storeCert);
         // 新增档口的单据编号初始化 销售出库、采购入库、需求单、订单
         List<VoucherSequence> vsList = new ArrayList<>();
@@ -135,7 +134,7 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
         // 更新属性
         BeanUtil.copyProperties(certDTO.getStoreCert(), storeCert);
         // 新增档口认证的文件列表
-        this.handleStoreCertFileList(certDTO, storeCert);
+        storeCert = this.handleStoreCertFileList(certDTO, storeCert);
         // 更新档口信息
         this.updateStore(certDTO.getStoreId(), certDTO.getStoreBasic());
         return this.storeCertMapper.updateById(storeCert);
@@ -186,23 +185,19 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
      * @param certDTO   档口认证文件入参
      * @param storeCert 档口认证对象
      */
-    private void handleStoreCertFileList(StoreCertDTO certDTO, StoreCertificate storeCert) {
-        // 档口认证文件类型与文件名映射
-        Map<Integer, String> typeNameTransMap = certDTO.getStoreCert().getFileList().stream().collect(Collectors
-                .toMap(StoreCertDTO.SCStoreFileDTO::getFileType, StoreCertDTO.SCStoreFileDTO::getFileName));
-        // 上传的文件列表
-        final List<StoreCertDTO.SCStoreFileDTO> fileDTOList = certDTO.getStoreCert().getFileList();
-        // 将文件插入到SysFile表中
-        List<SysFile> fileList = BeanUtil.copyToList(fileDTOList, SysFile.class);
-        this.fileMapper.insert(fileList);
-        // 文件名称与文件ID映射
-        Map<String, Long> fileMap = fileList.stream().collect(Collectors.toMap(SysFile::getFileName, SysFile::getId));
-        // 设置身份证人脸文件ID
-        storeCert.setIdCardFaceFileId(fileMap.get(typeNameTransMap.get(FileType.ID_CARD_FACE.getValue())));
-        // 设置身份证国徽文件ID
-        storeCert.setIdCardEmblemFileId(fileMap.get(typeNameTransMap.get(FileType.ID_CARD_EMBLEM.getValue())));
-        // 设置营业执照文件ID
-        storeCert.setLicenseFileId(fileMap.get(typeNameTransMap.get(FileType.BUSINESS_LICENSE.getValue())));
+    private StoreCertificate handleStoreCertFileList(StoreCertDTO certDTO, StoreCertificate storeCert) {
+        // 新增身份证人脸
+        StoreCertDTO.SCStoreFileDTO idCardFace = certDTO.getStoreCert().getFileList().stream().filter(x -> Objects.equals(x.getFileType(), FileType.ID_CARD_FACE.getValue()))
+                .findFirst().orElseThrow(() -> new ServiceException("身份证人脸文件不存在!", HttpStatus.ERROR));
+        StoreCertDTO.SCStoreFileDTO idCardEmblem = certDTO.getStoreCert().getFileList().stream().filter(x -> Objects.equals(x.getFileType(), FileType.ID_CARD_EMBLEM.getValue()))
+                .findFirst().orElseThrow(() -> new ServiceException("身份证国徽文件不存在!", HttpStatus.ERROR));
+        StoreCertDTO.SCStoreFileDTO license = certDTO.getStoreCert().getFileList().stream().filter(x -> Objects.equals(x.getFileType(), FileType.BUSINESS_LICENSE.getValue()))
+                .findFirst().orElseThrow(() -> new ServiceException("营业执照文件不存在!", HttpStatus.ERROR));
+        SysFile idCardFaceFile = BeanUtil.toBean(idCardFace, SysFile.class);
+        SysFile idCardEmblemFile = BeanUtil.toBean(idCardEmblem, SysFile.class);
+        SysFile licenseFile = BeanUtil.toBean(license, SysFile.class);
+        this.fileMapper.insert(Arrays.asList(idCardFaceFile, idCardEmblemFile, licenseFile));
+        return storeCert.setIdCardFaceFileId(idCardFaceFile.getId()).setIdCardEmblemFileId(idCardEmblemFile.getId()).setLicenseFileId(licenseFile.getId());
     }
 
     /**

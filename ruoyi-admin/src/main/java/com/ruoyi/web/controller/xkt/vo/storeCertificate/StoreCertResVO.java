@@ -71,7 +71,7 @@ public class StoreCertResVO {
         private String fileName;
         @ApiModelProperty(value = "文件路径")
         private String fileUrl;
-        @ApiModelProperty(value = "文件类型（4 人脸照片  5 国徽照片  6档口营业执照）")
+        @ApiModelProperty(value = "文件类型")
         private Integer fileType;
         @ApiModelProperty(value = "文件大小")
         private BigDecimal fileSize;
