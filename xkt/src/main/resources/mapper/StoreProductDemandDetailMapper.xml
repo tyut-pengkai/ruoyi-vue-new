@@ -17,7 +17,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             LEFT JOIN store_factory sf ON spd.store_factory_id = sf.id
         WHERE
             spdd.del_flag = 0 AND spdd.store_id = #{storeId}
-            <if test="prodArtNum != null  and prodArtNum != ''"> and spdd.prod_art_num like concat('%', #{remark}, '%')</if>
+            <if test="prodArtNum != null  and prodArtNum != ''"> and spdd.prod_art_num like concat('%', #{prodArtNum}, '%')</if>
             <if test="storeFactoryId != null "> and sf.id = #{storeFactoryId}</if>
             <if test="remark != null  and remark != ''"> and sf.remark like concat('%', #{remark}, '%')</if>
             <if test="emergency != null "> and spdd.emergency = #{emergency}</if>
