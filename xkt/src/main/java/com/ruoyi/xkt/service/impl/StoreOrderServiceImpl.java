@@ -805,6 +805,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             throw new ServiceException(CharSequenceUtil.format("订单[{}]当前状态无法发货",
                     order.getOrderNo()));
         }
+        checkNoCompleteRefundDetail(storeOrderDetailIds, "售后完成状态的商品无法发货");
         List<StoreOrderDetail> containDetails = storeOrderDetailMapper.selectList(
                 Wrappers.lambdaQuery(StoreOrderDetail.class)
                         .eq(StoreOrderDetail::getStoreOrderId, order.getId())
@@ -898,6 +899,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             throw new ServiceException(CharSequenceUtil.format("订单[{}]当前状态无法发货",
                     order.getOrderNo()));
         }
+        checkNoCompleteRefundDetail(storeOrderDetailIds, "售后完成状态的商品无法发货");
         List<StoreOrderDetail> containDetails = storeOrderDetailMapper.selectList(
                 Wrappers.lambdaQuery(StoreOrderDetail.class)
                         .eq(StoreOrderDetail::getStoreOrderId, order.getId())
@@ -974,6 +976,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
     public ExpressShippingLabelDTO printOrder(Long storeOrderId, List<Long> storeOrderDetailIds, Long expressId,
                                               Boolean needShip, Long operatorId) {
         Assert.notEmpty(storeOrderDetailIds);
+        checkNoCompleteRefundDetail(storeOrderDetailIds, "售后完成状态的商品无法打印快递单");
         ExpressManager expressManager = expressService.getExpressManager(expressId);
         Express express = expressService.getById(expressId);
         if (!BeanValidators.exists(express) || !express.getSystemDeliverAccess()) {
@@ -1773,6 +1776,27 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                 EOrderAction.USER_COMPLETE_AFTER_SALE,
                 SecurityUtils.getUserIdSafe(),
                 new Date());
+    }
+
+    /**
+     * 检查：若存在已完成售后的订单明细则报错
+     *
+     * @param orderDetailIds
+     * @param errorMsg
+     */
+    private void checkNoCompleteRefundDetail(Collection<Long> orderDetailIds, String errorMsg) {
+        if (CollUtil.isEmpty(orderDetailIds)) {
+            return;
+        }
+        List<StoreOrderDetail> refundDetails = storeOrderDetailMapper.selectList(Wrappers
+                .lambdaQuery(StoreOrderDetail.class)
+                .in(StoreOrderDetail::getOriginOrderDetailId, orderDetailIds)
+                .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
+        for (StoreOrderDetail refundDetail : refundDetails) {
+            if (EOrderStatus.AFTER_SALE_COMPLETED.getValue().equals(refundDetail.getDetailStatus())) {
+                throw new ServiceException(errorMsg);
+            }
+        }
     }
 
     /**
