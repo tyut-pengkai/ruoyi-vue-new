@@ -3,6 +3,7 @@ package com.ruoyi.xkt.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreSale;
 import com.ruoyi.xkt.dto.storeSale.StoreSaleDownloadDTO;
+import com.ruoyi.xkt.dto.storeSale.StoreSaleExportDTO;
 import com.ruoyi.xkt.dto.storeSale.StoreSalePageDTO;
 import com.ruoyi.xkt.dto.storeSale.StoreSalePageResDTO;
 import org.apache.ibatis.annotations.Param;
@@ -36,10 +37,9 @@ public interface StoreSaleMapper extends BaseMapper<StoreSale> {
     /**
      * 导出指定时间段内的数据
      *
-     * @param voucherDateStart 开始时间
-     * @param voucherDateEnd   结束时间
+     * @param exportDTO 导出入参
      * @return
      */
-    List<StoreSaleDownloadDTO> selectExportListVoucherDateBetween(@Param("voucherDateStart") Date voucherDateStart, @Param("voucherDateEnd") Date voucherDateEnd);
+    List<StoreSaleDownloadDTO> selectExportListVoucherDateBetween(StoreSaleExportDTO exportDTO);
 
 }

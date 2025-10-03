@@ -288,7 +288,9 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
         } else {
             Optional.ofNullable(exportDTO.getFullExport())
                     .orElseThrow(() -> new ServiceException("全量导出，fullExport不能为空!", HttpStatus.ERROR));
-            return this.storeProdStockMapper.selectAllStockList();
+            List<StoreProductColor> prodColorList = this.prodColorMapper.selectList(new LambdaQueryWrapper<StoreProductColor>()
+                    .eq(StoreProductColor::getStoreId, exportDTO.getStoreId()).eq(StoreProductColor::getDelFlag, Constants.UNDELETED));
+            return this.storeProdStockMapper.selectAllStockList(prodColorList.stream().map(StoreProductColor::getId).collect(Collectors.toList()));
         }
     }
 

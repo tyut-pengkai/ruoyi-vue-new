@@ -1,7 +1,6 @@
 package com.ruoyi.xkt.service;
 
 import com.ruoyi.common.core.page.Page;
-import com.ruoyi.xkt.domain.StoreProduct;
 import com.ruoyi.xkt.dto.storeProduct.*;
 
 import java.io.IOException;
@@ -26,13 +25,10 @@ public interface IStoreProductService {
     /**
      * 查询档口商品列表
      *
-     * @param storeProduct 档口商品
-     * @return 档口商品集合
+     * @param pageDTO 查询入参
+     * @return Page<StoreProdPageResDTO>
      */
-    List<StoreProduct> selectStoreProductList(StoreProduct storeProduct);
-
     Page<StoreProdPageResDTO> page(StoreProdPageDTO pageDTO);
-
 
     /**
      * 新增档口商品

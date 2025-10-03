@@ -1,10 +1,14 @@
 package com.ruoyi.xkt.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.xkt.domain.StoreProduct;
 import com.ruoyi.xkt.dto.storeProdStorage.StoreStorageDetailDownloadDTO;
 import com.ruoyi.xkt.dto.storeProdStorage.StoreStorageExportDTO;
+import com.ruoyi.xkt.mapper.StoreProductMapper;
 import com.ruoyi.xkt.mapper.StoreProductStorageDetailMapper;
 import com.ruoyi.xkt.service.IStoreProductStorageDetailService;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +21,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 档口商品入库明细Service业务层处理
@@ -29,6 +34,7 @@ import java.util.List;
 public class StoreProductStorageDetailServiceImpl implements IStoreProductStorageDetailService {
 
     final StoreProductStorageDetailMapper storageDetailMapper;
+    final StoreProductMapper storeProdMapper;
 
     /**
      * 导出档口商品入库明细
@@ -64,6 +70,9 @@ public class StoreProductStorageDetailServiceImpl implements IStoreProductStorag
                     throw new ServiceException("导出时间间隔不能超过6个月!", HttpStatus.ERROR);
                 }
             }
+            List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+                    .eq(StoreProduct::getStoreId, exportDTO.getStoreId()).eq(StoreProduct::getDelFlag, Constants.UNDELETED));
+            exportDTO.setStoreProdIdList(storeProdList.stream().map(StoreProduct::getId).collect(Collectors.toList()));
             return this.storageDetailMapper.selectExportListVoucherDateBetween(exportDTO);
         }
     }

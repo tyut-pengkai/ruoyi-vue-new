@@ -7,9 +7,7 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.SecurityUtils;
-import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.web.controller.xkt.vo.storeProd.*;
-import com.ruoyi.xkt.domain.StoreProduct;
 import com.ruoyi.xkt.dto.storeProduct.*;
 import com.ruoyi.xkt.service.IStoreProductService;
 import io.swagger.annotations.Api;
@@ -19,7 +17,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
@@ -137,14 +134,6 @@ public class StoreProductController extends XktBaseController {
     public R<List<StoreProdStatusCateCountResVO>> getStatusCateNum(@Validated @RequestBody StoreProdStatusCateNumVO cateCountVO) {
         return R.ok(BeanUtil.copyToList(storeProdService.getStatusCateNum(
                 BeanUtil.toBean(cateCountVO, StoreProdStatusCateNumDTO.class)), StoreProdStatusCateCountResVO.class));
-    }
-
-    @Log(title = "档口商品", businessType = BusinessType.EXPORT)
-    @PostMapping("/export")
-    public void export(HttpServletResponse response, StoreProduct storeProduct) {
-        List<StoreProduct> list = storeProdService.selectStoreProductList(storeProduct);
-        ExcelUtil<StoreProduct> util = new ExcelUtil<>(StoreProduct.class);
-        util.exportExcel(response, list, "档口商品数据");
     }
 
     @ApiOperation(value = "获取商品图包列表", httpMethod = "GET", response = R.class)

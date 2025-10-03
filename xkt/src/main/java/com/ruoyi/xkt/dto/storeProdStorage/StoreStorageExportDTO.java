@@ -31,5 +31,7 @@ public class StoreStorageExportDTO {
     private Date voucherDateStart;
     @ApiModelProperty(value = "导出结束时间")
     private Date voucherDateEnd;
+    @ApiModelProperty(value = "商品ID", hidden = true)
+    private List<Long> storeProdIdList;
 
 }

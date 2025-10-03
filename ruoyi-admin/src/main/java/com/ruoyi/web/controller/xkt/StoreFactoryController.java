@@ -6,11 +6,9 @@ import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.web.controller.xkt.vo.storeFactory.StoreFactoryPageVO;
 import com.ruoyi.web.controller.xkt.vo.storeFactory.StoreFactoryResVO;
 import com.ruoyi.web.controller.xkt.vo.storeFactory.StoreFactoryVO;
-import com.ruoyi.xkt.domain.StoreFactory;
 import com.ruoyi.xkt.dto.storeFactory.StoreFactoryDTO;
 import com.ruoyi.xkt.dto.storeFactory.StoreFactoryPageDTO;
 import com.ruoyi.xkt.dto.storeFactory.StoreFactoryResDTO;
@@ -22,7 +20,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -74,14 +71,6 @@ public class StoreFactoryController extends XktBaseController {
     @GetMapping(value = "/{storeId}/{storeFactoryId}")
     public R<StoreFactoryVO> getInfo(@PathVariable("storeId") Long storeId, @PathVariable("storeFactoryId") Long storeFactoryId) {
         return R.ok(BeanUtil.toBean(storeFactoryService.selectByStoreFacId(storeId, storeFactoryId), StoreFactoryVO.class));
-    }
-
-    @Log(title = "档口合作工厂", businessType = BusinessType.EXPORT)
-    @PostMapping("/export")
-    public void export(HttpServletResponse response, StoreFactory storeFactory) {
-        List<StoreFactory> list = storeFactoryService.selectStoreFactoryList(storeFactory);
-        ExcelUtil<StoreFactory> util = new ExcelUtil<StoreFactory>(StoreFactory.class);
-        util.exportExcel(response, list, "档口合作工厂数据");
     }
 
 }

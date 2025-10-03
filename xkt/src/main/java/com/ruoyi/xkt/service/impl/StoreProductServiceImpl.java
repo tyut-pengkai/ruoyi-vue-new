@@ -64,7 +64,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.rmi.ServerException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -144,18 +143,6 @@ public class StoreProductServiceImpl implements IStoreProductService {
         return storeProdResDTO.setFileList(fileResList).setAllColorList(allColorList).setDetail(prodDetail.getDetail())
                 .setColorList(colorList).setSizeList(sizeList).setCateAttr(BeanUtil.toBean(cateAttr, StoreProdCateAttrDTO.class))
                 .setSvc(BeanUtil.toBean(storeProductSvc, StoreProdSvcDTO.class)).setProcess(BeanUtil.toBean(prodProcess, StoreProdProcessDTO.class));
-    }
-
-    /**
-     * 查询档口商品列表
-     *
-     * @param storeProduct 档口商品
-     * @return 档口商品
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public List<StoreProduct> selectStoreProductList(StoreProduct storeProduct) {
-        return storeProdMapper.selectStoreProductList(storeProduct);
     }
 
     /**
@@ -350,10 +337,11 @@ public class StoreProductServiceImpl implements IStoreProductService {
 
     /**
      * 更新档口商品其它属性
-     *  @param updateDTO   更新入参
+     *
+     * @param updateDTO   更新入参
      * @param storeProdId 档口商品ID
      * @param storeId     档口ID
-     * @param prodArtNum 货号
+     * @param prodArtNum  货号
      */
     private void updateColorRelation(StoreProdDTO updateDTO, Long storeProdId, Long storeId, String prodArtNum) {
         // 处理档口所有颜色
@@ -483,10 +471,11 @@ public class StoreProductServiceImpl implements IStoreProductService {
 
     /**
      * 新增档口商品颜色等
-     *  @param createDTO   入参
+     *
+     * @param createDTO   入参
      * @param storeProdId 档口商品ID
      * @param storeId     档口ID
-     * @param prodArtNum 货号
+     * @param prodArtNum  货号
      */
     private void createProdColor(StoreProdDTO createDTO, Long storeProdId, Long storeId, String prodArtNum) {
         // 处理档口所有颜色
@@ -517,7 +506,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
         this.storeProdColorSizeMapper.updateById(prodColorSizeList);
         // 新增档口库存初始化数据
         List<StoreProductStock> prodStockList = prodColorList.stream().map(x -> BeanUtil.toBean(x, StoreProductStock.class)
-                        .setProdArtNum(prodArtNum).setStoreProdColorId(x.getId())).collect(Collectors.toList());
+                .setProdArtNum(prodArtNum).setStoreProdColorId(x.getId())).collect(Collectors.toList());
         this.prodStockMapper.insert(prodStockList);
         // 设置了档口商品全部优惠的客户，新增商品优惠
         this.createStoreCusDiscount(prodColorList, storeProdId);

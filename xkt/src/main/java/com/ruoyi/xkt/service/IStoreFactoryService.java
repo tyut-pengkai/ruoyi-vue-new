@@ -26,14 +26,6 @@ public interface IStoreFactoryService {
     StoreFactoryResDTO selectByStoreFacId(Long storeId, Long storeFacId);
 
     /**
-     * 查询档口合作工厂列表
-     *
-     * @param storeFactory 档口合作工厂
-     * @return 档口合作工厂集合
-     */
-    List<StoreFactory> selectStoreFactoryList(StoreFactory storeFactory);
-
-    /**
      * 新增档口合作工厂
      *
      * @param storeFactoryDTO 档口合作工厂

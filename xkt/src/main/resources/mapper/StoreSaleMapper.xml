@@ -42,6 +42,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 LEFT JOIN store_customer sc ON ss.store_cus_id = sc.id
         WHERE
             ss.del_flag = 0
+            AND ss.store_id = #{storeId}
             AND ss.id IN
             <foreach collection="storeSaleIdList" item="storeSaleId" open="(" separator="," close=")">
                 #{storeSaleId}
@@ -66,6 +67,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 LEFT JOIN store_customer sc ON ss.store_cus_id = sc.id
         WHERE
             ss.del_flag = 0
+            AND ss.store_id = #{storeId}
             AND ss.voucher_date BETWEEN #{voucherDateStart} AND #{voucherDateEnd}
     </select>
 

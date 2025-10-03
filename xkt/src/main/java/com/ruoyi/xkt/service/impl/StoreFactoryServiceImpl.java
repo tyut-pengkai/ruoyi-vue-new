@@ -137,18 +137,4 @@ public class StoreFactoryServiceImpl implements IStoreFactoryService {
         return BeanUtil.toBean(storeFactory, StoreFactoryResDTO.class);
     }
 
-
-    /**
-     * 查询档口合作工厂列表
-     *
-     * @param storeFactory 档口合作工厂
-     * @return 档口合作工厂
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public List<StoreFactory> selectStoreFactoryList(StoreFactory storeFactory) {
-        return storeFactoryMapper.selectStoreFactoryList(storeFactory);
-    }
-
-
 }

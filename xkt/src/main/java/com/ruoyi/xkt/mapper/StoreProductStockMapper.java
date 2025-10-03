@@ -55,7 +55,7 @@ public interface StoreProductStockMapper extends BaseMapper<StoreProductStock> {
      *
      * @return List<StoreProdStockDownloadDTO>
      */
-    List<StoreProdStockDownloadDTO> selectAllStockList();
+    List<StoreProdStockDownloadDTO> selectAllStockList(@Param("storeProdColorIdList") List<Long> storeProdColorIdList);
 
     /**
      * 筛选商城库存列表

@@ -235,7 +235,7 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
                     throw new ServiceException("导出时间间隔不能超过6个月!", HttpStatus.ERROR);
                 }
             }
-            return this.storeSaleMapper.selectExportListVoucherDateBetween(exportDTO.getVoucherDateStart(), exportDTO.getVoucherDateEnd());
+            return this.storeSaleMapper.selectExportListVoucherDateBetween(exportDTO);
         }
     }
 
