@@ -3,9 +3,8 @@ package com.ruoyi.xkt.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProductStorageDetail;
 import com.ruoyi.xkt.dto.storeProdStorage.StoreStorageDetailDownloadDTO;
-import org.apache.ibatis.annotations.Param;
+import com.ruoyi.xkt.dto.storeProdStorage.StoreStorageExportDTO;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -19,18 +18,17 @@ public interface StoreProductStorageDetailMapper extends BaseMapper<StoreProduct
     /**
      * 导出选定的入库记录
      *
-     * @param storeProdStorageIdList 入库单ID列表
+     * @param exportDTO 导出入参
      * @return 入库记录
      */
-    List<StoreStorageDetailDownloadDTO> selectExportList(@Param("storeProdStorageIdList") List<Long> storeProdStorageIdList);
+    List<StoreStorageDetailDownloadDTO> selectExportList(StoreStorageExportDTO exportDTO);
 
     /**
      * 导出指定时间段内的入库记录
      *
-     * @param voucherDateStart 开始时间
-     * @param voucherDateEnd   结束时间
+     * @param exportDTO 导出入参
      * @return 入库记录
      */
-    List<StoreStorageDetailDownloadDTO> selectExportListVoucherDateBetween(@Param("voucherDateStart") Date voucherDateStart, @Param("voucherDateEnd") Date voucherDateEnd);
+    List<StoreStorageDetailDownloadDTO> selectExportListVoucherDateBetween(StoreStorageExportDTO exportDTO);
 
 }

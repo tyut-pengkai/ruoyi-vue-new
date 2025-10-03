@@ -44,7 +44,7 @@ public class StoreProductStorageDetailServiceImpl implements IStoreProductStorag
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         if (CollectionUtils.isNotEmpty(exportDTO.getStoreProdStorageIdList())) {
-            return this.storageDetailMapper.selectExportList(exportDTO.getStoreProdStorageIdList());
+            return this.storageDetailMapper.selectExportList(exportDTO);
         } else {
             // 没有传时间，则设置当前时间往前推半年
             if (ObjectUtils.isEmpty(exportDTO.getVoucherDateStart()) && ObjectUtils.isEmpty(exportDTO.getVoucherDateEnd())) {
@@ -64,7 +64,7 @@ public class StoreProductStorageDetailServiceImpl implements IStoreProductStorag
                     throw new ServiceException("导出时间间隔不能超过6个月!", HttpStatus.ERROR);
                 }
             }
-            return this.storageDetailMapper.selectExportListVoucherDateBetween(exportDTO.getVoucherDateStart(), exportDTO.getVoucherDateEnd());
+            return this.storageDetailMapper.selectExportListVoucherDateBetween(exportDTO);
         }
     }
 }
