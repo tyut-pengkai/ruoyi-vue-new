@@ -6,6 +6,7 @@ import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.xkt.domain.StoreFactory;
 import com.ruoyi.xkt.domain.StoreProductStorage;
 import com.ruoyi.xkt.domain.StoreProductStorageDemandDeduct;
@@ -98,33 +99,77 @@ public class StoreProductStorageDemandDeducteServiceImpl implements IStoreProduc
             return StoreProdStorageDemandDeductDTO.SPSDDDemandDetailDTO.builder().spsddId(storageDetail.getId())
                     .prodArtNum(storageDetail.getProdArtNum()).colorName(storageDetail.getColorName())
                     .demandCodeList(demandCodeList).compareStrList(compareNumStrList)
-                    .size30List(this.getSizeQuantityList(demandCodeList, demandSizeMap, SIZE_30))
-                    .size31List(this.getSizeQuantityList(demandCodeList, demandSizeMap, SIZE_31))
-                    .size32List(this.getSizeQuantityList(demandCodeList, demandSizeMap, SIZE_32))
-                    .size33List(this.getSizeQuantityList(demandCodeList, demandSizeMap, SIZE_33))
-                    .size34List(this.getSizeQuantityList(demandCodeList, demandSizeMap, SIZE_34))
-                    .size35List(this.getSizeQuantityList(demandCodeList, demandSizeMap, SIZE_35))
-                    .size36List(this.getSizeQuantityList(demandCodeList, demandSizeMap, SIZE_36))
-                    .size37List(this.getSizeQuantityList(demandCodeList, demandSizeMap, SIZE_37))
-                    .size38List(this.getSizeQuantityList(demandCodeList, demandSizeMap, SIZE_38))
-                    .size39List(this.getSizeQuantityList(demandCodeList, demandSizeMap, SIZE_39))
-                    .size40List(this.getSizeQuantityList(demandCodeList, demandSizeMap, SIZE_40))
-                    .size41List(this.getSizeQuantityList(demandCodeList, demandSizeMap, SIZE_41))
-                    .size42List(this.getSizeQuantityList(demandCodeList, demandSizeMap, SIZE_42))
-                    .size43List(this.getSizeQuantityList(demandCodeList, demandSizeMap, SIZE_43))
+                    .size30List(this.getSizeQuantityList(storageDetail, demandCodeList, demandSizeMap, SIZE_30))
+                    .size31List(this.getSizeQuantityList(storageDetail, demandCodeList, demandSizeMap, SIZE_31))
+                    .size32List(this.getSizeQuantityList(storageDetail, demandCodeList, demandSizeMap, SIZE_32))
+                    .size33List(this.getSizeQuantityList(storageDetail, demandCodeList, demandSizeMap, SIZE_33))
+                    .size34List(this.getSizeQuantityList(storageDetail, demandCodeList, demandSizeMap, SIZE_34))
+                    .size35List(this.getSizeQuantityList(storageDetail, demandCodeList, demandSizeMap, SIZE_35))
+                    .size36List(this.getSizeQuantityList(storageDetail, demandCodeList, demandSizeMap, SIZE_36))
+                    .size37List(this.getSizeQuantityList(storageDetail, demandCodeList, demandSizeMap, SIZE_37))
+                    .size38List(this.getSizeQuantityList(storageDetail, demandCodeList, demandSizeMap, SIZE_38))
+                    .size39List(this.getSizeQuantityList(storageDetail, demandCodeList, demandSizeMap, SIZE_39))
+                    .size40List(this.getSizeQuantityList(storageDetail, demandCodeList, demandSizeMap, SIZE_40))
+                    .size41List(this.getSizeQuantityList(storageDetail, demandCodeList, demandSizeMap, SIZE_41))
+                    .size42List(this.getSizeQuantityList(storageDetail, demandCodeList, demandSizeMap, SIZE_42))
+                    .size43List(this.getSizeQuantityList(storageDetail, demandCodeList, demandSizeMap, SIZE_43))
                     .build();
         }).collect(Collectors.toList());
         return dto.setDetailList(demandDetailDTOList);
     }
 
 
-    private List<Integer> getSizeQuantityList(List<String> demandCodeList, Map<String, List<StoreProductStorageDemandDeduct>> demandSizeMap, Integer size) {
+    /**
+     * 设置每个需求code的抵扣数量
+     *
+     * @param storageDetail  入库当明细
+     * @param demandCodeList 需求code列表，第一行为“”，代表入库单明细数量
+     * @param demandSizeMap  需求尺码对应的数量map
+     * @param size           当前尺码
+     * @return
+     */
+    private List<Integer> getSizeQuantityList(StoreProductStorageDetail storageDetail, List<String> demandCodeList,
+                                              Map<String, List<StoreProductStorageDemandDeduct>> demandSizeMap, Integer size) {
         // 每一个尺码的数量对比明细
         return demandCodeList.stream().map(demandCode -> {
-            List<StoreProductStorageDemandDeduct> demandSizeList = demandSizeMap.get(demandCode);
-            return CollectionUtils.isEmpty(demandSizeList) ? 0
-                    : demandSizeList.stream().filter(x -> Objects.equals(x.getSize(), size))
-                    .map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
+            Integer demandDeductQuantity = 0;
+            // 如果demandCode为""，表明是第一行，此时取入库数量
+            if (StringUtils.isEmpty(demandCode)) {
+                if (Objects.equals(SIZE_30, size)) {
+                    demandDeductQuantity = ObjectUtils.defaultIfNull(storageDetail.getSize30(), 0);
+                } else if (Objects.equals(SIZE_31, size)) {
+                    demandDeductQuantity = ObjectUtils.defaultIfNull(storageDetail.getSize31(), 0);
+                } else if (Objects.equals(SIZE_32, size)) {
+                    demandDeductQuantity = ObjectUtils.defaultIfNull(storageDetail.getSize32(), 0);
+                } else if (Objects.equals(SIZE_33, size)) {
+                    demandDeductQuantity = ObjectUtils.defaultIfNull(storageDetail.getSize33(), 0);
+                } else if (Objects.equals(SIZE_34, size)) {
+                    demandDeductQuantity = ObjectUtils.defaultIfNull(storageDetail.getSize34(), 0);
+                } else if (Objects.equals(SIZE_35, size)) {
+                    demandDeductQuantity = ObjectUtils.defaultIfNull(storageDetail.getSize35(), 0);
+                } else if (Objects.equals(SIZE_36, size)) {
+                    demandDeductQuantity = ObjectUtils.defaultIfNull(storageDetail.getSize36(), 0);
+                } else if (Objects.equals(SIZE_37, size)) {
+                    demandDeductQuantity = ObjectUtils.defaultIfNull(storageDetail.getSize37(), 0);
+                } else if (Objects.equals(SIZE_38, size)) {
+                    demandDeductQuantity = ObjectUtils.defaultIfNull(storageDetail.getSize38(), 0);
+                } else if (Objects.equals(SIZE_39, size)) {
+                    demandDeductQuantity = ObjectUtils.defaultIfNull(storageDetail.getSize39(), 0);
+                } else if (Objects.equals(SIZE_40, size)) {
+                    demandDeductQuantity = ObjectUtils.defaultIfNull(storageDetail.getSize40(), 0);
+                } else if (Objects.equals(SIZE_41, size)) {
+                    demandDeductQuantity = ObjectUtils.defaultIfNull(storageDetail.getSize41(), 0);
+                } else if (Objects.equals(SIZE_42, size)) {
+                    demandDeductQuantity = ObjectUtils.defaultIfNull(storageDetail.getSize42(), 0);
+                } else if (Objects.equals(SIZE_43, size)) {
+                    demandDeductQuantity = ObjectUtils.defaultIfNull(storageDetail.getSize43(), 0);
+                }
+            } else {
+                List<StoreProductStorageDemandDeduct> demandSizeList = demandSizeMap.get(demandCode);
+                demandDeductQuantity = CollectionUtils.isEmpty(demandSizeList) ? 0 : demandSizeList.stream().filter(x -> Objects.equals(x.getSize(), size))
+                        .map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
+            }
+            return demandDeductQuantity;
         }).collect(Collectors.toList());
     }
 
