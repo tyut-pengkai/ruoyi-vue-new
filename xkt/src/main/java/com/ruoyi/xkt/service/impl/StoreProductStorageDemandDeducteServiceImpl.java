@@ -71,10 +71,9 @@ public class StoreProductStorageDemandDeducteServiceImpl implements IStoreProduc
                 .eq(StoreProductStorageDemandDeduct::getStorageCode, storageCode).eq(StoreProductStorageDemandDeduct::getDelFlag, Constants.UNDELETED));
         StoreProdStorageDemandDeductDTO dto = BeanUtil.toBean(storage, StoreProdStorageDemandDeductDTO.class).setStorageCode(storageCode)
                 .setFacName(ObjectUtils.isNotEmpty(storeFac) ? storeFac.getFacName() : "");
-        if (CollectionUtils.isEmpty(demandDeductList)) {
-            return dto;
-        }
-        Map<Long, List<StoreProductStorageDemandDeduct>> demandDeductMap = demandDeductList.stream().collect(Collectors.groupingBy(StoreProductStorageDemandDeduct::getStoreProdStorageDetailId));
+        // 入库单明细具体抵扣需求单明细map
+        Map<Long, List<StoreProductStorageDemandDeduct>> demandDeductMap = CollectionUtils.isEmpty(demandDeductList) ? new HashMap<>()
+                : demandDeductList.stream().collect(Collectors.groupingBy(StoreProductStorageDemandDeduct::getStoreProdStorageDetailId));
         List<StoreProdStorageDemandDeductDTO.SPSDDDemandDetailDTO> demandDetailDTOList = storageDetailList.stream().map(storageDetail -> {
             // 获取该明细的抵扣需求列表
             List<StoreProductStorageDemandDeduct> demandDetailList = ObjectUtils.defaultIfNull(demandDeductMap.get(storageDetail.getId()), new ArrayList<>());
