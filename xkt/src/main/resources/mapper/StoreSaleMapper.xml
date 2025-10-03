@@ -47,6 +47,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <foreach collection="storeSaleIdList" item="storeSaleId" open="(" separator="," close=")">
                 #{storeSaleId}
             </foreach>
+        ORDER BY
+            ss.create_time DESC
     </select>
 
     <select id="selectExportListVoucherDateBetween" resultType="com.ruoyi.xkt.dto.storeSale.StoreSaleDownloadDTO">
@@ -69,6 +71,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             ss.del_flag = 0
             AND ss.store_id = #{storeId}
             AND ss.voucher_date BETWEEN #{voucherDateStart} AND #{voucherDateEnd}
+        ORDER BY
+            ss.create_time DESC
     </select>
 
 

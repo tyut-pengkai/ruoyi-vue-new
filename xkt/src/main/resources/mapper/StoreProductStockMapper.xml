@@ -124,6 +124,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <foreach collection="storeProdStockIdList" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>
+        ORDER BY
+            sps.store_prod_id,
+            sps.store_color_id
     </select>
 
     <select id="selectAllStockList" resultType="com.ruoyi.xkt.dto.storeProductStock.StoreProdStockDownloadDTO">
@@ -156,6 +159,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <foreach collection="storeProdColorIdList" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>
+        ORDER BY
+            sps.store_prod_id,
+            sps.store_color_id
     </select>
 
     <select id="selectWebsitePage" resultType="com.ruoyi.xkt.dto.storeProductStock.StoreProdStockWebsitePageResDTO">

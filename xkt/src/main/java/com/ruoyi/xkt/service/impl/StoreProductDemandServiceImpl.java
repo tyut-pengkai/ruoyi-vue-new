@@ -400,7 +400,8 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
     @Transactional(readOnly = true)
     public List<StoreProdDemandDownloadDTO> export(StoreProdDemandExportDTO exportDTO) {
         LambdaQueryWrapper<StoreProductDemandDetail> queryWrapper = new LambdaQueryWrapper<StoreProductDemandDetail>()
-                .eq(StoreProductDemandDetail::getStoreId, exportDTO.getStoreId()).eq(StoreProductDemandDetail::getDelFlag, Constants.UNDELETED);
+                .eq(StoreProductDemandDetail::getStoreId, exportDTO.getStoreId()).eq(StoreProductDemandDetail::getDelFlag, Constants.UNDELETED)
+                .orderByDesc(StoreProductDemandDetail::getCreateTime);
         if (CollectionUtils.isNotEmpty(exportDTO.getStoreProdDemandDetailIdList())) {
             queryWrapper.in(StoreProductDemandDetail::getId, exportDTO.getStoreProdDemandDetailIdList());
         }
