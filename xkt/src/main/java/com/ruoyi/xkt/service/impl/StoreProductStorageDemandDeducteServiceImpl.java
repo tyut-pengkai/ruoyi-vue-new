@@ -76,25 +76,25 @@ public class StoreProductStorageDemandDeducteServiceImpl implements IStoreProduc
         }
         Map<Long, List<StoreProductStorageDemandDeduct>> demandDeductMap = demandDeductList.stream().collect(Collectors.groupingBy(StoreProductStorageDemandDeduct::getStoreProdStorageDetailId));
         List<StoreProdStorageDemandDeductDTO.SPSDDDemandDetailDTO> demandDetailDTOList = storageDetailList.stream().map(storageDetail -> {
-            List<StoreProductStorageDemandDeduct> demandDetailList = demandDeductMap.get(storageDetail.getId());
-            if (CollectionUtils.isEmpty(demandDetailList)) {
-                return StoreProdStorageDemandDeductDTO.SPSDDDemandDetailDTO.builder()
-                        .prodArtNum(storageDetail.getProdArtNum()).colorName(storageDetail.getColorName())
-                        .build();
-            }
+            // 获取该明细的抵扣需求列表
+            List<StoreProductStorageDemandDeduct> demandDetailList = ObjectUtils.defaultIfNull(demandDeductMap.get(storageDetail.getId()), new ArrayList<>());
             // 抵扣的需求明细列表 再按照code进行分类
             Map<String, List<StoreProductStorageDemandDeduct>> demandSizeMap = demandDetailList.stream().collect(Collectors.groupingBy(StoreProductStorageDemandDeduct::getDemandCode));
             // 生产需求单号列
             final List<String> demandCodeList = new ArrayList<String>() {{
                 add("");
-                // 生产需求单号列表
-                demandDetailList.stream().map(StoreProductStorageDemandDeduct::getDemandCode).distinct().sorted(Comparator.comparing(x -> x)).forEach(this::add);
+                if (CollectionUtils.isNotEmpty(demandDetailList)) {
+                    // 生产需求单号列表
+                    demandDetailList.stream().map(StoreProductStorageDemandDeduct::getDemandCode).distinct().sorted(Comparator.comparing(x -> x)).forEach(this::add);
+                }
             }};
             // 初始化数量对比 列
             List<String> compareNumStrList = new ArrayList<String>() {{
                 add("入库数量");
-                // 根据生产需求单号数量 生成 对应的 抵扣数量
-                demandDetailList.stream().map(StoreProductStorageDemandDeduct::getDemandCode).distinct().forEach(x -> this.add("抵扣需求数量"));
+                if (CollectionUtils.isNotEmpty(demandDetailList)) {
+                    // 根据生产需求单号数量 生成 对应的 抵扣数量
+                    demandDetailList.stream().map(StoreProductStorageDemandDeduct::getDemandCode).distinct().forEach(x -> this.add("抵扣需求数量"));
+                }
             }};
             return StoreProdStorageDemandDeductDTO.SPSDDDemandDetailDTO.builder().spsddId(storageDetail.getId())
                     .prodArtNum(storageDetail.getProdArtNum()).colorName(storageDetail.getColorName())
@@ -134,7 +134,7 @@ public class StoreProductStorageDemandDeducteServiceImpl implements IStoreProduc
         return demandCodeList.stream().map(demandCode -> {
             Integer demandDeductQuantity = 0;
             // 如果demandCode为""，表明是第一行，此时取入库数量
-            if (StringUtils.isEmpty(demandCode)) {
+            if (StringUtils.isBlank(demandCode)) {
                 if (Objects.equals(SIZE_30, size)) {
                     demandDeductQuantity = ObjectUtils.defaultIfNull(storageDetail.getSize30(), 0);
                 } else if (Objects.equals(SIZE_31, size)) {
