@@ -19,6 +19,8 @@ import java.util.Date;
 @Accessors(chain = true)
 public class StoreProdPageResDTO {
 
+    @ApiModelProperty(value = "是否私款 0 否 1 是")
+    private Integer privateItem;
     @ApiModelProperty(value = "档口商品颜色ID")
     private Long storeProdColorId;
     @ApiModelProperty(value = "档口商品ID")

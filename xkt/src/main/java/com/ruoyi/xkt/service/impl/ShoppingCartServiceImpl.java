@@ -311,6 +311,26 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
     }
 
     /**
+     * 用户更新进货车明细数量
+     *
+     * @param updateQuantityDTO 更新入参
+     * @return Integer
+     */
+    @Override
+    @Transactional
+    public Integer updateDetailQuantity(ShopCartDetailQuantityUpdateDTO updateQuantityDTO) {
+        // 数量不能小于等于0
+        if (0 >= updateQuantityDTO.getQuantity()) {
+            throw new ServiceException("数量不能小于等于0!", HttpStatus.ERROR);
+        }
+        ShoppingCartDetail detail = Optional.ofNullable(this.shopCartDetailMapper.selectOne(new LambdaQueryWrapper<ShoppingCartDetail>()
+                        .eq(ShoppingCartDetail::getId, updateQuantityDTO.getShoppingCartDetailId()).eq(ShoppingCartDetail::getDelFlag, Constants.UNDELETED)))
+                .orElseThrow(() -> new ServiceException("进货车明细不存在!", HttpStatus.ERROR));
+        detail.setQuantity(updateQuantityDTO.getQuantity());
+        return this.shopCartDetailMapper.updateById(detail);
+    }
+
+    /**
      * 获取档口商品颜色尺码的库存
      *
      * @param stockList            库存数量

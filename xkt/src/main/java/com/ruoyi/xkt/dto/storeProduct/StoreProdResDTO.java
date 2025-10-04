@@ -40,6 +40,8 @@ public class StoreProdResDTO {
     private String prodArtNum;
     @ApiModelProperty(value = "商品标题")
     private String prodTitle;
+    @ApiModelProperty(value = "0 否 1 是")
+    private Integer privateItem;
     @ApiModelProperty(value = "商品重量")
     private BigDecimal prodWeight;
     @ApiModelProperty(value = "生产价格")

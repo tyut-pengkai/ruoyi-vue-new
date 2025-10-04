@@ -59,6 +59,11 @@ public class StoreProduct extends XktBaseEntity {
     private String prodTitle;
 
     /**
+     * 是否私款 0 否 1 是
+     */
+    private Integer privateItem;
+
+    /**
      * 商品重量
      */
     @Excel(name = "商品重量")

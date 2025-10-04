@@ -33,7 +33,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             pc.`name` AS prodCateName,
             spc.prod_status,
             spc.create_time,
-            sf.file_url AS mainPicUrl
+            sf.file_url AS mainPicUrl,
+            sp.private_item
         FROM
             store_product_color spc
                 JOIN store_product sp ON spc.store_prod_id = sp.id
@@ -50,6 +51,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             </if>
             <if test="prodArtNum != null  and prodArtNum != ''"> and sp.prod_art_num like concat('%', #{prodArtNum}, '%')</if>
             <if test="prodCateId != null "> and sp.prod_cate_id = #{prodCateId}</if>
+            <if test="privateItem != null "> and sp.private_item = #{privateItem}</if>
         ORDER BY
             spc.create_time DESC
     </select>

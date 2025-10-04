@@ -427,7 +427,7 @@ public class XktTask {
         // 5. 打 关注榜 标签，根据关注量，进行排序
         this.tagAttentionRank(now, yesterday, tagList);
         // 6. 打 库存榜 标签，根据库存量，进行排序
-        this.tagStockTag(yesterday, oneMonthAgo, tagList);
+        this.tagStockTag(now, yesterday, oneMonthAgo, tagList);
         // 7. 打 七日上新 标签
         this.tag7DaysNewTag(now, yesterday, oneWeekAgo, tagList);
         if (CollectionUtils.isEmpty(tagList)) {
@@ -503,8 +503,9 @@ public class XktTask {
      */
     @Transactional
     public void dailyProdWeight() {
+        // 筛选非私款的商品
         List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
-                .eq(StoreProduct::getDelFlag, Constants.UNDELETED));
+                .eq(StoreProduct::getDelFlag, Constants.UNDELETED).eq(StoreProduct::getPrivateItem, EProductItemType.NON_PRIVATE_ITEM.getValue()));
         if (CollectionUtils.isEmpty(storeProdList)) {
             return;
         }
@@ -543,7 +544,9 @@ public class XktTask {
      */
     @Transactional
     public void dailyStoreWeight() {
-        List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>().eq(StoreProduct::getDelFlag, Constants.UNDELETED));
+        // 筛选非私款的商品
+        List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+                .eq(StoreProduct::getDelFlag, Constants.UNDELETED).eq(StoreProduct::getPrivateItem, EProductItemType.NON_PRIVATE_ITEM.getValue()));
         if (CollectionUtils.isEmpty(storeProdList)) {
             return;
         }
@@ -773,8 +776,10 @@ public class XktTask {
         final List<Long> storeIdList = memberList.stream().map(StoreMember::getStoreId).collect(Collectors.toList());
         List<Store> storeList = this.storeMapper.selectList(new LambdaQueryWrapper<Store>()
                 .eq(Store::getDelFlag, Constants.UNDELETED).in(Store::getId, storeIdList));
+        // 非私款商品才会计入权重
         List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
-                .eq(StoreProduct::getDelFlag, Constants.UNDELETED).in(StoreProduct::getStoreId, storeIdList));
+                .eq(StoreProduct::getDelFlag, Constants.UNDELETED).eq(StoreProduct::getPrivateItem, EProductItemType.NON_PRIVATE_ITEM.getValue())
+                .in(StoreProduct::getStoreId, storeIdList));
         if (CollectionUtils.isEmpty(storeProdList)) {
             return;
         }
@@ -846,15 +851,16 @@ public class XktTask {
     public void hourPublicStoreProduct() {
         // 获取当前时间 格式化为 yyyy-MM-dd HH:00:00
         String hourTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:00:00").format(LocalDateTime.now());
-        // 当前整点待发布的商品
-        List<StoreProduct> unpublicList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+        // 当前整点待发布的商品 必须为非私款商品
+        List<StoreProduct> unPublicList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getDelFlag, Constants.UNDELETED).eq(StoreProduct::getListingWaySchedule, hourTime)
+                .eq(StoreProduct::getPrivateItem, EProductItemType.NON_PRIVATE_ITEM.getValue())
                 .eq(StoreProduct::getProdStatus, EProductStatus.UN_PUBLISHED.getValue()));
-        if (CollectionUtils.isEmpty(unpublicList)) {
+        if (CollectionUtils.isEmpty(unPublicList)) {
             return;
         }
-        System.err.println(unpublicList);
-        final List<String> storeProdIdList = unpublicList.stream().map(StoreProduct::getId).map(String::valueOf).collect(Collectors.toList());
+        System.err.println(unPublicList);
+        final List<String> storeProdIdList = unPublicList.stream().map(StoreProduct::getId).map(String::valueOf).collect(Collectors.toList());
         // 获取所有的商品的第一张主图
         List<StoreProdFileResDTO> mainPicList = this.storeProdFileMapper.selectMainPic(storeProdIdList);
         // 所有的商品主图map
@@ -880,11 +886,11 @@ public class XktTask {
                 .stream().collect(Collectors.toMap(StoreProductCategoryAttribute::getStoreProdId, x -> x));
         // 档口商品对应的档口
         Map<Long, Store> storeMap = this.storeMapper.selectList(new LambdaQueryWrapper<Store>().eq(Store::getDelFlag, Constants.UNDELETED)
-                        .in(Store::getId, unpublicList.stream().map(StoreProduct::getStoreId).collect(Collectors.toList())))
+                        .in(Store::getId, unPublicList.stream().map(StoreProduct::getStoreId).collect(Collectors.toList())))
                 .stream().collect(Collectors.toMap(Store::getId, x -> x));
         // 构建批量操作请求
         List<BulkOperation> bulkOperations = new ArrayList<>();
-        for (StoreProduct product : unpublicList) {
+        for (StoreProduct product : unPublicList) {
             final SysProductCategory cate = prodCateMap.get(product.getProdCateId());
             final SysProductCategory parCate = ObjectUtils.isEmpty(cate) ? null : prodCateMap.get(cate.getParentId());
             final Store store = storeMap.get(product.getStoreId());
@@ -929,7 +935,7 @@ public class XktTask {
         } catch (Exception e) {
             log.error("批量插入到 ES 失败", e);
         }
-        for (StoreProduct product : unpublicList) {
+        for (StoreProduct product : unPublicList) {
             List<String> mainPicUrlList = mainPicMap.get(product.getId());
             if (CollUtil.isEmpty(mainPicUrlList)) {
                 return;
@@ -1313,6 +1319,7 @@ public class XktTask {
      */
     private void tagSevenDayNew(Date now, Date yesterday, Date fourDaysAgo, Date oneWeekAgo, List<DailyProdTag> tagList) {
         List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+                .eq(StoreProduct::getPrivateItem, EProductItemType.NON_PRIVATE_ITEM.getValue())
                 .eq(StoreProduct::getDelFlag, Constants.UNDELETED).between(StoreProduct::getCreateTime, oneWeekAgo, fourDaysAgo));
         if (CollectionUtils.isEmpty(storeProdList)) {
             return;
@@ -1332,6 +1339,7 @@ public class XktTask {
      */
     private void tagThreeDayNew(Date now, Date yesterday, Date fourDaysAgo, List<DailyProdTag> tagList) {
         List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+                .eq(StoreProduct::getPrivateItem, EProductItemType.NON_PRIVATE_ITEM.getValue())
                 .eq(StoreProduct::getDelFlag, Constants.UNDELETED).between(StoreProduct::getCreateTime, fourDaysAgo, yesterday));
         if (CollectionUtils.isEmpty(storeProdList)) {
             return;
@@ -1395,7 +1403,7 @@ public class XktTask {
      */
     private void tag7DaysNewTag(Date now, Date yesterday, Date oneWeekAgo, List<DailyStoreTag> tagList) {
         List<StoreProduct> newProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
-                .eq(StoreProduct::getDelFlag, Constants.UNDELETED)
+                .eq(StoreProduct::getDelFlag, Constants.UNDELETED).eq(StoreProduct::getPrivateItem, EProductItemType.NON_PRIVATE_ITEM.getValue())
                 .in(StoreProduct::getProdStatus, Collections.singletonList(EProductStatus.ON_SALE.getValue()))
                 .between(StoreProduct::getCreateTime, oneWeekAgo, yesterday));
         if (CollectionUtils.isEmpty(newProdList)) {
@@ -1403,24 +1411,25 @@ public class XktTask {
         }
         newProdList.stream().map(StoreProduct::getStoreId).distinct().forEach(x -> {
             tagList.add(DailyStoreTag.builder().storeId(x).type(StoreTagType.SEVEN_DAY_NEW_RANK.getValue())
-                    .tag("七日上新").voucherDate(yesterday).build());
+                    .tag("七日上新").voucherDate(now).build());
         });
     }
 
     /**
      * 给档口打库存标签
      *
+     * @param now         今天
      * @param yesterday   昨天
      * @param oneMonthAgo 一月前
      * @param tagList     标签列表
      */
-    private void tagStockTag(Date yesterday, Date oneMonthAgo, List<DailyStoreTag> tagList) {
+    private void tagStockTag(Date now, Date yesterday, Date oneMonthAgo, List<DailyStoreTag> tagList) {
         List<DailyStoreTagDTO> top10List = this.stockMapper.selectTop10List(yesterday, oneMonthAgo);
         if (CollectionUtils.isEmpty(top10List)) {
             return;
         }
         tagList.addAll(top10List.stream().map(x -> DailyStoreTag.builder().storeId(x.getStoreId()).type(StoreTagType.STOCK_RANK.getValue())
-                .tag("库存充足").voucherDate(yesterday).build()).collect(Collectors.toList()));
+                .tag("库存充足").voucherDate(now).build()).collect(Collectors.toList()));
     }
 
 

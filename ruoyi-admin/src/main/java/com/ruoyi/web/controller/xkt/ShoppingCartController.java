@@ -32,14 +32,14 @@ public class ShoppingCartController extends XktBaseController {
 
     final IShoppingCartService shopCartService;
 
-    @PreAuthorize("@ss.hasAnyRoles('seller,agent')")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,seller,agent')")
     @ApiOperation(value = "获取用户进货车各状态数量", httpMethod = "GET", response = R.class)
     @GetMapping("/status/num")
     public R<ShopCartStatusCountResVO> getStatusNum() {
         return R.ok(BeanUtil.toBean(shopCartService.getStatusNum(), ShopCartStatusCountResVO.class));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('seller,agent')")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,seller,agent')")
     @ApiOperation(value = "电商卖家添加商品到进货车", httpMethod = "POST", response = R.class)
     @Log(title = "电商卖家添加商品到进货车", businessType = BusinessType.INSERT)
     @PostMapping
@@ -47,7 +47,7 @@ public class ShoppingCartController extends XktBaseController {
         return R.ok(shopCartService.create(BeanUtil.toBean(shopCartVO, ShoppingCartDTO.class)));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('seller,agent')")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,seller,agent')")
     @ApiOperation(value = "电商卖家编辑进货车商品", httpMethod = "PUT", response = R.class)
     @Log(title = "电商卖家编辑进货车商品", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -55,14 +55,14 @@ public class ShoppingCartController extends XktBaseController {
         return R.ok(shopCartService.update(BeanUtil.toBean(editVO, ShoppingCartEditDTO.class)));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('seller,agent')")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,seller,agent')")
     @ApiOperation(value = "获取用户进货车列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<ShopCartPageResDTO>> page(@Validated @RequestBody ShopCartPageVO pageVO) {
         return R.ok(shopCartService.page(BeanUtil.toBean(pageVO, ShopCartPageDTO.class)));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('seller,agent')")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,seller,agent')")
     @ApiOperation(value = "用户进货车列表点击编辑获取数据", httpMethod = "GET", response = R.class)
     @GetMapping("/edit/{shoppingCartId}")
     public R<ShopCartEditDetailResVO> getEditInfo(@PathVariable Long shoppingCartId) {
@@ -77,13 +77,22 @@ public class ShoppingCartController extends XktBaseController {
         return R.ok(BeanUtil.copyToList(shopCartService.getList(BeanUtil.toBean(listVO, ShopCartListDTO.class)), ShopCartResVO.class));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('seller,agent')")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,seller,agent')")
     @ApiOperation(value = "用户删除进货车商品", httpMethod = "DELETE", response = R.class)
     @Log(title = "用户删除进货车商品", businessType = BusinessType.DELETE)
     @DeleteMapping
     public R<Integer> remove(@Validated @RequestBody ShopCartDeleteVO deleteVO) {
         return R.ok(shopCartService.delete(BeanUtil.toBean(deleteVO, ShopCartDeleteDTO.class)));
     }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,seller,agent')")
+    @ApiOperation(value = "用户修改进货车明细数量", httpMethod = "PUT", response = R.class)
+    @Log(title = "用户修改进货车明细数量", businessType = BusinessType.UPDATE)
+    @PutMapping("/detail/quantity")
+    public R<Integer> updateDetailQuantity(@Validated @RequestBody ShopCartDetailQuantityUpdateVO updateQuantityVO) {
+        return R.ok(shopCartService.updateDetailQuantity(BeanUtil.toBean(updateQuantityVO, ShopCartDetailQuantityUpdateDTO.class)));
+    }
+
 
 
 }

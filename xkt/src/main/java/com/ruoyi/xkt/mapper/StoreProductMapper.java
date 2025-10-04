@@ -18,13 +18,6 @@ import java.util.List;
  */
 @Repository
 public interface StoreProductMapper extends BaseMapper<StoreProduct> {
-    /**
-     * 查询档口商品列表
-     *
-     * @param storeProduct 档口商品
-     * @return 档口商品集合
-     */
-    List<StoreProduct> selectStoreProductList(StoreProduct storeProduct);
 
     /**
      * 根据商品货号模糊查询档口商品并返回商品主图
@@ -37,6 +30,7 @@ public interface StoreProductMapper extends BaseMapper<StoreProduct> {
 
     /**
      * 档口商品ID列表
+     * 过滤掉 私款商品
      *
      * @param idList id列表
      * @return List<ProductESDTO>

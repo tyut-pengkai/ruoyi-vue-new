@@ -68,4 +68,11 @@ public interface IShoppingCartService {
      */
     ShopCartStatusCountResDTO getStatusNum();
 
+    /**
+     * 用户更新进货车明细数量
+     *
+     * @param updateQuantityDTO 更新入参
+     * @return Integer
+     */
+    Integer updateDetailQuantity(ShopCartDetailQuantityUpdateDTO updateQuantityDTO);
 }

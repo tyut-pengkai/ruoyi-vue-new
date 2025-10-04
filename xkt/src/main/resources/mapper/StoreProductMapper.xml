@@ -46,7 +46,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             JOIN sys_product_category spc2 ON spc1.parent_id = spc2.id
             LEFT JOIN ( SELECT store_prod_id, MIN( price ) AS min_price FROM store_product_color_size GROUP BY store_prod_id ) spcp ON sp.id = spcp.store_prod_id
         WHERE
-            sp.del_flag = 0 AND  sp.id IN
+            sp.del_flag = 0
+            AND sp.private_item = 0
+            AND sp.id IN
             <foreach item="id" collection="idList" open="(" separator="," close=")">
                 #{id}
             </foreach>
@@ -275,6 +277,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 JOIN sys_product_category spc ON sp.prod_cate_id = spc.id
         WHERE
             sp.del_flag = 0
+            AND sp.private_item = 0
             AND sp.store_id = #{storeId}
         GROUP BY
             sp.prod_status,

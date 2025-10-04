@@ -23,6 +23,8 @@ public class StoreProdPageVO extends BasePageVO {
     private String prodArtNum;
     @ApiModelProperty(value = "商品分类ID")
     private Long prodCateId;
+    @ApiModelProperty(value = "是否私款 0 否 1 是")
+    private Integer privateItem;
     @ApiModelProperty(value = "档口ID", required = true)
     @NotNull(message = "档口ID不能为空")
     private Long storeId;

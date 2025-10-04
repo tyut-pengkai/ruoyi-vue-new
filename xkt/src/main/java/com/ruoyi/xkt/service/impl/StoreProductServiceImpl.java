@@ -217,8 +217,9 @@ public class StoreProductServiceImpl implements IStoreProductService {
         this.createProdColor(createDTO, storeProd.getId(), storeProd.getStoreId(), storeProd.getProdArtNum());
         // 新增档口商品其它属性
         this.createOtherProperties(createDTO, storeProd);
-        // 立即发布 将商品同步到 ES 商品文档，并将商品主图同步到 以图搜款服务中
-        if (Objects.equals(storeProd.getListingWay(), ListingType.RIGHT_NOW.getValue())) {
+        // 非私款的商品 且 立即发布 将商品同步到 ES 商品文档，并将商品主图同步到 以图搜款服务中
+        if (Objects.equals(storeProd.getPrivateItem(), EProductItemType.NON_PRIVATE_ITEM.getValue())
+                && Objects.equals(storeProd.getListingWay(), ListingType.RIGHT_NOW.getValue())) {
             // redis中的档口
             Store store = this.redisCache.getCacheObject(CacheConstants.STORE_KEY + storeProd.getStoreId());
             // 向ES索引: product_info 创建文档
@@ -282,9 +283,10 @@ public class StoreProductServiceImpl implements IStoreProductService {
         this.updateColorRelation(updateDTO, storeProd.getId(), storeProd.getStoreId(), storeProd.getProdArtNum());
         // 处理更新逻辑
         this.updateOtherProperties(updateDTO, storeProd);
-        // 只有在售和尾货状态，更新ES 信息 及 图搜
-        if (Objects.equals(storeProd.getProdStatus(), EProductStatus.ON_SALE.getValue())
-                || Objects.equals(storeProd.getProdStatus(), EProductStatus.TAIL_GOODS.getValue())) {
+        // 只有非私款商品 且 只有在售和尾货状态，更新ES 信息 及 图搜
+        if (Objects.equals(storeProd.getPrivateItem(), EProductItemType.NON_PRIVATE_ITEM.getValue())
+                && (Objects.equals(storeProd.getProdStatus(), EProductStatus.ON_SALE.getValue())
+                || Objects.equals(storeProd.getProdStatus(), EProductStatus.TAIL_GOODS.getValue()))) {
             // 从redis中获取store
             Store store = this.redisCache.getCacheObject(CacheConstants.STORE_KEY + storeProd.getStoreId());
             // 更新索引: product_info 的文档
@@ -573,10 +575,16 @@ public class StoreProductServiceImpl implements IStoreProductService {
             updateProdList.add(storeProduct);
         });
         this.storeProdMapper.updateById(updateProdList);
+        // 非私款的商品，才需要更新图搜及ES
+        final List<StoreProduct> nonPrivateProdList = updateProdList.stream()
+                .filter(x -> Objects.equals(x.getPrivateItem(), EProductItemType.NON_PRIVATE_ITEM.getValue())).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(nonPrivateProdList)) {
+            return count;
+        }
         // 非删除商品颜色，则更新ES
         if (!Objects.equals(prodStatusDTO.getProdStatus(), EProductStatus.REMOVED.getValue())) {
             // 需要更新状态的商品
-            Map<Long, Integer> updateESProdStatusMap = updateProdList.stream().filter(x -> !Objects.equals(storeProdStatusMap.get(x.getId()), x.getProdStatus()))
+            Map<Long, Integer> updateESProdStatusMap = nonPrivateProdList.stream().filter(x -> !Objects.equals(storeProdStatusMap.get(x.getId()), x.getProdStatus()))
                     .collect(Collectors.toMap(StoreProduct::getId, StoreProduct::getProdStatus));
             // 没有需要更新商品状态的商品
             if (MapUtils.isEmpty(updateESProdStatusMap)) {
@@ -586,7 +594,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
             this.updateESProdStatus(updateESProdStatusMap);
         } else {
             // 需要删除的商品
-            List<StoreProduct> deleteESProdList = updateProdList.stream().filter(x -> !Objects.equals(storeProdStatusMap.get(x.getId()), x.getProdStatus())).collect(Collectors.toList());
+            List<StoreProduct> deleteESProdList = nonPrivateProdList.stream().filter(x -> !Objects.equals(storeProdStatusMap.get(x.getId()), x.getProdStatus())).collect(Collectors.toList());
             List<Long> updateESProdIdList = deleteESProdList.stream().map(StoreProduct::getId).collect(Collectors.toList());
             if (CollectionUtils.isEmpty(updateESProdIdList)) {
                 return count;
@@ -970,6 +978,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
     @Override
     @Transactional(readOnly = true)
     public List<StoreProdStatusCateCountResDTO> getStatusCateNum(StoreProdStatusCateNumDTO cateNumDTO) {
+        // 商城首页展示的分类对应的数量，需要过滤掉  私款商品
         List<StoreProdStatusCateCountDTO> statusCateNumList = this.storeProdMapper.getStatusCateNum(cateNumDTO);
         List<StoreProdStatusCateCountResDTO> countList = new ArrayList<>();
         statusCateNumList.stream().collect(Collectors.groupingBy(StoreProdStatusCateCountDTO::getProdStatus))

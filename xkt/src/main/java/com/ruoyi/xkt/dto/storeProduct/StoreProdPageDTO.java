@@ -22,6 +22,8 @@ public class StoreProdPageDTO extends BasePageDTO {
     private String prodArtNum;
     @ApiModelProperty(value = "商品分类ID")
     private Long prodCateId;
+    @ApiModelProperty(value = "是否私款 0 否 1 是")
+    private Integer privateItem;
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
     @ApiModelProperty(value = "商品状态")
