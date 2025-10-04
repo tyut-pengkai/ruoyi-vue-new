@@ -21,6 +21,11 @@ import java.util.List;
 @Repository
 public interface StoreProductFileMapper extends BaseMapper<StoreProductFile> {
 
+    /**
+     * 根据商品ID删除所有文件
+     *
+     * @param storeProdId 商品ID
+     */
     void updateDelFlagByStoreProdId(Long storeProdId);
 
     /**

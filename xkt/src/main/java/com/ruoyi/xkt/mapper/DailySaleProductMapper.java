@@ -7,6 +7,7 @@ import com.ruoyi.xkt.dto.dailySale.DailySaleProdDTO;
 import com.ruoyi.xkt.dto.dailyStoreProd.DailyStoreProdSaleDTO;
 import com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO;
 import com.ruoyi.xkt.dto.store.StoreIndexSaleTop10ResDTO;
+import com.ruoyi.xkt.dto.storeHomepage.StoreRecommendResDTO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
@@ -93,4 +94,13 @@ public interface DailySaleProductMapper extends BaseMapper<DailySaleProduct> {
      */
     List<DailyStoreProdSaleDTO> prodCateSaleTop50List(@Param("oneMonthAgo") Date oneMonthAgo, @Param("yesterday") Date yesterday);
 
+    /**
+     * 获取当前档口销量最好的10件商品作为默认的推荐商品
+     *
+     * @param storeId     档口ID
+     * @param fiveDaysAgo 5天前
+     * @param yesterday   昨天
+     * @return
+     */
+    List<StoreRecommendResDTO> selectStoreDefaultRecommendList(@Param("storeId") Long storeId, @Param("fiveDaysAgo") Date fiveDaysAgo, @Param("yesterday") Date yesterday);
 }

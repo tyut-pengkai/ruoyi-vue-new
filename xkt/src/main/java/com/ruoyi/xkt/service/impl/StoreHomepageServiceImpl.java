@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -47,6 +48,8 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
     final StoreProductFileMapper prodFileMapper;
     final StoreProductCategoryAttributeMapper prodCateAttrMapper;
     final StoreCertificateMapper storeCertMapper;
+    final DailySaleProductMapper dailySaleProdMapper;
+    final DailyProdTagMapper dailyProdTagMapper;
 
     /**
      * 获取档口首页各个部分的图信息
@@ -164,7 +167,11 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                 .eq(StoreHomepage::getStoreId, storeId).eq(StoreHomepage::getDelFlag, Constants.UNDELETED)
                 .eq(StoreHomepage::getFileType, HomepageType.STORE_RECOMMENDED.getValue()));
         if (CollectionUtils.isEmpty(recommendList)) {
-            return Collections.emptyList();
+            final Date yesterday = java.sql.Date.valueOf(LocalDate.now().minusDays(1));
+            final Date fiveDaysAgo = java.sql.Date.valueOf(LocalDate.now().minusDays(6));
+            // 如果档口未设置推荐商品，则筛选销量最好的10条商品
+            List<StoreRecommendResDTO> dailySaleTop10ProdList = this.dailySaleProdMapper.selectStoreDefaultRecommendList(storeId, fiveDaysAgo, yesterday);
+            return CollectionUtils.isEmpty(dailySaleTop10ProdList) ? Collections.emptyList() : this.getDefaultRecommendList(storeId, dailySaleTop10ProdList);
         }
         // 商品价格、主图、标签等
         List<StoreProdPriceAndMainPicAndTagDTO> attrList = this.storeProdMapper.selectPriceAndMainPicAndTagList(recommendList.stream()
@@ -181,6 +188,42 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                 })
                 .filter(ObjectUtils::isNotEmpty)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * 获取默认的推荐推荐商品
+     *
+     * @param storeId                档口ID
+     * @param dailySaleTop10ProdList 近5日销量排名前10的商品
+     * @return List<StoreRecommendResDTO>
+     */
+    private List<StoreRecommendResDTO> getDefaultRecommendList(Long storeId, List<StoreRecommendResDTO> dailySaleTop10ProdList) {
+        // 获取商品标签
+        List<DailyProdTag> prodTagList = this.dailyProdTagMapper.selectList(new LambdaQueryWrapper<DailyProdTag>()
+                .eq(DailyProdTag::getStoreId, storeId).eq(DailyProdTag::getDelFlag, Constants.UNDELETED)
+                .in(DailyProdTag::getStoreProdId, dailySaleTop10ProdList.stream().map(StoreRecommendResDTO::getStoreProdId).collect(Collectors.toList())));
+        Map<String, List<String>> tagMap = CollectionUtils.isEmpty(prodTagList) ? new HashMap<>()
+                : prodTagList.stream().collect(Collectors.groupingBy(x -> x.getStoreProdId().toString(), Collectors.mapping(DailyProdTag::getTag, Collectors.toList())));
+        // 获取商品主图及视频等
+        List<StoreProductFile> prodFileList = this.prodFileMapper.selectList(new LambdaQueryWrapper<StoreProductFile>()
+                .eq(StoreProductFile::getStoreId, storeId).eq(StoreProductFile::getDelFlag, Constants.UNDELETED).eq(StoreProductFile::getOrderNum, ORDER_NUM_1)
+                .in(StoreProductFile::getStoreProdId, dailySaleTop10ProdList.stream().map(StoreRecommendResDTO::getStoreProdId).collect(Collectors.toList()))
+                .in(StoreProductFile::getFileType, Arrays.asList(FileType.MAIN_PIC.getValue(), FileType.MAIN_PIC_VIDEO.getValue())));
+        // 档口商品主图map
+        Map<String, Long> mainPicMap = prodFileList.stream().filter(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC.getValue()))
+                .collect(Collectors.toMap(x -> x.getStoreProdId().toString(), StoreProductFile::getFileId));
+        // 档口商品视频map
+        Map<String, Long> videoMap = prodFileList.stream().filter(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC_VIDEO.getValue()))
+                .collect(Collectors.toMap(x -> x.getStoreProdId().toString(), StoreProductFile::getFileId));
+        List<SysFile> fileList = this.fileMapper.selectList(new LambdaQueryWrapper<SysFile>().eq(SysFile::getDelFlag, Constants.UNDELETED)
+                .in(SysFile::getId, prodFileList.stream().map(StoreProductFile::getFileId).collect(Collectors.toList())));
+        Map<Long, String> fileMap = CollectionUtils.isEmpty(fileList) ? new HashMap<>() : fileList.stream().collect(Collectors.toMap(SysFile::getId, SysFile::getFileUrl));
+        dailySaleTop10ProdList.forEach(x -> {
+            x.setTags(tagMap.getOrDefault(x.getStoreProdId(), new ArrayList<>()));
+            x.setMainPicUrl(fileMap.get(mainPicMap.get(x.getStoreProdId())));
+            x.setHasVideo(videoMap.containsKey(x.getStoreProdId()));
+        });
+        return dailySaleTop10ProdList;
     }
 
     /**
