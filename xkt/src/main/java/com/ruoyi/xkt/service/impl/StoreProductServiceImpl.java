@@ -718,6 +718,18 @@ public class StoreProductServiceImpl implements IStoreProductService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 获取商城 档口首页商品状态数量
+     *
+     * @param storeId 档口ID
+     * @return StoreProdStatusCountResDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public StoreProdStatusCountResDTO getPcStatusNum(Long storeId) {
+        return this.storeProdMapper.getStatusNum(storeId);
+    }
+
 
     /**
      * 根据档口ID和商品货号模糊查询货号列表
@@ -964,9 +976,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
     @Override
     @Transactional(readOnly = true)
     public StoreProdStatusCountResDTO getStatusNum(Long storeId) {
-        final Date now = java.sql.Date.valueOf(LocalDate.now().plusDays(1));
-        final Date sixMonthAgo = java.sql.Date.valueOf(LocalDate.now().minusMonths(6));
-        return this.storeProdMapper.getStatusNum(storeId, sixMonthAgo, now);
+        return this.storeProdColorMapper.getStatusNum(storeId);
     }
 
     /**

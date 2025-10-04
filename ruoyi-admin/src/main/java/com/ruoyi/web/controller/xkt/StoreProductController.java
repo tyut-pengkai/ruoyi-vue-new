@@ -129,6 +129,12 @@ public class StoreProductController extends XktBaseController {
         return R.ok(BeanUtil.toBean(storeProdService.getStatusNum(storeId), StoreProdStatusCountResVO.class));
     }
 
+    @ApiOperation(value = "获取商品各个状态数量", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/pc/status/num/{storeId}")
+    public R<StoreProdStatusCountResVO> getPcStatusNum(@PathVariable Long storeId) {
+        return R.ok(BeanUtil.toBean(storeProdService.getPcStatusNum(storeId), StoreProdStatusCountResVO.class));
+    }
+
     @ApiOperation(value = "获取商品各个状态下的分类数量", httpMethod = "POST", response = R.class)
     @PostMapping(value = "/status/cate/num/{storeId}")
     public R<List<StoreProdStatusCateCountResVO>> getStatusCateNum(@Validated @RequestBody StoreProdStatusCateNumVO cateCountVO) {

@@ -162,4 +162,12 @@ public interface IStoreProductService {
      * @return StoreProdFuzzyResDTO
      */
     List<StoreProdFuzzyResDTO> fuzzyQuery(String prodArtNum);
+
+    /**
+     * 获取商城 档口首页商品状态数量
+     *
+     * @param storeId 档口ID
+     * @return StoreProdStatusCountResDTO
+     */
+    StoreProdStatusCountResDTO getPcStatusNum(Long storeId);
 }

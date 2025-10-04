@@ -105,18 +105,6 @@ public interface StoreProductMapper extends BaseMapper<StoreProduct> {
     StoreProdPCResDTO selectPCProdInfo(@Param("storeProdId") Long storeProdId, @Param("userId") Long userId);
 
     /**
-     * 获取档口各个状态的数量
-     *
-     * @param storeId     档口ID
-     * @param sixMonthAgo 六个月前
-     * @param now         当前时间
-     * @return StoreProdStatusCountResDTO
-     */
-    StoreProdStatusCountResDTO getStatusNum(@Param("storeId") Long storeId,
-                                            @Param("sixMonthAgo") Date sixMonthAgo,
-                                            @Param("now") Date now);
-
-    /**
      * 获取档口各个状态的分类数量
      *
      * @param cateNumDTO 查询入参
@@ -132,5 +120,13 @@ public interface StoreProductMapper extends BaseMapper<StoreProduct> {
      * @return StoreProdAppResDTO
      */
     StoreProdAppResDTO getAppInfo(@Param("storeProdId") Long storeProdId, @Param("userId") Long userId);
+
+    /**
+     * 获取档口各个状态的数量
+     *
+     * @param storeId     档口ID
+     * @return StoreProdStatusCountResDTO
+     */
+    StoreProdStatusCountResDTO getStatusNum(@Param("storeId") Long storeId);
 }
 

@@ -125,5 +125,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             spc.id
     </select>
 
+    <select id="getStatusNum" resultType="com.ruoyi.xkt.dto.storeProduct.StoreProdStatusCountResDTO">
+        SELECT
+            COALESCE ( SUM( CASE WHEN spc.del_flag = 0 AND spc.prod_status = 1 THEN 1 ELSE 0 END ), 0 ) AS unPublishedNum,
+            COALESCE ( SUM( CASE WHEN spc.del_flag = 0 AND spc.prod_status = 2 THEN 1 ELSE 0 END ), 0 ) AS onSaleNum,
+            COALESCE ( SUM( CASE WHEN spc.del_flag = 0 AND spc.prod_status = 3 THEN 1 ELSE 0 END ), 0 ) AS tailGoodsNum,
+            COALESCE ( SUM( CASE WHEN spc.del_flag = 0 AND spc.prod_status = 4 THEN 1 ELSE 0 END ), 0 ) AS offSaleNum,
+            COALESCE ( SUM( CASE WHEN spc.del_flag = 2 AND spc.prod_status = 5 THEN 1 ELSE 0 END ), 0 ) AS removedNum
+        FROM
+            store_product_color spc
+        WHERE
+            spc.store_id = #{storeId}
+            AND (
+                ( spc.del_flag = 0 AND spc.prod_status IN ( 1, 2, 3, 4 ))
+                OR ( spc.del_flag = 2 AND spc.prod_status = 5 )
+            );
+    </select>
+
 
 </mapper>

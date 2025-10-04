@@ -8,9 +8,11 @@ import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPricePageDTO;
 import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceResDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdPageDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdPageResDTO;
+import com.ruoyi.xkt.dto.storeProduct.StoreProdStatusCountResDTO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -70,4 +72,12 @@ public interface StoreProductColorMapper extends BaseMapper<StoreProductColor> {
      * @return List<StoreProdColorPriceResDTO>
      */
     List<StoreProdColorPriceResDTO> selectColorPricePage(StoreProdColorPricePageDTO pageDTO);
+
+    /**
+     * 获取档口各个状态的数量
+     *
+     * @param storeId     档口ID
+     * @return StoreProdStatusCountResDTO
+     */
+    StoreProdStatusCountResDTO getStatusNum(@Param("storeId") Long storeId);
 }
