@@ -3387,6 +3387,7 @@ CREATE TABLE `store_product`
     `factory_art_num`      varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '工厂货号',
     `prod_art_num`         varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '商品货号',
     `prod_title`           varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '商品标题',
+    `private_item`         tinyint UNSIGNED NOT NULL COMMENT '是否私款 0否 1是',
     `prod_weight`          decimal(10, 2) NULL DEFAULT NULL COMMENT '商品重量',
     `produce_price`        int UNSIGNED NULL DEFAULT NULL COMMENT '生产价格',
     `delivery_time`        int UNSIGNED NULL DEFAULT NULL COMMENT '发货时效',
