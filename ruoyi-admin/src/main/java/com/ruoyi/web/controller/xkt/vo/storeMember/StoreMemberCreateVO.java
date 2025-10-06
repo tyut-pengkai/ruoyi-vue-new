@@ -24,8 +24,10 @@ public class StoreMemberCreateVO {
     @NotNull(message = "支付金额不能为空!")
     @ApiModelProperty(value = "支付金额", required = true)
     private BigDecimal payPrice;
-    @NotNull(message = "交易密码不能为空!")
-    @ApiModelProperty(value = "交易密码", required = true)
+    @NotNull(message = "支付方式不能为空!")
+    @ApiModelProperty(value = "支付方式", required = true)
+    private Integer payWay;
+    @ApiModelProperty(value = "交易密码")
     private String transactionPassword;
 
 }

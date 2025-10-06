@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 /**
@@ -15,10 +16,15 @@ import java.math.BigDecimal;
 @Accessors(chain = true)
 public class StoreMemberCreateDTO {
 
-    @ApiModelProperty(value = "档口ID")
+    @NotNull(message = "档口ID不能为空!")
+    @ApiModelProperty(value = "档口ID", required = true)
     private Long storeId;
-    @ApiModelProperty(value = "支付金额")
+    @NotNull(message = "支付金额不能为空!")
+    @ApiModelProperty(value = "支付金额", required = true)
     private BigDecimal payPrice;
+    @NotNull(message = "支付方式不能为空!")
+    @ApiModelProperty(value = "支付方式", required = true)
+    private Integer payWay;
     @ApiModelProperty(value = "交易密码")
     private String transactionPassword;
 
