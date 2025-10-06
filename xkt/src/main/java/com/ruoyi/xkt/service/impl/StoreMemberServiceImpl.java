@@ -148,11 +148,10 @@ public class StoreMemberServiceImpl implements IStoreMemberService {
         if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(storeId)) {
             throw new ServiceException("当前用户非管理员账号，无权限操作!", HttpStatus.ERROR);
         }
-        LocalDate yesterdayLocal = LocalDate.now().minusDays(1);
-        Date yesterday = Date.from(yesterdayLocal.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        Date todayStart = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
         StoreMember storeMember = this.storeMemberMapper.selectOne(new LambdaQueryWrapper<StoreMember>()
                 .eq(StoreMember::getStoreId, storeId).eq(StoreMember::getDelFlag, Constants.UNDELETED)
-                .gt(StoreMember::getStartTime, yesterday).le(StoreMember::getEndTime, new Date()));
+                .le(StoreMember::getStartTime, todayStart));
         return BeanUtil.toBean(storeMember, StoreMemberExpireResDTO.class);
     }
 
