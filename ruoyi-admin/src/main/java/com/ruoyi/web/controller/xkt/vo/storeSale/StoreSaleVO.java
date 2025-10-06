@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.Valid;
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
@@ -74,8 +75,10 @@ public class StoreSaleVO {
         private String sn;
         @NotNull(message = "销售单价不能为空!")
         @ApiModelProperty(value = "销售单价", required = true)
+        @DecimalMin(value = "0.00", inclusive = false, message = "销售单价必须大于0")
         private BigDecimal price;
         @ApiModelProperty(value = "给客户优惠后单价")
+        @DecimalMin(value = "0.00", inclusive = false, message = "优惠后单价必须大于0")
         private BigDecimal discountedPrice;
         @ApiModelProperty(value = "数量", required = true)
         @NotNull(message = "数量不能为空!")
@@ -83,8 +86,6 @@ public class StoreSaleVO {
         @NotNull(message = "总金额不能为空!")
         @ApiModelProperty(value = "总金额", required = true)
         private BigDecimal amount;
-        @ApiModelProperty(value = "其它优惠")
-        private BigDecimal otherDiscount;
     }
 
 }

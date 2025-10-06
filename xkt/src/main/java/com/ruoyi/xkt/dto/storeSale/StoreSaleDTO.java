@@ -62,8 +62,6 @@ public class StoreSaleDTO {
         private Integer quantity;
         @ApiModelProperty(value = "总金额")
         private BigDecimal amount;
-        @ApiModelProperty(value = "其它优惠")
-        private BigDecimal otherDiscount;
     }
 
 }
