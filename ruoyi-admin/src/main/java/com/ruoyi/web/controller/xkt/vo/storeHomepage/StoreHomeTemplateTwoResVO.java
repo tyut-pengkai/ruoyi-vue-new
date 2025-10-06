@@ -18,13 +18,15 @@ public class StoreHomeTemplateTwoResVO {
     @ApiModelProperty(value = "顶部左侧轮播图")
     List<SHTOTopBannerVO> topLeftList;
     @ApiModelProperty(value = "右侧店铺公告")
-    String notice;
+    SHTTNoticeVO notice;
     @ApiModelProperty(value = "店家推荐")
     List<StoreHomeTemplateItemResVO> recommendList;
     @ApiModelProperty(value = "人气爆款")
     List<StoreHomeTemplateItemResVO> popularSaleList;
     @ApiModelProperty(value = "当季新品")
     List<StoreHomeTemplateItemResVO> newProdList;
+    @ApiModelProperty(value = "销量排行")
+    List<StoreHomeTemplateItemResVO> saleRankList;
 
     @Data
     @ApiModel
@@ -37,6 +39,15 @@ public class StoreHomeTemplateTwoResVO {
         private String fileUrl;
         @ApiModelProperty(value = "排序")
         private Integer orderNum;
+    }
+
+    @Data
+    @ApiModel
+    public static class SHTTNoticeVO {
+        @ApiModelProperty(value = "标题")
+        private String noticeTitle;
+        @ApiModelProperty(value = "内容")
+        private String noticeContent;
     }
 
 }

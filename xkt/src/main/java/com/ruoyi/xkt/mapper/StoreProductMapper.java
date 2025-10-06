@@ -3,6 +3,7 @@ package com.ruoyi.xkt.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProduct;
 import com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO;
+import com.ruoyi.xkt.dto.storeHomepage.StoreRecommendResDTO;
 import com.ruoyi.xkt.dto.storeProduct.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -124,9 +125,18 @@ public interface StoreProductMapper extends BaseMapper<StoreProduct> {
     /**
      * 获取档口各个状态的数量
      *
-     * @param storeId     档口ID
+     * @param storeId 档口ID
      * @return StoreProdStatusCountResDTO
      */
     StoreProdStatusCountResDTO getStatusNum(@Param("storeId") Long storeId);
+
+    /**
+     * 获取档口最新的10个商品
+     *
+     * @param storeId 档口ID
+     * @return List<StoreRecommendResDTO>
+     */
+    List<StoreRecommendResDTO> selectLatest10List(@Param("storeId") Long storeId);
+
 }
 

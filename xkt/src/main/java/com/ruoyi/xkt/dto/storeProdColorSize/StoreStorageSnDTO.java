@@ -25,7 +25,6 @@ public class StoreStorageSnDTO {
     @Data
     @Accessors(chain = true)
     public static class SSSDetailDTO {
-
         @ApiModelProperty(value = "档口商品颜色尺码ID")
         private Long storeProdColorId;
         @ApiModelProperty(value = "档口商品ID")

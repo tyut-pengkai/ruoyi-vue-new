@@ -1,6 +1,7 @@
 package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
@@ -10,10 +11,7 @@ import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.storeHomepage.*;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdPriceAndMainPicAndTagDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
-import com.ruoyi.xkt.enums.AdDisplayType;
-import com.ruoyi.xkt.enums.FileType;
-import com.ruoyi.xkt.enums.HomepageJumpType;
-import com.ruoyi.xkt.enums.HomepageType;
+import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IStoreHomepageService;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +21,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -50,6 +47,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
     final StoreCertificateMapper storeCertMapper;
     final DailySaleProductMapper dailySaleProdMapper;
     final DailyProdTagMapper dailyProdTagMapper;
+    final NoticeMapper noticeMapper;
 
     /**
      * 获取档口首页各个部分的图信息
@@ -167,26 +165,9 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                 .eq(StoreHomepage::getStoreId, storeId).eq(StoreHomepage::getDelFlag, Constants.UNDELETED)
                 .eq(StoreHomepage::getFileType, HomepageType.STORE_RECOMMENDED.getValue()));
         if (CollectionUtils.isEmpty(recommendList)) {
-            final Date yesterday = java.sql.Date.valueOf(LocalDate.now().minusDays(1));
-            final Date fiveDaysAgo = java.sql.Date.valueOf(LocalDate.now().minusDays(6));
-
-
-            // TODO 推荐商品逻辑修改，要确保档口从一入驻，整个档口首页就能正常显示数据
-            // TODO 推荐商品逻辑修改，要确保档口从一入驻，整个档口首页就能正常显示数据
-            // TODO 推荐商品逻辑修改，要确保档口从一入驻，整个档口首页就能正常显示数据
-            // TODO 推荐商品逻辑修改，要确保档口从一入驻，整个档口首页就能正常显示数据
-            // TODO 推荐商品逻辑修改，要确保档口从一入驻，整个档口首页就能正常显示数据
-            // TODO 推荐商品逻辑修改，要确保档口从一入驻，整个档口首页就能正常显示数据
-
-
-            // 如果档口未设置推荐商品，则筛选销量最好的10条商品
-            List<StoreRecommendResDTO> dailySaleTop10ProdList = this.dailySaleProdMapper.selectStoreDefaultRecommendList(storeId, fiveDaysAgo, yesterday);
+            // 未设置推荐的商品，则获取档口最新上传的10个商品
+            List<StoreRecommendResDTO> dailySaleTop10ProdList = this.storeProdMapper.selectLatest10List(storeId);
             return CollectionUtils.isEmpty(dailySaleTop10ProdList) ? Collections.emptyList() : this.getDefaultRecommendList(storeId, dailySaleTop10ProdList);
-
-
-
-
-
         }
         // 商品价格、主图、标签等
         List<StoreProdPriceAndMainPicAndTagDTO> attrList = this.storeProdMapper.selectPriceAndMainPicAndTagList(recommendList.stream()
@@ -205,41 +186,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * 获取默认的推荐推荐商品
-     *
-     * @param storeId                档口ID
-     * @param dailySaleTop10ProdList 近5日销量排名前10的商品
-     * @return List<StoreRecommendResDTO>
-     */
-    private List<StoreRecommendResDTO> getDefaultRecommendList(Long storeId, List<StoreRecommendResDTO> dailySaleTop10ProdList) {
-        // 获取商品标签
-        List<DailyProdTag> prodTagList = this.dailyProdTagMapper.selectList(new LambdaQueryWrapper<DailyProdTag>()
-                .eq(DailyProdTag::getStoreId, storeId).eq(DailyProdTag::getDelFlag, Constants.UNDELETED)
-                .in(DailyProdTag::getStoreProdId, dailySaleTop10ProdList.stream().map(StoreRecommendResDTO::getStoreProdId).collect(Collectors.toList())));
-        Map<String, List<String>> tagMap = CollectionUtils.isEmpty(prodTagList) ? new HashMap<>()
-                : prodTagList.stream().collect(Collectors.groupingBy(x -> x.getStoreProdId().toString(), Collectors.mapping(DailyProdTag::getTag, Collectors.toList())));
-        // 获取商品主图及视频等
-        List<StoreProductFile> prodFileList = this.prodFileMapper.selectList(new LambdaQueryWrapper<StoreProductFile>()
-                .eq(StoreProductFile::getStoreId, storeId).eq(StoreProductFile::getDelFlag, Constants.UNDELETED).eq(StoreProductFile::getOrderNum, ORDER_NUM_1)
-                .in(StoreProductFile::getStoreProdId, dailySaleTop10ProdList.stream().map(StoreRecommendResDTO::getStoreProdId).collect(Collectors.toList()))
-                .in(StoreProductFile::getFileType, Arrays.asList(FileType.MAIN_PIC.getValue(), FileType.MAIN_PIC_VIDEO.getValue())));
-        // 档口商品主图map
-        Map<String, Long> mainPicMap = prodFileList.stream().filter(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC.getValue()))
-                .collect(Collectors.toMap(x -> x.getStoreProdId().toString(), StoreProductFile::getFileId));
-        // 档口商品视频map
-        Map<String, Long> videoMap = prodFileList.stream().filter(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC_VIDEO.getValue()))
-                .collect(Collectors.toMap(x -> x.getStoreProdId().toString(), StoreProductFile::getFileId));
-        List<SysFile> fileList = this.fileMapper.selectList(new LambdaQueryWrapper<SysFile>().eq(SysFile::getDelFlag, Constants.UNDELETED)
-                .in(SysFile::getId, prodFileList.stream().map(StoreProductFile::getFileId).collect(Collectors.toList())));
-        Map<Long, String> fileMap = CollectionUtils.isEmpty(fileList) ? new HashMap<>() : fileList.stream().collect(Collectors.toMap(SysFile::getId, SysFile::getFileUrl));
-        dailySaleTop10ProdList.forEach(x -> {
-            x.setTags(tagMap.getOrDefault(x.getStoreProdId(), new ArrayList<>()));
-            x.setMainPicUrl(fileMap.get(mainPicMap.get(x.getStoreProdId())));
-            x.setHasVideo(videoMap.containsKey(x.getStoreProdId()));
-        });
-        return dailySaleTop10ProdList;
-    }
+
 
     /**
      * 档口首页模板一返回数据
@@ -251,26 +198,146 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
     @Transactional(readOnly = true)
     public StoreHomeTemplateOneResDTO getTemplateOne(Long storeId) {
         // 顶部轮播大图
-        StoreHomeTemplateOneResDTO templateTwo = new StoreHomeTemplateOneResDTO().setTopLeftList(this.storeHomeMapper.selectTopLeftList(storeId));
+        StoreHomeTemplateOneResDTO templateOne = new StoreHomeTemplateOneResDTO().setTopLeftList(this.storeHomeMapper.selectTopLeftList(storeId));
         // 其他区域
-        List<StoreHomepage> otherList = this.storeHomeMapper.selectList(new LambdaQueryWrapper<StoreHomepage>()
+        List<StoreHomepage> otherList = ObjectUtils.defaultIfNull(this.storeHomeMapper.selectList(new LambdaQueryWrapper<StoreHomepage>()
                 .eq(StoreHomepage::getStoreId, storeId).eq(StoreHomepage::getDelFlag, Constants.UNDELETED)
                 .in(StoreHomepage::getFileType, Arrays.asList(HomepageType.POPULAR_SALES.getValue(),
                         HomepageType.SLIDING_PICTURE_SMALL.getValue(), HomepageType.SEASON_NEW_PRODUCTS.getValue(),
-                        HomepageType.STORE_RECOMMENDED.getValue(), HomepageType.SALES_RANKING.getValue())));
-        if (CollectionUtils.isEmpty(otherList)) {
-            return templateTwo;
+                        HomepageType.STORE_RECOMMENDED.getValue(), HomepageType.SALES_RANKING.getValue()))), new ArrayList<>());
+        // 商品ID列表
+        List<Long> prodIdList = CollectionUtils.isEmpty(otherList) ? new ArrayList<>() : otherList.stream().map(StoreHomepage::getBizId).collect(Collectors.toList());
+        // 筛选商品最新的50条数据
+        List<StoreProduct> latest50ProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+                .eq(StoreProduct::getStoreId, storeId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)
+                .orderByDesc(StoreProduct::getCreateTime).last("LIMIT 50"));
+        CollectionUtils.addAll(prodIdList, latest50ProdList.stream().map(StoreProduct::getId).collect(Collectors.toList()));
+        if (CollectionUtils.isEmpty(latest50ProdList)) {
+            return templateOne;
         }
-        final List<Long> storeProdIdList = otherList.stream().map(StoreHomepage::getBizId).collect(Collectors.toList());
-        List<StoreProdPriceAndMainPicAndTagDTO> attrList = storeProdMapper.selectPriceAndMainPicAndTagList(storeProdIdList);
-        Map<Long, StoreProdPriceAndMainPicAndTagDTO> attrMap = attrList.stream().collect(Collectors.toMap(StoreProdPriceAndMainPicAndTagDTO::getStoreProdId, x -> x));
-        return templateTwo
-                .setTopRightList(this.getTemplateTypeList(otherList, attrMap, HomepageType.SLIDING_PICTURE_SMALL.getValue(), 2))
-                .setRecommendList(this.getTemplateTypeList(otherList, attrMap, HomepageType.STORE_RECOMMENDED.getValue(), 5))
-                .setPopularSaleList(this.getTemplateTypeList(otherList, attrMap, HomepageType.POPULAR_SALES.getValue(), 5))
-                .setNewProdList(this.getTemplateTypeList(otherList, attrMap, HomepageType.SEASON_NEW_PRODUCTS.getValue(), 5))
-                .setSaleRankList(this.getTemplateTypeList(otherList, attrMap, HomepageType.SALES_RANKING.getValue(), 10));
+        // 商品价格、主图、标签等
+        List<StoreProdPriceAndMainPicAndTagDTO> attrList = this.storeProdMapper.selectPriceAndMainPicAndTagList(prodIdList);
+        Map<Long, StoreProdPriceAndMainPicAndTagDTO> attrMap = attrList.stream()
+                .collect(Collectors.toMap(StoreProdPriceAndMainPicAndTagDTO::getStoreProdId, Function.identity()));
+
+        // 顶部右侧商品2条
+        List<StoreHomepage> topRightList = otherList.stream().filter(x -> Objects.equals(x.getFileType(), HomepageType.SLIDING_PICTURE_SMALL.getValue())).collect(Collectors.toList());
+        List<StoreHomeTemplateItemResDTO> topRightRecommendList;
+        if (CollectionUtils.isEmpty(topRightList)) {
+            // 从latest50ProdList中随机选取最多2条数据
+            List<StoreProduct> randomProductList = getRandomElements(latest50ProdList, 2);
+            topRightRecommendList = randomProductList.stream().map(x -> {
+                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getId());
+                return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
+                        .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
+                        .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
+            }).collect(Collectors.toList());
+        } else {
+            topRightRecommendList = topRightList.stream().map(x -> {
+                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getId());
+                return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
+                        .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
+                        .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
+            }).collect(Collectors.toList());
+        }
+        // 顶部右侧推荐商品
+        templateOne.setTopRightList(topRightRecommendList);
+
+        // 店家推荐 5条
+        List<StoreHomepage> storeRecommendList = otherList.stream().filter(x -> Objects.equals(x.getFileType(), HomepageType.STORE_RECOMMENDED.getValue())).collect(Collectors.toList());
+        List<StoreHomeTemplateItemResDTO> recommendList;
+        if (CollectionUtils.isEmpty(storeRecommendList)) {
+            // 从latest50ProdList中随机选取最多5条数据
+            List<StoreProduct> randomProductList = getRandomElements(latest50ProdList, 5);
+            recommendList = randomProductList.stream().map(x -> {
+                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getId());
+                return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
+                        .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
+                        .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
+            }).collect(Collectors.toList());
+        } else {
+            recommendList = storeRecommendList.stream().map(x -> {
+                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getId());
+                return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
+                        .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
+                        .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
+            }).collect(Collectors.toList());
+        }
+        // 档口推荐列表
+        templateOne.setRecommendList(recommendList);
+
+        List<StoreHomeTemplateItemResDTO> popularRecommendList;
+        // 人气爆款 5条
+        List<StoreHomepage> popularSaleList = otherList.stream().filter(x -> Objects.equals(x.getFileType(), HomepageType.POPULAR_SALES.getValue())).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(popularSaleList)) {
+            // 从latest50ProdList中随机选取最多5条数据
+            List<StoreProduct> randomProductList = getRandomElements(latest50ProdList, 5);
+            popularRecommendList = randomProductList.stream().map(x -> {
+                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getId());
+                return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
+                        .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
+                        .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
+            }).collect(Collectors.toList());
+        } else {
+            popularRecommendList = popularSaleList.stream().map(x -> {
+                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getId());
+                return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
+                        .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
+                        .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
+            }).collect(Collectors.toList());
+        }
+        // 人气爆款列表
+        templateOne.setPopularSaleList(popularRecommendList);
+
+        // 当季新品 5条
+        List<StoreHomepage> seasonNewProductsList = otherList.stream().filter(x -> Objects.equals(x.getFileType(), HomepageType.SEASON_NEW_PRODUCTS.getValue())).collect(Collectors.toList());
+        List<StoreHomeTemplateItemResDTO> seasonNewRecommendList;
+        if (CollectionUtils.isEmpty(seasonNewProductsList)) {
+            // 从latest50ProdList中随机选取最多5条数据
+            List<StoreProduct> randomProductList = getRandomElements(latest50ProdList, 5);
+            seasonNewRecommendList = randomProductList.stream().map(x -> {
+                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getId());
+                return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
+                        .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
+                        .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
+            }).collect(Collectors.toList());
+        } else {
+            seasonNewRecommendList = seasonNewProductsList.stream().map(x -> {
+                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getId());
+                return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
+                        .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
+                        .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
+            }).collect(Collectors.toList());
+        }
+        // 当季新品列表
+        templateOne.setNewProdList(seasonNewRecommendList);
+
+        List<StoreHomeTemplateItemResDTO> saleRankRecommendList;
+        // 销量排行 10条
+        List<StoreHomepage> salesRankingList = otherList.stream().filter(x -> Objects.equals(x.getFileType(), HomepageType.SALES_RANKING.getValue())).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(salesRankingList)) {
+            // 从latest50ProdList中随机选取最多10条数据
+            List<StoreProduct> randomProductList = getRandomElements(latest50ProdList, 10);
+            saleRankRecommendList = randomProductList.stream().map(x -> {
+                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getId());
+                return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
+                        .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
+                        .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
+            }).collect(Collectors.toList());
+        } else {
+            saleRankRecommendList = salesRankingList.stream().map(x -> {
+                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getId());
+                return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
+                        .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
+                        .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
+            }).collect(Collectors.toList());
+        }
+        // 销量排行列表
+        templateOne.setSaleRankList(saleRankRecommendList);
+        return templateOne;
     }
+
+
 
     /**
      * 档口首页模板二返回数据
@@ -283,27 +350,131 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
     public StoreHomeTemplateTwoResDTO getTemplateTwo(Long storeId) {
         // 顶部轮播大图
         StoreHomeTemplateTwoResDTO templateTwo = new StoreHomeTemplateTwoResDTO().setTopLeftList(this.storeHomeMapper.selectTopLeftList(storeId));
-
-        // TODO 获取档口公告
-        // TODO 获取档口公告
-        // TODO 获取档口公告
-
+        // 获取档口发布的公告
+        List<Notice> storeNoticeList = this.noticeMapper.selectList(new LambdaQueryWrapper<Notice>().eq(Notice::getStoreId, storeId)
+                .eq(Notice::getDelFlag, Constants.UNDELETED).eq(Notice::getNoticeType, NoticeType.ANNOUNCEMENT.getValue())
+                .eq(Notice::getOwnerType, NoticeOwnerType.STORE.getValue()).orderByDesc(Notice::getCreateTime));
+        if (CollectionUtils.isEmpty(storeNoticeList)) {
+            templateTwo.setNotice(null);
+        } else {
+            final Date now = new Date();
+            Notice storeNotice = storeNoticeList.stream()
+                    .filter(x -> Objects.equals(x.getPerpetuity(), 2) || (x.getEffectStart().before(now) && x.getEffectEnd().after(now)))
+                    .findFirst().orElse(null);
+            templateTwo.setNotice(BeanUtil.toBean(storeNotice, StoreHomeTemplateTwoResDTO.SHTTNoticeDTO.class));
+        }
         List<StoreHomepage> otherList = this.storeHomeMapper.selectList(new LambdaQueryWrapper<StoreHomepage>()
                 .eq(StoreHomepage::getStoreId, storeId).eq(StoreHomepage::getDelFlag, Constants.UNDELETED)
                 .in(StoreHomepage::getFileType, Arrays.asList(HomepageType.POPULAR_SALES.getValue(),
                         HomepageType.SEASON_NEW_PRODUCTS.getValue(), HomepageType.STORE_RECOMMENDED.getValue(),
                         HomepageType.SALES_RANKING.getValue())));
-        if (CollectionUtils.isEmpty(otherList)) {
+        // 商品ID列表
+        List<Long> prodIdList = CollectionUtils.isEmpty(otherList) ? new ArrayList<>() : otherList.stream().map(StoreHomepage::getBizId).collect(Collectors.toList());
+        // 筛选商品最新的50条数据
+        List<StoreProduct> latest50ProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+                .eq(StoreProduct::getStoreId, storeId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)
+                .orderByDesc(StoreProduct::getCreateTime).last("LIMIT 50"));
+        CollectionUtils.addAll(prodIdList, latest50ProdList.stream().map(StoreProduct::getId).collect(Collectors.toList()));
+        if (CollectionUtils.isEmpty(latest50ProdList)) {
             return templateTwo;
         }
-        final List<Long> storeProdIdList = otherList.stream().map(StoreHomepage::getBizId).collect(Collectors.toList());
-        List<StoreProdPriceAndMainPicAndTagDTO> attrList = storeProdMapper.selectPriceAndMainPicAndTagList(storeProdIdList);
-        Map<Long, StoreProdPriceAndMainPicAndTagDTO> attrMap = attrList.stream().collect(Collectors.toMap(StoreProdPriceAndMainPicAndTagDTO::getStoreProdId, x -> x));
-        return templateTwo
-                .setRecommendList(this.getTemplateTypeList(otherList, attrMap, HomepageType.STORE_RECOMMENDED.getValue(), 5))
-                .setPopularSaleList(this.getTemplateTypeList(otherList, attrMap, HomepageType.POPULAR_SALES.getValue(), 5))
-                .setNewProdList(this.getTemplateTypeList(otherList, attrMap, HomepageType.SEASON_NEW_PRODUCTS.getValue(), 5))
-                .setSaleRankList(this.getTemplateTypeList(otherList, attrMap, HomepageType.SALES_RANKING.getValue(), 10));
+        // 商品价格、主图、标签等
+        List<StoreProdPriceAndMainPicAndTagDTO> attrList = this.storeProdMapper.selectPriceAndMainPicAndTagList(prodIdList);
+        Map<Long, StoreProdPriceAndMainPicAndTagDTO> attrMap = attrList.stream()
+                .collect(Collectors.toMap(StoreProdPriceAndMainPicAndTagDTO::getStoreProdId, Function.identity()));
+
+        // 店家推荐 5条
+        List<StoreHomepage> storeRecommendList = otherList.stream().filter(x -> Objects.equals(x.getFileType(), HomepageType.STORE_RECOMMENDED.getValue())).collect(Collectors.toList());
+        List<StoreHomeTemplateItemResDTO> recommendList;
+        if (CollectionUtils.isEmpty(storeRecommendList)) {
+            // 从latest50ProdList中随机选取最多5条数据
+            List<StoreProduct> randomProductList = getRandomElements(latest50ProdList, 5);
+            recommendList = randomProductList.stream().map(x -> {
+                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getId());
+                return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
+                        .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
+                        .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
+            }).collect(Collectors.toList());
+        } else {
+            recommendList = storeRecommendList.stream().map(x -> {
+                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getId());
+                return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
+                        .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
+                        .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
+            }).collect(Collectors.toList());
+        }
+        // 档口推荐列表
+        templateTwo.setRecommendList(recommendList);
+
+        List<StoreHomeTemplateItemResDTO> popularRecommendList;
+        // 人气爆款 5条
+        List<StoreHomepage> popularSaleList = otherList.stream().filter(x -> Objects.equals(x.getFileType(), HomepageType.POPULAR_SALES.getValue())).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(popularSaleList)) {
+            // 从latest50ProdList中随机选取最多5条数据
+            List<StoreProduct> randomProductList = getRandomElements(latest50ProdList, 5);
+            popularRecommendList = randomProductList.stream().map(x -> {
+                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getId());
+                return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
+                        .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
+                        .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
+            }).collect(Collectors.toList());
+        } else {
+            popularRecommendList = popularSaleList.stream().map(x -> {
+                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getId());
+                return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
+                        .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
+                        .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
+            }).collect(Collectors.toList());
+        }
+        // 人气爆款列表
+        templateTwo.setPopularSaleList(popularRecommendList);
+
+        // 当季新品 5条
+        List<StoreHomepage> seasonNewProductsList = otherList.stream().filter(x -> Objects.equals(x.getFileType(), HomepageType.SEASON_NEW_PRODUCTS.getValue())).collect(Collectors.toList());
+        List<StoreHomeTemplateItemResDTO> seasonNewRecommendList;
+        if (CollectionUtils.isEmpty(seasonNewProductsList)) {
+            // 从latest50ProdList中随机选取最多5条数据
+            List<StoreProduct> randomProductList = getRandomElements(latest50ProdList, 5);
+            seasonNewRecommendList = randomProductList.stream().map(x -> {
+                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getId());
+                return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
+                        .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
+                        .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
+            }).collect(Collectors.toList());
+        } else {
+            seasonNewRecommendList = seasonNewProductsList.stream().map(x -> {
+                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getId());
+                return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
+                        .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
+                        .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
+            }).collect(Collectors.toList());
+        }
+        // 当季新品列表
+        templateTwo.setNewProdList(seasonNewRecommendList);
+
+        List<StoreHomeTemplateItemResDTO> saleRankRecommendList;
+        // 销量排行 10条
+        List<StoreHomepage> salesRankingList = otherList.stream().filter(x -> Objects.equals(x.getFileType(), HomepageType.SALES_RANKING.getValue())).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(salesRankingList)) {
+            // 从latest50ProdList中随机选取最多10条数据
+            List<StoreProduct> randomProductList = getRandomElements(latest50ProdList, 10);
+            saleRankRecommendList = randomProductList.stream().map(x -> {
+                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getId());
+                return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
+                        .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
+                        .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
+            }).collect(Collectors.toList());
+        } else {
+            saleRankRecommendList = salesRankingList.stream().map(x -> {
+                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getId());
+                return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
+                        .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
+                        .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
+            }).collect(Collectors.toList());
+        }
+        // 销量排行列表
+        templateTwo.setSaleRankList(saleRankRecommendList);
+        return templateTwo;
     }
 
     /**
@@ -577,6 +748,62 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
             this.storeHomeMapper.insert(homePageList);
         }
         return homePageList;
+    }
+
+
+    /**
+     * 从列表中随机选择指定数量的元素
+     *
+     * @param list 列表
+     * @param count 需要选择的数量
+     * @param <T> 元素类型
+     * @return 随机选择的元素列表
+     */
+    private <T> List<T> getRandomElements(List<T> list, int count) {
+        if (CollectionUtils.isEmpty(list)) {
+            return new ArrayList<>();
+        }
+        // 创建列表副本以避免修改原列表
+        List<T> copyList = new ArrayList<>(list);
+        Collections.shuffle(copyList);
+        // 返回不超过列表大小和所需数量的元素
+        return copyList.stream().limit(Math.min(count, copyList.size())).collect(Collectors.toList());
+    }
+
+    /**
+     * 获取默认的推荐推荐商品
+     *
+     * @param storeId                档口ID
+     * @param dailySaleTop10ProdList 近5日销量排名前10的商品
+     * @return List<StoreRecommendResDTO>
+     */
+    private List<StoreRecommendResDTO> getDefaultRecommendList(Long storeId, List<StoreRecommendResDTO> dailySaleTop10ProdList) {
+        // 获取商品标签
+        List<DailyProdTag> prodTagList = this.dailyProdTagMapper.selectList(new LambdaQueryWrapper<DailyProdTag>()
+                .eq(DailyProdTag::getStoreId, storeId).eq(DailyProdTag::getDelFlag, Constants.UNDELETED)
+                .in(DailyProdTag::getStoreProdId, dailySaleTop10ProdList.stream().map(StoreRecommendResDTO::getStoreProdId).collect(Collectors.toList())));
+        Map<String, List<String>> tagMap = CollectionUtils.isEmpty(prodTagList) ? new HashMap<>()
+                : prodTagList.stream().collect(Collectors.groupingBy(x -> x.getStoreProdId().toString(), Collectors.mapping(DailyProdTag::getTag, Collectors.toList())));
+        // 获取商品主图及视频等
+        List<StoreProductFile> prodFileList = this.prodFileMapper.selectList(new LambdaQueryWrapper<StoreProductFile>()
+                .eq(StoreProductFile::getStoreId, storeId).eq(StoreProductFile::getDelFlag, Constants.UNDELETED).eq(StoreProductFile::getOrderNum, ORDER_NUM_1)
+                .in(StoreProductFile::getStoreProdId, dailySaleTop10ProdList.stream().map(StoreRecommendResDTO::getStoreProdId).collect(Collectors.toList()))
+                .in(StoreProductFile::getFileType, Arrays.asList(FileType.MAIN_PIC.getValue(), FileType.MAIN_PIC_VIDEO.getValue())));
+        // 档口商品主图map
+        Map<String, Long> mainPicMap = prodFileList.stream().filter(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC.getValue()))
+                .collect(Collectors.toMap(x -> x.getStoreProdId().toString(), StoreProductFile::getFileId));
+        // 档口商品视频map
+        Map<String, Long> videoMap = prodFileList.stream().filter(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC_VIDEO.getValue()))
+                .collect(Collectors.toMap(x -> x.getStoreProdId().toString(), StoreProductFile::getFileId));
+        List<SysFile> fileList = this.fileMapper.selectList(new LambdaQueryWrapper<SysFile>().eq(SysFile::getDelFlag, Constants.UNDELETED)
+                .in(SysFile::getId, prodFileList.stream().map(StoreProductFile::getFileId).collect(Collectors.toList())));
+        Map<Long, String> fileMap = CollectionUtils.isEmpty(fileList) ? new HashMap<>() : fileList.stream().collect(Collectors.toMap(SysFile::getId, SysFile::getFileUrl));
+        dailySaleTop10ProdList.forEach(x -> {
+            x.setTags(tagMap.getOrDefault(x.getStoreProdId(), new ArrayList<>()));
+            x.setMainPicUrl(fileMap.get(mainPicMap.get(x.getStoreProdId())));
+            x.setHasVideo(videoMap.containsKey(x.getStoreProdId()));
+        });
+        return dailySaleTop10ProdList;
     }
 
 

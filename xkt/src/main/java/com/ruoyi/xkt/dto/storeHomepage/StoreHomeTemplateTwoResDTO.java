@@ -20,7 +20,7 @@ public class StoreHomeTemplateTwoResDTO {
     @ApiModelProperty(value = "顶部左侧轮播图")
     List<StoreHomeTopBannerResDTO> topLeftList;
     @ApiModelProperty(value = "右侧店铺公告")
-    String notice;
+    SHTTNoticeDTO notice;
     @ApiModelProperty(value = "店家推荐")
     List<StoreHomeTemplateItemResDTO> recommendList;
     @ApiModelProperty(value = "人气爆款")
@@ -29,5 +29,14 @@ public class StoreHomeTemplateTwoResDTO {
     List<StoreHomeTemplateItemResDTO> newProdList;
     @ApiModelProperty(value = "销量排行")
     List<StoreHomeTemplateItemResDTO> saleRankList;
+
+    @Data
+    @ApiModel
+    public static class SHTTNoticeDTO {
+        @ApiModelProperty(value = "标题")
+        private String noticeTitle;
+        @ApiModelProperty(value = "内容")
+        private String noticeContent;
+    }
 
 }

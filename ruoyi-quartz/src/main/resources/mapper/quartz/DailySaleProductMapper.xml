@@ -184,34 +184,5 @@
             count DESC;
     </select>
 
-    <select id="selectStoreDefaultRecommendList" resultType="com.ruoyi.xkt.dto.storeHomepage.StoreRecommendResDTO">
-        SELECT
-            dsp.store_id,
-            s.store_name,
-            dsp.store_prod_id,
-            dsp.prod_art_num,
-            sp.prod_title,
-            FALSE AS advert,
-            MIN( spcs.price ) AS minPrice
-        FROM
-            daily_sale_product dsp
-                JOIN store s ON dsp.store_id = s.id
-                JOIN store_product sp ON dsp.store_prod_id = sp.id
-                JOIN store_product_color_size spcs ON dsp.store_prod_id = spcs.store_prod_id AND spcs.del_flag = 0
-        WHERE
-            dsp.del_flag = 0
-            AND dsp.store_id = #{storeId}
-            AND dsp.voucher_date BETWEEN #{fiveDaysAgo} AND #{yesterday}
-        GROUP BY
-            dsp.store_id,
-            dsp.store_prod_id,
-            dsp.prod_art_num
-        ORDER BY
-            SUM( dsp.sale_num ) DESC
-            LIMIT 10
-    </select>
-
-
-
 
 </mapper> 

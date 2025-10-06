@@ -309,5 +309,28 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             spd.detail
     </select>
 
+    <select id="selectLatest10List" resultType="com.ruoyi.xkt.dto.storeHomepage.StoreRecommendResDTO">
+        SELECT
+            sp.id AS storeProdId,
+            sp.store_id,
+            s.store_name,
+            sp.prod_art_num,
+            sp.prod_title,
+            MIN( spcs.price ) AS minPrice,
+            false AS advert
+        FROM
+            store_product sp
+                JOIN store s ON sp.store_id = s.id
+                JOIN store_product_color_size spcs ON sp.id = spcs.store_prod_id AND spcs.del_flag = 0
+        WHERE
+            sp.del_flag = 0
+            AND sp.store_id = #{storeId}
+        GROUP BY
+            sp.id
+        ORDER BY
+            sp.create_time DESC
+            LIMIT 10
+    </select>
+
 
 </mapper>

@@ -62,7 +62,7 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
     @Override
     @Transactional(readOnly = true)
     public Page<AdminAdRoundPageResDTO> page(AdminAdRoundPageDTO pageDTO) {
-        // 用户是否为档口管理者或子账户
+        // 用户是否为管理员
         if (!SecurityUtils.isAdmin()) {
             throw new ServiceException("当前用户非管理员账号，无权限操作!", HttpStatus.ERROR);
         }

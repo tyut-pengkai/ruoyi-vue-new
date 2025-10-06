@@ -62,7 +62,7 @@ public class StoreMemberServiceImpl implements IStoreMemberService {
     @Transactional
     public Integer create(StoreMemberCreateDTO createDTO) {
         // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isAdmin()) {
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(createDTO.getStoreId())) {
             throw new ServiceException("当前用户非管理员账号，无权限操作!", HttpStatus.ERROR);
         }
         //校验推广支付方式是否存在
@@ -125,7 +125,7 @@ public class StoreMemberServiceImpl implements IStoreMemberService {
     @Override
     @Transactional(readOnly = true)
     public Page<StoreMemberPageResDTO> page(StoreMemberPageDTO pageDTO) {
-        // 用户是否为档口管理者或子账户
+        // 用户是否为超级管理员
         if (!SecurityUtils.isAdmin()) {
             throw new ServiceException("当前用户非管理员账号，无权限操作!", HttpStatus.ERROR);
         }
@@ -144,6 +144,10 @@ public class StoreMemberServiceImpl implements IStoreMemberService {
     @Override
     @Transactional(readOnly = true)
     public StoreMemberExpireResDTO expire(Long storeId) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(storeId)) {
+            throw new ServiceException("当前用户非管理员账号，无权限操作!", HttpStatus.ERROR);
+        }
         StoreMember storeMember = this.storeMemberMapper.selectOne(new LambdaQueryWrapper<StoreMember>()
                 .eq(StoreMember::getStoreId, storeId).eq(StoreMember::getDelFlag, Constants.UNDELETED)
                 .gt(StoreMember::getStartTime, new Date()).le(StoreMember::getEndTime, new Date()));
