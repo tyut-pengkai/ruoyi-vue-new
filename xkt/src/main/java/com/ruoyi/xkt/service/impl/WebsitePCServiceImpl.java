@@ -526,6 +526,9 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         }
         // 获取近一月 档口首页PC 顶部左侧轮播图推广数据
         List<AdvertRound> oneMonthList = this.getOneMonthAdvertList(Collections.singletonList(AdType.PC_HOME_TOP_LEFT_BANNER.getValue()));
+        if (CollectionUtils.isEmpty(oneMonthList)) {
+            return Collections.emptyList();
+        }
         Map<Long, SysFile> fileMap = fileMapper.selectList(new LambdaQueryWrapper<SysFile>().eq(SysFile::getDelFlag, Constants.UNDELETED)
                         .in(SysFile::getId, oneMonthList.stream().map(AdvertRound::getPicId).filter(ObjectUtils::isNotEmpty).collect(Collectors.toList())))
                 .stream().collect(Collectors.toMap(SysFile::getId, Function.identity()));
@@ -576,6 +579,9 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
             return topRightBannerList;
         }
         List<AdvertRound> oneMonthList = this.getOneMonthAdvertList(Collections.singletonList(AdType.PC_HOME_TOP_RIGHT_BANNER.getValue()));
+        if (CollectionUtils.isEmpty(oneMonthList)) {
+            return Collections.emptyList();
+        }
         List<StoreProdFileResDTO> mainPicList = this.prodFileMapper.selectMainPic(oneMonthList.stream().map(AdvertRound::getProdIdStr).distinct().collect(Collectors.toList()));
         Map<Long, String> mainPicMap = mainPicList.stream().collect(Collectors.toMap(StoreProdFileResDTO::getStoreProdId, StoreProdFileResDTO::getFileUrl, (v1, v2) -> v2));
         List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue()))
@@ -684,6 +690,9 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
             return redisStyleList;
         }
         List<AdvertRound> oneMonthList = this.getOneMonthAdvertList(Collections.singletonList(AdType.PC_HOME_STYLE_RANK.getValue()));
+        if (CollectionUtils.isEmpty(oneMonthList)) {
+            return Collections.emptyList();
+        }
         // 档口推广主图map
         List<SysFile> fileList = this.fileMapper.selectByIds(oneMonthList.stream().map(AdvertRound::getPicId)
                 .filter(ObjectUtils::isNotEmpty).collect(Collectors.toList()));
@@ -1246,6 +1255,9 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
             return redisList;
         }
         List<AdvertRound> oneMonthList = this.getOneMonthAdvertList(Collections.singletonList(AdType.PC_NEW_PROD_SINGLE_BANNER.getValue()));
+        if (CollectionUtils.isEmpty(oneMonthList)) {
+            return Collections.emptyList();
+        }
         List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue()))
                 .filter(x -> Objects.equals(x.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue())).collect(Collectors.toList());
         List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());

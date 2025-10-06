@@ -169,9 +169,24 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
         if (CollectionUtils.isEmpty(recommendList)) {
             final Date yesterday = java.sql.Date.valueOf(LocalDate.now().minusDays(1));
             final Date fiveDaysAgo = java.sql.Date.valueOf(LocalDate.now().minusDays(6));
+
+
+            // TODO 推荐商品逻辑修改，要确保档口从一入驻，整个档口首页就能正常显示数据
+            // TODO 推荐商品逻辑修改，要确保档口从一入驻，整个档口首页就能正常显示数据
+            // TODO 推荐商品逻辑修改，要确保档口从一入驻，整个档口首页就能正常显示数据
+            // TODO 推荐商品逻辑修改，要确保档口从一入驻，整个档口首页就能正常显示数据
+            // TODO 推荐商品逻辑修改，要确保档口从一入驻，整个档口首页就能正常显示数据
+            // TODO 推荐商品逻辑修改，要确保档口从一入驻，整个档口首页就能正常显示数据
+
+
             // 如果档口未设置推荐商品，则筛选销量最好的10条商品
             List<StoreRecommendResDTO> dailySaleTop10ProdList = this.dailySaleProdMapper.selectStoreDefaultRecommendList(storeId, fiveDaysAgo, yesterday);
             return CollectionUtils.isEmpty(dailySaleTop10ProdList) ? Collections.emptyList() : this.getDefaultRecommendList(storeId, dailySaleTop10ProdList);
+
+
+
+
+
         }
         // 商品价格、主图、标签等
         List<StoreProdPriceAndMainPicAndTagDTO> attrList = this.storeProdMapper.selectPriceAndMainPicAndTagList(recommendList.stream()

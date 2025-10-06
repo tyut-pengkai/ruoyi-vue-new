@@ -46,10 +46,9 @@ public class StoreProdVO {
     @Size(min = 0, max = 60, message = "商品标题不能超过60个字!")
     @NotBlank(message = "商品标题不能为空!")
     private String prodTitle;
-
+    @NotNull(message = "是否私款不能为空!")
     @ApiModelProperty(value = "0 否 1 是", required = true)
     private Integer privateItem;
-
     @ApiModelProperty(value = "商品重量")
     private BigDecimal prodWeight;
     @ApiModelProperty(value = "生产价格")
