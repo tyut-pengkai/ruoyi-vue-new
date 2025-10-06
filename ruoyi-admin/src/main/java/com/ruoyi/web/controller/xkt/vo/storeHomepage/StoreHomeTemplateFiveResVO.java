@@ -20,7 +20,7 @@ public class StoreHomeTemplateFiveResVO {
     @ApiModelProperty(value = "顶部右侧商品")
     List<StoreHomeTemplateItemResVO> topRightList;
     @ApiModelProperty(value = "右侧店铺公告")
-    String notice;
+    SHTFNoticeVO notice;
     @ApiModelProperty(value = "店家推荐")
     List<StoreHomeTemplateItemResVO> recommendList;
     @ApiModelProperty(value = "销量排行")
@@ -36,6 +36,15 @@ public class StoreHomeTemplateFiveResVO {
         private String fileUrl;
         @ApiModelProperty(value = "排序")
         private Integer orderNum;
+    }
+
+    @Data
+    @ApiModel
+    public static class SHTFNoticeVO {
+        @ApiModelProperty(value = "标题")
+        private String noticeTitle;
+        @ApiModelProperty(value = "内容")
+        private String noticeContent;
     }
 
 }

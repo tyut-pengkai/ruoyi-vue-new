@@ -22,10 +22,19 @@ public class StoreHomeTemplateFiveResDTO {
     @ApiModelProperty(value = "顶部右侧商品")
     List<StoreHomeTemplateItemResDTO> topRightList;
     @ApiModelProperty(value = "右侧店铺公告")
-    String notice;
+    SHTFNoticeDTO notice;
     @ApiModelProperty(value = "店家推荐")
     List<StoreHomeTemplateItemResDTO> recommendList;
     @ApiModelProperty(value = "销量排行")
     List<StoreHomeTemplateItemResDTO> saleRankList;
+
+    @Data
+    @ApiModel
+    public static class SHTFNoticeDTO {
+        @ApiModelProperty(value = "标题")
+        private String noticeTitle;
+        @ApiModelProperty(value = "内容")
+        private String noticeContent;
+    }
 
 }
