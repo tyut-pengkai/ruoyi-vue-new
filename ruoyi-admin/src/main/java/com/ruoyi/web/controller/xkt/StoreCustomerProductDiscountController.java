@@ -41,8 +41,8 @@ public class StoreCustomerProductDiscountController extends XktBaseController {
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
-    @ApiOperation(value = "客户销售管理 批量减价、批量抹零减价、新增客户定价优惠", httpMethod = "PUT", response = R.class)
-    @Log(title = "客户销售管理 批量减价、批量抹零减价、新增客户定价优惠", businessType = BusinessType.UPDATE)
+    @ApiOperation(value = "客户销售管理 批量减价、批量抹零减价、新增客户定价优惠;销售/出库，客户优惠修改", httpMethod = "PUT", response = R.class)
+    @Log(title = "客户销售管理 批量减价、批量抹零减价、新增客户定价优惠;销售/出库，客户优惠修改", businessType = BusinessType.UPDATE)
     @PutMapping("/batch")
     public R<Integer> batchDiscount(@Validated @RequestBody StoreCusProdBatchDiscountVO batchDiscVO) {
         return R.ok(storeCusProdDiscService.batchDiscount(BeanUtil.toBean(batchDiscVO, StoreCusProdBatchDiscountDTO.class)));
