@@ -219,10 +219,11 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         if (CollectionUtils.isEmpty(advertRoundList)) {
             return new ArrayList<>();
         }
-        // 该档口在这些轮次竞价失败的记录
+        // 该档口在这些轮次竞价失败的记录，查询非系统拦截的竞价失败记录
         List<AdvertRoundRecord> recordList = this.advertRoundRecordMapper.selectList(new LambdaQueryWrapper<AdvertRoundRecord>()
                 .eq(AdvertRoundRecord::getDelFlag, Constants.UNDELETED).eq(AdvertRoundRecord::getTypeId, typeId)
                 .eq(AdvertRoundRecord::getStoreId, storeId).eq(AdvertRoundRecord::getVoucherDate, voucherDate)
+                .eq(AdvertRoundRecord::getSysIntercept, AdSysInterceptType.UN_INTERCEPT.getValue())
                 .in(AdvertRoundRecord::getAdvertRoundId, advertRoundList.stream().map(AdvertRound::getId).collect(Collectors.toList())));
         Map<Integer, List<AdvertRoundRecord>> roundRecordMap = recordList.stream().collect(Collectors.groupingBy(AdvertRoundRecord::getRoundId));
         List<AdRoundTypeRoundResDTO> resList = new ArrayList<>();
@@ -258,8 +259,10 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                                     .divide(BigDecimal.valueOf(durationDay), 0, RoundingMode.HALF_UP);
                             typeRoundResDTO.setStartPrice(curStartPrice);
                         }
-                        // 当前档口购买的轮次
-                        AdvertRound boughtRound = currentRoundList.stream().filter(x -> Objects.equals(x.getStoreId(), storeId)).findFirst().orElse(null);
+                        // 当前档口购买的轮次，查询非系统拦截的购买成功的轮次
+                        AdvertRound boughtRound = currentRoundList.stream().filter(x -> Objects.equals(x.getStoreId(), storeId))
+                                .filter(x -> Objects.equals(x.getSysIntercept(), AdSysInterceptType.UN_INTERCEPT.getValue()))
+                                .findFirst().orElse(null);
                         if (ObjectUtils.isNotEmpty(boughtRound)) {
                             // 如果是最近的播放轮次，且当前时间在 晚上10:00:01 之后到 当天23:59:59 都显示 biddingTempStatus 字段
                             Integer biddingStatus = tenClockAfter && Objects.equals(typeRoundResDTO.getRoundId(), minRoundId)
@@ -323,8 +326,8 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                 Date tomorrow = Date.from(LocalDate.now().plusDays(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
                 boughtResDTO.setStartPrice(curStartPrice).setStartTime(tomorrow);
             }
-            // 当前档口购买的推广位置
-            if (Objects.equals(advertRound.getStoreId(), storeId)) {
+            // 当前档口购买的推广位置 必须为非系统拦截的广告位
+            if (Objects.equals(advertRound.getStoreId(), storeId) && Objects.equals(advertRound.getSysIntercept(), AdSysInterceptType.UN_INTERCEPT.getValue())) {
                 Integer biddingStatus = tenClockAfter ? advertRound.getBiddingTempStatus() : advertRound.getBiddingStatus();
                 boughtResDTO.setBiddingStatus(biddingStatus);
                 boughtResDTO.setBiddingStatusName(AdBiddingStatus.of(biddingStatus).getLabel());
@@ -337,11 +340,12 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         if (CollectionUtils.isEmpty(unBoughtPositionList)) {
             return resList;
         }
-        // 当天竞价失败的位置
+        // 当天竞价失败的位置，必须是非系统拦截的广告位
         List<AdvertRoundRecord> recordList = this.advertRoundRecordMapper.selectList(new LambdaQueryWrapper<AdvertRoundRecord>()
                 .eq(AdvertRoundRecord::getDelFlag, Constants.UNDELETED).eq(AdvertRoundRecord::getTypeId, typeId)
                 .eq(AdvertRoundRecord::getRoundId, roundId).eq(AdvertRoundRecord::getStoreId, storeId)
                 .eq(AdvertRoundRecord::getVoucherDate, java.sql.Date.valueOf(LocalDate.now()))
+                .eq(AdvertRoundRecord::getSysIntercept, AdSysInterceptType.UN_INTERCEPT.getValue())
                 .in(AdvertRoundRecord::getPosition, unBoughtPositionList));
         if (CollectionUtils.isEmpty(recordList)) {
             return resList;
@@ -382,10 +386,10 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         if (CollectionUtils.isEmpty(allRoundList)) {
             return new ArrayList<>();
         }
-        // 当前 档口 在所有 待投放  及 投放中 的推广轮次竞价失败记录
+        // 当前 档口 在所有 待投放  及 投放中 的推广轮次竞价失败记录. 查询非系统拦截的推广位
         List<AdvertRoundRecord> allRecordList = this.advertRoundRecordMapper.selectList(new LambdaQueryWrapper<AdvertRoundRecord>()
                 .eq(AdvertRoundRecord::getDelFlag, Constants.UNDELETED).eq(AdvertRoundRecord::getStoreId, storeId)
-                .eq(AdvertRoundRecord::getVoucherDate, voucherDate));
+                .eq(AdvertRoundRecord::getVoucherDate, voucherDate).eq(AdvertRoundRecord::getSysIntercept, AdSysInterceptType.UN_INTERCEPT.getValue()));
         // 按照advertId进行分组，取最小的roundId列表
         Map<Long, Optional<Integer>> minRoundIdMap = allRoundList.stream().collect(Collectors.groupingBy(AdvertRound::getAdvertId,
                 Collectors.mapping(AdvertRound::getRoundId, Collectors.minBy(Comparator.comparing(Integer::intValue)))));
@@ -393,6 +397,8 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         List<Integer> roundIdList = minRoundIdMap.values().stream().filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
         // 筛选档口 所有的 已购买 推广位数据
         List<AdRoundStoreBoughtResDTO> boughtRoundList = allRoundList.stream().filter(x -> Objects.equals(x.getStoreId(), storeId))
+                // 查询非系统拦截的推广位
+                .filter(x -> Objects.equals(x.getSysIntercept(), AdSysInterceptType.UN_INTERCEPT.getValue()))
                 .map(x -> {
                     // 如果是最近的播放轮次，且当前时间在 晚上10:00:01 之后到 当天23:59:59 都显示 biddingTempStatus 字段
                     final Integer biddingStatus = tenClockAfter && roundIdList.contains(x.getRoundId()) ? x.getBiddingTempStatus() : x.getBiddingStatus();
