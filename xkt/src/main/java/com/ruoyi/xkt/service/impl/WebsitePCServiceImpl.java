@@ -431,6 +431,11 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         return topList;
     }
 
+    /**
+     * PC 搜索结果广告列表。
+     * 即使是会员 也不返回会员标识，这样布局更好看
+     * @return
+     */
     @Override
     @Transactional(readOnly = true)
     public List<PCSearchResultAdvertDTO> getPcSearchAdvertList() {
@@ -486,6 +491,8 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                 pcSearchResAdvertList.forEach(x -> x.setFocus(focusStoreIdList.contains(x.getStoreId()) ? Boolean.TRUE : Boolean.FALSE));
             }
         }
+        // 此广告位不返回会员标识，页面样式更好看
+
         // 放到redis中，过期时间为1天
         redisCache.setCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_SEARCH_RESULT_ADVERT, pcSearchResAdvertList, 1, TimeUnit.DAYS);
         return pcSearchResAdvertList;
