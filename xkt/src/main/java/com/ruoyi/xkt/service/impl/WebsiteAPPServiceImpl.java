@@ -1097,8 +1097,8 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                                 .from((searchDTO.getPageNum() - 1) * searchDTO.getPageSize())
                                 .size(searchDTO.getPageSize())
                                 .sort(Arrays.asList(
-                                        SortOptions.of(so -> so.field(f -> f.field("storeWeight").order(SortOrder.Desc))),
-                                        SortOptions.of(so -> so.field(f -> f.field(searchDTO.getSort()).order(searchDTO.getOrder())))
+                                        SortOptions.of(so -> so.field(f -> f.field(searchDTO.getSort()).order(searchDTO.getOrder()))),
+                                        SortOptions.of(so -> so.field(f -> f.field("storeWeight").order(SortOrder.Desc)))
                                 )),
                         ESProductDTO.class);
         final long total = resList.hits().total().value();

@@ -1868,7 +1868,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         if (StringUtils.isNotBlank(searchDTO.getSearch())) {
             MultiMatchQuery multiMatchQuery = MultiMatchQuery.of(m -> m
                     .query(searchDTO.getSearch())
-                    .fields( "prodArtNum", "storeName", "prodCateName", "parCateName")
+                    .fields("prodArtNum", "storeName", "prodCateName", "parCateName")
             );
             boolQuery.must(multiMatchQuery._toQuery());
         }
@@ -1947,8 +1947,8 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                                 .from((searchDTO.getPageNum() - 1) * searchDTO.getPageSize())
                                 .size(searchDTO.getPageSize())
                                 .sort(Arrays.asList(
-                                        SortOptions.of(so -> so.field(f -> f.field("storeWeight").order(SortOrder.Desc))),
-                                        SortOptions.of(so -> so.field(f -> f.field(searchDTO.getSort()).order(searchDTO.getOrder())))
+                                        SortOptions.of(so -> so.field(f -> f.field(searchDTO.getSort()).order(searchDTO.getOrder()))),
+                                        SortOptions.of(so -> so.field(f -> f.field("storeWeight").order(SortOrder.Desc)))
                                 )),
                         ESProductDTO.class);
         final long total = resList.hits().total().value();
