@@ -67,8 +67,8 @@ public class PictureSearchServiceImpl implements IPictureSearchService {
     public List<StoreProdViewDTO> searchProductByPic(SearchRequestDTO requestDTO) {
         // 以图搜款广告
         List<PicSearchAdvertDTO> picSearchAdverts = websitePCService.getPicSearchList();
-        if (StringUtils.isBlank(requestDTO.getPicKey()) || StringUtils.isBlank(requestDTO.getPicName()) ||
-                ObjectUtils.isEmpty(requestDTO.getPicSize()) || requestDTO.getNum() <= 0) {
+        if (StringUtils.isBlank(requestDTO.getPicKey()) || StringUtils.isBlank(requestDTO.getPicName())
+                || requestDTO.getNum() <= 0) {
             return BeanUtil.copyToList(picSearchAdverts, StoreProdViewDTO.class);
         }
         Assert.notEmpty(requestDTO.getPicKey());

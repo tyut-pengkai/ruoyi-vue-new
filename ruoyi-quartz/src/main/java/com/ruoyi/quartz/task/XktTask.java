@@ -408,8 +408,6 @@ public class XktTask {
             this.dailyStoreTagMapper.deleteByIds(existList.stream().map(DailyStoreTag::getId).collect(Collectors.toList()));
         }
         List<DailyStoreTag> tagList = new ArrayList<>();
-        // 单据日期为当然
-        final Date now = java.sql.Date.valueOf(LocalDate.now());
         // 根据LocalDate 获取当前日期前一天
         final Date yesterday = java.sql.Date.valueOf(LocalDate.now().minusDays(1));
         // 使用LocalDate 获取当前日期前一天的前一周，并转为 Date 格式
@@ -417,19 +415,19 @@ public class XktTask {
         // 使用LocalDate 获取当前日期前一天的前一个月
         final Date oneMonthAgo = java.sql.Date.valueOf(LocalDate.now().minusMonths(1));
         // 1. 打 月销千件 标签
-        this.tagSaleThousand(now, yesterday, oneMonthAgo, tagList);
+        this.tagSaleThousand(yesterday, oneMonthAgo, tagList);
         // 2. 打 销量榜 标签
-        this.tagStoreSaleRank(now, yesterday, oneMonthAgo, tagList);
+        this.tagStoreSaleRank(yesterday, oneMonthAgo, tagList);
         // 3. 打 爆款频出 标签，根据销量前50的商品中 档口 先后顺序排列
-        this.tagHotRank(now, yesterday, oneMonthAgo, tagList);
+        this.tagHotRank(yesterday, oneMonthAgo, tagList);
         // 4. 打 新款频出 标签，根据最近一周档口商品上新速度，先后排序
-        this.tagNewProd(now, yesterday, oneWeekAgo, tagList);
+        this.tagNewProd(yesterday, oneWeekAgo, tagList);
         // 5. 打 关注榜 标签，根据关注量，进行排序
-        this.tagAttentionRank(now, yesterday, tagList);
+        this.tagAttentionRank(yesterday, tagList);
         // 6. 打 库存榜 标签，根据库存量，进行排序
-        this.tagStockTag(now, yesterday, oneMonthAgo, tagList);
+        this.tagStockTag(yesterday, oneMonthAgo, tagList);
         // 7. 打 七日上新 标签
-        this.tag7DaysNewTag(now, yesterday, oneWeekAgo, tagList);
+        this.tag7DaysNewTag(yesterday, oneWeekAgo, tagList);
         if (CollectionUtils.isEmpty(tagList)) {
             return;
         }
@@ -447,7 +445,6 @@ public class XktTask {
         if (CollectionUtils.isNotEmpty(existList)) {
             this.dailyProdTagMapper.deleteByIds(existList.stream().map(DailyProdTag::getId).collect(Collectors.toList()));
         }
-        final Date now = java.sql.Date.valueOf(LocalDate.now());
         // 根据LocalDate 获取当前日期前一天
         final Date yesterday = java.sql.Date.valueOf(LocalDate.now().minusDays(1));
         // 使用LocalDate 获取当前日期4天前，并转为 Date 格式
@@ -458,25 +455,25 @@ public class XktTask {
         final Date oneMonthAgo = java.sql.Date.valueOf(LocalDate.now().minusMonths(1));
         List<DailyProdTag> tagList = new ArrayList<>();
         // 1. 打 月销千件 标签
-        this.tagMonthSaleThousand(now, yesterday, oneMonthAgo, tagList);
+        this.tagMonthSaleThousand(yesterday, oneMonthAgo, tagList);
         // 2. 打 销量榜 标签
-        this.tagProdSaleTop10(now, yesterday, oneMonthAgo, tagList);
+        this.tagProdSaleTop10(yesterday, oneMonthAgo, tagList);
         // 3. 当月（近一月）爆款
-        this.tagMonthHot(now, yesterday, oneMonthAgo, tagList);
+        this.tagMonthHot(yesterday, oneMonthAgo, tagList);
         // 4. 档口热卖
-        this.tagStoreHotTop20(now, yesterday, oneMonthAgo, tagList);
+        this.tagStoreHotTop20(yesterday, oneMonthAgo, tagList);
         // 5. 图搜榜
-        this.tagImgSearchTop10(now, yesterday, oneMonthAgo, tagList);
+        this.tagImgSearchTop10(yesterday, oneMonthAgo, tagList);
         // 6. 收藏榜
-        this.tagCollectionTop10(now, yesterday, oneMonthAgo, tagList);
+        this.tagCollectionTop10(yesterday, oneMonthAgo, tagList);
         // 7. 下载榜 铺货榜
-        this.tagDownloadTop10(now, yesterday, oneMonthAgo, tagList);
+        this.tagDownloadTop10(yesterday, oneMonthAgo, tagList);
         // 8. 三日上新
-        this.tagThreeDayNew(now, yesterday, fourDaysAgo, tagList);
+        this.tagThreeDayNew(yesterday, fourDaysAgo, tagList);
         // 9. 七日上新
-        this.tagSevenDayNew(now, yesterday, fourDaysAgo, oneWeekAgo, tagList);
+        this.tagSevenDayNew(yesterday, fourDaysAgo, oneWeekAgo, tagList);
         // 10. 风格
-        this.tagStyle(now, yesterday, tagList);
+        this.tagStyle(yesterday, tagList);
         if (CollectionUtils.isEmpty(tagList)) {
             return;
         }
@@ -1154,30 +1151,28 @@ public class XktTask {
     /**
      * 给商品打销量过千标签
      *
-     * @param now         今天
      * @param yesterday   昨天
      * @param oneMonthAgo 一月前
      * @param tagList     标签列表
      */
-    private void tagMonthSaleThousand(Date now, Date yesterday, Date oneMonthAgo, List<DailyProdTag> tagList) {
+    private void tagMonthSaleThousand(Date yesterday, Date oneMonthAgo, List<DailyProdTag> tagList) {
         List<DailyStoreTagDTO> prodSale1000List = this.dailySaleProdMapper.prodSale1000List(oneMonthAgo, yesterday);
         if (CollectionUtils.isEmpty(prodSale1000List)) {
             return;
         }
         tagList.addAll(prodSale1000List.stream().map(x -> DailyProdTag.builder().storeId(x.getStoreId()).storeProdId(x.getStoreProdId())
                 .tag(ProdTagType.MONTH_SALES_THOUSAND.getLabel()).type(ProdTagType.MONTH_SALES_THOUSAND.getValue())
-                .voucherDate(now).build()).collect(Collectors.toList()));
+                .voucherDate(yesterday).build()).collect(Collectors.toList()));
     }
 
     /**
      * 给商品打销量榜标签
      *
-     * @param now         今天
      * @param yesterday   昨天
      * @param oneMonthAgo 一月前
      * @param tagList     标签列表
      */
-    private void tagProdSaleTop10(Date now, Date yesterday, Date oneMonthAgo, List<DailyProdTag> tagList) {
+    private void tagProdSaleTop10(Date yesterday, Date oneMonthAgo, List<DailyProdTag> tagList) {
         List<DailyStoreTagDTO> prodSaleTop10List = this.dailySaleProdMapper.prodSaleTop10List(oneMonthAgo, yesterday);
         if (CollectionUtils.isEmpty(prodSaleTop10List)) {
             return;
@@ -1195,19 +1190,18 @@ public class XktTask {
             DailyStoreTagDTO tagDTO = prodSaleTop10List.get(i);
             // 构建 DailyStoreTag 对象并添加到 tagList
             tagList.add(DailyProdTag.builder().storeId(tagDTO.getStoreId()).storeProdId(tagDTO.getStoreProdId()).type(saleRankType)
-                    .tag(rankTags.getOrDefault(i, "销量前十")).voucherDate(now).build());
+                    .tag(rankTags.getOrDefault(i, "销量前十")).voucherDate(yesterday).build());
         }
     }
 
     /**
      * 给商品打图搜标签
      *
-     * @param now         现在
      * @param yesterday   昨天
      * @param oneMonthAgo 一月前
      * @param tagList     标签列表
      */
-    private void tagImgSearchTop10(Date now, Date yesterday, Date oneMonthAgo, List<DailyProdTag> tagList) {
+    private void tagImgSearchTop10(Date yesterday, Date oneMonthAgo, List<DailyProdTag> tagList) {
         List<DailyStoreTagDTO> imgSearchTop10List = this.storeProdStatMapper.searchTop10Prod(oneMonthAgo, yesterday);
         if (CollectionUtils.isEmpty(imgSearchTop10List)) {
             return;
@@ -1225,19 +1219,18 @@ public class XktTask {
             DailyStoreTagDTO tagDTO = imgSearchTop10List.get(i);
             // 构建 DailyProdTag 对象并添加到 tagList
             tagList.add(DailyProdTag.builder().storeId(tagDTO.getStoreId()).storeProdId(tagDTO.getStoreProdId()).type(imgSearchType)
-                    .tag(rankTags.getOrDefault(i, "图搜前十")).voucherDate(now).build());
+                    .tag(rankTags.getOrDefault(i, "图搜前十")).voucherDate(yesterday).build());
         }
     }
 
     /**
      * 给商品打收藏榜前10标签
      *
-     * @param now         现在
      * @param yesterday   昨天
      * @param oneMonthAgo 一月前
      * @param tagList     标签列表
      */
-    private void tagCollectionTop10(Date now, Date yesterday, Date oneMonthAgo, List<DailyProdTag> tagList) {
+    private void tagCollectionTop10(Date yesterday, Date oneMonthAgo, List<DailyProdTag> tagList) {
         List<DailyStoreTagDTO> collectTop10List = this.userFavMapper.searchTop10Prod(oneMonthAgo, yesterday);
         if (CollectionUtils.isEmpty(collectTop10List)) {
             return;
@@ -1255,19 +1248,18 @@ public class XktTask {
             DailyStoreTagDTO tagDTO = collectTop10List.get(i);
             // 构建 DailyProdTag 对象并添加到 tagList
             tagList.add(DailyProdTag.builder().storeId(tagDTO.getStoreId()).storeProdId(tagDTO.getStoreProdId()).type(imgSearchType)
-                    .tag(rankTags.getOrDefault(i, "收藏前十")).voucherDate(now).build());
+                    .tag(rankTags.getOrDefault(i, "收藏前十")).voucherDate(yesterday).build());
         }
     }
 
     /**
      * 给商品打下载榜前10标签
      *
-     * @param now         现在
      * @param yesterday   昨天
      * @param oneMonthAgo 一月前
      * @param tagList     标签列表
      */
-    private void tagDownloadTop10(Date now, Date yesterday, Date oneMonthAgo, List<DailyProdTag> tagList) {
+    private void tagDownloadTop10(Date yesterday, Date oneMonthAgo, List<DailyProdTag> tagList) {
         List<DailyStoreTagDTO> downloadTop10List = this.storeProdStatMapper.downloadTop10Prod(oneMonthAgo, yesterday);
         if (CollectionUtils.isEmpty(downloadTop10List)) {
             return;
@@ -1285,18 +1277,17 @@ public class XktTask {
             DailyStoreTagDTO tagDTO = downloadTop10List.get(i);
             // 构建 DailyProdTag 对象并添加到 tagList
             tagList.add(DailyProdTag.builder().storeId(tagDTO.getStoreId()).storeProdId(tagDTO.getStoreProdId()).type(downloadType)
-                    .tag(rankTags.getOrDefault(i, "铺货前十")).voucherDate(now).build());
+                    .tag(rankTags.getOrDefault(i, "铺货前十")).voucherDate(yesterday).build());
         }
     }
 
     /**
      * 给商品打风格标签
      *
-     * @param now       今天
      * @param yesterday 昨天
      * @param tagList   标签列表
      */
-    private void tagStyle(Date now, Date yesterday, List<DailyProdTag> tagList) {
+    private void tagStyle(Date yesterday, List<DailyProdTag> tagList) {
         List<StoreProductCategoryAttribute> cateAttrList = this.cateAttrMapper.selectList(new LambdaQueryWrapper<StoreProductCategoryAttribute>()
                 .eq(StoreProductCategoryAttribute::getDelFlag, Constants.UNDELETED));
         if (CollectionUtils.isEmpty(cateAttrList)) {
@@ -1304,20 +1295,19 @@ public class XktTask {
         }
         tagList.addAll(cateAttrList.stream().filter(x -> StringUtils.isNotBlank(x.getStyle()))
                 .map(x -> DailyProdTag.builder().storeId(x.getStoreId()).storeProdId(x.getStoreProdId())
-                        .tag(x.getStyle()).type(ProdTagType.STYLE.getValue()).voucherDate(now).build())
+                        .tag(x.getStyle()).type(ProdTagType.STYLE.getValue()).voucherDate(yesterday).build())
                 .collect(Collectors.toList()));
     }
 
     /**
      * 给商品打标 七日上新
      *
-     * @param now         现在
      * @param yesterday   昨天
      * @param fourDaysAgo 4天前
      * @param oneWeekAgo  一周前
      * @param tagList     标签列表
      */
-    private void tagSevenDayNew(Date now, Date yesterday, Date fourDaysAgo, Date oneWeekAgo, List<DailyProdTag> tagList) {
+    private void tagSevenDayNew(Date yesterday, Date fourDaysAgo, Date oneWeekAgo, List<DailyProdTag> tagList) {
         List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getPrivateItem, EProductItemType.NON_PRIVATE_ITEM.getValue())
                 .eq(StoreProduct::getDelFlag, Constants.UNDELETED).between(StoreProduct::getCreateTime, oneWeekAgo, fourDaysAgo));
@@ -1325,19 +1315,18 @@ public class XktTask {
             return;
         }
         tagList.addAll(storeProdList.stream().map(x -> DailyProdTag.builder().storeId(x.getStoreId()).storeProdId(x.getId())
-                        .type(ProdTagType.SEVEN_DAY_NEW.getValue()).tag(ProdTagType.SEVEN_DAY_NEW.getLabel()).voucherDate(now).build())
+                        .type(ProdTagType.SEVEN_DAY_NEW.getValue()).tag(ProdTagType.SEVEN_DAY_NEW.getLabel()).voucherDate(yesterday).build())
                 .collect(Collectors.toList()));
     }
 
     /**
      * 三日上新
      *
-     * @param now         现在
      * @param yesterday   昨天
      * @param fourDaysAgo 3天前
      * @param tagList     标签列表
      */
-    private void tagThreeDayNew(Date now, Date yesterday, Date fourDaysAgo, List<DailyProdTag> tagList) {
+    private void tagThreeDayNew(Date yesterday, Date fourDaysAgo, List<DailyProdTag> tagList) {
         List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getPrivateItem, EProductItemType.NON_PRIVATE_ITEM.getValue())
                 .eq(StoreProduct::getDelFlag, Constants.UNDELETED).between(StoreProduct::getCreateTime, fourDaysAgo, yesterday));
@@ -1346,20 +1335,19 @@ public class XktTask {
         }
         tagList.addAll(storeProdList.stream().map(x -> DailyProdTag.builder().storeId(x.getStoreId()).storeProdId(x.getId())
                 .type(ProdTagType.THREE_DAY_NEW.getValue()).tag(ProdTagType.THREE_DAY_NEW.getLabel())
-                .voucherDate(now).build()).collect(Collectors.toList()));
+                .voucherDate(yesterday).build()).collect(Collectors.toList()));
     }
 
     /**
      * 筛选档口热卖商品
      *
-     * @param now
      * @param yesterday   昨天
      * @param oneMonthAgo 一月前
      * @param tagList     标签集合
      */
-    private void tagStoreHotTop20(Date now, Date yesterday, Date oneMonthAgo, List<DailyProdTag> tagList) {
+    private void tagStoreHotTop20(Date yesterday, Date oneMonthAgo, List<DailyProdTag> tagList) {
         List<DailySaleProduct> saleProdList = this.dailySaleProdMapper.selectList(new LambdaQueryWrapper<DailySaleProduct>()
-                .eq(DailySaleProduct::getDelFlag, Constants.UNDELETED).eq(DailySaleProduct::getVoucherDate, now));
+                .eq(DailySaleProduct::getDelFlag, Constants.UNDELETED).eq(DailySaleProduct::getVoucherDate, yesterday));
         if (CollectionUtils.isEmpty(saleProdList)) {
             return;
         }
@@ -1369,7 +1357,7 @@ public class XktTask {
                         .collectingAndThen(Collectors.toList(), list -> list.stream().limit(20).collect(Collectors.toList()))));
         storeHotSaleMap.forEach((storeId, saleList) -> {
             tagList.addAll(saleList.stream().map(x -> DailyProdTag.builder().storeId(x.getStoreId()).storeProdId(x.getStoreProdId())
-                            .type(ProdTagType.STORE_HOT.getValue()).tag(ProdTagType.STORE_HOT.getLabel()).voucherDate(now).build())
+                            .type(ProdTagType.STORE_HOT.getValue()).tag(ProdTagType.STORE_HOT.getLabel()).voucherDate(oneMonthAgo).build())
                     .collect(Collectors.toList()));
         });
     }
@@ -1377,18 +1365,17 @@ public class XktTask {
     /**
      * 给商品打标 本月爆款
      *
-     * @param now         今天
      * @param yesterday   昨天
      * @param oneMonthAgo 一月前
      * @param tagList     标签列表
      */
-    private void tagMonthHot(Date now, Date yesterday, Date oneMonthAgo, List<DailyProdTag> tagList) {
+    private void tagMonthHot(Date yesterday, Date oneMonthAgo, List<DailyProdTag> tagList) {
         List<DailyStoreTagDTO> top50List = this.dailySaleProdMapper.selectTop50ProdList(yesterday, oneMonthAgo);
         if (CollectionUtils.isEmpty(top50List)) {
             return;
         }
         tagList.addAll(top50List.stream().map(x -> DailyProdTag.builder().storeId(x.getStoreId()).storeProdId(x.getStoreProdId())
-                        .tag(ProdTagType.MONTH_HOT.getLabel()).type(ProdTagType.MONTH_HOT.getValue()).voucherDate(now).build())
+                        .tag(ProdTagType.MONTH_HOT.getLabel()).type(ProdTagType.MONTH_HOT.getValue()).voucherDate(yesterday).build())
                 .collect(Collectors.toList()));
     }
 
@@ -1396,12 +1383,11 @@ public class XktTask {
     /**
      * 档口基础标签
      *
-     * @param now        今天
      * @param yesterday  昨日
      * @param oneWeekAgo 一周前
      * @param tagList    标签列表
      */
-    private void tag7DaysNewTag(Date now, Date yesterday, Date oneWeekAgo, List<DailyStoreTag> tagList) {
+    private void tag7DaysNewTag(Date yesterday, Date oneWeekAgo, List<DailyStoreTag> tagList) {
         List<StoreProduct> newProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getDelFlag, Constants.UNDELETED).eq(StoreProduct::getPrivateItem, EProductItemType.NON_PRIVATE_ITEM.getValue())
                 .in(StoreProduct::getProdStatus, Collections.singletonList(EProductStatus.ON_SALE.getValue()))
@@ -1411,36 +1397,35 @@ public class XktTask {
         }
         newProdList.stream().map(StoreProduct::getStoreId).distinct().forEach(x -> {
             tagList.add(DailyStoreTag.builder().storeId(x).type(StoreTagType.SEVEN_DAY_NEW_RANK.getValue())
-                    .tag("七日上新").voucherDate(now).build());
+                    .tag("七日上新").voucherDate(yesterday).build());
         });
     }
 
     /**
      * 给档口打库存标签
      *
-     * @param now         今天
+     * @param yesterday   今天
      * @param yesterday   昨天
      * @param oneMonthAgo 一月前
      * @param tagList     标签列表
      */
-    private void tagStockTag(Date now, Date yesterday, Date oneMonthAgo, List<DailyStoreTag> tagList) {
+    private void tagStockTag(Date yesterday, Date oneMonthAgo, List<DailyStoreTag> tagList) {
         List<DailyStoreTagDTO> top10List = this.stockMapper.selectTop10List(yesterday, oneMonthAgo);
         if (CollectionUtils.isEmpty(top10List)) {
             return;
         }
         tagList.addAll(top10List.stream().map(x -> DailyStoreTag.builder().storeId(x.getStoreId()).type(StoreTagType.STOCK_RANK.getValue())
-                .tag("库存充足").voucherDate(now).build()).collect(Collectors.toList()));
+                .tag("库存充足").voucherDate(yesterday).build()).collect(Collectors.toList()));
     }
 
 
     /**
      * 给档口打关注标签
      *
-     * @param now       今天
      * @param yesterday 昨天
      * @param tagList   档口标签列表
      */
-    private void tagAttentionRank(Date now, Date yesterday, List<DailyStoreTag> tagList) {
+    private void tagAttentionRank(Date yesterday, List<DailyStoreTag> tagList) {
         List<DailyStoreTagDTO> top10List = this.userSubsMapper.selectTop10List();
         if (CollectionUtils.isEmpty(top10List)) {
             return;
@@ -1457,24 +1442,23 @@ public class XktTask {
         for (int i = 0; i < Math.min(top10List.size(), 10); i++) { // 确保不会超出 top10List 的大小
             // 构建 DailyStoreTag 对象并添加到 tagList
             tagList.add(DailyStoreTag.builder().storeId(top10List.get(i).getStoreId()).type(attentionRankType)
-                    .tag(rankTags.getOrDefault(i, "关注前十")).voucherDate(now).build());
+                    .tag(rankTags.getOrDefault(i, "关注前十")).voucherDate(yesterday).build());
         }
     }
 
     /**
      * 给档口打销量过千标签
      *
-     * @param now         今天
      * @param yesterday   昨天
      * @param oneMonthAgo 一月前
      * @param tagList     档口标签列表
      */
-    private void tagSaleThousand(Date now, Date yesterday, Date oneMonthAgo, List<DailyStoreTag> tagList) {
+    private void tagSaleThousand(Date yesterday, Date oneMonthAgo, List<DailyStoreTag> tagList) {
         List<DailyStoreTagDTO> thousandSaleList = this.dailySaleMapper.selectSaleThousand(yesterday, oneMonthAgo);
         if (CollectionUtils.isEmpty(thousandSaleList)) {
             return;
         }
-        tagList.addAll(thousandSaleList.stream().map(x -> DailyStoreTag.builder().storeId(x.getStoreId()).voucherDate(now)
+        tagList.addAll(thousandSaleList.stream().map(x -> DailyStoreTag.builder().storeId(x.getStoreId()).voucherDate(yesterday)
                         .type(StoreTagType.MONTH_SALES_THOUSAND.getValue()).tag(StoreTagType.MONTH_SALES_THOUSAND.getLabel()).build())
                 .collect(Collectors.toList()));
     }
@@ -1483,12 +1467,11 @@ public class XktTask {
      * 统计最近一月档口销售数据。 1. 销量榜 规则：销量排名第1，打标：销量第一  销量第2、第3，打标：销量前三 ；
      * 销量前5，打标：销量前五；销量第6-10，打标：销量前十
      *
-     * @param now         当天
      * @param yesterday   昨天
      * @param oneMonthAgo 一月前
      * @param tagList     档口标签列表
      */
-    private void tagStoreSaleRank(Date now, Date yesterday, Date oneMonthAgo, List<DailyStoreTag> tagList) {
+    private void tagStoreSaleRank(Date yesterday, Date oneMonthAgo, List<DailyStoreTag> tagList) {
         // 获取最近一月销量前10的档口
         List<DailyStoreTagDTO> saleTop10List = this.dailySaleMapper.selectTop10List(yesterday, oneMonthAgo);
         if (CollectionUtils.isEmpty(saleTop10List)) {
@@ -1508,7 +1491,7 @@ public class XktTask {
             if (ObjectUtils.isNotEmpty(storeTagDTO)) {
                 String tag = rankTags.getOrDefault(i, "销量前十");
                 tagList.add(DailyStoreTag.builder().storeId(storeTagDTO.getStoreId()).type(salesRankType)
-                        .tag(tag).voucherDate(now).build());
+                        .tag(tag).voucherDate(yesterday).build());
             }
         }
     }
@@ -1516,38 +1499,36 @@ public class XktTask {
     /**
      * 打销量爆款标签
      *
-     * @param now         当天
      * @param yesterday   昨天
      * @param oneMonthAgo 一月前
      * @param tagList     档口标签列表
      */
-    private void tagHotRank(Date now, Date yesterday, Date oneMonthAgo, List<DailyStoreTag> tagList) {
+    private void tagHotRank(Date yesterday, Date oneMonthAgo, List<DailyStoreTag> tagList) {
         List<DailyStoreTagDTO> top50List = this.dailySaleProdMapper.selectTop50ProdList(yesterday, oneMonthAgo);
         if (CollectionUtils.isEmpty(top50List)) {
             return;
         }
         tagList.addAll(top50List.stream().map(DailyStoreTagDTO::getStoreId).distinct().map(storeId -> DailyStoreTag.builder()
                         .storeId(storeId).type(StoreTagType.HOT_RANK.getValue()).tag(StoreTagType.HOT_RANK.getLabel())
-                        .voucherDate(now).build())
+                        .voucherDate(yesterday).build())
                 .collect(Collectors.toList()));
     }
 
     /**
      * 给档口打新品频出标签
      *
-     * @param now        今天
      * @param yesterday  昨天
      * @param oneWeekAgo 一周前
      * @param tagList    标签列表
      */
-    private void tagNewProd(Date now, Date yesterday, Date oneWeekAgo, List<DailyStoreTag> tagList) {
+    private void tagNewProd(Date yesterday, Date oneWeekAgo, List<DailyStoreTag> tagList) {
         List<DailyStoreTagDTO> top20List = this.storeProdMapper.selectTop20List(yesterday, oneWeekAgo);
         if (CollectionUtils.isEmpty(top20List)) {
             return;
         }
         tagList.addAll(top20List.stream().map(DailyStoreTagDTO::getStoreId).distinct().map(storeId -> DailyStoreTag.builder()
                         .storeId(storeId).type(StoreTagType.NEW_PRODUCT.getValue()).tag(StoreTagType.NEW_PRODUCT.getLabel())
-                        .voucherDate(now).build())
+                        .voucherDate(yesterday).build())
                 .collect(Collectors.toList()));
     }
 
