@@ -93,8 +93,12 @@ public class PictureSearchServiceImpl implements IPictureSearchService {
         if (CollectionUtils.isEmpty(results)) {
             return BeanUtil.copyToList(picSearchAdverts, StoreProdViewDTO.class);
         }
+        // 图搜的商品ID列表
+        final List<Long> storeProdIdList = picSearchAdverts.stream().map(x -> x.getStoreProdId()).collect(Collectors.toList());
+        // 搜索结果过滤掉广告商品
+        List<ProductMatchDTO> filterResults = results.stream().filter(x -> !storeProdIdList.contains(x.getStoreProductId())).collect(Collectors.toList());
         // 档口商品显示的基本属性 数据库筛选，必须要带prodStatus，因为图搜搜出来的可能是下架的商品
-        List<StoreProdViewDTO> storeProdViewAttrList = this.storeProdMapper.getStoreProdViewAttr(results.stream()
+        List<StoreProdViewDTO> storeProdViewAttrList = this.storeProdMapper.getStoreProdViewAttr(filterResults.stream()
                         .map(ProductMatchDTO::getStoreProductId).distinct().collect(Collectors.toList()),
                 java.sql.Date.valueOf(LocalDate.now().minusMonths(2)), java.sql.Date.valueOf(LocalDate.now()));
         // 设置商品标签
