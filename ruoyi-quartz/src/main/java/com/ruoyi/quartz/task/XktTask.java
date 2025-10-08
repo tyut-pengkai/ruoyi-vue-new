@@ -461,7 +461,7 @@ public class XktTask {
         // 3. 当月（近一月）爆款
         this.tagMonthHot(yesterday, oneMonthAgo, tagList);
         // 4. 档口热卖
-        this.tagStoreHotTop20(yesterday, oneMonthAgo, tagList);
+        this.tagStoreHotTop10(yesterday, oneWeekAgo, tagList);
         // 5. 图搜榜
         this.tagImgSearchTop10(yesterday, oneMonthAgo, tagList);
         // 6. 收藏榜
@@ -1341,24 +1341,27 @@ public class XktTask {
     /**
      * 筛选档口热卖商品
      *
-     * @param yesterday   昨天
-     * @param oneMonthAgo 一月前
-     * @param tagList     标签集合
+     * @param yesterday  昨天
+     * @param oneWeekAgo 一周前
+     * @param tagList    标签集合
      */
-    private void tagStoreHotTop20(Date yesterday, Date oneMonthAgo, List<DailyProdTag> tagList) {
+    private void tagStoreHotTop10(Date yesterday, Date oneWeekAgo, List<DailyProdTag> tagList) {
+        // 筛选近一周档口销量
         List<DailySaleProduct> saleProdList = this.dailySaleProdMapper.selectList(new LambdaQueryWrapper<DailySaleProduct>()
-                .eq(DailySaleProduct::getDelFlag, Constants.UNDELETED).eq(DailySaleProduct::getVoucherDate, yesterday));
+                .eq(DailySaleProduct::getDelFlag, Constants.UNDELETED).between(DailySaleProduct::getVoucherDate, oneWeekAgo, yesterday));
         if (CollectionUtils.isEmpty(saleProdList)) {
             return;
         }
-        // 筛选每个档口，销量排名前20的商品
-        Map<Long, List<DailySaleProduct>> storeHotSaleMap = saleProdList.stream().collect(Collectors
-                .groupingBy(DailySaleProduct::getStoreId, Collectors
-                        .collectingAndThen(Collectors.toList(), list -> list.stream().limit(20).collect(Collectors.toList()))));
-        storeHotSaleMap.forEach((storeId, saleList) -> {
-            tagList.addAll(saleList.stream().map(x -> DailyProdTag.builder().storeId(x.getStoreId()).storeProdId(x.getStoreProdId())
-                            .type(ProdTagType.STORE_HOT.getValue()).tag(ProdTagType.STORE_HOT.getLabel()).voucherDate(oneMonthAgo).build())
-                    .collect(Collectors.toList()));
+        // 筛选每个档口，销量排名前10的商品
+        Map<Long, Map<Long, Integer>> storeHotSaleMap = saleProdList.stream().collect(Collectors
+                .groupingBy(DailySaleProduct::getStoreId, Collectors.groupingBy(DailySaleProduct::getStoreProdId, Collectors
+                        .summingInt(DailySaleProduct::getSaleNum))));
+        storeHotSaleMap.forEach((storeId, prodSaleMap) -> {
+            // 筛选prodSaleMap中销量前10的商品
+            List<Map.Entry<Long, Integer>> top5ProdList = prodSaleMap.entrySet().stream().sorted(Map.Entry.<Long, Integer>comparingByValue().reversed())
+                    .limit(10).collect(Collectors.toList());
+            top5ProdList.forEach(entry -> tagList.add(DailyProdTag.builder().storeId(storeId).storeProdId(entry.getKey()).type(ProdTagType.STORE_HOT.getValue())
+                    .tag(ProdTagType.STORE_HOT.getLabel()).voucherDate(yesterday).build()));
         });
     }
 
