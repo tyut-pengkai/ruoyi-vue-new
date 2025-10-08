@@ -138,5 +138,13 @@ public interface StoreProductMapper extends BaseMapper<StoreProduct> {
      */
     List<StoreRecommendResDTO> selectLatest10List(@Param("storeId") Long storeId);
 
+    /**
+     * 获取商品下载信息
+     *
+     * @param storeProdId 档口商品ID
+     * @return StoreProdPcDownloadInfoResDTO
+     */
+    StoreProdPcDownloadInfoResDTO selectDownloadProdInfo(@Param("storeProdId") Long storeProdId);
+
 }
 

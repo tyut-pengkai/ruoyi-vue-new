@@ -730,6 +730,20 @@ public class StoreProductServiceImpl implements IStoreProductService {
         return this.storeProdMapper.getStatusNum(storeId);
     }
 
+    /**
+     * 获取档口商品PC端下载信息
+     *
+     * @param storeProdId 档口商品ID
+     * @return StoreProdPcDownloadInfoResDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public StoreProdPcDownloadInfoResDTO getPcDownloadInfo(Long storeProdId) {
+        StoreProdPcDownloadInfoResDTO downloadInfo = this.storeProdMapper.selectDownloadProdInfo(storeProdId);
+        // 获取下载图包
+        return downloadInfo.setFileList(this.storeProdFileMapper.selectDownloadFileList(storeProdId));
+    }
+
 
     /**
      * 根据档口ID和商品货号模糊查询货号列表

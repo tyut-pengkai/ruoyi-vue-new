@@ -170,4 +170,12 @@ public interface IStoreProductService {
      * @return StoreProdStatusCountResDTO
      */
     StoreProdStatusCountResDTO getPcStatusNum(Long storeId);
+
+    /**
+     * 获取档口商品PC端下载信息
+     *
+     * @param storeProdId 档口商品ID
+     * @return
+     */
+    StoreProdPcDownloadInfoResDTO getPcDownloadInfo(Long storeProdId);
 }

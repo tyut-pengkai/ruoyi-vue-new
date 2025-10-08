@@ -75,6 +75,7 @@ public class StoreProductController extends XktBaseController {
         return R.ok(storeProdService.page(BeanUtil.toBean(pageVO, StoreProdPageDTO.class)));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "获取档口商品详细信息", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/detail/{storeProdId}")
     public R<StoreProdResVO> getInfo(@PathVariable("storeProdId") Long storeProdId) {
@@ -142,6 +143,13 @@ public class StoreProductController extends XktBaseController {
                 BeanUtil.toBean(cateCountVO, StoreProdStatusCateNumDTO.class)), StoreProdStatusCateCountResVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,seller,agent')")
+    @ApiOperation(value = "获取下载页商品数据", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/pc/download/{storeProdId}")
+    public R<StoreProdPcDownloadInfoResVO> getPcDownloadInfo(@PathVariable("storeProdId") Long storeProdId) {
+        return R.ok(BeanUtil.toBean(storeProdService.getPcDownloadInfo(storeProdId), StoreProdPcDownloadInfoResVO.class));
+    }
+
     @ApiOperation(value = "获取商品图包列表", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/pic-pack/{storeProdId}")
     public R<List<PicPackSimpleVO>> listPickPack(@PathVariable("storeProdId") Long storeProdId) {
@@ -149,6 +157,7 @@ public class StoreProductController extends XktBaseController {
         return success(BeanUtil.copyToList(dtoList, PicPackSimpleVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,seller,agent')")
     @Log(title = "获取商品图包下载链接", businessType = BusinessType.OTHER)
     @ApiOperation(value = "获取商品图包下载链接", httpMethod = "POST", response = R.class)
     @PostMapping(value = "/pic-pack/url")
@@ -158,5 +167,8 @@ public class StoreProductController extends XktBaseController {
         PicPackInfoDTO infoDTO = storeProdService.getPicPackDownloadUrl(reqDTO);
         return success(BeanUtil.toBean(infoDTO, PicPackInfoVO.class));
     }
+
+
+
 
 }

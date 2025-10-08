@@ -3,8 +3,8 @@ package com.ruoyi.xkt.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProductFile;
 import com.ruoyi.xkt.dto.advertRound.app.strength.APPStrengthStoreFileDTO;
+import com.ruoyi.xkt.dto.storeProduct.StoreProdPcDownloadInfoResDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileLatestFourProdDTO;
-import com.ruoyi.xkt.dto.storeProductFile.StoreProdFilePicSpaceResDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
 import org.apache.ibatis.annotations.Param;
@@ -79,4 +79,12 @@ public interface StoreProductFileMapper extends BaseMapper<StoreProductFile> {
      * @return List<APPStrengthStoreFileDTO>
      */
     List<APPStrengthStoreFileDTO> selectRandomStoreFileList(@Param("storeIdList") List<Long> storeIdList);
+
+    /**
+     * 获取下载图包信息
+     *
+     * @param storeProdId 档口商品ID
+     * @return List<StoreProdPcDownloadInfoResDTO.SPPDIFileDTO>
+     */
+    List<StoreProdPcDownloadInfoResDTO.SPPDIFileDTO> selectDownloadFileList(@Param("storeProdId") Long storeProdId);
 }
