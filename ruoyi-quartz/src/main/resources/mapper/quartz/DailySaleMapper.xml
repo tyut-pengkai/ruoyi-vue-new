@@ -6,21 +6,21 @@
 
     <select id="selectDailySale" resultType="com.ruoyi.xkt.dto.dailySale.DailySaleDTO">
         SELECT
-            ss.store_id,
-            COALESCE(SUM(CASE WHEN ssd.sale_type = 1 THEN ssd.amount ELSE 0 END), 0) AS saleAmount,
-            COALESCE(SUM(CASE WHEN ssd.sale_type = 2 THEN ssd.amount ELSE 0 END), 0) AS refundAmount,
-            COALESCE(SUM(CASE WHEN ssd.sale_type = 1 THEN ssd.quantity ELSE 0 END), 0) AS saleNum,
-            COALESCE(SUM(CASE WHEN ssd.sale_type = 2 THEN ssd.quantity ELSE 0 END), 0) AS refundNum,
-            COALESCE(COUNT(ss.store_cus_id), 0) AS customerNum,
-            COALESCE(SUM(sps.quantity), 0) AS storageNum
+            ssd.store_id,
+            COALESCE ( SUM( CASE WHEN ssd.sale_type = 1 THEN ssd.amount ELSE 0 END ), 0 ) AS saleAmount,
+            COALESCE ( SUM( CASE WHEN ssd.sale_type = 2 THEN ssd.amount ELSE 0 END ), 0 ) AS refundAmount,
+            COALESCE ( SUM( CASE WHEN ssd.sale_type = 1 THEN ssd.quantity ELSE 0 END ), 0 ) AS saleNum,
+            COALESCE ( SUM( CASE WHEN ssd.sale_type = 2 THEN ssd.quantity ELSE 0 END ), 0 ) AS refundNum,
+            COALESCE ( COUNT( ssd.store_cus_id ), 0 ) AS customerNum,
+            COALESCE ( SUM( sps.quantity ), 0 ) AS storageNum
         FROM
-            store_sale ss
-                JOIN store_sale_detail ssd ON ss.id = ssd.store_sale_id
-                LEFT JOIN store_product_storage sps ON ss.store_id = sps.store_id
+            store_sale_detail ssd
+                LEFT JOIN store_product_storage sps ON ssd.store_id = sps.store_id
         WHERE
-            ss.del_flag = 0 AND ss.voucher_date = #{voucherDate}
+            ssd.del_flag = 0 AND ssd.voucher_date = #{voucherDate}
         GROUP BY
-            ss.store_id
+            ssd.store_id
+
     </select>
 
     <select id="selectSaleThousand" resultType="com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO">
