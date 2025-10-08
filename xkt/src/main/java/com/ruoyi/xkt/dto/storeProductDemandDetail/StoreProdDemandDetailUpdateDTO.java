@@ -15,6 +15,8 @@ public class StoreProdDemandDetailUpdateDTO {
 
     @ApiModelProperty(value = "商品需求明细ID")
     private Long storeProdDemandDetailId;
+    @ApiModelProperty(value = "是否紧急单")
+    private Integer emergency;
     @ApiModelProperty(value = "尺码30")
     private Integer size30;
     @ApiModelProperty(value = "尺码31")

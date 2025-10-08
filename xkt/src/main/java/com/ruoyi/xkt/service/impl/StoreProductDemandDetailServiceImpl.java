@@ -9,6 +9,7 @@ import com.ruoyi.xkt.dto.storeProductDemandDetail.StoreProdDemandDetailUpdateDTO
 import com.ruoyi.xkt.mapper.StoreProductDemandDetailMapper;
 import com.ruoyi.xkt.service.IStoreProductDemandDetailService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +39,7 @@ public class StoreProductDemandDetailServiceImpl implements IStoreProductDemandD
         StoreProductDemandDetail demandDetail = Optional.ofNullable(this.demandDetailMapper.selectOne(new LambdaQueryWrapper<StoreProductDemandDetail>()
                         .eq(StoreProductDemandDetail::getId, updateDTO.getStoreProdDemandDetailId()).eq(StoreProductDemandDetail::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("商品需求单明细不存在!", HttpStatus.ERROR));
+        demandDetail.setEmergency(ObjectUtils.defaultIfNull(updateDTO.getEmergency(), 0));
         // 如果数量为0，则设置为null
         demandDetail.setSize30(this.convertZeroToNull(updateDTO.getSize30()));
         demandDetail.setSize31(this.convertZeroToNull(updateDTO.getSize31()));
