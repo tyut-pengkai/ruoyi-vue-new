@@ -344,6 +344,18 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                     .filter(x -> CollectionUtils.isEmpty(advertProdIdList) || !advertProdIdList.contains(x.getStoreProdId()))
                     .collect(Collectors.toList());
         }
+        // 增加用户是否已收藏商品
+        Long userId = SecurityUtils.getUserIdSafe();
+        if (ObjectUtils.isNotEmpty(userId)) {
+            List<String> storeProdIdList = realDataList.stream().map(APPSearchDTO::getStoreProdId).filter(StringUtils::isNotBlank).collect(Collectors.toList());
+            CollectionUtils.addAll(storeProdIdList, redisList.stream().map(APPSearchDTO::getStoreProdId).collect(Collectors.toList()));
+            List<UserFavorites> userFavList = this.userFavMapper.selectList(new LambdaQueryWrapper<UserFavorites>()
+                    .eq(UserFavorites::getUserId, userId).in(UserFavorites::getStoreProdId, storeProdIdList));
+            Map<String, Long> userFavMap = CollectionUtils.isEmpty(userFavList) ? new HashMap<>()
+                    : userFavList.stream().collect(Collectors.toMap(x -> x.getStoreProdId().toString(), UserFavorites::getId));
+            realDataList.forEach(x -> x.setCollectProd(userFavMap.containsKey(x.getStoreProdId())));
+            redisList.forEach(x -> x.setCollectProd(userFavMap.containsKey(x.getStoreProdId())));
+        }
         // APP 只有第一页 有数据 其它页暂时没有广告
         if (searchDTO.getPageNum() > 1) {
             return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), realDataList);

@@ -43,6 +43,8 @@ public class APPSearchDTO {
     private String prodTitle;
     @ApiModelProperty(value = "是否有视频")
     private Boolean hasVideo;
+    @ApiModelProperty(value = "是否已收藏商品")
+    private Boolean collectProd;
     @ApiModelProperty(value = "标签")
     private List<String> tags;
 
