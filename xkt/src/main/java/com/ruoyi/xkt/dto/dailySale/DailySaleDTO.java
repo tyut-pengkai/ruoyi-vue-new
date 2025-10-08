@@ -32,7 +32,7 @@ public class DailySaleDTO {
     /**
      * 退货数量
      */
-    private Integer returnNum;
+    private Integer refundNum;
     /**
      * 拿货客户数量（人次）
      */
