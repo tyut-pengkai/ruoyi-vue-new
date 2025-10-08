@@ -1416,7 +1416,6 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
             return new ArrayList<>();
         }
         List<Long> storeProdIdList = oneMonthList.stream().map(AdvertRound::getProdIdStr).map(Long::parseLong).distinct().collect(Collectors.toList());
-        List<Store> storeList = this.storeMapper.selectByIds(oneMonthList.stream().map(AdvertRound::getStoreId).collect(Collectors.toList()));
         // 获取商品显示的基本属性
         List<StoreProdViewDTO> storeProdViewList = this.storeProdMapper.getStoreProdViewAttr(storeProdIdList,
                 java.sql.Date.valueOf(LocalDate.now().minusMonths(2)), java.sql.Date.valueOf(LocalDate.now()));
@@ -1424,7 +1423,8 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         // 商品图搜次数
         List<StoreProductStatistics> prodStatsList = prodStatsMapper.selectList(new LambdaQueryWrapper<StoreProductStatistics>()
                 .eq(StoreProductStatistics::getDelFlag, Constants.UNDELETED).in(StoreProductStatistics::getStoreProdId, storeProdIdList));
-        Map<Long, StoreProductStatistics> prodStatsMap = prodStatsList.stream().collect(Collectors.toMap(StoreProductStatistics::getStoreProdId, Function.identity()));
+        Map<Long, Long> prodStatsMap = prodStatsList.stream().collect(Collectors
+                .groupingBy(StoreProductStatistics::getStoreProdId, Collectors.summingLong(StoreProductStatistics::getImgSearchCount)));
         List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue()))
                 .filter(x -> Objects.equals(x.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue())).collect(Collectors.toList());
         List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
@@ -1581,7 +1581,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
      * @param prodStatsMap  图搜次数map
      * @return List<PicSearchAdvertDTO>
      */
-    private List<PicSearchAdvertDTO> getPicSearchAdvertList(List<AdvertRound> picSearchList, Map<Long, StoreProdViewDTO> viewMap, Map<Long, StoreProductStatistics> prodStatsMap) {
+    private List<PicSearchAdvertDTO> getPicSearchAdvertList(List<AdvertRound> picSearchList, Map<Long, StoreProdViewDTO> viewMap, Map<Long, Long> prodStatsMap) {
         return picSearchList.stream().limit(10).map(advertRound -> {
             final Long storeProdId = Long.valueOf(advertRound.getProdIdStr());
             StoreProdViewDTO viewDTO = viewMap.get(storeProdId);
@@ -1593,7 +1593,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
             CollectionUtils.addAll(prodTagList, ObjectUtils.isNotEmpty(viewDTO) && StringUtils.isNotBlank(viewDTO.getTagStr())
                     ? StrUtil.split(viewDTO.getTagStr(), ",") : new ArrayList<>());
             return new PicSearchAdvertDTO()
-                    .setImgSearchCount(prodStatsMap.containsKey(storeProdId) ? prodStatsMap.get(storeProdId).getImgSearchCount() : null)
+                    .setImgSearchCount(prodStatsMap.containsKey(storeProdId) ? prodStatsMap.get(storeProdId) : null)
                     .setSameProdCount(results.size()).setStoreProdId(storeProdId).setStoreId(advertRound.getStoreId()).setTags(prodTagList)
                     .setStoreName(ObjectUtils.isNotEmpty(viewDTO) ? viewDTO.getStoreName() : "")
                     .setPrice(ObjectUtils.isNotEmpty(viewDTO) ? viewDTO.getPrice() : null)
