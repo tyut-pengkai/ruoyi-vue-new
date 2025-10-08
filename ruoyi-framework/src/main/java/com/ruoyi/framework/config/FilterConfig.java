@@ -56,7 +56,7 @@ public class FilterConfig
         FilterRegistrationBean registration = new FilterRegistrationBean();
         registration.setDispatcherTypes(DispatcherType.REQUEST);
         registration.setFilter(new RefererFilter());
-        registration.addUrlPatterns(Constants.RESOURCE_PREFIX + "/*");
+        registration.addUrlPatterns(Constants.RESOURCE_PREFIX + "/**");
         registration.setName("refererFilter");
         registration.setOrder(FilterRegistrationBean.HIGHEST_PRECEDENCE);
         Map<String, String> initParameters = new HashMap<String, String>();
