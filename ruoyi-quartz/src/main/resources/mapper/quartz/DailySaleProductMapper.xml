@@ -10,9 +10,9 @@
             sp.id AS store_prod_id,
             sp.prod_art_num,
             COALESCE ( SUM( CASE WHEN ssd.sale_type = 1 THEN ssd.amount ELSE 0 END ), 0 ) AS saleAmount,
-            COALESCE ( SUM( CASE WHEN ssd.sale_type = 2 THEN ssd.amount ELSE 0 END ), 0 ) AS returnAmount,
+            COALESCE ( SUM( CASE WHEN ssd.sale_type = 2 THEN ssd.amount ELSE 0 END ), 0 ) AS refundAmount,
             COALESCE ( SUM( CASE WHEN ssd.sale_type = 1 THEN ssd.quantity ELSE 0 END ), 0 ) AS saleNum,
-            COALESCE ( SUM( CASE WHEN ssd.sale_type = 2 THEN ssd.quantity ELSE 0 END ), 0 ) AS returnNum
+            COALESCE ( SUM( CASE WHEN ssd.sale_type = 2 THEN ssd.quantity ELSE 0 END ), 0 ) AS refundNum
         FROM
             store_sale_detail ssd
                 LEFT JOIN store_product sp ON ssd.store_prod_id = sp.id

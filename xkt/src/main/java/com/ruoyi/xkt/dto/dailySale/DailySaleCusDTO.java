@@ -27,7 +27,7 @@ public class DailySaleCusDTO {
     /**
      * 退货金额
      */
-    private BigDecimal returnAmount;
+    private BigDecimal refundAmount;
     /**
      * 销售数量
      */
@@ -35,6 +35,6 @@ public class DailySaleCusDTO {
     /**
      * 退货数量
      */
-    private Integer returnNum;
+    private Integer refundNum;
 
 }

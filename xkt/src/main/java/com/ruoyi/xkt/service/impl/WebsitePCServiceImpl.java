@@ -1586,14 +1586,15 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
             final Long storeProdId = Long.valueOf(advertRound.getProdIdStr());
             StoreProdViewDTO viewDTO = viewMap.get(storeProdId);
             String mainPic = ObjectUtils.isNotEmpty(viewDTO) ? viewDTO.getMainPicUrl() : "";
-            List<ProductMatchDTO> results = StringUtils.isNotBlank(mainPic) ? pictureService.searchProductByPicKey(mainPic, 1000) : new ArrayList<>();
+            List<ProductMatchDTO> results = StringUtils.isNotBlank(mainPic)
+                    ? pictureService.searchProductByPicKey(mainPic, Constants.IMG_SEARCH_MAX_PAGE_NUM) : new ArrayList<>();
             List<String> prodTagList = new ArrayList<String>() {{
                 add("同类热卖");
             }};
             CollectionUtils.addAll(prodTagList, ObjectUtils.isNotEmpty(viewDTO) && StringUtils.isNotBlank(viewDTO.getTagStr())
                     ? StrUtil.split(viewDTO.getTagStr(), ",") : new ArrayList<>());
             return new PicSearchAdvertDTO()
-                    .setImgSearchCount(prodStatsMap.containsKey(storeProdId) ? prodStatsMap.get(storeProdId) : null)
+                    .setImgSearchCount(prodStatsMap.getOrDefault(storeProdId, 1L))
                     .setSameProdCount(results.size()).setStoreProdId(storeProdId).setStoreId(advertRound.getStoreId()).setTags(prodTagList)
                     .setStoreName(ObjectUtils.isNotEmpty(viewDTO) ? viewDTO.getStoreName() : "")
                     .setPrice(ObjectUtils.isNotEmpty(viewDTO) ? viewDTO.getPrice() : null)

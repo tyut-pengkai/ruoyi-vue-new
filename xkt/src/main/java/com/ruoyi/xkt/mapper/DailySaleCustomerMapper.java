@@ -5,7 +5,6 @@ import com.ruoyi.xkt.domain.DailySaleCustomer;
 import com.ruoyi.xkt.dto.dailySale.DailySaleCusDTO;
 import com.ruoyi.xkt.dto.store.StoreIndexCusSaleTop10ResDTO;
 import com.ruoyi.xkt.dto.store.StoreIndexOverviewResDTO;
-import com.ruoyi.xkt.dto.store.StoreSaleCustomerTop10DTO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
@@ -18,14 +17,20 @@ import java.util.List;
  */
 public interface DailySaleCustomerMapper extends BaseMapper<DailySaleCustomer> {
 
+    /**
+     * 获取客户每日销售数据
+     *
+     * @param voucherDate 统计的日期
+     * @return List<DailySaleCusDTO>
+     */
     List<DailySaleCusDTO> selectDailySale(Date voucherDate);
 
     /**
      * 档口客户销售榜前10
      *
-     * @param storeId storeId
+     * @param storeId          storeId
      * @param voucherDateStart 开始时间
-     * @param voucherDateEnd 结束时间
+     * @param voucherDateEnd   结束时间
      * @return List<StoreIndexCustomerSaleTop10ResDTO>
      */
     List<StoreIndexCusSaleTop10ResDTO> selectTop10SaleCustomerList(@Param("storeId") Long storeId,
