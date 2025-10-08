@@ -294,7 +294,7 @@ public class Constants
     /**
      * 以图搜图匹配分数阈值
      */
-    public static final float IMG_SEARCH_MATCH_SCORE_THRESHOLD = (float) 0.5;
+    public static final float IMG_SEARCH_MATCH_SCORE_THRESHOLD = (float) 0.6;
     /**
      * 以图搜图默认返回数
      */
