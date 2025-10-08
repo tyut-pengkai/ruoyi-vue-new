@@ -965,6 +965,10 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         if (CollectionUtils.isEmpty(oneMonthList)) {
             return new ArrayList<>();
         }
+        List<Store> storeList = this.storeMapper.selectList(new LambdaQueryWrapper<Store>().eq(Store::getDelFlag, Constants.UNDELETED)
+                .in(Store::getId, oneMonthList.stream().map(AdvertRound::getStoreId).collect(Collectors.toList())));
+        Map<Long, Store> storeMap = CollectionUtils.isEmpty(storeList) ? new HashMap<>()
+                : storeList.stream().collect(Collectors.toMap(Store::getId, Function.identity()));
         final List<Long> storeProdIdList = oneMonthList.stream()
                 .filter(x -> StringUtils.isNotBlank(x.getProdIdStr())).map(x -> Long.parseLong(x.getProdIdStr())).distinct().collect(Collectors.toList());
         // 档口商品的价格及商品主图map
@@ -984,6 +988,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                         AdvertRound advertRound = list.get(0);
                         final Long storeProdId = Long.parseLong(advertRound.getProdIdStr());
                         tempList.add(new PCIndexSearchRecommendProdDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreProdId(storeProdId).setStoreId(advertRound.getStoreId())
+                                .setStoreName(storeMap.containsKey(advertRound.getStoreId()) ? storeMap.get(advertRound.getStoreId()).getStoreName() : "")
                                 .setProdArtNum(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getProdArtNum() : "")
                                 .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMainPicUrl() : ""));
                     });
@@ -996,6 +1001,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                 final Long storeProdId = Long.parseLong(advertRound.getProdIdStr());
                 return new PCIndexSearchRecommendProdDTO().setDisplayType(AdDisplayType.PRODUCT.getValue()).setStoreProdId(storeProdId)
                         .setOrderNum(this.positionToNumber(advertRound.getPosition())).setStoreId(advertRound.getStoreId())
+                        .setStoreName(storeMap.containsKey(advertRound.getStoreId()) ? storeMap.get(advertRound.getStoreId()).getStoreName() : "")
                         .setProdArtNum(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getProdArtNum() : "")
                         .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(storeProdId)) ? prodPriceAndMainPicMap.get(storeProdId).getMainPicUrl() : "");
             }).collect(Collectors.toList());

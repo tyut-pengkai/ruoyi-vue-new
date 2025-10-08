@@ -19,6 +19,8 @@ public class PCIndexSearchRecommendProdVO {
     private Long storeProdId;
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
+    @ApiModelProperty(value = "档口名称")
+    private String storeName;
     @ApiModelProperty(value = "商品货号")
     private String prodArtNum;
     @ApiModelProperty(value = "排序")
