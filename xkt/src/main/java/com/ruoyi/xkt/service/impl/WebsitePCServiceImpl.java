@@ -434,6 +434,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
     /**
      * PC 搜索结果广告列表。
      * 即使是会员 也不返回会员标识，这样布局更好看
+     *
      * @return
      */
     @Override
@@ -1420,17 +1421,15 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         List<StoreProdViewDTO> storeProdViewList = this.storeProdMapper.getStoreProdViewAttr(storeProdIdList,
                 java.sql.Date.valueOf(LocalDate.now().minusMonths(2)), java.sql.Date.valueOf(LocalDate.now()));
         Map<Long, StoreProdViewDTO> viewMap = storeProdViewList.stream().collect(Collectors.toMap(StoreProdViewDTO::getStoreProdId, Function.identity()));
-        // 档口标签
-        List<DailyStoreTag> storeTagList = this.dailyStoreTagMapper.selectList(new LambdaQueryWrapper<DailyStoreTag>()
-                .eq(DailyStoreTag::getDelFlag, Constants.UNDELETED).in(DailyStoreTag::getStoreId, storeList.stream().map(Store::getId).collect(Collectors.toList())));
-        Map<Long, List<String>> storeTagMap = storeTagList.stream().collect(Collectors
-                .groupingBy(DailyStoreTag::getStoreId, Collectors.collectingAndThen(Collectors.toList(), list -> list.stream()
-                        .sorted(Comparator.comparing(DailyStoreTag::getType)).map(DailyStoreTag::getTag).collect(Collectors.toList()))));
+        // 商品图搜次数
+        List<StoreProductStatistics> prodStatsList = prodStatsMapper.selectList(new LambdaQueryWrapper<StoreProductStatistics>()
+                .eq(StoreProductStatistics::getDelFlag, Constants.UNDELETED).in(StoreProductStatistics::getStoreProdId, storeProdIdList));
+        Map<Long, StoreProductStatistics> prodStatsMap = prodStatsList.stream().collect(Collectors.toMap(StoreProductStatistics::getStoreProdId, Function.identity()));
         List<AdvertRound> launchingList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.LAUNCHING.getValue()))
                 .filter(x -> Objects.equals(x.getBiddingStatus(), AdBiddingStatus.BIDDING_SUCCESS.getValue())).collect(Collectors.toList());
         List<AdvertRound> expiredList = oneMonthList.stream().filter(x -> Objects.equals(x.getLaunchStatus(), AdLaunchStatus.EXPIRED.getValue())).collect(Collectors.toList());
         // 从正在播放的图搜热款广告或者历史广告中筛选10条
-        picSearchList = getPicSearchAdvertList(CollectionUtils.isEmpty(launchingList) ? expiredList : launchingList, viewMap, storeTagMap);
+        picSearchList = getPicSearchAdvertList(CollectionUtils.isEmpty(launchingList) ? expiredList : launchingList, viewMap, prodStatsMap);
         picSearchList.forEach(x -> {
             // 查询档口会员等级
             StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId());
@@ -1579,10 +1578,10 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
      * 获取以图搜款的广告
      *
      * @param picSearchList 图搜热款数据库数据
-     * @param storeTagMap   档口标签map
+     * @param prodStatsMap  图搜次数map
      * @return List<PicSearchAdvertDTO>
      */
-    private List<PicSearchAdvertDTO> getPicSearchAdvertList(List<AdvertRound> picSearchList, Map<Long, StoreProdViewDTO> viewMap, Map<Long, List<String>> storeTagMap) {
+    private List<PicSearchAdvertDTO> getPicSearchAdvertList(List<AdvertRound> picSearchList, Map<Long, StoreProdViewDTO> viewMap, Map<Long, StoreProductStatistics> prodStatsMap) {
         return picSearchList.stream().limit(10).map(advertRound -> {
             final Long storeProdId = Long.valueOf(advertRound.getProdIdStr());
             StoreProdViewDTO viewDTO = viewMap.get(storeProdId);
@@ -1593,15 +1592,14 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
             }};
             CollectionUtils.addAll(prodTagList, ObjectUtils.isNotEmpty(viewDTO) && StringUtils.isNotBlank(viewDTO.getTagStr())
                     ? StrUtil.split(viewDTO.getTagStr(), ",") : new ArrayList<>());
-            return new PicSearchAdvertDTO().setImgSearchCount(ObjectUtils.isNotEmpty(viewDTO) && ObjectUtils.isNotEmpty(viewDTO.getImgSearchCount())
-                            ? viewDTO.getImgSearchCount() : (long) (new Random().nextInt(191) + 10))
+            return new PicSearchAdvertDTO()
+                    .setImgSearchCount(prodStatsMap.containsKey(storeProdId) ? prodStatsMap.get(storeProdId).getImgSearchCount() : null)
                     .setSameProdCount(results.size()).setStoreProdId(storeProdId).setStoreId(advertRound.getStoreId()).setTags(prodTagList)
                     .setStoreName(ObjectUtils.isNotEmpty(viewDTO) ? viewDTO.getStoreName() : "")
                     .setPrice(ObjectUtils.isNotEmpty(viewDTO) ? viewDTO.getPrice() : null)
                     .setProdArtNum(ObjectUtils.isNotEmpty(viewDTO) ? viewDTO.getProdArtNum() : "")
                     .setMainPicUrl(ObjectUtils.isNotEmpty(viewDTO) ? viewDTO.getMainPicUrl() : "")
                     .setProdTitle(ObjectUtils.isNotEmpty(viewDTO) ? viewDTO.getProdTitle() : "");
-//                    .setStoreTagList(CollectionUtils.isNotEmpty(storeTagMap.get(advertRound.getStoreId())) ? storeTagMap.get(advertRound.getStoreId()) : null);
         }).collect(Collectors.toList());
     }
 
