@@ -85,6 +85,8 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
     @Autowired
     private IFinanceBillService financeBillService;
     @Autowired
+    private IShoppingCartService shoppingCartService;
+    @Autowired
     private List<PaymentManager> paymentManagers;
     @Autowired
     private Kuaidi100Client kuaidi100Client;
@@ -105,6 +107,8 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         Map<Long, StoreProductColorSize> spcsMap = detailCheckRtn.getSpcsMap();
         Map<Long, StoreProduct> spMap = detailCheckRtn.getSpMap();
         Map<Long, StoreColor> scMap = detailCheckRtn.getScMap();
+        //清空购物车
+        spMap.keySet().forEach(spId -> shoppingCartService.removeShoppingCart(spId, orderUserId));
         //快递费配置
         ExpressFeeConfig expressFeeConfig = expressService.getExpressFeeConfig(expressId,
                 storeOrderAddDTO.getDestinationProvinceCode(), storeOrderAddDTO.getDestinationCityCode(),
