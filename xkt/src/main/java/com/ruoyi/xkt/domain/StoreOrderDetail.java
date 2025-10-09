@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * 代发订单明细
@@ -114,6 +115,10 @@ public class StoreOrderDetail extends SimpleEntity {
      * 退货拒绝原因
      */
     private String refundRejectReason;
+    /**
+     * 发货完成时间
+     */
+    private Date deliveryOverTime;
     /**
      * 版本号
      */
