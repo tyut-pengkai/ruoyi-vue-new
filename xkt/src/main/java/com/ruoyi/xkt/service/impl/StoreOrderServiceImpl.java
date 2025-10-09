@@ -856,6 +856,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         for (StoreOrderDetail orderDetail : orderDetails) {
             //明细->已发货
             orderDetail.setDetailStatus(EOrderStatus.SHIPPED.getValue());
+            orderDetail.setDeliveryOverTime(new Date());
             int orderDetailSuccess = storeOrderDetailMapper.updateById(prepareUpdate(orderDetail));
             if (orderDetailSuccess == 0) {
                 throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
@@ -938,6 +939,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             }
             //明细->已发货
             orderDetail.setDetailStatus(EOrderStatus.SHIPPED.getValue());
+            orderDetail.setDeliveryOverTime(new Date());
             orderDetail.setExpressId(expressId);
             orderDetail.setExpressType(EExpressType.STORE.getValue());
             orderDetail.setExpressStatus(EExpressStatus.COMPLETED.getValue());

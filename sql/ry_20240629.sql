@@ -2555,6 +2555,9 @@ CREATE TABLE `store_order_detail`
     KEY                        `idx_eid_ewno` (`express_id`,`express_waybill_no`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='代发订单明细';
 
+ALTER TABLE `store_order_detail`
+ADD COLUMN `delivery_over_time` datetime NULL COMMENT '发货完成时间' AFTER `refund_reject_reason`;
+
 DROP TABLE IF EXISTS `store_order_operation_record`;
 CREATE TABLE `store_order_operation_record`
 (
