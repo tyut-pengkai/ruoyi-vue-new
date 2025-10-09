@@ -4,8 +4,5 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.xkt.mapper.QuickFunctionMapper">
 
-    <update id="updateDelFlagByRoleIdAndBizId" parameterType="Long">
-        UPDATE quick_function SET del_flag = 2 WHERE role_id = #{roleId} AND biz_id = #{bizId}
-    </update>
 
 </mapper>

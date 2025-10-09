@@ -1,8 +1,7 @@
 package com.ruoyi.xkt.service;
 
-import com.ruoyi.xkt.dto.quickFunction.QuickFuncDTO;
-
-import java.util.List;
+import com.ruoyi.xkt.dto.quickFunction.QuickFuncResDTO;
+import com.ruoyi.xkt.dto.quickFunction.QuickFuncUpdateDTO;
 
 /**
  * 档口快捷功能Service接口
@@ -11,21 +10,20 @@ import java.util.List;
  * @date 2025-03-26
  */
 public interface IQuickFunctionService {
+
     /**
      * 获取当前绑定的快捷功能
      *
-     * @param roleId 当前角色ID
-     * @param bizId  bizId
      * @return List<StoreQuickFuncDTO.DetailDTO>
      */
-    List<QuickFuncDTO.DetailDTO> getCheckedMenuList(Long roleId, Long bizId);
+    QuickFuncResDTO getCheckedMenuList();
 
     /**
      * 更新绑定的快捷功能
      *
-     * @param storeQuickFuncDTO 绑定快捷功能的DTO
+     * @param updateDTO 绑定快捷功能的DTO
      * @return
      */
-    void updateCheckedList(QuickFuncDTO storeQuickFuncDTO);
+    Integer update(QuickFuncUpdateDTO updateDTO);
 
 }

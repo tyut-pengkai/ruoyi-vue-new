@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 /**
  * @author liujiang
  * @version v1.0
@@ -18,17 +20,18 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor
-public class StoreQuickFuncVO {
+public class QuickFuncResVO {
 
-    @ApiModelProperty(value = "菜单名称")
-    private String menuName;
-    @ApiModelProperty(value = "显示顺序")
-    private Integer orderNum;
-    @ApiModelProperty(value = "路由地址")
-    private String path;
-    @ApiModelProperty(value = "组件路径")
-    private String component;
-    @ApiModelProperty(value = "菜单图标")
-    private String icon;
+    @ApiModelProperty(value = "菜单id列表")
+    private List<QFMenuVO> menuList;
+
+    @Data
+    @ApiModel
+    public static class QFMenuVO {
+        @ApiModelProperty(value = "菜单ID")
+        private Long menuId;
+        @ApiModelProperty(value = "排序")
+        private Integer orderNum;
+    }
 
 }

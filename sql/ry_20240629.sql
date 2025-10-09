@@ -2299,12 +2299,9 @@ DROP TABLE IF EXISTS `quick_function`;
 CREATE TABLE `quick_function`
 (
     `id`          bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '档口快捷功能ID',
-    `biz_id`      bigint UNSIGNED NOT NULL COMMENT 'store.id or user.id',
-    `role_id`     bigint UNSIGNED NOT NULL COMMENT '角色ID',
-    `menu_name`   varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '快捷功能名称',
-    `icon`        varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '快捷功能图标',
-    `path`        varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '快捷功能路径',
-    `order_num`   int UNSIGNED NULL DEFAULT NULL COMMENT '排序',
+    `user_id`     bigint UNSIGNED NOT NULL COMMENT 'user.id',
+    `menu_id`     bigint UNSIGNED NOT NULL COMMENT '菜单id',
+    `order_num`   int UNSIGNED NOT NULL COMMENT '排序',
     `version`     bigint UNSIGNED NOT NULL COMMENT '版本号',
     `del_flag`    char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '删除标志（0代表存在 2代表删除）',
     `create_by`   varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '创建者',

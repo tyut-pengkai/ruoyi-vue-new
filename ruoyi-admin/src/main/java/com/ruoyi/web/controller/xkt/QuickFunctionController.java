@@ -5,11 +5,10 @@ import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.system.domain.vo.menu.SysMenuDTO;
 import com.ruoyi.system.service.ISysMenuService;
-import com.ruoyi.web.controller.xkt.vo.quickFunction.QuickFuncVO;
-import com.ruoyi.web.controller.xkt.vo.quickFunction.StoreQuickFuncVO;
-import com.ruoyi.xkt.dto.quickFunction.QuickFuncDTO;
+import com.ruoyi.web.controller.xkt.vo.quickFunction.QuickFuncResVO;
+import com.ruoyi.web.controller.xkt.vo.quickFunction.QuickFuncUpdateVO;
+import com.ruoyi.xkt.dto.quickFunction.QuickFuncUpdateDTO;
 import com.ruoyi.xkt.service.IQuickFunctionService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -17,8 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * 快捷功能Controller
@@ -37,36 +34,20 @@ public class QuickFunctionController extends XktBaseController {
 
     private static final String MENU_TYPE_C = "C";
 
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,seller,store')")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,seller,agent,store')")
     @ApiOperation(value = "档口或电商卖家选择的快捷功能", httpMethod = "GET", response = R.class)
-    @GetMapping("/selected/{roleId}/{bizId}")
-    public R<List<StoreQuickFuncVO>> getSelectedList(@PathVariable("roleId") Long roleId, @PathVariable("bizId") Long bizId) {
+    @GetMapping("/selected")
+    public R<QuickFuncResVO> getSelectedList() {
         // 找到当前所有的快捷菜单
-        List<QuickFuncDTO.DetailDTO> checkedList = quickFuncService.getCheckedMenuList(roleId, bizId);
-        return R.ok(BeanUtil.copyToList(checkedList, StoreQuickFuncVO.class));
+        return R.ok(BeanUtil.toBean(quickFuncService.getCheckedMenuList(), QuickFuncResVO.class));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,seller,store')")
-    @ApiOperation(value = "常用功能 点击 设置", httpMethod = "GET", response = R.class)
-    @GetMapping("/menus/{roleId}/{bizId}")
-    public R<QuickFuncVO> getMenuList(@PathVariable("roleId") Long roleId, @PathVariable("bizId") Long bizId) {
-        // 找到当前所有的快捷菜单
-        List<QuickFuncDTO.DetailDTO> checkedList = quickFuncService.getCheckedMenuList(roleId, bizId);
-        // 找到系统所有的二级菜单
-        List<SysMenuDTO> sysMenuList = menuService.selectMenuListByRoleIdAndMenuType(roleId, MENU_TYPE_C);
-        return R.ok(QuickFuncVO.builder().bizId(bizId).roleId(roleId)
-                .checkedList(BeanUtil.copyToList(checkedList, QuickFuncVO.QuickFuncDetailVO.class))
-                .menuList(BeanUtil.copyToList(sysMenuList, QuickFuncVO.QuickFuncDetailVO.class))
-                .build());
-    }
-
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,seller,store')")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,seller,agent,store')")
     @ApiOperation(value = "修改快捷功能", httpMethod = "PUT", response = R.class)
     @Log(title = "修改快捷功能", businessType = BusinessType.UPDATE)
     @PutMapping("/checked")
-    public R editCheckedList(@Validated @RequestBody QuickFuncVO quickFuncVO) {
-        quickFuncService.updateCheckedList(BeanUtil.toBean(quickFuncVO, QuickFuncDTO.class));
-        return success();
+    public R<Integer> update(@Validated @RequestBody QuickFuncUpdateVO quickFuncVO) {
+        return R.ok(quickFuncService.update(BeanUtil.toBean(quickFuncVO, QuickFuncUpdateDTO.class)));
     }
 
 }
