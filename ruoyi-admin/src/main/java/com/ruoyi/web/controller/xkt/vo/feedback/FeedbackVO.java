@@ -6,7 +6,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 /**
@@ -20,14 +19,12 @@ import javax.validation.constraints.Size;
 public class FeedbackVO {
 
     @ApiModelProperty(value = "用户反馈内容", required = true)
-    @Size(max = 200, message = "反馈内容不能超过180个字!")
+    @Size(max = 180, message = "反馈内容不能超过180个字!")
     @NotBlank(message = "反馈内容不能为空!")
     @Xss
     private String content;
     @ApiModelProperty(value = "用户反馈联系方式", required = true)
     @Size(max = 20, message = "联系方式不能超过20个字!")
-    @NotBlank(message = "联系方式不能为空!")
-    @Pattern(regexp = "^1[3-9]\\d{9}$", message = "联系电话格式不正确，请输入有效的中国大陆手机号")
     @Xss
     private String contact;
 

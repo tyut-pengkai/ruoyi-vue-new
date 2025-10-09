@@ -316,7 +316,7 @@ CREATE TABLE `feedback`
 (
     `id`          bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
     `content`     varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '反馈内容',
-    `contact`     varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci  NOT NULL COMMENT '联系方式',
+    `contact`     varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci COMMENT '联系方式',
     `version`     bigint UNSIGNED NOT NULL COMMENT '版本号',
     `del_flag`    char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '删除标志（0代表存在 2代表删除）',
     `create_by`   varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '创建者',
