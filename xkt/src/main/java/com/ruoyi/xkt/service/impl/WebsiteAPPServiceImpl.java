@@ -348,13 +348,16 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         Long userId = SecurityUtils.getUserIdSafe();
         if (ObjectUtils.isNotEmpty(userId)) {
             List<String> storeProdIdList = realDataList.stream().map(APPSearchDTO::getStoreProdId).filter(StringUtils::isNotBlank).collect(Collectors.toList());
-            CollectionUtils.addAll(storeProdIdList, redisList.stream().map(APPSearchDTO::getStoreProdId).collect(Collectors.toList()));
-            List<UserFavorites> userFavList = this.userFavMapper.selectList(new LambdaQueryWrapper<UserFavorites>()
-                    .eq(UserFavorites::getUserId, userId).in(UserFavorites::getStoreProdId, storeProdIdList));
+            CollectionUtils.addAll(storeProdIdList, CollectionUtils.isEmpty(redisList)
+                    ? new ArrayList<>() : redisList.stream().map(APPSearchDTO::getStoreProdId).collect(Collectors.toList()));
+            List<UserFavorites> userFavList = this.userFavMapper.selectList(new LambdaQueryWrapper<UserFavorites>().eq(UserFavorites::getUserId, userId)
+                    .in(UserFavorites::getStoreProdId, storeProdIdList).eq(UserFavorites::getDelFlag, Constants.UNDELETED));
             Map<String, Long> userFavMap = CollectionUtils.isEmpty(userFavList) ? new HashMap<>()
                     : userFavList.stream().collect(Collectors.toMap(x -> x.getStoreProdId().toString(), UserFavorites::getId));
             realDataList.forEach(x -> x.setCollectProd(userFavMap.containsKey(x.getStoreProdId())));
-            redisList.forEach(x -> x.setCollectProd(userFavMap.containsKey(x.getStoreProdId())));
+            if (CollectionUtils.isNotEmpty(redisList)) {
+                redisList.forEach(x -> x.setCollectProd(userFavMap.containsKey(x.getStoreProdId())));
+            }
         }
         // APP 只有第一页 有数据 其它页暂时没有广告
         if (searchDTO.getPageNum() > 1) {
@@ -377,7 +380,8 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                 Map<Long, StoreProdPriceAndMainPicAndTagDTO> attrMap = this.getStoreProdAttrMap(storeProdIdList);
                 List<APPSearchDTO> newProdList = advertRoundList.stream().filter(x -> StringUtils.isNotBlank(x.getProdIdStr())).map(x -> {
                     StoreProdPriceAndMainPicAndTagDTO attrDto = attrMap.get(Long.parseLong(x.getProdIdStr()));
-                    return new APPSearchDTO().setAdvert(Boolean.TRUE).setStoreId(x.getStoreId().toString()).setStoreProdId(x.getProdIdStr())
+                    return new APPSearchDTO().setAdvert(Boolean.TRUE).setStoreId(x.getStoreId().toString())
+                            .setStoreProdId(x.getProdIdStr()).setCollectProd(Boolean.FALSE)
                             .setProdTitle(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getProdTitle() : "")
                             .setHasVideo(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getHasVideo() : Boolean.FALSE)
                             .setTags(StringUtils.isNotBlank(attrDto.getTagStr()) ? StrUtil.split(attrDto.getTagStr(), ",") : null)
