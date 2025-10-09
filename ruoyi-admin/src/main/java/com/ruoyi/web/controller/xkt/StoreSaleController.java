@@ -57,16 +57,16 @@ public class StoreSaleController extends XktBaseController {
     @ApiOperation(value = "新增档口销售出库", httpMethod = "POST", response = R.class)
     @Log(title = "新增档口销售出库", businessType = BusinessType.INSERT)
     @PostMapping
-    public R<Integer> add(@Validated @RequestBody StoreSaleVO storeSaleVO) {
-        return R.ok(storeSaleService.insertStoreSale(BeanUtil.toBean(storeSaleVO, StoreSaleDTO.class)));
+    public R<StoreSaleSimpleResVO> add(@Validated @RequestBody StoreSaleVO storeSaleVO) {
+        return R.ok(BeanUtil.toBean(storeSaleService.insertStoreSale(BeanUtil.toBean(storeSaleVO, StoreSaleDTO.class)), StoreSaleSimpleResVO.class));
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @Log(title = "返单后，更新档口销售出库", businessType = BusinessType.UPDATE)
     @ApiOperation(value = "返单后，更新档口销售出库", httpMethod = "PUT", response = R.class)
     @PutMapping
-    public R<Integer> edit(@Validated @RequestBody StoreSaleVO storeSaleVO) {
-        return R.ok(storeSaleService.updateStoreSale(BeanUtil.toBean(storeSaleVO, StoreSaleDTO.class)));
+    public R<StoreSaleSimpleResVO> edit(@Validated @RequestBody StoreSaleVO storeSaleVO) {
+        return R.ok(BeanUtil.toBean(storeSaleService.updateStoreSale(BeanUtil.toBean(storeSaleVO, StoreSaleDTO.class)), StoreSaleSimpleResVO.class));
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")

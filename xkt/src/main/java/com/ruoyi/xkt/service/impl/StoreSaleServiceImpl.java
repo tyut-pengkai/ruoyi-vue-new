@@ -247,7 +247,7 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
      */
     @Override
     @Transactional
-    public int insertStoreSale(StoreSaleDTO storeSaleDTO) {
+    public StoreSaleSimpleResDTO insertStoreSale(StoreSaleDTO storeSaleDTO) {
         // 用户是否为档口管理者或子账户
         if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(storeSaleDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
@@ -271,7 +271,7 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
         // 属性赋值
         storeSale.setCode(code).setVoucherDate(voucherDate).setQuantity(quantity).setAmount(amount).setRoundOff(ObjectUtils.defaultIfNull(storeSaleDTO.getRoundOff(), BigDecimal.ZERO))
                 .setSaleQuantity(saleQuantity).setRefundQuantity(refundQuantity).setOperatorId(loginUser.getUserId()).setOperatorName(loginUser.getUsername()).setCreateBy(loginUser.getUsername());
-        int count = storeSaleMapper.insert(storeSale);
+        storeSaleMapper.insert(storeSale);
         // 处理订单明细
         List<StoreSaleDetail> saleDetailList = storeSaleDTO.getDetailList().stream().map(x -> {
             StoreSaleDetail saleDetail = BeanUtil.toBean(x, StoreSaleDetail.class).setStoreSaleId(storeSale.getId()).setStoreId(storeSale.getStoreId())
@@ -287,7 +287,7 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
                                 .mapping(StoreSaleDTO.SaleDetailVO::getQuantity, Collectors.reducing(0, Integer::sum)))));
         // 组装库存调整入参调整库存
         this.storeProdStockService.updateStock(storeSale.getStoreId(), this.getStockDiffList(saleCountMap, -1), 1);
-        return count;
+        return BeanUtil.toBean(storeSale, StoreSaleSimpleResDTO.class);
     }
 
 
@@ -299,7 +299,7 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
      */
     @Override
     @Transactional
-    public int updateStoreSale(StoreSaleDTO storeSaleDTO) {
+    public StoreSaleSimpleResDTO updateStoreSale(StoreSaleDTO storeSaleDTO) {
         Optional.ofNullable(storeSaleDTO.getStoreSaleId()).orElseThrow(() -> new ServiceException("storeSaleId不能为空!", HttpStatus.ERROR));
         // 用户是否为档口管理者或子账户
         if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(storeSaleDTO.getStoreId())) {
@@ -344,7 +344,7 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
         BigDecimal amount = storeSaleDTO.getDetailList().stream().map(x -> ObjectUtils.defaultIfNull(x.getAmount(), BigDecimal.ZERO)).reduce(BigDecimal.ZERO, BigDecimal::add);
         // 扣除掉抹零金额
         amount = amount.subtract(ObjectUtils.defaultIfNull(storeSaleDTO.getRoundOff(), BigDecimal.ZERO));
-        int count = this.storeSaleMapper.updateById(storeSale.setQuantity(quantity).setAmount(amount).setSaleQuantity(saleQuantity).setRefundQuantity(refundQuantity).setVoucherDate(voucherDate)
+        this.storeSaleMapper.updateById(storeSale.setQuantity(quantity).setAmount(amount).setSaleQuantity(saleQuantity).setRefundQuantity(refundQuantity).setVoucherDate(voucherDate)
                 .setOperatorId(loginUser.getUserId()).setOperatorName(loginUser.getUsername()).setRoundOff(ObjectUtils.defaultIfNull(storeSaleDTO.getRoundOff(), BigDecimal.ZERO)));
         // 先将所有明细置为无效，再新增
         this.storeSaleDetailMapper.updateById(saleDetailList.stream().peek(x -> x.setDelFlag(Constants.DELETED)).collect(Collectors.toList()));
@@ -365,7 +365,7 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
                                 .mapping(StoreSaleDetail::getQuantity, Collectors.reducing(0, Integer::sum)))));
         // 调整库存
         this.storeProdStockService.updateStock(storeSale.getStoreId(), this.getStockDiffList(saleCountMap, 1), 1);
-        return count;
+        return BeanUtil.toBean(storeSale, StoreSaleSimpleResDTO.class);
     }
 
     /**
@@ -396,9 +396,9 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
                 .groupingBy(StoreProductColorSize::getStoreProdId, Collectors
                         .toMap(StoreProductColorSize::getSize, StoreProductColorSize::getStandard, (v1, v2) -> v2)));
         return storeSaleDTO.setDetailList(saleDetailList.stream().map(x -> {
-                    Map<Integer, Integer> tempSizeMap = sizeMap.getOrDefault(x.getStoreProdId(), new HashMap<>());
-                    return BeanUtil.toBean(x, StoreSaleResDTO.SSDetailDTO.class).setStandard(tempSizeMap.get(x.getSize()));
-                }).collect(Collectors.toList()));
+            Map<Integer, Integer> tempSizeMap = sizeMap.getOrDefault(x.getStoreProdId(), new HashMap<>());
+            return BeanUtil.toBean(x, StoreSaleResDTO.SSDetailDTO.class).setStandard(tempSizeMap.get(x.getSize()));
+        }).collect(Collectors.toList()));
     }
 
     /**

@@ -28,7 +28,7 @@ public interface IStoreSaleService {
      * @param storeSaleDTO 档口销售出库
      * @return 结果
      */
-    int insertStoreSale(StoreSaleDTO storeSaleDTO);
+    StoreSaleSimpleResDTO insertStoreSale(StoreSaleDTO storeSaleDTO);
 
     /**
      * 修改档口销售出库
@@ -36,7 +36,7 @@ public interface IStoreSaleService {
      * @param storeSaleDTO 档口销售出库
      * @return 结果
      */
-    int updateStoreSale(StoreSaleDTO storeSaleDTO);
+    StoreSaleSimpleResDTO updateStoreSale(StoreSaleDTO storeSaleDTO);
 
     /**
      * 删除档口销售出库信息
