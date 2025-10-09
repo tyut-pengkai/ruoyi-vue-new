@@ -331,6 +331,35 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
     }
 
     /**
+     * 下单后，删除用户进货车商品
+     *
+     * @param storeProdId 档口商品ID
+     * @param userId      用户ID
+     * @return Integer
+     */
+    @Override
+    @Transactional
+    public Integer removeShoppingCart(Long storeProdId, Long userId) {
+        // 用户进货车是否存在该商品
+        ShoppingCart shoppingCart = this.shopCartMapper.selectOne(new LambdaQueryWrapper<ShoppingCart>()
+                .eq(ShoppingCart::getStoreProdId, storeProdId).eq(ShoppingCart::getUserId, userId)
+                .eq(ShoppingCart::getDelFlag, Constants.UNDELETED));
+        if (ObjectUtils.isEmpty(shoppingCart)) {
+            return 0;
+        }
+        shoppingCart.setDelFlag(DELETED);
+        int count = this.shopCartMapper.updateById(shoppingCart);
+        // 找到进货车明细
+        List<ShoppingCartDetail> detailList = this.shopCartDetailMapper.selectList(new LambdaQueryWrapper<ShoppingCartDetail>()
+                .eq(ShoppingCartDetail::getShoppingCartId, shoppingCart.getId()).eq(ShoppingCartDetail::getDelFlag, Constants.UNDELETED));
+        if (CollectionUtils.isNotEmpty(detailList)) {
+            detailList.forEach(detail -> detail.setDelFlag(DELETED));
+            this.shopCartDetailMapper.updateById(detailList);
+        }
+        return count;
+    }
+
+    /**
      * 获取档口商品颜色尺码的库存
      *
      * @param stockList            库存数量

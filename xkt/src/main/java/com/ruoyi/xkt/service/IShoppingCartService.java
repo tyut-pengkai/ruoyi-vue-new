@@ -54,7 +54,7 @@ public interface IShoppingCartService {
     Integer delete(ShopCartDeleteDTO deleteDTO);
 
     /**
-     * 根据storeProdid获取进货车详情
+     * 根据storeProdId获取进货车详情
      *
      * @param listDTO 档口商品ID列表
      * @return ShoppingCartDTO
@@ -75,4 +75,14 @@ public interface IShoppingCartService {
      * @return Integer
      */
     Integer updateDetailQuantity(ShopCartDetailQuantityUpdateDTO updateQuantityDTO);
+
+    /**
+     * 下单后，删除用户进货车商品
+     *
+     * @param storeProdId 档口商品ID
+     * @param userId      用户ID
+     * @return Integer
+     */
+    Integer removeShoppingCart(Long storeProdId, Long userId);
+
 }

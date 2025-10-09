@@ -32,8 +32,6 @@ public class QuickFunctionController extends XktBaseController {
     final IQuickFunctionService quickFuncService;
     final ISysMenuService menuService;
 
-    private static final String MENU_TYPE_C = "C";
-
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,seller,agent,store')")
     @ApiOperation(value = "档口或电商卖家选择的快捷功能", httpMethod = "GET", response = R.class)
     @GetMapping("/selected")
