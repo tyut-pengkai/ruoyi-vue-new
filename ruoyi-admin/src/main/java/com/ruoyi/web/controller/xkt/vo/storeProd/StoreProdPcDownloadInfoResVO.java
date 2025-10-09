@@ -28,6 +28,8 @@ public class StoreProdPcDownloadInfoResVO {
 
     @Data
     public static class SPPDIFileVO {
+        @ApiModelProperty(value = "文件id")
+        private Long fileId;
         @ApiModelProperty(value = "文件名称")
         private String fileName;
         @ApiModelProperty(value = "文件路径")

@@ -29,6 +29,8 @@ public class StoreProdPcDownloadInfoResDTO {
 
     @Data
     public static class SPPDIFileDTO {
+        @ApiModelProperty(value = "文件id")
+        private Long fileId;
         @ApiModelProperty(value = "文件名称")
         private String fileName;
         @ApiModelProperty(value = "文件路径")

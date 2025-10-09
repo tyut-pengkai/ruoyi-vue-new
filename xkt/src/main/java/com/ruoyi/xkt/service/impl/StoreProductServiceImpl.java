@@ -19,7 +19,6 @@ import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
-import com.ruoyi.common.core.domain.XktBaseEntity;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
@@ -637,33 +636,6 @@ public class StoreProductServiceImpl implements IStoreProductService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<PicPackSimpleDTO> prepareGetPicPackDownloadUrl(Long storeProductId) {
-        Assert.notNull(storeProductId);
-        List<StoreProductFile> productFiles = storeProdFileMapper.selectList(Wrappers.lambdaQuery(StoreProductFile.class)
-                .eq(StoreProductFile::getStoreProdId, storeProductId)
-                .in(StoreProductFile::getFileType, FileType.picPackValues())
-                .eq(XktBaseEntity::getDelFlag, UNDELETED));
-        if (CollUtil.isEmpty(productFiles)) {
-            return ListUtil.empty();
-        }
-        // 商品下载量+1
-        redisCache.valueIncr(CacheConstants.PRODUCT_STATISTICS_DOWNLOAD_COUNT, storeProductId);
-        List<Long> fileIds = productFiles.stream().map(StoreProductFile::getFileId).collect(Collectors.toList());
-        Map<Long, SysFile> fileMaps = fileMapper.selectByIds(fileIds)
-                .stream()
-                .collect(Collectors.toMap(SysFile::getId, Function.identity()));
-        return productFiles.stream()
-                .map(o -> {
-                    SysFile sysFile = fileMaps.get(o.getFileId());
-                    PicPackSimpleDTO dto = BeanUtil.toBean(sysFile, PicPackSimpleDTO.class);
-                    dto.setFileId(sysFile.getId());
-                    dto.setFileType(o.getFileType());
-                    return dto;
-                }).collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
-    @Override
     public PicPackInfoDTO getPicPackDownloadUrl(PicPackReqDTO picPackReqDTO) {
         Assert.notNull(picPackReqDTO.getUserId());
         String reqCacheKey = CacheConstants.PIC_PACK_USER_REQ_COUNT_CACHE + picPackReqDTO.getUserId();
@@ -739,6 +711,8 @@ public class StoreProductServiceImpl implements IStoreProductService {
     @Override
     @Transactional(readOnly = true)
     public StoreProdPcDownloadInfoResDTO getPcDownloadInfo(Long storeProdId) {
+        // 商品下载量+1
+        redisCache.valueIncr(CacheConstants.PRODUCT_STATISTICS_DOWNLOAD_COUNT, storeProdId);
         StoreProdPcDownloadInfoResDTO downloadInfo = this.storeProdMapper.selectDownloadProdInfo(storeProdId);
         // 获取下载图包
         return downloadInfo.setFileList(this.storeProdFileMapper.selectDownloadFileList(storeProdId));

@@ -172,6 +172,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectDownloadFileList">
         SELECT
+            sf.id AS fileId,
             sf.file_name,
             sf.file_url,
             sf.file_size,

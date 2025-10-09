@@ -150,13 +150,6 @@ public class StoreProductController extends XktBaseController {
         return R.ok(BeanUtil.toBean(storeProdService.getPcDownloadInfo(storeProdId), StoreProdPcDownloadInfoResVO.class));
     }
 
-    @ApiOperation(value = "获取商品图包列表", httpMethod = "GET", response = R.class)
-    @GetMapping(value = "/pic-pack/{storeProdId}")
-    public R<List<PicPackSimpleVO>> listPickPack(@PathVariable("storeProdId") Long storeProdId) {
-        List<PicPackSimpleDTO> dtoList = storeProdService.prepareGetPicPackDownloadUrl(storeProdId);
-        return success(BeanUtil.copyToList(dtoList, PicPackSimpleVO.class));
-    }
-
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,seller,agent')")
     @Log(title = "获取商品图包下载链接", businessType = BusinessType.OTHER)
     @ApiOperation(value = "获取商品图包下载链接", httpMethod = "POST", response = R.class)
@@ -167,8 +160,6 @@ public class StoreProductController extends XktBaseController {
         PicPackInfoDTO infoDTO = storeProdService.getPicPackDownloadUrl(reqDTO);
         return success(BeanUtil.toBean(infoDTO, PicPackInfoVO.class));
     }
-
-
 
 
 }
