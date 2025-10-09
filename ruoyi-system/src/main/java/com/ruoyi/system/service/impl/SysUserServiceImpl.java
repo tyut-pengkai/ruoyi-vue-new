@@ -90,6 +90,7 @@ public class SysUserServiceImpl implements ISysUserService {
     @Override
     public Long createUser(UserInfoEdit userEdit) {
         checkRoles(userEdit.getRoleIds());
+        checkSupperAdmin(userEdit.getUserId(), userEdit.getRoleIds());
         // 创建用户
         SysUser user = BeanUtil.toBean(userEdit, SysUser.class);
         if (StrUtil.isNotEmpty(userEdit.getPassword())) {
@@ -109,6 +110,7 @@ public class SysUserServiceImpl implements ISysUserService {
     @Override
     public Long updateUser(UserInfoEdit userEdit) {
         checkRoles(userEdit.getRoleIds());
+        checkSupperAdmin(userEdit.getUserId(), userEdit.getRoleIds());
         // 修改用户信息
         Assert.notNull(userEdit.getUserId());
         SysUser user = userMapper.selectById(userEdit.getUserId());
@@ -536,6 +538,16 @@ public class SysUserServiceImpl implements ISysUserService {
         }
         if ((sellerCount + otherCount) > 1) {
             throw new ServiceException("用户只能有一个系统角色");
+        }
+    }
+
+    private void checkSupperAdmin(Long userId, List<Long> roleIds) {
+        if (Long.valueOf(1).equals(userId)) {
+            Assert.isTrue(CollUtil.emptyIfNull(roleIds).contains(ESystemRole.SUPER_ADMIN.getId()),
+                    "不能移除超级管理员");
+        }
+        if (CollUtil.emptyIfNull(roleIds).contains(ESystemRole.SUPER_ADMIN.getId())) {
+            Assert.isTrue(Long.valueOf(1).equals(userId), "不能新增超级管理员");
         }
     }
 
