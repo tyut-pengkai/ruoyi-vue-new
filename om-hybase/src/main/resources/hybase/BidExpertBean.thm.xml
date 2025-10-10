@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<trshybase-mapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.huisituo.com/dms/trshybase-mapping"
+                   xsi:schemaLocation="http://www.huisituo.com/dms/trshybase-mapping trshybase-mapping.xsd">
+
+    <class id="BidExpertBean.all" name="com.trs.common.hybase.domain.BidExpertBean" table="tbyx_bid_expert">
+        <property name="rid" column="RID"/>
+        <property name="pubTime" column="PUBTIME"/>
+        <property name="projectNo" column="PROJECT_NO"/>
+        <property name="projectName" column="PROJECT_NAME"/>
+        <property name="industry" column="INDUSTRY"/>
+        <property name="category" column="CATEGORY"/>
+        <property name="buyer" column="BUYER"/>
+        <property name="buyerProvince" column="BUYER_PROVINCE"/>
+        <property name="buyerCity" column="BUYER_CITY"/>
+        <property name="buyerCounty" column="BUYER_COUNTY"/>
+        <property name="agent" column="AGENT"/>
+        <property name="sourceExpert" column="SOURCE_EXPERT"/>
+        <property name="expert" column="EXPERT"/>
+        <property name="sortMark" column="SORT_MARK"/>
+        <property name="isIllegal" column="IS_ILLEGAL"/>
+    </class>
+
+</trshybase-mapping>

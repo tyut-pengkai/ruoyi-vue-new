@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<trshybase-mapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.huisituo.com/dms/trshybase-mapping"
+                   xsi:schemaLocation="http://www.huisituo.com/dms/trshybase-mapping trshybase-mapping.xsd">
+
+    <class id="EnterpriseInfo.all" name="com.trs.common.hybase.domain.EnterpriseInfoBean" table="tbyx_enterprise_info">
+        <property name="id" column="id"/>
+        <property name="recId" column="rec_id"/>
+        <property name="eid" column="eid"/>
+        <property name="entName" column="ent_name"/>
+        <property name="usccCode" column="uscc_code"/>
+        <property name="regNo" column="reg_no"/>
+        <property name="nacaoCode" column="nacao_code"/>
+        <property name="entTypeCode" column="ent_type_code"/>
+        <property name="abuItem" column="abu_item"/>
+        <property name="cbuItem" column="cbu_item"/>
+        <property name="opFromDate" column="op_from_date"/>
+        <property name="opToDate" column="op_to_date"/>
+        <property name="postalCode" column="postal_code"/>
+        <property name="esDate" column="es_date"/>
+        <property name="apprDate" column="appr_date"/>
+        <property name="regOrg" column="reg_org"/>
+        <property name="entStatusCode" column="ent_status_code"/>
+        <property name="regCap" column="reg_cap"/>
+        <property name="regCapCurCode" column="reg_cap_cur_code"/>
+        <property name="opScope" column="op_scope"/>
+        <property name="opForm" column="op_form"/>
+        <property name="opScoandForm" column="op_scoand_form"/>
+        <property name="ptbusScope" column="ptbus_scope"/>
+        <property name="domAddr" column="dom_addr"/>
+        <property name="recCap" column="rec_cap"/>
+        <property name="corporationName" column="corporation_name"/>
+        <property name="corporationTitle" column="corporation_title"/>
+        <property name="canDate" column="can_date"/>
+        <property name="revDate" column="rev_date"/>
+        <property name="ancheYearDate" column="anche_year_date"/>
+        <property name="regionId" column="region_id"/>
+        <property name="nicId" column="nic_id"/>
+        <property name="lat" column="lat"/>
+        <property name="lng" column="lng"/>
+        <property name="updateTime" column="update_time"/>
+        <property name="deleteFlg" column="delete_flg"/>
+        <property name="deleteTime" column="delete_time"/>
+    </class>
+
+    <!-- 简化查询映射 -->
+    <class id="EnterpriseInfo.basic" name="com.trs.common.hybase.domain.EnterpriseInfoBean"
+           table="tbyx_enterprise_info">
+        <property name="recId" column="rec_id"/>
+        <property name="entName" column="ent_name"/>
+        <property name="usccCode" column="uscc_code"/>
+        <property name="regNo" column="reg_no"/>
+        <property name="domAddr" column="dom_addr"/>
+    </class>
+</trshybase-mapping>

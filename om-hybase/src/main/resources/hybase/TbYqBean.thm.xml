@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<trshybase-mapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.huisituo.com/dms/trshybase-mapping"
+                   xsi:schemaLocation="http://www.huisituo.com/dms/trshybase-mapping trshybase-mapping.xsd">
+    <class id="yuqing.stat" name="com.trs.common.hybase.domain.TbYqBean" table="tbyx_yuqing">
+        <property name="uuid" uuid="true"/>
+        <property name="rid" column="RID"/>
+    </class>
+
+    <class id="yuqing.all" name="com.trs.common.hybase.domain.TbYqBean" table="tbyx_yuqing">
+        <property name="uuid" uuid="true"/>
+        <property name="rid" column="RID"/>
+        <property name="urlTitle" column="URLTITLE"/>
+        <property name="abstracts" column="ABSTRACTS"/>
+        <property name="urlContent" column="URLCONTENT"/>
+        <property name="source" column="SOURCE"/>
+        <property name="urlName" column="URLNAME"/>
+        <property name="pubTime" column="PUBTIME"/>
+        <property name="loadTime" column="LOADTIME"/>
+        <property name="illegalName" column="ILLEGAL_NAME"/>
+        <property name="illegalType" column="ILLEGAL_TYPE"/>
+        <property name="illegalObject" column="ILLEGAL_OBJECT"/>
+        <property name="illegalDate" column="ILLEGAL_DATE"/>
+        <property name="introduction" column="INTRODUCTION"/>
+        <property name="reportDept" column="REPORT_DEPT"/>
+        <property name="punishAccording" column="PUNISH_ACCORDING"/>
+        <property name="punishResult" column="PUNISH_RESULT"/>
+    </class>
+</trshybase-mapping>

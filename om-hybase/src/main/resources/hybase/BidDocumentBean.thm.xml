@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<trshybase-mapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.huisituo.com/dms/trshybase-mapping"
+                   xsi:schemaLocation="http://www.huisituo.com/dms/trshybase-mapping trshybase-mapping.xsd">
+
+    <class id="BidDocumentBean.all" name="com.trs.common.hybase.domain.BidDocumentBean" table="tbyx_bid_document">
+        <property name="uuid" uuid="true"/>
+        <property name="rid" column="RID"/>
+        <property name="pubTime" column="PUBTIME"/>
+        <property name="title" column="TITLE"/>
+        <property name="projectNo" column="PROJECT_NO"/>
+        <property name="projectName" column="PROJECT_NAME"/>
+        <property name="projectAbs" column="PROJECT_ABS"/>
+        <property name="budgetAmount" column="BUDGET_AMOUNT"/>
+        <property name="industry" column="INDUSTRY"/>
+        <property name="category" column="CATEGORY"/>
+        <property name="isAccept" column="IS_ACCEPT"/>
+        <property name="bidDate" column="BID_DATE"/>
+        <property name="bidDeadlineDate" column="BID_DEADLINE_DATE"/>
+        <property name="buyer" column="BUYER"/>
+        <property name="buyerAddr" column="BUYER_ADDR"/>
+        <property name="buyerPerson" column="BUYER_PERSON"/>
+        <property name="buyerPhone" column="BUYER_PHONE"/>
+        <property name="buyerProvince" column="BUYER_PROVINCE"/>
+        <property name="buyerCity" column="BUYER_CITY"/>
+        <property name="buyerCounty" column="BUYER_COUNTY"/>
+        <property name="agent" column="AGENT"/>
+        <property name="agentAddr" column="AGENT_ADDR"/>
+        <property name="agentPerson" column="AGENT_PERSON"/>
+        <property name="agentPhone" column="AGENT_PHONE"/>
+        <property name="agentProvince" column="AGENT_PROVINCE"/>
+        <property name="agentCity" column="AGENT_CITY"/>
+        <property name="agentCounty" column="AGENT_COUNTY"/>
+        <property name="projectPeople" column="PROJECT_PEOPLE"/>
+        <property name="projectPhone" column="PROJECT_PHONE"/>
+        <property name="purchaseMethod" column="PURCHASE_METHOD"/>
+        <property name="itemName" column="ITEM_NAME"/>
+        <property name="purchaseObject" column="PURCHASE_OBJECT"/>
+        <property name="purchaseRecord" column="PURCHASE_RECORD"/>
+        <property name="supplier" column="SUPPLIER"/>
+        <property name="supplierAddr" column="SUPPLIER_ADDR"/>
+        <property name="supplierProvince" column="SUPPLIER_PROVINCE"/>
+        <property name="supplierCity" column="SUPPLIER_CITY"/>
+        <property name="supplierCounty" column="SUPPLIER_COUNTY"/>
+        <property name="goodsName" column="GOODS_NAME"/>
+        <property name="expert" column="EXPERT"/>
+        <property name="serveName" column="SERVE_NAME"/>
+        <property name="serveRange" column="SERVE_RANGE"/>
+        <property name="correctContent" column="CORRECT_CONTENT"/>
+        <property name="correctLaterContent" column="CORRECT_LATER_CONTENT"/>
+        <property name="urlName" column="URLNAME"/>
+        <property name="siteName" column="SITENAME"/>
+        <property name="content" column="CONTENT"/>
+        <property name="winBidAmount" column="WIN_BID_AMOUNT"/>
+        <property name="bidType" column="BID_TYPE"/>
+        <property name="bidTypeSmall" column="BID_TYPE_SMALL"/>
+        <property name="gbTag" column="GB_TAG"/>
+        <property name="xzTag" column="XZ_TAG"/>
+        <property name="buyerGrade" column="BUYER_GRADE"/>
+        <property name="buyerType" column="BUYER_TYPE"/>
+        <property name="sortMark" column="SORT_MARK"/>
+    </class>
+
+    <class id="BidDocumentBean.noContent" name="com.trs.common.hybase.domain.BidDocumentBean" table="tbyx_bid_document">
+        <property name="uuid" uuid="true"/>
+        <property name="rid" column="RID"/>
+        <property name="pubTime" column="PUBTIME"/>
+        <property name="title" column="TITLE"/>
+        <property name="projectNo" column="PROJECT_NO"/>
+        <property name="projectName" column="PROJECT_NAME"/>
+        <property name="projectAbs" column="PROJECT_ABS"/>
+        <property name="budgetAmount" column="BUDGET_AMOUNT"/>
+        <property name="industry" column="INDUSTRY"/>
+        <property name="category" column="CATEGORY"/>
+        <property name="isAccept" column="IS_ACCEPT"/>
+        <property name="bidDate" column="BID_DATE"/>
+        <property name="bidDeadlineDate" column="BID_DEADLINE_DATE"/>
+        <property name="buyer" column="BUYER"/>
+        <property name="buyerAddr" column="BUYER_ADDR"/>
+        <property name="buyerPerson" column="BUYER_PERSON"/>
+        <property name="buyerPhone" column="BUYER_PHONE"/>
+        <property name="buyerProvince" column="BUYER_PROVINCE"/>
+        <property name="buyerCity" column="BUYER_CITY"/>
+        <property name="buyerCounty" column="BUYER_COUNTY"/>
+        <property name="agent" column="AGENT"/>
+        <property name="agentAddr" column="AGENT_ADDR"/>
+        <property name="agentPerson" column="AGENT_PERSON"/>
+        <property name="agentPhone" column="AGENT_PHONE"/>
+        <property name="agentProvince" column="AGENT_PROVINCE"/>
+        <property name="agentCity" column="AGENT_CITY"/>
+        <property name="agentCounty" column="AGENT_COUNTY"/>
+        <property name="projectPeople" column="PROJECT_PEOPLE"/>
+        <property name="projectPhone" column="PROJECT_PHONE"/>
+        <property name="purchaseMethod" column="PURCHASE_METHOD"/>
+        <property name="itemName" column="ITEM_NAME"/>
+        <property name="purchaseObject" column="PURCHASE_OBJECT"/>
+        <property name="purchaseRecord" column="PURCHASE_RECORD"/>
+        <property name="supplier" column="SUPPLIER"/>
+        <property name="supplierAddr" column="SUPPLIER_ADDR"/>
+        <property name="supplierProvince" column="SUPPLIER_PROVINCE"/>
+        <property name="supplierCity" column="SUPPLIER_CITY"/>
+        <property name="supplierCounty" column="SUPPLIER_COUNTY"/>
+        <property name="goodsName" column="GOODS_NAME"/>
+        <property name="expert" column="EXPERT"/>
+        <property name="serveName" column="SERVE_NAME"/>
+        <property name="serveRange" column="SERVE_RANGE"/>
+        <property name="urlName" column="URLNAME"/>
+        <property name="siteName" column="SITENAME"/>
+        <property name="winBidAmount" column="WIN_BID_AMOUNT"/>
+        <property name="bidType" column="BID_TYPE"/>
+        <property name="bidTypeSmall" column="BID_TYPE_SMALL"/>
+        <property name="gbTag" column="GB_TAG"/>
+        <property name="xzTag" column="XZ_TAG"/>
+        <property name="buyerGrade" column="BUYER_GRADE"/>
+        <property name="buyerType" column="BUYER_TYPE"/>
+        <property name="sortMark" column="SORT_MARK"/>
+    </class>
+
+    <class id="BidDocumentBean.Analysis" name="com.trs.common.hybase.domain.BidDocumentBean" table="tbyx_bid_document">
+        <property name="uuid" uuid="true"/>
+        <property name="rid" column="RID"/>
+        <property name="pubTime" column="PUBTIME"/>
+        <property name="title" column="TITLE"/>
+        <property name="budgetAmount" column="BUDGET_AMOUNT"/>
+        <property name="industry" column="INDUSTRY"/>
+        <property name="category" column="CATEGORY"/>
+        <property name="buyer" column="BUYER"/>
+        <property name="buyerProvince" column="BUYER_PROVINCE"/>
+        <property name="buyerCity" column="BUYER_CITY"/>
+        <property name="buyerCounty" column="BUYER_COUNTY"/>
+        <property name="agent" column="AGENT"/>
+        <property name="agentProvince" column="AGENT_PROVINCE"/>
+        <property name="agentCity" column="AGENT_CITY"/>
+        <property name="agentCounty" column="AGENT_COUNTY"/>
+        <property name="projectPeople" column="PROJECT_PEOPLE"/>
+        <property name="projectPhone" column="PROJECT_PHONE"/>
+        <property name="purchaseRecord" column="PURCHASE_RECORD"/>
+        <property name="supplier" column="SUPPLIER"/>
+        <property name="supplierAddr" column="SUPPLIER_ADDR"/>
+        <property name="supplierProvince" column="SUPPLIER_PROVINCE"/>
+        <property name="supplierCity" column="SUPPLIER_CITY"/>
+        <property name="supplierCounty" column="SUPPLIER_COUNTY"/>
+        <property name="goodsName" column="GOODS_NAME"/>
+        <property name="expert" column="EXPERT"/>
+        <property name="winBidAmount" column="WIN_BID_AMOUNT"/>
+        <property name="bidType" column="BID_TYPE"/>
+        <property name="bidTypeSmall" column="BID_TYPE_SMALL"/>
+        <property name="gbTag" column="GB_TAG"/>
+        <property name="xzTag" column="XZ_TAG"/>
+        <property name="sortMark" column="SORT_MARK"/>
+    </class>
+    <class id="BidDocumentBean.newBidWin" name="com.trs.common.hybase.domain.BidDocumentBean" table="tbyx_bid_document">
+        <property name="pubTime" column="PUBTIME"/>
+        <property name="title" column="TITLE"/>
+        <property name="rid" column="RID"/>
+        <property name="budgetAmount" column="BUDGET_AMOUNT"/>
+        <property name="industry" column="INDUSTRY"/>
+        <property name="category" column="CATEGORY"/>
+        <property name="bidType" column="BID_TYPE"/>
+        <property name="winBidAmount" column="WIN_BID_AMOUNT"/>
+    </class>
+</trshybase-mapping>
