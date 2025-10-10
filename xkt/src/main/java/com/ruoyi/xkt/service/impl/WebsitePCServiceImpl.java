@@ -288,7 +288,56 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
             StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId());
             x.setMemberLevel(ObjectUtils.isNotEmpty(member) ? member.getLevel() : null);
         });
-        // 暂时没有广告
+        // pc 搜索结果需要过滤掉广告商品
+        List<PCSearchDTO> redisList = redisCache.getCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_SEARCH_RESULT_LIST_RECOMMEND);
+        if (CollectionUtils.isNotEmpty(redisList)) {
+            final List<String> advertProdIdList = redisList.stream().map(PCSearchDTO::getStoreProdId).map(String::valueOf).collect(Collectors.toList());
+            realDataList = realDataList.stream()
+                    .filter(x -> CollectionUtils.isEmpty(advertProdIdList) || !advertProdIdList.contains(x.getStoreProdId()))
+                    .collect(Collectors.toList());
+        }
+        // 只有第一页 有数据 其它页暂时没有广告
+        if (searchDTO.getPageNum() > 1) {
+            return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), realDataList);
+        }
+        if (CollectionUtils.isNotEmpty(redisList)) {
+            // 添加广告的数据
+            return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(),
+                    insertAdvertsIntoList(realDataList, redisList, Constants.PC_SEARCH_RESULT_INSERT_POSITIONS));
+        } else {
+            // 从数据库查询搜索结果是否有广告（只查询现在正在播放的，不查询历史数据）
+            List<AdvertRound> advertRoundList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
+                    .isNotNull(AdvertRound::getStoreId).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
+                    .eq(AdvertRound::getTypeId, AdType.PC_SEARCH_RESULT_PRODUCT.getValue())
+                    .eq(AdvertRound::getLaunchStatus, AdLaunchStatus.LAUNCHING.getValue())
+                    .eq(AdvertRound::getBiddingStatus, AdBiddingStatus.BIDDING_SUCCESS.getValue()));
+            if (CollectionUtils.isNotEmpty(advertRoundList)) {
+                final List<Long> storeProdIdList = advertRoundList.stream()
+                        .filter(x -> StringUtils.isNotBlank(x.getProdIdStr())).map(x -> Long.parseLong(x.getProdIdStr())).distinct().collect(Collectors.toList());
+                // 商品的货号、价格、主图等
+                List<StoreProdPriceAndMainPicAndTagDTO> attrList = storeProdMapper.selectPriceAndMainPicAndTagList(storeProdIdList);
+                attrList = attrList.stream().peek(x -> x.setTags(StringUtils.isNotBlank(x.getTagStr()) ? Arrays.asList(x.getTagStr().split(",")) : null)).collect(Collectors.toList());
+                Map<Long, StoreProdPriceAndMainPicAndTagDTO> attrMap = attrList.stream().collect(Collectors.toMap(StoreProdPriceAndMainPicAndTagDTO::getStoreProdId, x -> x));
+                List<PCSearchDTO> searchResAdvertList = advertRoundList.stream().filter(x -> StringUtils.isNotBlank(x.getProdIdStr())).map(x -> {
+                    StoreProdPriceAndMainPicAndTagDTO attrDto = attrMap.get(Long.parseLong(x.getProdIdStr()));
+                    return new PCSearchDTO().setAdvert(Boolean.TRUE).setStoreId(x.getStoreId().toString()).setStoreProdId(x.getProdIdStr())
+                            .setProdTitle(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getProdTitle() : "")
+                            .setHasVideo(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getHasVideo() : Boolean.FALSE)
+                            .setTags(StringUtils.isNotBlank(attrDto.getTagStr()) ? StrUtil.split(attrDto.getTagStr(), ",") : null)
+                            .setStoreName(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getStoreName() : "")
+                            .setProdPrice(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMinPrice().toString() : null)
+                            .setProdArtNum(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getProdArtNum() : "")
+                            .setMainPicUrl(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicUrl() : "")
+                            .setMainPicName(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicName() : "")
+                            .setMainPicSize(ObjectUtils.isNotEmpty(attrDto) ? attrDto.getMainPicSize() : null);
+                }).collect(Collectors.toList());
+                // 放到redis中 有效期1天
+                this.redisCache.setCacheObject(CacheConstants.APP_INDEX_HOT_SALE_ADVERT, searchResAdvertList, 1, TimeUnit.DAYS);
+                // 添加了广告的数据
+                return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(),
+                        insertAdvertsIntoList(realDataList, searchResAdvertList, Constants.PC_SEARCH_RESULT_INSERT_POSITIONS));
+            }
+        }
         return new Page<>(page.getPageNum(), page.getPageSize(), page.getPages(), page.getTotal(), realDataList);
     }
 

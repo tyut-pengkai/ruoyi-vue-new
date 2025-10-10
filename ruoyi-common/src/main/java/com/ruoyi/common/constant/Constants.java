@@ -315,6 +315,10 @@ public class Constants
      * 档口搜索结果，广告插入位置 2 9 18 27 36
      */
     public static final Set<Integer> STORE_RECOMMEND_INSERT_POSITIONS = new HashSet<>(Arrays.asList(2, 9, 18, 27, 36));
+    /**
+     * PC 搜索结果，广告插入位置 2 6 10 14 18
+     */
+    public static final Set<Integer> PC_SEARCH_RESULT_INSERT_POSITIONS = new HashSet<>(Arrays.asList(2, 6, 10, 14, 18));
 
     public static final String ALIPAY_DEFAULT_FORMAT = "json";
 

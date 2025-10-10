@@ -191,6 +191,10 @@ public class CacheConstants {
      * PC 新品馆 为你推荐
      */
     public static final String PC_NEW_RECOMMEND = "pc_new_recommend";
+    /**
+     * PC 搜索结果列表 广告
+     */
+    public static final String PC_SEARCH_RESULT_LIST_RECOMMEND = "pc_search_result_list_recommend";
 
     /**
      * APP 广告
