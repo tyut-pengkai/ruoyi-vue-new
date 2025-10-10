@@ -42,8 +42,11 @@ public class TyController extends BaseController {
 
     final RedisCache redisCache;
 
+    /**
+     * step1
+     */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @PostMapping("/-R/prod/cache/{userId}")
+    @PostMapping("/prod/cache/{userId}")
     public R<Integer> createProdCache(@PathVariable Integer userId, MultipartFile file) throws IOException {
         ExcelUtil<TyProdImportVO> util = new ExcelUtil<>(TyProdImportVO.class);
         List<TyProdImportVO> tyProdVOList = util.importExcel(file.getInputStream());
@@ -72,6 +75,9 @@ public class TyController extends BaseController {
     }
 
 
+    /**
+     * step2
+     */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @PostMapping("/cus/cache/{userId}")
     public R<Integer> createCusCache(@PathVariable Integer userId, MultipartFile file) throws IOException {
@@ -83,8 +89,11 @@ public class TyController extends BaseController {
         return R.ok();
     }
 
+    /**
+     * step3
+     */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @PostMapping("/-R/cus/disc/cache/{cusName}/{userId}")
+    @PostMapping("/cus/disc/cache/{cusName}/{userId}")
     public R<Integer> createCusDiscCache(@PathVariable(value = "userId") Integer userId, @PathVariable(value = "cusName") String cusName,
                                          MultipartFile file) throws IOException {
         // 从redis中获取已存在的客户优惠数据
@@ -133,8 +142,11 @@ public class TyController extends BaseController {
         return R.ok();
     }
 
+    /**
+     * step4
+     */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @PostMapping("/-R/stock/cache/{userId}")
+    @PostMapping("/stock/cache/{userId}")
     public R<Integer> createTyProdStockCache(@PathVariable Integer userId, MultipartFile file) throws IOException {
         ExcelUtil<TyProdStockVO> util = new ExcelUtil<>(TyProdStockVO.class);
         List<TyProdStockVO> tyStockList = util.importExcel(file.getInputStream());

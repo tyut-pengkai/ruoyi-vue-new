@@ -35,6 +35,9 @@ public class FhbController extends BaseController {
     final IShipMasterService shipMasterService;
     final RedisCache redisCache;
 
+    /**
+     * step1
+     */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @PostMapping("/prod/cache")
     public R<Integer> createProdCache(@Validated @RequestBody FhbProdVO prodVO) {
@@ -51,34 +54,18 @@ public class FhbController extends BaseController {
                 throw new ServiceException("同一货号中存在相同的颜色" + artNo, HttpStatus.ERROR);
             }
         }));
-        // 去除空格
-        List<FhbProdVO.SMIVO> fhbProdList = prodVO.getData().getRecords().stream()
-                .map(x -> x.setArtNo(x.getArtNo().trim()).setColor(x.getColor().trim()).setSize(x.getSize().trim())
-                        .setAddPriceSize(x.getAddPriceSize().trim()).setSnPrefix(x.getSnPrefix().trim()))
-                .collect(Collectors.toList());
         // 先从redis中获取列表数据
         List<FhbProdVO.SMIVO> cacheList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_PROD_KEY + supplierId), new ArrayList<>());
-        CollectionUtils.addAll(cacheList, fhbProdList);
+        CollectionUtils.addAll(cacheList, prodVO.getData().getRecords());
         // 存到redis中
         redisCache.setCacheObject(CacheConstants.MIGRATION_SUPPLIER_PROD_KEY + supplierId, cacheList, 5, TimeUnit.DAYS);
         return R.ok();
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @PostMapping("/colors/cache/{supplierId}")
-    public R<Integer> createColorsCache(@PathVariable Integer supplierId) {
-        // 先从redis中获取列表数据
-        List<FhbProdVO.SMIVO> cacheList = ObjectUtils.defaultIfNull(redisCache
-                .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_PROD_KEY + supplierId), new ArrayList<>());
-        if (CollectionUtils.isEmpty(cacheList)) {
-            throw new ServiceException("FHB商品列表为空", HttpStatus.ERROR);
-        }
-        List<String> colorNameList = cacheList.stream().map(FhbProdVO.SMIVO::getColor).distinct().collect(Collectors.toList());
-
-        return R.ok();
-    }
-
+    /**
+     * step2
+     */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @PostMapping("/cus/cache")
     public R<Integer> createCusCache(@Validated @RequestBody FhbCusVO cusVO) {
@@ -95,6 +82,43 @@ public class FhbController extends BaseController {
         return R.ok();
     }
 
+    /**
+     * step3
+     */
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @PostMapping("/cus/discount/cache")
+    public R<Integer> createCusDiscountCache(@Validated @RequestBody FhbCusDiscountVO cusDiscountVO) {
+        final Integer supplierId = cusDiscountVO.getData().getRecords().get(0).getSupplierId();
+        // 供应商ID
+        if (ObjectUtils.isEmpty(cusDiscountVO.getData()) || ObjectUtils.isEmpty(cusDiscountVO.getData().getRecords())) {
+            return R.ok();
+        }
+        // 错误的折扣列表
+        List<String> errorCusDiscList = new ArrayList<>();
+        // 设置优惠价格
+        cusDiscountVO.getData().getRecords().forEach(record -> {
+            final Integer supplyPrice = ObjectUtils.defaultIfNull(record.getSupplyPrice(), 0);
+            final Integer customerPrice = ObjectUtils.defaultIfNull(record.getCustomerPrice(), 0);
+            if (supplyPrice - customerPrice < 0) {
+                errorCusDiscList.add(record.getArtNo() + ":" + record.getCustomerName() + ":" + record.getColor());
+            }
+            record.setDiscount(supplyPrice - customerPrice);
+        });
+        if (CollectionUtils.isNotEmpty(errorCusDiscList)) {
+            throw new ServiceException("供应商商品价格有误!" + errorCusDiscList, HttpStatus.ERROR);
+        }
+        // 先从redis中获取列表数据
+        List<FhbCusDiscountVO.SMCDRecordVO> cacheList = ObjectUtils.defaultIfNull(redisCache
+                .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_CUS_DISCOUNT_KEY + supplierId), new ArrayList<>());
+        CollectionUtils.addAll(cacheList, cusDiscountVO.getData().getRecords());
+        // 存到redis中
+        redisCache.setCacheObject(CacheConstants.MIGRATION_SUPPLIER_CUS_DISCOUNT_KEY + supplierId, cacheList, 5, TimeUnit.DAYS);
+        return R.ok();
+    }
+
+    /**
+     * step4
+     */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @PostMapping("/prod/stock/cache/{supplierId}")
     public R<Integer> createProdStockCache(@PathVariable Integer supplierId, @Validated @RequestBody FhbProdStockVO stockVO) {
@@ -111,32 +135,26 @@ public class FhbController extends BaseController {
         return R.ok();
     }
 
+
+
+
+    // ======================================================================================================================================
+
+
+
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @PostMapping("/cus/discount/cache")
-    public R<Integer> createCusDiscountCache(@Validated @RequestBody FhbCusDiscountVO cusDiscountVO) {
-        final Integer supplierId = cusDiscountVO.getData().getRecords().get(0).getSupplierId();
-        // 供应商ID
-        if (ObjectUtils.isEmpty(cusDiscountVO.getData()) || ObjectUtils.isEmpty(cusDiscountVO.getData().getRecords())) {
-            return R.ok();
-        }
-        // 设置优惠价格
-        cusDiscountVO.getData().getRecords().forEach(record -> {
-            final Integer supplyPrice = ObjectUtils.defaultIfNull(record.getSupplyPrice(), 0);
-            final Integer customerPrice = ObjectUtils.defaultIfNull(record.getCustomerPrice(), 0);
-            if (supplyPrice - customerPrice < 0) {
-                throw new ServiceException("供应商商品价格有误" + record.getArtNo(), HttpStatus.ERROR);
-            }
-            record.setDiscount(supplyPrice - customerPrice);
-        });
-        // 先从redis中获取列表数据
-        List<FhbCusDiscountVO.SMCDRecordVO> cacheList = ObjectUtils.defaultIfNull(redisCache
-                .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_CUS_DISCOUNT_KEY + supplierId), new ArrayList<>());
-        CollectionUtils.addAll(cacheList, cusDiscountVO.getData().getRecords());
-        // 存到redis中
-        redisCache.setCacheObject(CacheConstants.MIGRATION_SUPPLIER_CUS_DISCOUNT_KEY + supplierId, cacheList, 5, TimeUnit.DAYS);
+    @PostMapping("/colors/cache/{supplierId}")
+    public R<Integer> createColorsCache(@PathVariable Integer supplierId) {
+
+        /*// 先从redis中获取列表数据
+        List<FhbProdVO.SMIVO> cacheList = ObjectUtils.defaultIfNull(redisCache
+                .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_PROD_KEY + supplierId), new ArrayList<>());
+        if (CollectionUtils.isEmpty(cacheList)) {
+            throw new ServiceException("FHB商品列表为空", HttpStatus.ERROR);
+        }*/
+
         return R.ok();
     }
-
 
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
@@ -190,6 +208,7 @@ public class FhbController extends BaseController {
         System.err.println(cusGroupMap);
         return R.ok();
     }
+
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @GetMapping("/cus/discount/cache/{supplierId}")

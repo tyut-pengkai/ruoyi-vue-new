@@ -104,7 +104,7 @@ public class GtAndFhbBizController extends BaseController {
                 .getCacheObject(CacheConstants.MIGRATION_GT_SALE_BASIC_KEY + userId), new ArrayList<>());
         Map<String, String> articleNoColorMap = gtSaleBasicList.stream().collect(Collectors.groupingBy(GtProdSkuVO::getArticle_number,
                 Collectors.collectingAndThen(Collectors.mapping(GtProdSkuVO::getColor, Collectors.toList()),
-                        list -> "(" + list.stream().distinct().collect(Collectors.joining(",")) + ")")));
+                        list -> "(" + list.stream().sorted(Comparator.naturalOrder()).distinct().collect(Collectors.joining(",")) + ")")));
         List<String> doubleRunSaleArtNoList = gtSaleBasicList.stream().map(GtProdSkuVO::getArticle_number)
                 .distinct().collect(Collectors.toList());
         // 查看gt 在售的商品 这边有多少相似的货号
@@ -134,7 +134,7 @@ public class GtAndFhbBizController extends BaseController {
                 .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_PROD_KEY + supplierId), new ArrayList<>());
         Map<String, String> fhbArticleNoColorMap = fhbProdList.stream().collect(Collectors.groupingBy(FhbProdVO.SMIVO::getArtNo,
                 Collectors.collectingAndThen(Collectors.mapping(FhbProdVO.SMIVO::getColor, Collectors.toList()),
-                        list -> "(" + list.stream().distinct().collect(Collectors.joining(",")) + ")")));
+                        list -> "(" + list.stream().sorted(Comparator.naturalOrder()).distinct().collect(Collectors.joining(",")) + ")")));
         List<String> shipArtNoList = fhbProdList.stream().map(FhbProdVO.SMIVO::getArtNo)
                 .distinct().collect(Collectors.toList());
         shipArtNoList.forEach(artNo -> {

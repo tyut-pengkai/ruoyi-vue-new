@@ -41,7 +41,32 @@ public class GtController extends BaseController {
     final RedisCache redisCache;
     final SysProductCategoryMapper prodCateMapper;
 
+    /**
+     * step1
+     */
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @PostMapping("/cate/cache/{user_id}")
+    public R<Integer> createCateCache(@PathVariable(value = "user_id") Integer user_id, @Validated @RequestBody GtCateVO cateInitVO) {
+        if (CollectionUtils.isEmpty(cateInitVO.getData())) {
+            throw new ServiceException("入参GT分类数据为空!", HttpStatus.ERROR);
+        }
+        List<GtCateVO.GCIDataVO> cateList = cateInitVO.getData().stream()
+                // 只处理二级分类及没有子分类的一级分类，因为我们是存的最后的分类
+                .filter(x -> x.getHas_child() == 0)
+                .map(x -> Objects.equals(x.getName(), "时尚雪地靴") ? x.setName("雪地靴") : x)
+                .collect(Collectors.toList());
+        // 先从redis中获取列表数据
+        List<GtCateVO.GCIDataVO> cacheList = ObjectUtils.defaultIfNull(redisCache
+                .getCacheObject(CacheConstants.MIGRATION_GT_SALE_CATE_KEY + user_id), new ArrayList<>());
+        CollectionUtils.addAll(cacheList, cateList);
+        // 放到缓存中
+        redisCache.setCacheObject(CacheConstants.MIGRATION_GT_SALE_CATE_KEY + user_id, cacheList);
+        return R.ok();
+    }
 
+    /**
+     * step2
+     */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @PostMapping("/sale/cache")
     public R<Integer> createSaleCache(@Validated @RequestBody GtProdVO doubleRunVO) {
@@ -51,7 +76,7 @@ public class GtController extends BaseController {
         List<GtProdSkuVO> cacheList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_GT_SALE_BASIC_KEY + userId), new ArrayList<>());
         // 已存入的map，增加个校验 如果已导入则不重复导入 避免误操作
-        Map<String, String> cacheMap = cacheList.stream().collect(Collectors.toMap(GtProdSkuVO::getArticle_number, GtProdSkuVO::getArticle_number));
+        Map<String, String> cacheMap = cacheList.stream().collect(Collectors.toMap(GtProdSkuVO::getArticle_number, GtProdSkuVO::getArticle_number, (v1, v2) -> v2));
         // 三年前的时间
         Date threeYearsBefore = java.sql.Date.valueOf(LocalDate.now().minusYears(3));
         artNoList.stream()
@@ -73,6 +98,9 @@ public class GtController extends BaseController {
         return R.ok();
     }
 
+    /**
+     * step3
+     */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @PostMapping("/off-sale/cache")
     public R<Integer> createOffSaleCache(@Validated @RequestBody GtProdVO doubleRunVO) {
@@ -82,7 +110,7 @@ public class GtController extends BaseController {
         List<GtProdSkuVO> cacheList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_GT_OFF_SALE_BASIC_KEY + userId), new ArrayList<>());
         // 已存入的map，增加个校验 如果已导入则不重复导入 避免误操作
-        Map<String, String> cacheMap = cacheList.stream().collect(Collectors.toMap(GtProdSkuVO::getArticle_number, GtProdSkuVO::getArticle_number));
+        Map<String, String> cacheMap = cacheList.stream().collect(Collectors.toMap(GtProdSkuVO::getArticle_number, GtProdSkuVO::getArticle_number, (v1, v2) -> v2));
         artNoList.stream()
                 // 避免误操作
                 .filter(x -> !cacheMap.containsKey(x.getArticle_number()))
@@ -98,6 +126,9 @@ public class GtController extends BaseController {
         return R.ok();
     }
 
+    /**
+     * step4
+     */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @PostMapping("/attr/cache/{user_id}/{product_id}")
     public R<Integer> createAttrCache(@PathVariable(value = "user_id") Integer user_id, @PathVariable("product_id") Integer product_id,
@@ -120,25 +151,6 @@ public class GtController extends BaseController {
             }
         });
         redisCache.setCacheMap(CacheConstants.MIGRATION_GT_SALE_ATTR_KEY + user_id + "_" + product_id, attrMap);
-        return R.ok();
-    }
-
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @PostMapping("/cate/cache/{user_id}")
-    public R<Integer> createCateCache(@PathVariable(value = "user_id") Integer user_id, @Validated @RequestBody GtCateVO cateInitVO) {
-        if (CollectionUtils.isEmpty(cateInitVO.getData())) {
-            throw new ServiceException("入参GT分类数据为空!", HttpStatus.ERROR);
-        }
-        List<GtCateVO.GCIDataVO> cateList = cateInitVO.getData().stream()
-                .filter(x -> x.getHas_child() == 0)
-                .map(x -> Objects.equals(x.getName(), "时尚雪地靴") ? x.setName("雪地靴") : x)
-                .collect(Collectors.toList());
-        // 先从redis中获取列表数据
-        List<GtCateVO.GCIDataVO> cacheList = ObjectUtils.defaultIfNull(redisCache
-                .getCacheObject(CacheConstants.MIGRATION_GT_SALE_CATE_KEY + user_id), new ArrayList<>());
-        CollectionUtils.addAll(cacheList, cateList);
-        // 放到缓存中
-        redisCache.setCacheObject(CacheConstants.MIGRATION_GT_SALE_CATE_KEY + user_id, cacheList);
         return R.ok();
     }
 
