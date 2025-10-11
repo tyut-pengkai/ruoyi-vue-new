@@ -47,5 +47,4 @@ public class IndexSearchVO extends BasePageVO {
     @ApiModelProperty(value = "排序方式", required = true)
     private SortOrder order;
 
-
 }
