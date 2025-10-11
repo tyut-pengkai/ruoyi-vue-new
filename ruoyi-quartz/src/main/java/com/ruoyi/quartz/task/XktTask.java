@@ -124,10 +124,6 @@ public class XktTask {
     final SysDictDataMapper dictDataMapper;
     final StoreProductColorSizeMapper prodColorSizeMapper;
 
-    public void test() throws IOException {
-        System.err.println("aaa");
-    }
-
     /**
      * 每天执行定时任务
      * 每年3月1日、6月1日、9月1日、12月1日执行 生成夏秋冬春标签
@@ -856,7 +852,6 @@ public class XktTask {
         if (CollectionUtils.isEmpty(unPublicList)) {
             return;
         }
-        System.err.println(unPublicList);
         final List<String> storeProdIdList = unPublicList.stream().map(StoreProduct::getId).map(String::valueOf).collect(Collectors.toList());
         // 获取所有的商品的第一张主图
         List<StoreProdFileResDTO> mainPicList = this.storeProdFileMapper.selectMainPic(storeProdIdList);

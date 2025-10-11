@@ -1,5 +1,12 @@
 package com.ruoyi.web.controller.xkt.migartion;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.thread.ThreadUtil;
+import cn.hutool.json.JSONUtil;
+import co.elastic.clients.elasticsearch.core.BulkResponse;
+import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
+import co.elastic.clients.elasticsearch.core.bulk.BulkResponseItem;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
@@ -11,6 +18,8 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.framework.es.EsClientWrapper;
+import com.ruoyi.system.domain.dto.productCategory.ProdCateDTO;
 import com.ruoyi.web.controller.xkt.migartion.vo.GtAndFHBCompareDownloadVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.GtAndFHBInitVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.fhb.FhbCusDiscountVO;
@@ -20,11 +29,21 @@ import com.ruoyi.web.controller.xkt.migartion.vo.fhb.FhbProdVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.gt.GtCateVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.gt.GtProdSkuVO;
 import com.ruoyi.xkt.domain.*;
+import com.ruoyi.xkt.dto.es.ESProductDTO;
+import com.ruoyi.xkt.dto.picture.ProductPicSyncDTO;
+import com.ruoyi.xkt.dto.picture.ProductPicSyncResultDTO;
+import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdMinPriceDTO;
+import com.ruoyi.xkt.dto.storeProduct.StoreProdDTO;
+import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileDTO;
+import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO;
 import com.ruoyi.xkt.enums.EProductStatus;
+import com.ruoyi.xkt.enums.FileType;
 import com.ruoyi.xkt.enums.ListingType;
 import com.ruoyi.xkt.mapper.*;
+import com.ruoyi.xkt.service.IPictureService;
 import com.ruoyi.xkt.service.shipMaster.IShipMasterService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -35,6 +54,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.util.*;
@@ -46,6 +66,7 @@ import java.util.stream.Collectors;
  *
  * @author ruoyi
  */
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/rest/v1/gt-fhb")
@@ -64,35 +85,14 @@ public class GtAndFhbBizController extends BaseController {
     final StoreProductServiceMapper prodSvcMapper;
     final StoreProductCategoryAttributeMapper prodCateAttrMapper;
     final SysProductCategoryMapper prodCateMapper;
-
+    final StoreProductFileMapper storeProdFileMapper;
+    final EsClientWrapper esClientWrapper;
+    final IPictureService pictureService;
 
 
     // TODO 提供导出测试环境数据的接口，不然迁移到生产还要重新来一遍
     // TODO 提供导出测试环境数据的接口，不然迁移到生产还要重新来一遍
     // TODO 提供导出测试环境数据的接口，不然迁移到生产还要重新来一遍
-
-
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @PostMapping("/sync-es/{storeId}")
-    public void syncToEs(@PathVariable("storeId") Long storeId) {
-        // 同步主图 到 图搜 服务器
-
-        // TODO 上传到ES之后还需要确认
-        // TODO 上传到ES之后还需要确认
-        // TODO 上传到ES之后还需要确认
-
-    }
-
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @PostMapping("/sync-pic/{storeId}")
-    public void syncToPicSearch(@PathVariable("storeId") Long storeId) {
-        // 同步主图 到 图搜 服务器
-
-        // TODO 上传到图搜服务器之后还要确认
-        // TODO 上传到图搜服务器之后还要确认
-        // TODO 上传到图搜服务器之后还要确认
-
-    }
 
 
     /**
@@ -348,13 +348,11 @@ public class GtAndFhbBizController extends BaseController {
                 .eq(StoreColor::getStoreId, initVO.getStoreId()).eq(StoreColor::getDelFlag, Constants.UNDELETED));
         Map<String, StoreColor> storeColorMap = storeColorList.stream().collect(Collectors.toMap(StoreColor::getColorName, x -> x, (v1, v2) -> v2));
 
+
         // TODO 临时处理，10-11之后的数据
         // TODO 临时处理，10-11之后的数据
         // TODO 临时处理，10-11之后的数据
         storeProdList = storeProdList.stream().filter(x -> x.getCreateTime().after(DateUtils.parseDate("2025-10-11 00:00:00"))).collect(Collectors.toList());
-
-
-
 
 
         Map<String, List<String>> multiSaleSameGoMap = new HashMap<>();
@@ -464,6 +462,7 @@ public class GtAndFhbBizController extends BaseController {
         List<StoreCustomer> storeCusList = this.storeCusMapper.selectList(new LambdaQueryWrapper<StoreCustomer>()
                 .eq(StoreCustomer::getStoreId, initVO.getStoreId()).eq(StoreCustomer::getDelFlag, Constants.UNDELETED));
 
+
         // TODO 临时处理，10-11之后的数据
         // TODO 临时处理，10-11之后的数据
         // TODO 临时处理，10-11之后的数据
@@ -534,259 +533,102 @@ public class GtAndFhbBizController extends BaseController {
     }
 
     /**
-     * 步骤1: 准备数据，新建颜色;
-     * 步骤2: GT 和 FHB 货号对应关系，然后直接copy 对应的属性关系
-     * // a. 商品与颜色对应关系
-     * // b. 商品颜色尺码 + 价格 对应关系
-     * // c. 库存初始化
-     * // d. 服务承诺初始化
-     * // e. 类目属性初始化
-     * 步骤3: 准备数据，新建客户
-     * 步骤4: 客户与货号的优惠关系
-     * 步骤5: 批量创建数据到ES服务器
+     * step5
      */
-/*    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @PutMapping("/init")
-    @Transactional
-    public void initToDB(@Validated @RequestBody GtAndFHBInitVO initVO) {
-        // 去掉可能的空格
-        initVO.setExcludeArtNoList(initVO.getExcludeArtNoList().stream().map(String::trim).collect(Collectors.toList()));
-        Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
-                        .eq(Store::getId, initVO.getStoreId()).eq(Store::getDelFlag, Constants.UNDELETED)))
-                .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
-        // 步骤1: 准备数据，新建颜色
-        Map<String, StoreColor> storeColorMap = this.initStoreColorList(initVO.getStoreId(), initVO.getSupplierId());
-        // 步骤2: GT 和 FHB 货号对应关系，然后直接copy 对应的属性关系
-        // a. 商品与颜色对应关系
-        // b. 商品颜色尺码 + 价格 对应关系
-        // c. 库存初始化
-        // d. 服务承诺初始化
-        // e. 类目属性初始化
-        this.init(initVO, storeColorMap);
-
-        // 步骤x: 查看有哪些货号价格是有多个的，单独设置差异的价格
-
-        // 步骤5: 批量创建数据到ES服务器
-
-    }
-
-    private R<Integer> init(GtAndFHBInitVO initVO, Map<String, StoreColor> storeColorMap) {
-        // 步骤2: GT 和 FHB 货号对应关系，然后直接copy 对应的属性关系
-        // a. 商品与颜色对应关系
-        // b. 商品颜色尺码 + 价格 对应关系
-        // c. 库存初始化
-        // d. 服务承诺初始化
-        // e. 类目属性初始化
-        Map<String, List<String>> multiSaleSameGoMap = new HashMap<>();
-        Map<String, List<String>> multiOffSaleSameGoMap = new HashMap<>();
-        Map<String, List<String>> multiSameFhbMap = new HashMap<>();
-        List<GtProdSkuVO> gtSaleBasicList = ObjectUtils.defaultIfNull(redisCache
-                .getCacheObject(CacheConstants.MIGRATION_GT_SALE_BASIC_KEY + initVO.getUserId()), new ArrayList<>());
-        // 查看gt 在售的商品 这边有多少相似的货号
-        gtSaleBasicList.stream().map(GtProdSkuVO::getArticle_number).distinct()
-                // 过滤掉需要特殊处理的货号
-                .filter(article_number -> !initVO.getExcludeArtNoList().contains(article_number))
-                .forEach(article_number -> {
-                    // 只保留核心连续的数字，去除其他所有符号
-                    String cleanArtNo = this.extractCoreArticleNumber(article_number);
-                    List<String> existList = multiSaleSameGoMap.containsKey(cleanArtNo) ? multiSaleSameGoMap.get(cleanArtNo) : new ArrayList<>();
-                    existList.add(article_number);
-                    multiSaleSameGoMap.put(cleanArtNo, existList);
-                });
-
-        // 查看gt 下架的商品有多少相似的货号
-        List<GtProdSkuVO> gtOffSaleBasicList = ObjectUtils.defaultIfNull(redisCache
-                .getCacheObject(CacheConstants.MIGRATION_GT_OFF_SALE_BASIC_KEY + initVO.getUserId()), new ArrayList<>());
-        gtOffSaleBasicList.stream().map(GtProdSkuVO::getArticle_number).distinct().forEach(article_number -> {
-            // 只保留核心连续的数字，去除其他所有符号
-            String cleanArtNo = this.extractCoreArticleNumber(article_number);
-            List<String> existList = multiOffSaleSameGoMap.containsKey(cleanArtNo) ? multiOffSaleSameGoMap.get(cleanArtNo) : new ArrayList<>();
-            existList.add(article_number);
-            multiOffSaleSameGoMap.put(cleanArtNo, existList);
-        });
-
-        // 查看Fhb 这边有多少相似的货号
-        List<FhbProdVO.SMIVO> fhbProdList = ObjectUtils.defaultIfNull(redisCache
-                .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_PROD_KEY + initVO.getSupplierId()), new ArrayList<>());
-        // Fhb按照颜色分类
-        Map<String, List<FhbProdVO.SMIVO>> fhbProdGroupMap = fhbProdList.stream().collect(Collectors.groupingBy(FhbProdVO.SMIVO::getArtNo));
-        fhbProdList.stream().map(FhbProdVO.SMIVO::getArtNo).distinct()
-                // 过滤掉需要特殊处理的货号
-                .filter(artNo -> !initVO.getExcludeArtNoList().contains(artNo))
-                .forEach(artNo -> {
-                    // 只保留核心连续的数字，去除其他所有符号
-                    String cleanArtNo = this.extractCoreArticleNumber(artNo);
-                    List<String> existList = multiSameFhbMap.containsKey(cleanArtNo) ? multiSameFhbMap.get(cleanArtNo) : new ArrayList<>();
-                    existList.add(artNo);
-                    multiSameFhbMap.put(cleanArtNo, existList);
-                });
-
-        // gt按照货号分组
-        Map<String, List<GtProdSkuVO>> gtSaleGroupMap = gtSaleBasicList.stream().collect(Collectors.groupingBy(GtProdSkuVO::getArticle_number));
-
-        // GT分类
-        List<GtCateVO.GCIDataVO> cacheList = ObjectUtils.defaultIfNull(redisCache
-                .getCacheObject(CacheConstants.MIGRATION_GT_SALE_CATE_KEY + initVO.getUserId()), new ArrayList<>());
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @PostMapping("/sync-es/{storeId}")
+    public void syncToEs(@PathVariable("storeId") Long storeId) {
+        // 将公共的商品同步到ES
+        List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+                .eq(StoreProduct::getDelFlag, Constants.UNDELETED).eq(StoreProduct::getStoreId, storeId));
+        if (CollectionUtils.isEmpty(storeProdList)) {
+            return;
+        }
+        final List<String> storeProdIdList = storeProdList.stream().map(StoreProduct::getId).map(String::valueOf).collect(Collectors.toList());
+        // 获取所有的商品的第一张主图
+        List<StoreProdFileResDTO> mainPicList = this.storeProdFileMapper.selectMainPic(storeProdIdList);
+        // 所有的商品主图map
+        Map<Long, List<String>> mainPicMap = mainPicList.stream().filter(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC.getValue()))
+                .collect(Collectors.groupingBy(StoreProdFileResDTO::getStoreProdId, Collectors.mapping(StoreProdFileResDTO::getFileUrl, Collectors.toList())));
+        // 第一张商品主图map
+        Map<Long, StoreProdFileResDTO> firstMainPicMap = mainPicList.stream().filter(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC.getValue()))
+                .filter(x -> Objects.equals(x.getOrderNum(), Constants.ORDER_NUM_1)).collect(Collectors
+                        .toMap(StoreProdFileResDTO::getStoreProdId, x -> x));
+        // 主图视频map
+        Map<Long, Boolean> mainVideoMap = mainPicList.stream().filter(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC_VIDEO.getValue()))
+                .collect(Collectors.toMap(StoreProdFileResDTO::getStoreProdId, x -> true));
+        // 所有的分类
         List<SysProductCategory> prodCateList = this.prodCateMapper.selectList(new LambdaQueryWrapper<SysProductCategory>()
                 .eq(SysProductCategory::getDelFlag, Constants.UNDELETED));
-        Map<String, Long> dbCateNameMap = prodCateList.stream().collect(Collectors.toMap(SysProductCategory::getName, SysProductCategory::getId));
-        // GT商品分类和步橘分类映射
-        Map<Integer, Long> cateRelationMap = new HashMap<>();
-        cacheList.forEach(gtCate -> {
-            final Long cateId = Optional.ofNullable(dbCateNameMap.get(gtCate.getName())).orElseThrow(() -> new ServiceException("GT分类不存在!", HttpStatus.ERROR));
-            cateRelationMap.put(gtCate.getId(), cateId);
-        });
-
-        System.err.println("============ 两边系统“一致”的货号 ============");
-        // 清洗后，相同货号映射
-        Set<String> commonArtNos = new HashSet<>(multiSaleSameGoMap.keySet());
-        commonArtNos.retainAll(multiSameFhbMap.keySet());
-        // 待导入的商品
-        List<StoreProduct> storeProdList = new ArrayList<>();
-        // 当天
-        final Date voucherDate = java.sql.Date.valueOf(LocalDate.now());
-        // 所有商品的类目属性map  key gt的product_id value StoreProductCategoryAttribute
-        Map<Integer, StoreProductCategoryAttribute> prodAttrMap = new HashMap<>();
-        commonArtNos.forEach(cleanArtNo -> {
-            // 获取GT匹配的商品中的第一个商品
-            List<GtProdSkuVO> gtMatchSkuList = this.getGtFirstSku(multiSaleSameGoMap, gtSaleGroupMap, cleanArtNo);
-            // 初始化档口商品
-            StoreProduct storeProd = new StoreProduct().setStoreId(initVO.getStoreId()).setProdCateId(cateRelationMap.get(gtMatchSkuList.get(0).getCategory_nid()))
-                    .setProdArtNum(gtMatchSkuList.get(0).getArticle_number()).setProdTitle(gtMatchSkuList.get(0).getCharacters()).setListingWay(ListingType.RIGHT_NOW.getValue())
-                    .setVoucherDate(voucherDate).setProdStatus(EProductStatus.ON_SALE.getValue()).setRecommendWeight(0L).setSaleWeight(0L).setPopularityWeight(0L);
-            // 提前设置档口商品的类目属性
-            this.preMatchAttr(gtMatchSkuList.get(0).getProduct_id(), initVO.getUserId(), prodAttrMap);
-            storeProdList.add(storeProd);
-        });
-        this.storeProdMapper.insert(storeProdList);
-
-        // 商品所有颜色 尺码 颜色库存初始化
-        List<StoreProductColor> prodColorList = new ArrayList<>();
-        List<StoreProductColorSize> prodColorSizeList = new ArrayList<>();
-        List<StoreProductService> prodSvcList = new ArrayList<>();
-        List<StoreProductCategoryAttribute> prodAttrList = new ArrayList<>();
-        storeProdList.forEach(storeProd -> {
-            // 获取clearArtNo
-            String clearArtNo = this.extractCoreArticleNumber(storeProd.getProdArtNum());
-            // FHB匹配的货号
-            List<String> fhbMatchArtNoList = multiSameFhbMap.get(clearArtNo);
-            // 获取GT匹配的商品sku列表
-            List<GtProdSkuVO> gtMatchSkuList = this.getGtFirstSku(multiSaleSameGoMap, gtSaleGroupMap, clearArtNo);
-            // 当前货号在GT的所有尺码，作为标准尺码
-            List<Integer> gtStandardSizeList = gtMatchSkuList.stream().map(sku -> (int) Math.floor(Double.parseDouble(sku.getSize()))).collect(Collectors.toList());
-            AtomicInteger orderNum = new AtomicInteger();
-            fhbMatchArtNoList.forEach(fhbArtNo -> {
-                List<FhbProdVO.SMIVO> fhbMatchSkuList = fhbProdGroupMap.get(fhbArtNo);
-                for (int i = 0; i < fhbMatchSkuList.size(); i++) {
-                    StoreColor storeColor = Optional.ofNullable(storeColorMap.get(fhbMatchSkuList.get(i).getColor()))
-                            .orElseThrow(() -> new ServiceException("没有FHB商品颜色!" + fhbArtNo, HttpStatus.ERROR));
-                    // 该商品的颜色
-                    prodColorList.add(new StoreProductColor().setStoreId(storeProd.getStoreId()).setStoreProdId(storeProd.getId()).setOrderNum(orderNum.addAndGet(1))
-                            .setColorName(storeColor.getColorName()).setStoreColorId(storeColor.getId()).setProdStatus(EProductStatus.ON_SALE.getValue()));
-                    // 该颜色所有的尺码
-                    for (int j = 0; j < Constants.SIZE_LIST.size(); j++) {
-                        // FHB系统条码前缀
-                        final String otherSnPrefix = fhbMatchSkuList.get(i).getSupplierId()
-                                + String.format("%05d", fhbMatchSkuList.get(i).getSupplierSkuId()) + Constants.SIZE_LIST.get(j);
-                        prodColorSizeList.add(new StoreProductColorSize().setSize(Constants.SIZE_LIST.get(j)).setStoreColorId(storeColor.getId())
-                                .setStoreProdId(storeProd.getId()).setStandard(gtStandardSizeList.contains(Constants.SIZE_LIST.get(j)) ? 1 : 0)
-                                // 销售价格以FHB价格为准
-                                .setPrice(fhbMatchSkuList.get(i).getSalePrice())
-                                .setOtherSnPrefix(otherSnPrefix).setNextSn(0));
-                    }
-                }
-            });
-
-            // 初始化商品服务承诺
-            prodSvcList.add(new StoreProductService().setStoreProdId(storeProd.getId()).setCustomRefund("0")
-                    .setThirtyDayRefund("0").setOneBatchSale("1").setRefundWithinThreeDay("0"));
-
-            // 初始化商品的类目属性
-            StoreProductCategoryAttribute cateAttr = Optional.ofNullable(prodAttrMap.get(gtMatchSkuList.get(0).getProduct_id()))
-                    .orElseThrow(() -> new ServiceException("没有GT商品类目属性!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
-            cateAttr.setStoreId(storeProd.getStoreId()).setStoreProdId(storeProd.getId());
-            prodAttrList.add(cateAttr);
-        });
-        // 插入商品颜色及颜色对应的尺码，档口服务承诺
-        this.prodColorMapper.insert(prodColorList);
-        prodColorSizeList.sort(Comparator.comparing(StoreProductColorSize::getStoreProdId).thenComparing(StoreProductColorSize::getSize));
-        this.prodColorSizeMapper.insert(prodColorSizeList);
-        this.prodSvcMapper.insert(prodSvcList);
-        this.prodCateAttrMapper.insert(prodAttrList);
-
-        // 还要更新步橘系统的条码前缀
-        prodColorSizeList.forEach(x -> x.setSnPrefix(initVO.getStoreId() + String.format("%08d", x.getId())));
-        this.prodColorSizeMapper.updateById(prodColorSizeList);
-
-        // 步骤3: 准备数据，新建客户
-        List<StoreCustomer> storeCusList = this.initStoreCusList(initVO);
-
-        // 步骤4: 客户与货号的优惠关系
-        this.initStoreCusProdDiscAndProdStock(initVO, storeProdList, storeCusList, prodColorList, multiSameFhbMap);
-
-        return R.ok();
-    }*/
-
-
-    /**
-     * 新建档口客户对应产品的优惠
-     *
-     * @param initVO          入参
-     * @param storeProdList   档口商品列表
-     * @param storeCusList    档口客户列表
-     * @param prodColorList   商品颜色列表
-     * @param multiSameFhbMap 步橘货号和FHB货号对应关系
-     */
-    private void initStoreCusProdDiscAndProdStock(GtAndFHBInitVO initVO, List<StoreProduct> storeProdList, List<StoreCustomer> storeCusList,
-                                          List<StoreProductColor> prodColorList, Map<String, List<String>> multiSameFhbMap) {
-        // 从redis中获取客户优惠数据
-        List<FhbCusDiscountVO.SMCDRecordVO> fhbCusDiscCacheList = ObjectUtils.defaultIfNull(redisCache
-                .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_CUS_DISCOUNT_KEY + initVO.getSupplierId()), new ArrayList<>());
-        if (CollectionUtils.isEmpty(fhbCusDiscCacheList)) {
-            throw new ServiceException("fhb供应商客户优惠列表为空!" + initVO.getSupplierId(), HttpStatus.ERROR);
+        Map<Long, SysProductCategory> prodCateMap = prodCateList.stream().collect(Collectors.toMap(SysProductCategory::getId, x -> x));
+        // 获取当前商品最低价格
+        Map<Long, BigDecimal> prodMinPriceMap = this.prodColorSizeMapper.selectStoreProdMinPriceList(storeProdIdList).stream().collect(Collectors
+                .toMap(StoreProdMinPriceDTO::getStoreProdId, StoreProdMinPriceDTO::getPrice));
+        // 档口商品的属性map
+        Map<Long, StoreProductCategoryAttribute> cateAttrMap = this.prodCateAttrMapper.selectList(new LambdaQueryWrapper<StoreProductCategoryAttribute>()
+                        .eq(StoreProductCategoryAttribute::getDelFlag, Constants.UNDELETED).in(StoreProductCategoryAttribute::getStoreProdId, storeProdIdList))
+                .stream().collect(Collectors.toMap(StoreProductCategoryAttribute::getStoreProdId, x -> x));
+        // 档口商品对应的档口
+        Map<Long, Store> storeMap = this.storeMapper.selectList(new LambdaQueryWrapper<Store>().eq(Store::getDelFlag, Constants.UNDELETED)
+                        .in(Store::getId, storeProdList.stream().map(StoreProduct::getStoreId).collect(Collectors.toList())))
+                .stream().collect(Collectors.toMap(Store::getId, x -> x));
+        List<ESProductDTO> esProductDTOList = new ArrayList<>();
+        for (StoreProduct product : storeProdList) {
+            final SysProductCategory cate = prodCateMap.get(product.getProdCateId());
+            final SysProductCategory parCate = ObjectUtils.isEmpty(cate) ? null : prodCateMap.get(cate.getParentId());
+            final Store store = storeMap.get(product.getStoreId());
+            final StoreProdFileResDTO mainPic = firstMainPicMap.get(product.getId());
+            final BigDecimal prodMinPrice = prodMinPriceMap.get(product.getId());
+            final StoreProductCategoryAttribute cateAttr = cateAttrMap.get(product.getId());
+            final Boolean hasVideo = mainVideoMap.getOrDefault(product.getId(), Boolean.FALSE);
+            ESProductDTO esProductDTO = new ESProductDTO().setStoreProdId(product.getId().toString()).setProdArtNum(product.getProdArtNum())
+                    .setHasVideo(hasVideo).setProdCateId(product.getProdCateId().toString()).setCreateTime(DateUtils.getTime())
+                    .setProdCateName(ObjectUtils.isNotEmpty(cate) ? cate.getName() : "")
+                    .setSaleWeight("0").setRecommendWeight("0").setPopularityWeight("0")
+                    .setMainPicUrl(ObjectUtils.isNotEmpty(mainPic) ? mainPic.getFileUrl() : "")
+                    .setMainPicName(ObjectUtils.isNotEmpty(mainPic) ? mainPic.getFileName() : "")
+                    .setMainPicSize(ObjectUtils.isNotEmpty(mainPic) ? mainPic.getFileSize() : BigDecimal.ZERO)
+                    .setParCateId(ObjectUtils.isNotEmpty(parCate) ? parCate.getId().toString() : "")
+                    .setParCateName(ObjectUtils.isNotEmpty(parCate) ? parCate.getName() : "")
+                    .setProdPrice(ObjectUtils.isNotEmpty(prodMinPrice) ? prodMinPrice.toString() : "")
+                    .setSeason(ObjectUtils.isNotEmpty(cateAttr) ? cateAttr.getSuitableSeason() : "")
+                    .setProdStatus(product.getProdStatus().toString())
+                    .setStoreId(product.getStoreId().toString())
+                    .setStoreName(ObjectUtils.isNotEmpty(store) ? store.getStoreName() : "")
+                    .setStyle(ObjectUtils.isNotEmpty(cateAttr) ? cateAttr.getStyle() : "")
+                    .setTags(ObjectUtils.isNotEmpty(cateAttr) ? Collections.singletonList(cateAttr.getStyle()) : new ArrayList<>())
+                    .setProdTitle(product.getProdTitle());
+            esProductDTOList.add(esProductDTO);
         }
-        List<FhbProdStockVO.SMPSRecordVO> fhbStockCacheList = redisCache
-                .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_PROD_STOCK_KEY + initVO.getSupplierId());
-        if (CollectionUtils.isEmpty(fhbStockCacheList)) {
-            throw new ServiceException("fhb供应商商品库存列表为空!" + initVO.getSupplierId(), HttpStatus.ERROR);
+        // 构建批量操作请求
+        List<BulkOperation> bulkOperations = new ArrayList<>();
+        for (ESProductDTO esProductDTO : esProductDTOList) {
+            BulkOperation bulkOperation = new BulkOperation.Builder()
+                    .index(i -> i.id(esProductDTO.getStoreProdId()).index(Constants.ES_IDX_PRODUCT_INFO).document(esProductDTO))
+                    .build();
+            bulkOperations.add(bulkOperation);
         }
-        // FHB 货号颜色优惠对应关系
-        Map<String, Map<String, List<FhbCusDiscountVO.SMCDRecordVO>>> fhbCusDiscGroupMap = fhbCusDiscCacheList.stream().collect(Collectors
-                .groupingBy(FhbCusDiscountVO.SMCDRecordVO::getArtNo, Collectors.groupingBy(FhbCusDiscountVO.SMCDRecordVO::getColor)));
-        // FHB 货号颜色库存对应关系
-        Map<String, Map<String, FhbProdStockVO.SMPSRecordVO>> fhbStockGroupMap = fhbStockCacheList.stream().collect(Collectors
-                .groupingBy(FhbProdStockVO.SMPSRecordVO::getArtNo, Collectors.toMap(FhbProdStockVO.SMPSRecordVO::getColor, x -> x)));
-        // 步橘系统商品所有颜色maps
-        Map<Long, Map<String, StoreProductColor>> prodColorGroupMap = prodColorList.stream().collect(Collectors
-                .groupingBy(StoreProductColor::getStoreProdId, Collectors.toMap(StoreProductColor::getColorName, x -> x)));
-        // 步橘系统客户名称map
-        Map<String, StoreCustomer> buJuStoreCusMap = storeCusList.stream().collect(Collectors.toMap(StoreCustomer::getCusName, x -> x));
-        List<StoreCustomerProductDiscount> prodCusDiscList = new ArrayList<>();
-        List<StoreProductStock> prodStockList = new ArrayList<>();
-        // 依次遍历商品列表，找到货号和FHB货号对应关系，然后用颜色进行匹配，建立客户优惠关系
-        storeProdList.forEach(storeProd -> {
-            final String cleanArtNo = this.extractCoreArticleNumber(storeProd.getProdArtNum());
-            // 当前商品颜色列表 key 颜色中文名称
-            Map<String, StoreProductColor> buJuProdColorMap = Optional.ofNullable(prodColorGroupMap.get(storeProd.getId())).orElseThrow(() -> new ServiceException("没有商品颜色!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
-            // 根据步橘货号 找到FHB对应的货号，可能是列表
-            List<String> fhbAtrNoList = Optional.ofNullable(multiSameFhbMap.get(cleanArtNo)).orElseThrow(() -> new ServiceException("没有FHB货号!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
-            fhbAtrNoList.forEach(fhbAtrNo -> {
-                // 处理档口客户商品优惠
-                this.handleCusDisc(fhbAtrNo, fhbCusDiscGroupMap, buJuProdColorMap, buJuStoreCusMap, storeProd.getStoreId(), storeProd.getId(), prodCusDiscList);
-                // 处理档口商品库存
-                this.handleProdStock(fhbAtrNo, fhbStockGroupMap, buJuProdColorMap, storeProd.getStoreId(), storeProd.getId(), storeProd.getProdArtNum(), prodStockList);
-            });
+        // 执行批量插入
+        try {
+            BulkResponse response = esClientWrapper.getEsClient().bulk(b -> b.index(Constants.ES_IDX_PRODUCT_INFO).operations(bulkOperations));
+            log.info("批量新增到 ES 成功，共处理 {} 条记录", response.items().size());
+            log.info("批量新增到 ES 成功的 id列表: {}", response.items().stream().map(BulkResponseItem::id).collect(Collectors.toList()));
+        } catch (Exception e) {
+            log.error("批量新增到 ES 失败", e);
+        }
+        // 依次同步主图到图搜列表
+        storeProdList.forEach(x -> {
+            List<String> mainPicUrlList = mainPicMap.get(x.getId());
+            if (CollUtil.isEmpty(mainPicUrlList)) {
+                return;
+            }
+            this.sync2ImgSearchServer(x.getId(), mainPicUrlList);
         });
-
-        // 档口客户优惠
-        this.storeCusProdDiscMapper.insert(prodCusDiscList);
-        // 档口客户库存
-        this.prodStockMapper.insert(prodStockList);
-
     }
 
     /**
      * 处理货号颜色的库存
+     *
      * @param fhbAtrNo
      * @param fhbStockGroupMap
      * @param buJuProdColorMap
@@ -849,9 +691,8 @@ public class GtAndFhbBizController extends BaseController {
      * 初始化客户列表
      *
      * @param initVO 入参
-     * @return List<StoreCustomer>
      */
-    private List<StoreCustomer> initStoreCusList(GtAndFHBInitVO initVO) {
+    private void initStoreCusList(GtAndFHBInitVO initVO) {
         List<FhbCusVO.SMCVO> cacheList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_CUS_KEY + initVO.getSupplierId()), new ArrayList<>());
         if (CollectionUtils.isEmpty(cacheList)) {
@@ -863,7 +704,6 @@ public class GtAndFhbBizController extends BaseController {
                 .map(x -> new StoreCustomer().setStoreId(initVO.getStoreId()).setCusName(x.getName()))
                 .collect(Collectors.toList());
         this.storeCusMapper.insert(storeCusList);
-        return storeCusList;
     }
 
 
@@ -1041,6 +881,53 @@ public class GtAndFhbBizController extends BaseController {
         }
         // 如果没有找到数字，返回空字符串
         throw new ServiceException("货号格式错误", HttpStatus.ERROR);
+    }
+
+    /**
+     * 组装ES 入参 DTO
+     *
+     * @param storeProd 档口商品
+     * @param updateDTO 档口商品更新入参
+     * @param storeName 档口名称
+     * @return
+     */
+    private ESProductDTO getESDTO(StoreProduct storeProd, StoreProdDTO updateDTO, String storeName) {
+        // 获取第一张主图
+        String firstMainPic = updateDTO.getFileList().stream().filter(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC.getValue()))
+                .min(Comparator.comparing(StoreProdFileDTO::getOrderNum)).map(StoreProdFileDTO::getFileUrl)
+                .orElseThrow(() -> new ServiceException("商品主图不存在!", HttpStatus.ERROR));
+        // 是否有主图视频
+        boolean hasVideo = updateDTO.getFileList().stream().anyMatch(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC_VIDEO.getValue()));
+        // 获取上一级分类的分类ID 及 分类名称
+        ProdCateDTO parCate = this.prodCateMapper.getParentCate(updateDTO.getProdCateId());
+        // 获取当前商品的最低价格
+        BigDecimal minPrice = updateDTO.getSizeList().stream().min(Comparator.comparing(StoreProdDTO.SPCSizeDTO::getPrice))
+                .map(StoreProdDTO.SPCSizeDTO::getPrice).orElseThrow(() -> new ServiceException("商品价格不存在!", HttpStatus.ERROR));
+        // 获取使用季节
+        String season = updateDTO.getCateAttr().getSuitableSeason();
+        // 获取风格
+        String style = updateDTO.getCateAttr().getStyle();
+        return BeanUtil.toBean(storeProd, ESProductDTO.class).setHasVideo(hasVideo)
+                .setProdCateName(updateDTO.getProdCateName()).setSaleWeight("0").setRecommendWeight("0").setPopularityWeight("0")
+                .setCreateTime(DateUtils.getTime()).setStoreName(storeName).setMainPicUrl(firstMainPic)
+                .setParCateId(parCate.getProdCateId().toString()).setParCateName(parCate.getName()).setProdPrice(minPrice.toString())
+                .setSeason(season).setStyle(style).setTags(Collections.singletonList(style));
+    }
+
+
+    /**
+     * 搜图服务同步商品
+     *
+     * @param storeProductId 档口商品ID
+     * @param picKeys        商品主图列表
+     */
+    private void sync2ImgSearchServer(Long storeProductId, List<String> picKeys) {
+        ThreadUtil.execAsync(() -> {
+                    ProductPicSyncResultDTO r =
+                            pictureService.sync2ImgSearchServer(new ProductPicSyncDTO(storeProductId, picKeys));
+                    log.info("商品图片同步至搜图服务器: id: {}, result: {}", storeProductId, JSONUtil.toJsonStr(r));
+                }
+        );
     }
 
 
