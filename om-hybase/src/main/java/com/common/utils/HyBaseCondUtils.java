@@ -117,13 +117,16 @@ public class HyBaseCondUtils implements HybasePool {
      */
     public static String getDataWeight(String sim) {
         if (StrUtil.isNotEmpty(sim)) {
-            return switch (sim) {
-                case "content" -> HybaseQuery.eq("SY_ISSAME", "0");
-                case "title" -> HybaseQuery.eq("SY_ISSAME_TITLE", "0");
-                case "mixing" ->
-                    HybaseQuery.orMerge(HybaseQuery.eq("SY_ISSAME_TITLE", "0"), HybaseQuery.eq("SY_ISSAME", "0"));
-                default -> null;
-            };
+            switch (sim) {
+                case "content":
+                    return HybaseQuery.eq("SY_ISSAME", "0");
+                case "title":
+                    return HybaseQuery.eq("SY_ISSAME_TITLE", "0");
+                case "mixing":
+                    return HybaseQuery.orMerge(HybaseQuery.eq("SY_ISSAME_TITLE", "0"), HybaseQuery.eq("SY_ISSAME", "0"));
+                default:
+                    return null;
+            }
         }
         return null;
     }
