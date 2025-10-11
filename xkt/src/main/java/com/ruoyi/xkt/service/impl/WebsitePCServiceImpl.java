@@ -1927,40 +1927,11 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         }
         // 添加 multiMatch 查询
         if (StringUtils.isNotBlank(searchDTO.getSearch())) {
-            BoolQuery.Builder shouldBoolQuery = new BoolQuery.Builder();
-            // 1. 多字段匹配（分词）
             MultiMatchQuery multiMatchQuery = MultiMatchQuery.of(m -> m
                     .query(searchDTO.getSearch())
-                    .fields("prodArtNum^3", "storeName^2", "prodCateName^2", "parCateName^2")
-                    .type(TextQueryType.BestFields)
-                    .fuzziness("AUTO")
+                    .fields("storeName", "prodCateName", "parCateName", "prodArtNum")
             );
-            shouldBoolQuery.should(multiMatchQuery._toQuery());
-
-            // 2. 商品编号的精确匹配
-            shouldBoolQuery.should(s -> s.wildcard(w -> w
-                    .field("prodArtNum")
-                    .value("*" + searchDTO.getSearch() + "*")
-                    .caseInsensitive(true)
-            ));
-
-            // 3. 短语匹配（带权重）- 完全匹配的得分更高
-            shouldBoolQuery.should(s -> s.matchPhrase(m -> m
-                    .field("storeName")
-                    .query(searchDTO.getSearch())
-                    .boost(2.0f)  // 店铺名称短语匹配权重加倍
-            ));
-            shouldBoolQuery.should(s -> s.matchPhrase(m -> m
-                    .field("prodCateName")
-                    .query(searchDTO.getSearch())
-                    .boost(1.5f)  // 分类名称短语匹配权重增加
-            ));
-            shouldBoolQuery.should(s -> s.matchPhrase(m -> m
-                    .field("parCateName")
-                    .query(searchDTO.getSearch())
-                    .boost(1.5f)  // 父级分类短语匹配权重增加
-            ));
-            boolQuery.must(shouldBoolQuery.build()._toQuery());
+            boolQuery.must(multiMatchQuery._toQuery());
         }
         // 档口ID 过滤条件
         if (CollectionUtils.isNotEmpty(searchDTO.getStoreIdList())) {
