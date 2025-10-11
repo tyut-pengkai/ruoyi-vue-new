@@ -536,7 +536,7 @@ public class GtAndFhbBizController extends BaseController {
 
 
         if (CollectionUtils.isEmpty(storeProdList)) {
-            return;
+            return R.fail();
         }
         final List<String> storeProdIdList = storeProdList.stream().map(StoreProduct::getId).map(String::valueOf).collect(Collectors.toList());
         // 所有的分类
