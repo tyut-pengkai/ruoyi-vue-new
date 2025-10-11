@@ -547,6 +547,9 @@ public class GtAndFhbBizController extends BaseController {
         final List<String> storeProdIdList = storeProdList.stream().map(StoreProduct::getId).map(String::valueOf).collect(Collectors.toList());
         // 获取所有的商品的第一张主图
         List<StoreProdFileResDTO> mainPicList = this.storeProdFileMapper.selectMainPic(storeProdIdList);
+        if (CollectionUtils.isEmpty(mainPicList)) {
+            throw new ServiceException("档口没有商品主图!" + storeId, HttpStatus.ERROR);
+        }
         // 所有的商品主图map
         Map<Long, List<String>> mainPicMap = mainPicList.stream().filter(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC.getValue()))
                 .collect(Collectors.groupingBy(StoreProdFileResDTO::getStoreProdId, Collectors.mapping(StoreProdFileResDTO::getFileUrl, Collectors.toList())));
