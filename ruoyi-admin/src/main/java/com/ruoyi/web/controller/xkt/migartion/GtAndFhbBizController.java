@@ -302,20 +302,16 @@ public class GtAndFhbBizController extends BaseController {
         storeProdList.forEach(storeProd -> {
             // 获取clearArtNo
             String clearArtNo = this.extractCoreArticleNumber(storeProd.getProdArtNum());
-            // FHB匹配的货号
-            List<String> fhbMatchArtNoList = multiSameFhbMap.get(clearArtNo);
             // 获取GT匹配的商品sku列表
             List<GtProdSkuVO> gtMatchSkuList = this.getGtFirstSku(multiSaleSameGoMap, gtSaleGroupMap, clearArtNo);
-            fhbMatchArtNoList.forEach(fhbArtNo -> {
-                // 初始化商品服务承诺
-                prodSvcList.add(new StoreProductService().setStoreProdId(storeProd.getId()).setCustomRefund("0")
-                        .setThirtyDayRefund("0").setOneBatchSale("1").setRefundWithinThreeDay("0"));
-                // 初始化商品的类目属性
-                StoreProductCategoryAttribute cateAttr = Optional.ofNullable(prodAttrMap.get(gtMatchSkuList.get(0).getProduct_id()))
-                        .orElseThrow(() -> new ServiceException("没有GT商品类目属性!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
-                cateAttr.setStoreId(storeProd.getStoreId()).setStoreProdId(storeProd.getId());
-                prodAttrList.add(cateAttr);
-            });
+            // 初始化商品服务承诺
+            prodSvcList.add(new StoreProductService().setStoreProdId(storeProd.getId()).setCustomRefund("0")
+                    .setThirtyDayRefund("0").setOneBatchSale("1").setRefundWithinThreeDay("0"));
+            // 初始化商品的类目属性
+            StoreProductCategoryAttribute cateAttr = Optional.ofNullable(prodAttrMap.get(gtMatchSkuList.get(0).getProduct_id()))
+                    .orElseThrow(() -> new ServiceException("没有GT商品类目属性!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
+            cateAttr.setStoreId(storeProd.getStoreId()).setStoreProdId(storeProd.getId());
+            prodAttrList.add(cateAttr);
         });
         // 插入档口服务承诺、商品基本属性
         this.prodSvcMapper.insert(prodSvcList);
