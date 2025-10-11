@@ -1,9 +1,5 @@
 package com.ruoyi.web.controller.xkt.migartion;
 
-import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.thread.ThreadUtil;
-import cn.hutool.json.JSONUtil;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
 import co.elastic.clients.elasticsearch.core.bulk.BulkResponseItem;
@@ -19,7 +15,7 @@ import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.framework.es.EsClientWrapper;
-import com.ruoyi.system.domain.dto.productCategory.ProdCateDTO;
+import com.ruoyi.framework.notice.fs.FsNotice;
 import com.ruoyi.web.controller.xkt.migartion.vo.GtAndFHBCompareDownloadVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.GtAndFHBInitVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.fhb.FhbCusDiscountVO;
@@ -30,14 +26,8 @@ import com.ruoyi.web.controller.xkt.migartion.vo.gt.GtCateVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.gt.GtProdSkuVO;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.es.ESProductDTO;
-import com.ruoyi.xkt.dto.picture.ProductPicSyncDTO;
-import com.ruoyi.xkt.dto.picture.ProductPicSyncResultDTO;
 import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdMinPriceDTO;
-import com.ruoyi.xkt.dto.storeProduct.StoreProdDTO;
-import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileDTO;
-import com.ruoyi.xkt.dto.storeProductFile.StoreProdFileResDTO;
 import com.ruoyi.xkt.enums.EProductStatus;
-import com.ruoyi.xkt.enums.FileType;
 import com.ruoyi.xkt.enums.ListingType;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IPictureService;
@@ -88,6 +78,7 @@ public class GtAndFhbBizController extends BaseController {
     final StoreProductFileMapper storeProdFileMapper;
     final EsClientWrapper esClientWrapper;
     final IPictureService pictureService;
+    final FsNotice fsNotice;
 
 
     // TODO 提供导出测试环境数据的接口，不然迁移到生产还要重新来一遍
@@ -541,25 +532,17 @@ public class GtAndFhbBizController extends BaseController {
         // 将公共的商品同步到ES
         List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getDelFlag, Constants.UNDELETED).eq(StoreProduct::getStoreId, storeId));
+
+        // TODO 临时处理，10-11之后的数据
+        // TODO 临时处理，10-11之后的数据
+        // TODO 临时处理，10-11之后的数据
+        storeProdList = storeProdList.stream().filter(x -> x.getCreateTime().after(DateUtils.parseDate("2025-10-11 00:00:00"))).collect(Collectors.toList());
+
+
         if (CollectionUtils.isEmpty(storeProdList)) {
             return;
         }
         final List<String> storeProdIdList = storeProdList.stream().map(StoreProduct::getId).map(String::valueOf).collect(Collectors.toList());
-        // 获取所有的商品的第一张主图
-        List<StoreProdFileResDTO> mainPicList = this.storeProdFileMapper.selectMainPic(storeProdIdList);
-        if (CollectionUtils.isEmpty(mainPicList)) {
-            throw new ServiceException("档口没有商品主图!" + storeId, HttpStatus.ERROR);
-        }
-        // 所有的商品主图map
-        Map<Long, List<String>> mainPicMap = mainPicList.stream().filter(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC.getValue()))
-                .collect(Collectors.groupingBy(StoreProdFileResDTO::getStoreProdId, Collectors.mapping(StoreProdFileResDTO::getFileUrl, Collectors.toList())));
-        // 第一张商品主图map
-        Map<Long, StoreProdFileResDTO> firstMainPicMap = mainPicList.stream().filter(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC.getValue()))
-                .filter(x -> Objects.equals(x.getOrderNum(), Constants.ORDER_NUM_1)).collect(Collectors
-                        .toMap(StoreProdFileResDTO::getStoreProdId, x -> x));
-        // 主图视频map
-        Map<Long, Boolean> mainVideoMap = mainPicList.stream().filter(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC_VIDEO.getValue()))
-                .collect(Collectors.toMap(StoreProdFileResDTO::getStoreProdId, x -> true));
         // 所有的分类
         List<SysProductCategory> prodCateList = this.prodCateMapper.selectList(new LambdaQueryWrapper<SysProductCategory>()
                 .eq(SysProductCategory::getDelFlag, Constants.UNDELETED));
@@ -580,17 +563,14 @@ public class GtAndFhbBizController extends BaseController {
             final SysProductCategory cate = prodCateMap.get(product.getProdCateId());
             final SysProductCategory parCate = ObjectUtils.isEmpty(cate) ? null : prodCateMap.get(cate.getParentId());
             final Store store = storeMap.get(product.getStoreId());
-            final StoreProdFileResDTO mainPic = firstMainPicMap.get(product.getId());
             final BigDecimal prodMinPrice = prodMinPriceMap.get(product.getId());
             final StoreProductCategoryAttribute cateAttr = cateAttrMap.get(product.getId());
-            final Boolean hasVideo = mainVideoMap.getOrDefault(product.getId(), Boolean.FALSE);
+            final Boolean hasVideo = Boolean.FALSE;
             ESProductDTO esProductDTO = new ESProductDTO().setStoreProdId(product.getId().toString()).setProdArtNum(product.getProdArtNum())
                     .setHasVideo(hasVideo).setProdCateId(product.getProdCateId().toString()).setCreateTime(DateUtils.getTime())
                     .setProdCateName(ObjectUtils.isNotEmpty(cate) ? cate.getName() : "")
                     .setSaleWeight("0").setRecommendWeight("0").setPopularityWeight("0")
-                    .setMainPicUrl(ObjectUtils.isNotEmpty(mainPic) ? mainPic.getFileUrl() : "")
-                    .setMainPicName(ObjectUtils.isNotEmpty(mainPic) ? mainPic.getFileName() : "")
-                    .setMainPicSize(ObjectUtils.isNotEmpty(mainPic) ? mainPic.getFileSize() : BigDecimal.ZERO)
+                    .setMainPicUrl("").setMainPicName("").setMainPicSize(BigDecimal.ZERO)
                     .setParCateId(ObjectUtils.isNotEmpty(parCate) ? parCate.getId().toString() : "")
                     .setParCateName(ObjectUtils.isNotEmpty(parCate) ? parCate.getName() : "")
                     .setProdPrice(ObjectUtils.isNotEmpty(prodMinPrice) ? prodMinPrice.toString() : "")
@@ -614,19 +594,20 @@ public class GtAndFhbBizController extends BaseController {
         // 执行批量插入
         try {
             BulkResponse response = esClientWrapper.getEsClient().bulk(b -> b.index(Constants.ES_IDX_PRODUCT_INFO).operations(bulkOperations));
-            log.info("批量新增到 ES 成功，共处理 {} 条记录", response.items().size());
             log.info("批量新增到 ES 成功的 id列表: {}", response.items().stream().map(BulkResponseItem::id).collect(Collectors.toList()));
+            // 有哪些没执行成功的，需要发飞书通知
+            List<String> successIdList = response.items().stream().map(BulkResponseItem::id).collect(Collectors.toList());
+            List<String> unExeIdList = storeProdIdList.stream().map(String::valueOf).filter(x -> !successIdList.contains(x)).collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(unExeIdList)) {
+                fsNotice.sendMsg2DefaultChat(storeId + "，批量新增商品到 ES 失败", "以下storeProdId未执行成功: " + unExeIdList);
+            } else {
+                fsNotice.sendMsg2DefaultChat(storeId + "，批量新增商品到 ES 成功", "共处理 " + response.items().size() + " 条记录");
+            }
         } catch (Exception e) {
             log.error("批量新增到 ES 失败", e);
+            fsNotice.sendMsg2DefaultChat(storeId + "，批量新增商品到 ES 失败", e.getMessage());
         }
-        // 依次同步主图到图搜列表
-        storeProdList.forEach(x -> {
-            List<String> mainPicUrlList = mainPicMap.get(x.getId());
-            if (CollUtil.isEmpty(mainPicUrlList)) {
-                return;
-            }
-            this.sync2ImgSearchServer(x.getId(), mainPicUrlList);
-        });
+
     }
 
     /**
@@ -884,53 +865,6 @@ public class GtAndFhbBizController extends BaseController {
         }
         // 如果没有找到数字，返回空字符串
         throw new ServiceException("货号格式错误", HttpStatus.ERROR);
-    }
-
-    /**
-     * 组装ES 入参 DTO
-     *
-     * @param storeProd 档口商品
-     * @param updateDTO 档口商品更新入参
-     * @param storeName 档口名称
-     * @return
-     */
-    private ESProductDTO getESDTO(StoreProduct storeProd, StoreProdDTO updateDTO, String storeName) {
-        // 获取第一张主图
-        String firstMainPic = updateDTO.getFileList().stream().filter(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC.getValue()))
-                .min(Comparator.comparing(StoreProdFileDTO::getOrderNum)).map(StoreProdFileDTO::getFileUrl)
-                .orElseThrow(() -> new ServiceException("商品主图不存在!", HttpStatus.ERROR));
-        // 是否有主图视频
-        boolean hasVideo = updateDTO.getFileList().stream().anyMatch(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC_VIDEO.getValue()));
-        // 获取上一级分类的分类ID 及 分类名称
-        ProdCateDTO parCate = this.prodCateMapper.getParentCate(updateDTO.getProdCateId());
-        // 获取当前商品的最低价格
-        BigDecimal minPrice = updateDTO.getSizeList().stream().min(Comparator.comparing(StoreProdDTO.SPCSizeDTO::getPrice))
-                .map(StoreProdDTO.SPCSizeDTO::getPrice).orElseThrow(() -> new ServiceException("商品价格不存在!", HttpStatus.ERROR));
-        // 获取使用季节
-        String season = updateDTO.getCateAttr().getSuitableSeason();
-        // 获取风格
-        String style = updateDTO.getCateAttr().getStyle();
-        return BeanUtil.toBean(storeProd, ESProductDTO.class).setHasVideo(hasVideo)
-                .setProdCateName(updateDTO.getProdCateName()).setSaleWeight("0").setRecommendWeight("0").setPopularityWeight("0")
-                .setCreateTime(DateUtils.getTime()).setStoreName(storeName).setMainPicUrl(firstMainPic)
-                .setParCateId(parCate.getProdCateId().toString()).setParCateName(parCate.getName()).setProdPrice(minPrice.toString())
-                .setSeason(season).setStyle(style).setTags(Collections.singletonList(style));
-    }
-
-
-    /**
-     * 搜图服务同步商品
-     *
-     * @param storeProductId 档口商品ID
-     * @param picKeys        商品主图列表
-     */
-    private void sync2ImgSearchServer(Long storeProductId, List<String> picKeys) {
-        ThreadUtil.execAsync(() -> {
-                    ProductPicSyncResultDTO r =
-                            pictureService.sync2ImgSearchServer(new ProductPicSyncDTO(storeProductId, picKeys));
-                    log.info("商品图片同步至搜图服务器: id: {}, result: {}", storeProductId, JSONUtil.toJsonStr(r));
-                }
-        );
     }
 
 
