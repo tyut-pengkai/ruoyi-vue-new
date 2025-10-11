@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<trshybase-mapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.huisituo.com/dms/trshybase-mapping"
+                   xsi:schemaLocation="http://www.huisituo.com/dms/trshybase-mapping trshybase-mapping.xsd">
+    <class id="BidKnowledgeBean.stat" name="com.trs.common.hybase.domain.BidKnowledgeBean" table="tbyx_zcfg">
+        <property name="uuid" uuid="true"/>
+        <property name="id" column="ID"/>
+    </class>
+
+    <class id="BidKnowledgeBean.select" name="com.trs.common.hybase.domain.BidKnowledgeBean" table="tbyx_zcfg">
+        <property name="uuid" uuid="true"/>
+        <property name="id" column="ID"/>
+        <property name="title" column="TITLE"/>
+        <property name="content" column="CONTENT"/>
+    </class>
+</trshybase-mapping>

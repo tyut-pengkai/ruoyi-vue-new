@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns:tns="http://www.huisituo.com/dms/trshybase-mapping"
+        targetNamespace="http://www.huisituo.com/dms/trshybase-mapping"
+        elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema">
+
+
+    <element name="trshybase-mapping" type="tns:TrsHybaseMappingType"/>
+    <complexType name="TrsHybaseMappingType">
+        <sequence>
+            <element name="class" type="tns:ClassType" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+    </complexType>
+    <complexType name="ClassType">
+        <sequence>
+            <element name="property" type="tns:ClassPropertyType" maxOccurs="unbounded"/>
+        </sequence>
+        <attribute name="id" type="string" use="required"/>
+        <attribute name="name" type="string" use="required"/>
+        <attribute name="table" type="string" use="required"/>
+        <attribute name="extends" type="string"/>
+    </complexType>
+    <complexType name="ClassPropertyType">
+        <sequence>
+            <element name="extractor" type="tns:BeanType" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+        <attribute name="name" type="string" use="required"/>
+        <attribute name="column" type="string"/>
+        <attribute name="uuid" type="boolean"/>
+        <attribute name="highlighter" type="boolean"/>
+    </complexType>
+    <complexType name="BeanType">
+        <attribute name="type" type="string" use="required"/>
+    </complexType>
+
+</schema>

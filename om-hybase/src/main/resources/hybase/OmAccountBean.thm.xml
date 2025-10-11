@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<trshybase-mapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.huisituo.com/dms/trshybase-mapping"
+                   xsi:schemaLocation="http://www.huisituo.com/dms/trshybase-mapping trshybase-mapping.xsd">
+
+    <!--微博-->
+    <class id="OmWeibo.account" name="com.trs.common.hybase.domain.OmAccountBean" table="trsom_weibo_accountinfo">
+
+        <property name="sid" column="SID"/>
+        <property name="uid" column="IR_UID"/>
+        <property name="irScreenName" column="IR_SCREEN_NAME"/>
+        <property name="irDescription" column="IR_DESCRIPTION"/>
+        <property name="gender" column="IR_GENDER"/>
+        <property name="friends" column="IR_FRIENDS_COUNT"/>
+        <property name="fans" column="IR_FOLLOWERS_COUNT"/>
+        <property name="statusCount" column="IR_STATUES_COUNT"/>
+        <property name="verified" column="IR_VERIFIED"/>
+        <property name="loadTime" column="LOADTIME"/>
+        <property name="registerTime" column="IR_REGISTERDATA"/>
+        <property name="irProfileImageUrl" column="IR_PROFILE_IMAGE_URL"/>
+
+    </class>
+
+    <!--微信-->
+    <class id="OmWeixin.account" name="com.trs.common.hybase.domain.OmAccountBean"
+           table="trsom_weixin_accountinfo">
+
+        <property name="sid" column="SID"/>
+        <property name="irWeiXinId" column="IR_WEIXINID"/>
+        <property name="irScreenName" column="IR_WEIXINNAME"/>
+        <property name="irDescription" column="IR_WEIXININFO"/>
+        <property name="irProfileImageUrl" column="IR_PROFILE_IMAGE_URL"/>
+        <property name="irIsVerified" column="IR_ISVERIFIED"/>
+        <property name="irVerifyInfo" column="IR_VERIFYINFO"/>
+        <property name="irVerifyDate" column="IR_VERIFYDATE"/>
+
+
+    </class>
+    <!--头条-->
+    <class id="OmToutiao.account" name="com.trs.common.hybase.domain.OmAccountBean"
+           table="trsom_toutiao_accountinfo">
+
+        <property name="sid" column="SID"/>
+        <property name="irMid" column="IR_MID"/>
+        <property name="irScreenName" column="IR_SCREEN_NAME"/>
+        <property name="irDescription" column="IR_DESCRIPTION"/>
+        <property name="friends" column="IR_FRIENDS_COUNT"/>
+        <property name="fans" column="IR_FOLLOWERS_COUNT"/>
+        <property name="irIsVerified" column="IR_ISVERIFIED"/>
+        <property name="irVerifyInfo" column="IR_VERIFYINFO"/>
+        <property name="loadTime" column="LOADTIME"/>
+        <property name="irDomain" column="IR_DOMAIN"/>
+        <property name="irProfileImageUrl" column="IR_PROFILE_IMAGE_URL"/>
+
+    </class>
+
+    <class id="OmSocial.account" name="com.trs.common.hybase.domain.OmAccountBean"
+           table="trsom_socia_accountinfos">
+
+        <property name="sid" column="SID"/>
+        <property name="irUserId" column="IR_USERID"/>
+        <property name="irUserNameZH" column="IR_USERNAME_ZH"/>
+        <property name="irUserNameEN" column="IR_USERNAME_EN"/>
+        <property name="irUserUrl" column="IR_USER_URL"/>
+        <property name="irDescription" column="IR_DESCRIPTION"/>
+        <property name="irUserInfoType" column="IR_USER_INFOTYPE"/>
+        <property name="fans" column="IR_FANSCOUNT"/>
+        <property name="irUserSchool" column="IR_USER_SCHOOL"/>
+        <property name="irUserDegree" column="IR_USER_DEGREE"/>
+        <property name="irUserMajor" column="IR_USER_MAJOR"/>
+        <property name="irUserCompany" column="IR_USER_COMPANY"/>
+        <property name="irUserJobDuration" column="IR_USER_JOBDURATION"/>
+        <property name="irUserMD5" column="IR_USERMD5"/>
+        <property name="syToChinaAttitude" column="SY_TOCHIAN_ATTITUDE"/>
+        <property name="syPoliticalIdent" column="SY_POLITICAL_IDENT"/>
+        <property name="irCreateDate" column="IR_CREATEDATE"/>
+        <property name="irEmail" column="IR_EMAIL"/>
+        <property name="irAuThen" column="IR_AUTHEN"/>
+        <property name="irAuThenDes" column="IR_AUTHEN_DES"/>
+        <property name="irWorkJob" column="IR_WORKJOB"/>
+        <property name="irWorkJob" column="IR_WORKJOB"/>
+        <property name="irUserInfoType" column="IR_USER_INFOTYPE"/>
+
+
+    </class>
+
+</trshybase-mapping>

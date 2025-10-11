@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<trshybase-mapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.huisituo.com/dms/trshybase-mapping"
+                   xsi:schemaLocation="http://www.huisituo.com/dms/trshybase-mapping trshybase-mapping.xsd">
+    <class id="OmDataBean.stat" name="com.om.hybase.common.domain.OmDataBean" table="trsom_maindb_common">
+        <property name="uuid" uuid="true"/>
+        <property name="rid" column="RID"/>
+    </class>
+    <class id="OmDataBean.all" name="com.om.hybase.common.domain.OmDataBean" table="trsom_maindb_common">
+        <property name="uuid" uuid="true"/>
+        <property name="rid" column="RID"/>
+        <property name="sid" column="SID"/>
+        <property name="title" column="IR_URLTITLE"/>
+        <property name="content" column="IR_CONTENT"/>
+        <property name="url" column="IR_URLNAME"/>
+        <property name="author" column="IR_AUTHORS"/>
+        <property name="source" column="IR_SITENAME"/>
+        <property name="pubTime" column="IR_URLTIME"/>
+        <property name="keywords" column="IR_KEYWORDS"/>
+        <property name="abstracts" column="IR_ABSTRACT"/>
+        <property name="infotype" column="SY_INFOTYPE"/>
+        <property name="tendency" column="SY_BB_COMMON"/>
+    </class>
+    <!--  检索中心和详情页专用  -->
+    <class id="OmDataBean.search" name="com.trs.common.hybase.domain.OmDataBean" table="trsom_maindb_common">
+        <property name="uuid" uuid="true"/>
+        <property name="rid" column="RID"/>
+        <property name="sid" column="SID"/>
+        <property name="title" column="IR_URLTITLE" highlighter="true">
+            <extractor type="com.trs.common.hybase.extractor.HybaseUnescapeHtml4Extractor"/>
+            <extractor type="com.trs.common.hybase.extractor.HybaseHighlighterExtractor"/>
+        </property>
+        <property name="content" column="IR_CONTENT" highlighter="true">
+            <extractor type="com.trs.common.hybase.extractor.HybaseUnescapeHtml4Extractor"/>
+            <extractor type="com.trs.common.hybase.extractor.HybaseHighlighterExtractor"/>
+            <extractor type="com.trs.common.hybase.extractor.HybaseConvertHtmlExtractor"/>
+        </property>
+        <property name="abstracts" column="SY_ABSTRACT"/>
+        <property name="advancedAbstracts" column="IR_CONTENT">
+            <extractor type="com.trs.common.hybase.extractor.HybaseUnescapeHtml4Extractor"/>
+            <extractor type="com.trs.common.hybase.extractor.HybaseHitAbstractExtractor"/>
+        </property>
+        <property name="url" column="IR_URLNAME"/>
+        <property name="imageUrl" column="IR_CONTENT">
+            <extractor type="com.trs.common.hybase.extractor.HybaseImageUrlExtractor"/>
+        </property>
+        <property name="videoUrl" column="IR_CONTENT">
+            <extractor type="com.trs.common.hybase.extractor.HybaseVideoUrlExtractor"/>
+        </property>
+        <property name="author" column="IR_AUTHORS"/>
+        <property name="source" column="IR_SITENAME"/>
+        <property name="pubTime" column="IR_URLTIME"/>
+        <property name="keywords" column="SY_KEYWORDS"/>
+        <property name="infotype" column="SY_INFOTYPE"/>
+        <property name="tendency" column="SY_BB_COMMON"/>
+        <property name="irPextag2" column="IR_PEXTAG2"/>
+        <property name="irPextag3" column="IR_PEXTAG3"/>
+        <property name="irAccountUid" column="IR_ACCOUNT_UID"/>
+        <property name="irAccountCount1" column="IR_ACCOUNT_COUNT1"/>
+        <property name="irAccountVerified" column="IR_ACCOUNT_VERIFIED"/>
+        <property name="syWbForwardLevel" column="SY_WB_FORWARD_LEVEL"/>
+        <property name="syWbExtractName" column="SY_WB_EXTRACT_NAME"/>
+        <property name="readCount" column="IR_COUNT1"/>
+        <property name="commentsCount" column="IR_COUNT2"/>
+        <property name="likeCount" column="IR_COUNT3"/>
+        <property name="collectionCount" column="IR_COUNT4"/>
+        <property name="forwardCount" column="SY_IEXTAG1"/>
+        <property name="shareCount" column="SY_IEXTAG2"/>
+        <property name="syImageContent" column="SY_IMGCONTENT"/>
+    </class>
+    <!--热点挖掘使用-->
+    <class id="OmDataBean.hotSpot" name="com.om.hybase.common.domain.OmDataBean" table="trsom_sjmedia_apidb">
+        <property name="uuid" uuid="true"/>
+        <property name="rid" column="RID"/>
+        <property name="sid" column="SID"/>
+        <property name="title" column="IR_URLTITLE"/>
+        <property name="content" column="IR_CONTENT"/>
+        <property name="url" column="IR_URLNAME"/>
+        <property name="author" column="IR_AUTHORS"/>
+        <property name="source" column="IR_SITENAME"/>
+        <property name="pubTime" column="IR_URLTIME"/>
+        <property name="keywords" column="IR_KEYWORDS"/>
+        <property name="abstracts" column="IR_ABSTRACT"/>
+        <property name="infotype" column="SY_INFOTYPE"/>
+        <property name="tendency" column="SY_BB_COMMON"/>
+        <property name="syIexTag1" column="SY_IEXTAG1"/>
+        <property name="irCataLog2" column="IR_CATALOG2"/>
+        <property name="irCextTag3" column="IR_CEXTAG3"/>
+        <property name="IrCextTag1" column="IR_CEXTAG1"/>
+        <property name="irCount1" column="IR_COUNT1"/>
+        <property name="irCount2" column="IR_COUNT2"/>
+
+    </class>
+</trshybase-mapping>

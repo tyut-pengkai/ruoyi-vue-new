@@ -3,17 +3,17 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
-    <groupId>com.ruoyi</groupId>
-    <artifactId>ruoyi</artifactId>
-    <version>3.9.0</version>
 
-    <name>ruoyi</name>
+    <groupId>com.common</groupId>
+    <artifactId>om</artifactId>
+    <version>${revision}</version>
+
+    <name>project</name>
     <url>http://www.ruoyi.vip</url>
-    <description>若依管理系统</description>
-    
+    <description>小型项目通用框架</description>
+
     <properties>
-        <ruoyi.version>3.9.0</ruoyi.version>
+        <revision>1.0.0</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
@@ -35,11 +35,36 @@
         <logback.version>1.2.13</logback.version>
         <spring-security.version>5.7.14</spring-security.version>
         <spring-framework.version>5.3.39</spring-framework.version>
+        <mapstruct-plus.lombok.version>0.2.0</mapstruct-plus.lombok.version>
+        <lombok.version>1.18.34</lombok.version>
+        <hutool.version>5.8.31</hutool.version>
+        <protobuf.version>3.22.2</protobuf.version>
     </properties>
 
     <!-- 依赖声明 -->
     <dependencyManagement>
         <dependencies>
+
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>${protobuf.version}</version>
+            </dependency>
+
+            <!-- hutool 的依赖配置-->
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-bom</artifactId>
+                <version>${hutool.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
 
             <!-- 覆盖SpringFramework的依赖配置-->
             <dependency>
@@ -185,49 +210,57 @@
 
             <!-- 定时任务-->
             <dependency>
-                <groupId>com.ruoyi</groupId>
-                <artifactId>ruoyi-quartz</artifactId>
-                <version>${ruoyi.version}</version>
+                <groupId>com.common</groupId>
+                <artifactId>om-quartz</artifactId>
+                <version>1.0.0</version>
             </dependency>
 
             <!-- 代码生成-->
             <dependency>
-                <groupId>com.ruoyi</groupId>
-                <artifactId>ruoyi-generator</artifactId>
-                <version>${ruoyi.version}</version>
+                <groupId>com.common</groupId>
+                <artifactId>om-generator</artifactId>
+                <version>${revision}</version>
             </dependency>
 
             <!-- 核心模块-->
             <dependency>
-                <groupId>com.ruoyi</groupId>
-                <artifactId>ruoyi-framework</artifactId>
-                <version>${ruoyi.version}</version>
+                <groupId>com.common</groupId>
+                <artifactId>om-framework</artifactId>
+                <version>${revision}</version>
             </dependency>
 
             <!-- 系统模块-->
             <dependency>
-                <groupId>com.ruoyi</groupId>
-                <artifactId>ruoyi-system</artifactId>
-                <version>${ruoyi.version}</version>
+                <groupId>com.common</groupId>
+                <artifactId>om-system</artifactId>
+                <version>${revision}</version>
             </dependency>
 
             <!-- 通用工具-->
             <dependency>
-                <groupId>com.ruoyi</groupId>
-                <artifactId>ruoyi-common</artifactId>
-                <version>${ruoyi.version}</version>
+                <groupId>com.common</groupId>
+                <artifactId>om-common</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 海贝模块-->
+            <dependency>
+                <groupId>com.common</groupId>
+                <artifactId>om-hybase</artifactId>
+                <version>${revision}</version>
             </dependency>
 
         </dependencies>
     </dependencyManagement>
 
     <modules>
-        <module>ruoyi-admin</module>
-        <module>ruoyi-framework</module>
-        <module>ruoyi-system</module>
-        <module>ruoyi-quartz</module>
-        <module>ruoyi-generator</module>
-        <module>ruoyi-common</module>
+        <module>om-admin</module>
+        <module>om-framework</module>
+        <module>om-system</module>
+        <module>om-quartz</module>
+        <module>om-generator</module>
+        <module>om-common</module>
+        <module>om-hybase</module>
     </modules>
     <packaging>pom</packaging>
 

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<trshybase-mapping xmlns="http://www.huisituo.com/dms/trshybase-mapping"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.huisituo.com/dms/trshybase-mapping trshybase-mapping.xsd ">
+    <class id="RanksNews.full" name="com.om.hybase.common.domain.OmRansNewsBean" table="trsom_maindb_ranks">
+        <property name="sid" column="SID"/>
+        <property name="title" column="IR_URLTITLE">
+            <extractor type="com.trs.common.hybase.extractor.HybaseHighlighterExtractor"/>
+        </property>
+        <property name="irHeat" column="IR_HEAT"/>
+        <property name="irIndexLink" column="IR_INDEX_LINK"/>
+        <property name="irSearchIndex" column="IR_SEARCH_INDEX"/>
+        <property name="irContent" column="IR_CONTENT" highlighter="true">
+            <extractor type="com.trs.common.hybase.extractor.HybaseHighlighterExtractor"/>
+        </property>
+        <property name="urlTime" column="IR_URLTIME"/>
+        <property name="siteName" column="IR_SITENAME"/>
+        <property name="channel" column="IR_CHANNEL"/>
+        <property name="urlName" column="IR_URLNAME"/>
+    </class>
+</trshybase-mapping>

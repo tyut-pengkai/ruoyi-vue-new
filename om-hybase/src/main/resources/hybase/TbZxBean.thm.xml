@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<trshybase-mapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.huisituo.com/dms/trshybase-mapping"
+                   xsi:schemaLocation="http://www.huisituo.com/dms/trshybase-mapping trshybase-mapping.xsd">
+    <class id="zixun.stat" name="com.trs.common.hybase.domain.TbZxBean" table="tbyx_zixun">
+        <property name="uuid" uuid="true"/>
+        <property name="rid" column="RID"/>
+    </class>
+
+    <class id="zixun.all" name="com.trs.common.hybase.domain.TbZxBean" table="tbyx_zixun">
+        <property name="uuid" uuid="true"/>
+        <property name="rid" column="RID"/>
+        <property name="urlTitle" column="URLTITLE"/>
+        <property name="urlContent" column="URLCONTENT"/>
+        <property name="source" column="SOURCE"/>
+        <property name="urlName" column="URLNAME"/>
+        <property name="pubTime" column="PUBTIME"/>
+        <property name="loadTime" column="LOADTIME"/>
+    </class>
+</trshybase-mapping>

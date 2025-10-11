@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<trshybase-mapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.huisituo.com/dms/trshybase-mapping"
+                   xsi:schemaLocation="http://www.huisituo.com/dms/trshybase-mapping trshybase-mapping.xsd">
+    <class id="AgentBean.stat" name="com.trs.common.hybase.domain.AgentBean" table="tbyx_dljg">
+        <property name="uuid" uuid="true"/>
+        <property name="rid" column="RID"/>
+    </class>
+
+    <class id="AgentBean.select" name="com.trs.common.hybase.domain.AgentBean" table="tbyx_dljg">
+        <property name="uuid" uuid="true"/>
+        <property name="rid" column="RID"/>
+        <property name="comName" column="COM_NAME"/>
+        <property name="comBidName" column="COM_BID_NAME"/>
+        <property name="buyerType" column="BUYER_TYPE"/>
+        <property name="legalPerson" column="LEGAL_PERSON"/>
+        <property name="esDate" column="ES_DATE"/>
+        <property name="province" column="PROVINCE"/>
+        <property name="city" column="CITY"/>
+        <property name="country" column="COUNTRY"/>
+        <property name="phone" column="PHONE"/>
+        <property name="creditCode" column="CREDIT_CODE"/>
+        <property name="comType" column="COM_TYPE"/>
+        <property name="industry" column="INDUSTRY"/>
+        <property name="address" column="ADDRESS"/>
+        <property name="scope" column="SCOPE"/>
+        <property name="remark" column="REMARK"/>
+        <property name="loadTime" column="LOAD_TIME"/>
+        <property name="relaPerson" column="RELA_PERSON"/>
+        <property name="relaPhone" column="RELA_PHONE"/>
+        <property name="regisDate" column="REGIS_DATE"/>
+        <property name="regisAddr" column="REGIS_ADDR"/>
+        <property name="sortMark" column="SORT_MARK"/>
+    </class>
+</trshybase-mapping>
