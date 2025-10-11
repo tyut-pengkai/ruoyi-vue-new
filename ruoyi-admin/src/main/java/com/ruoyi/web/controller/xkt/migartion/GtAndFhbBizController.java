@@ -833,11 +833,15 @@ public class GtAndFhbBizController extends BaseController {
         }
         // 依次遍历存在优惠的颜色，设置步橘系统客户优惠关系
         fhbColorCusDiscMap.forEach((fhbColor, fhbCusDiscList) -> fhbCusDiscList.forEach(fhbCusDisc -> {
-            StoreProductColor buJuProdColor = Optional.ofNullable(buJuProdColorMap.get(fhbColor)).orElseThrow(() -> new ServiceException("没有步橘系统对应的颜色!" + fhbColor, HttpStatus.ERROR));
-            StoreCustomer storeCus = Optional.ofNullable(buJuStoreCusMap.get(fhbCusDisc.getCustomerName())).orElseThrow(() -> new ServiceException("没有步橘系统对应的客户!" + fhbCusDisc.getCustomerName(), HttpStatus.ERROR));
-            // 将FHB客户优惠 转为步橘系统优惠
-            prodCusDiscList.add(new StoreCustomerProductDiscount().setStoreId(storeId).setStoreProdId(storeProdId).setStoreCusId(storeCus.getId())
-                    .setStoreCusName(storeCus.getCusName()).setStoreProdColorId(buJuProdColor.getId()).setDiscount(fhbCusDisc.getDiscount()));
+            // 获取步橘系统对应的颜色 Z1065 黑手抓纹绒里、黑手抓纹单里
+            StoreProductColor buJuProdColor = buJuProdColorMap.get(fhbColor);
+            if (ObjectUtils.isNotEmpty(buJuProdColor)) {
+                StoreCustomer storeCus = Optional.ofNullable(buJuStoreCusMap.get(fhbCusDisc.getCustomerName()))
+                        .orElseThrow(() -> new ServiceException("没有步橘系统对应的客户!" + fhbCusDisc.getCustomerName(), HttpStatus.ERROR));
+                // 将FHB客户优惠 转为步橘系统优惠
+                prodCusDiscList.add(new StoreCustomerProductDiscount().setStoreId(storeId).setStoreProdId(storeProdId).setStoreCusId(storeCus.getId())
+                        .setStoreCusName(storeCus.getCusName()).setStoreProdColorId(buJuProdColor.getId()).setDiscount(fhbCusDisc.getDiscount()));
+            }
         }));
     }
 
