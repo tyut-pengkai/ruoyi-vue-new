@@ -59,8 +59,8 @@ public class TyController extends BaseController {
                     String colorName = x.getColorName().trim();
                     String tySnPrefix = x.getTySnPrefix().trim();
                     // 如果货号包括-R 则表明是 货号为绒里，手动给颜色添加后缀“绒里”
-                    if (prodArtNum.contains("-R")) {
-                        colorName = colorName.contains("绒里") ? colorName : (colorName + "绒里");
+                    if (prodArtNum.contains("R")) {
+                        colorName = colorName.contains("绒") ? colorName : (colorName + "绒里");
                     }
                     return x.setProdArtNum(prodArtNum).setColorName(colorName).setTySnPrefix(tySnPrefix);
                 })
@@ -124,8 +124,8 @@ public class TyController extends BaseController {
                         String prodArtNum = x.getProdArtNum().trim();
                         String colorName = x.getColorName().trim();
                         // 如果货号包括-R 则表明是 货号为绒里，手动给颜色添加后缀“绒里”
-                        if (prodArtNum.contains("-R")) {
-                            colorName = colorName.contains("绒里") ? colorName : (colorName + "绒里");
+                        if (prodArtNum.contains("R")) {
+                            colorName = colorName.contains("绒") ? colorName : (colorName + "绒里");
                         }
                         x.setProdArtNum(prodArtNum).setColorName(colorName).setCusName(cusName).setDiscount(discount);
                         importCusDiscMap.put(x.getProdArtNum() + ":" + x.getColorName(), x);
@@ -156,9 +156,9 @@ public class TyController extends BaseController {
         tyStockList.forEach(x -> {
             String prodArtNum = x.getProdArtNum().trim();
             String colorName = x.getColorName().trim();
-            // 如果货号包括-R 则表明是 货号为绒里，手动给颜色添加后缀“绒里”
-            if (prodArtNum.contains("-R")) {
-                colorName = colorName.contains("绒里") ? colorName : (colorName + "绒里");
+            // 如果货号包括R 则表明是 货号为绒里，手动给颜色添加后缀“绒里”
+            if (prodArtNum.contains("R")) {
+                colorName = colorName.contains("绒") ? colorName : (colorName + "绒里");
             }
             if (importStockMap.containsKey(prodArtNum + ":" + colorName)) {
                 System.err.println(prodArtNum + ":" + colorName);

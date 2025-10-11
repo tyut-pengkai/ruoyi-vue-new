@@ -92,7 +92,9 @@ public class GtAndTyBizController extends BaseController {
 
     }
 
-
+    /**
+     * step1
+     */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @GetMapping("/compare/{userId}")
     public void compare(HttpServletResponse response, @PathVariable("userId") Integer userId) throws UnsupportedEncodingException {
@@ -197,10 +199,8 @@ public class GtAndTyBizController extends BaseController {
     }
 
     /**
+     * step2
      * 颜色、客户、商品初始化（包含类目属性及服务等）
-     *
-     * @param initVO
-     * @return
      */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @PostMapping("/init-prod")
@@ -223,14 +223,14 @@ public class GtAndTyBizController extends BaseController {
                 .getCacheObject(CacheConstants.MIGRATION_GT_SALE_BASIC_KEY + initVO.getUserId()), new ArrayList<>());
         // 查看gt 在售的商品 这边有多少相似的货号
         gtSaleBasicList.stream().map(GtProdSkuVO::getArticle_number).distinct()
-                // 过滤掉需要特殊处理的货号
-                .filter(article_number -> !initVO.getExcludeArtNoList().contains(article_number))
                 .forEach(article_number -> {
                     // 只保留核心连续的数字，去除其他所有符号
                     String cleanArtNo = this.extractCoreArticleNumber(article_number);
-                    List<String> existList = multiSaleSameGoMap.containsKey(cleanArtNo) ? multiSaleSameGoMap.get(cleanArtNo) : new ArrayList<>();
-                    existList.add(article_number);
-                    multiSaleSameGoMap.put(cleanArtNo, existList);
+                    if (CollectionUtils.isEmpty(initVO.getExcludeArtNoList()) || !initVO.getExcludeArtNoList().contains(cleanArtNo)) {
+                        List<String> existList = multiSaleSameGoMap.containsKey(cleanArtNo) ? multiSaleSameGoMap.get(cleanArtNo) : new ArrayList<>();
+                        existList.add(article_number);
+                        multiSaleSameGoMap.put(cleanArtNo, existList);
+                    }
                 });
         // 查看gt 下架的商品有多少相似的货号
         List<GtProdSkuVO> gtOffSaleBasicList = ObjectUtils.defaultIfNull(redisCache
@@ -245,14 +245,14 @@ public class GtAndTyBizController extends BaseController {
         // 查看TY 这边有多少相似的货号
         List<TyProdImportVO> tyProdList = redisCache.getCacheObject(CacheConstants.MIGRATION_TY_PROD_KEY + initVO.getUserId());
         tyProdList.stream().map(TyProdImportVO::getProdArtNum).distinct()
-                // 过滤掉需要特殊处理的货号
-                .filter(artNo -> !initVO.getExcludeArtNoList().contains(artNo))
                 .forEach(artNo -> {
                     // 只保留核心连续的数字，去除其他所有符号
                     String cleanArtNo = this.extractCoreArticleNumber(artNo);
-                    List<String> existList = multiSameTyMap.containsKey(cleanArtNo) ? multiSameTyMap.get(cleanArtNo) : new ArrayList<>();
-                    existList.add(artNo);
-                    multiSameTyMap.put(cleanArtNo, existList);
+                    if (CollectionUtils.isEmpty(initVO.getExcludeArtNoList()) || !initVO.getExcludeArtNoList().contains(cleanArtNo)) {
+                        List<String> existList = multiSameTyMap.containsKey(cleanArtNo) ? multiSameTyMap.get(cleanArtNo) : new ArrayList<>();
+                        existList.add(artNo);
+                        multiSameTyMap.put(cleanArtNo, existList);
+                    }
                 });
         // gt按照货号分组
         Map<String, List<GtProdSkuVO>> gtSaleGroupMap = gtSaleBasicList.stream().collect(Collectors.groupingBy(GtProdSkuVO::getArticle_number));
@@ -317,10 +317,8 @@ public class GtAndTyBizController extends BaseController {
 
 
     /**
+     * step3
      * 商品颜色及商品颜色尺码
-     *
-     * @param initVO
-     * @return
      */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @PostMapping("/init-color")
@@ -340,14 +338,14 @@ public class GtAndTyBizController extends BaseController {
                 .getCacheObject(CacheConstants.MIGRATION_GT_SALE_BASIC_KEY + initVO.getUserId()), new ArrayList<>());
         // 查看gt 在售的商品 这边有多少相似的货号
         gtSaleBasicList.stream().map(GtProdSkuVO::getArticle_number).distinct()
-                // 过滤掉需要特殊处理的货号
-                .filter(article_number -> !initVO.getExcludeArtNoList().contains(article_number))
                 .forEach(article_number -> {
                     // 只保留核心连续的数字，去除其他所有符号
                     String cleanArtNo = this.extractCoreArticleNumber(article_number);
-                    List<String> existList = multiSaleSameGoMap.containsKey(cleanArtNo) ? multiSaleSameGoMap.get(cleanArtNo) : new ArrayList<>();
-                    existList.add(article_number);
-                    multiSaleSameGoMap.put(cleanArtNo, existList);
+                    if (CollectionUtils.isEmpty(initVO.getExcludeArtNoList()) || !initVO.getExcludeArtNoList().contains(cleanArtNo)) {
+                        List<String> existList = multiSaleSameGoMap.containsKey(cleanArtNo) ? multiSaleSameGoMap.get(cleanArtNo) : new ArrayList<>();
+                        existList.add(article_number);
+                        multiSaleSameGoMap.put(cleanArtNo, existList);
+                    }
                 });
 
         // 查看gt 下架的商品有多少相似的货号
@@ -366,14 +364,14 @@ public class GtAndTyBizController extends BaseController {
         // TY按照颜色分类
         Map<String, List<TyProdImportVO>> tyProdGroupMap = tyProdList.stream().collect(Collectors.groupingBy(TyProdImportVO::getProdArtNum));
         tyProdList.stream().map(TyProdImportVO::getProdArtNum).distinct()
-                // 过滤掉需要特殊处理的货号
-                .filter(artNo -> !initVO.getExcludeArtNoList().contains(artNo))
                 .forEach(artNo -> {
                     // 只保留核心连续的数字，去除其他所有符号
                     String cleanArtNo = this.extractCoreArticleNumber(artNo);
-                    List<String> existList = multiSameTyMap.containsKey(cleanArtNo) ? multiSameTyMap.get(cleanArtNo) : new ArrayList<>();
-                    existList.add(artNo);
-                    multiSameTyMap.put(cleanArtNo, existList);
+                    if (CollectionUtils.isEmpty(initVO.getExcludeArtNoList()) || !initVO.getExcludeArtNoList().contains(cleanArtNo)) {
+                        List<String> existList = multiSameTyMap.containsKey(cleanArtNo) ? multiSameTyMap.get(cleanArtNo) : new ArrayList<>();
+                        existList.add(artNo);
+                        multiSameTyMap.put(cleanArtNo, existList);
+                    }
                 });
         // gt按照货号分组
         Map<String, List<GtProdSkuVO>> gtSaleGroupMap = gtSaleBasicList.stream().collect(Collectors.groupingBy(GtProdSkuVO::getArticle_number));
@@ -420,6 +418,9 @@ public class GtAndTyBizController extends BaseController {
         return R.ok();
     }
 
+    /**
+     * step4
+     */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @PostMapping("/init-cus-disc")
     @Transactional
@@ -436,14 +437,14 @@ public class GtAndTyBizController extends BaseController {
         // 查看TY 这边有多少相似的货号
         List<TyProdImportVO> tyProdList = redisCache.getCacheObject(CacheConstants.MIGRATION_TY_PROD_KEY + initVO.getUserId());
         tyProdList.stream().map(TyProdImportVO::getProdArtNum).distinct()
-                // 过滤掉需要特殊处理的货号
-                .filter(artNo -> !initVO.getExcludeArtNoList().contains(artNo))
                 .forEach(artNo -> {
                     // 只保留核心连续的数字，去除其他所有符号
                     String cleanArtNo = this.extractCoreArticleNumber(artNo);
-                    List<String> existList = multiSameTyMap.containsKey(cleanArtNo) ? multiSameTyMap.get(cleanArtNo) : new ArrayList<>();
-                    existList.add(artNo);
-                    multiSameTyMap.put(cleanArtNo, existList);
+                    if (CollectionUtils.isEmpty(initVO.getExcludeArtNoList()) || !initVO.getExcludeArtNoList().contains(cleanArtNo)) {
+                        List<String> existList = multiSameTyMap.containsKey(cleanArtNo) ? multiSameTyMap.get(cleanArtNo) : new ArrayList<>();
+                        existList.add(artNo);
+                        multiSameTyMap.put(cleanArtNo, existList);
+                    }
                 });
 
         // 从redis中获取已存在的客户优惠数据

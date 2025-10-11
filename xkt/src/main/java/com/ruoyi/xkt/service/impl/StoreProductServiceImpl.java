@@ -139,7 +139,8 @@ public class StoreProductServiceImpl implements IStoreProductService {
         StoreProductService storeProductSvc = this.storeProdSvcMapper.selectByStoreProdId(storeProdId);
         // 档口生产工艺信息
         StoreProductProcess prodProcess = this.storeProdProcMapper.selectByStoreProdId(storeProdId);
-        return storeProdResDTO.setFileList(fileResList).setAllColorList(allColorList).setDetail(prodDetail.getDetail())
+        return storeProdResDTO.setFileList(fileResList).setAllColorList(allColorList)
+                .setDetail(ObjectUtils.isNotEmpty(prodDetail) ? prodDetail.getDetail() : "")
                 .setColorList(colorList).setSizeList(sizeList).setCateAttr(BeanUtil.toBean(cateAttr, StoreProdCateAttrDTO.class))
                 .setSvc(BeanUtil.toBean(storeProductSvc, StoreProdSvcDTO.class)).setProcess(BeanUtil.toBean(prodProcess, StoreProdProcessDTO.class));
     }
