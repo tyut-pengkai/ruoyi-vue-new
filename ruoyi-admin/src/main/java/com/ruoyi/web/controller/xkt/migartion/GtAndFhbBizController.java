@@ -524,7 +524,7 @@ public class GtAndFhbBizController extends BaseController {
      */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @PostMapping("/sync-es/{storeId}")
-    public void syncToEs(@PathVariable("storeId") Long storeId) {
+    public R<Integer> syncToEs(@PathVariable("storeId") Long storeId) {
         // 将公共的商品同步到ES
         List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getDelFlag, Constants.UNDELETED).eq(StoreProduct::getStoreId, storeId));
@@ -603,7 +603,7 @@ public class GtAndFhbBizController extends BaseController {
             log.error("批量新增到 ES 失败", e);
             fsNotice.sendMsg2DefaultChat(storeId + "，批量新增商品到 ES 失败", e.getMessage());
         }
-
+        return R.ok();
     }
 
     /**
