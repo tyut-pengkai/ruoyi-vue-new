@@ -9,6 +9,7 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.web.controller.xkt.migartion.vo.GtAndFHBCompareDownloadVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.GtAndFHBInitVO;
@@ -72,7 +73,7 @@ public class GtAndFhbBizController extends BaseController {
 
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @PutMapping("/sync-es/{storeId}")
+    @PostMapping("/sync-es/{storeId}")
     public void syncToEs(@PathVariable("storeId") Long storeId) {
         // 同步主图 到 图搜 服务器
 
@@ -83,7 +84,7 @@ public class GtAndFhbBizController extends BaseController {
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @PutMapping("/sync-pic/{storeId}")
+    @PostMapping("/sync-pic/{storeId}")
     public void syncToPicSearch(@PathVariable("storeId") Long storeId) {
         // 同步主图 到 图搜 服务器
 
@@ -94,6 +95,9 @@ public class GtAndFhbBizController extends BaseController {
     }
 
 
+    /**
+     * step1
+     */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @GetMapping("/compare/{userId}/{supplierId}")
     public void compare(HttpServletResponse response, @PathVariable("userId") Integer userId, @PathVariable("supplierId") Integer supplierId) throws UnsupportedEncodingException {
@@ -199,13 +203,18 @@ public class GtAndFhbBizController extends BaseController {
     }
 
 
+    /**
+     * step2
+     */
     // 新增颜色、客户、商品基础数据
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @PutMapping("/init-prod")
+    @PostMapping("/init-prod")
     @Transactional
     public R<Integer> initProd(@Validated @RequestBody GtAndFHBInitVO initVO) {
-        // 去掉可能的空格
-        initVO.setExcludeArtNoList(initVO.getExcludeArtNoList().stream().map(String::trim).collect(Collectors.toList()));
+        // 去掉可能存在的空格
+        if (CollectionUtils.isNotEmpty(initVO.getExcludeArtNoList())) {
+            initVO.setExcludeArtNoList(initVO.getExcludeArtNoList().stream().filter(StringUtils::isNotEmpty).map(String::trim).collect(Collectors.toList()));
+        }
         Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
                         .eq(Store::getId, initVO.getStoreId()).eq(Store::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
@@ -221,14 +230,15 @@ public class GtAndFhbBizController extends BaseController {
                 .getCacheObject(CacheConstants.MIGRATION_GT_SALE_BASIC_KEY + initVO.getUserId()), new ArrayList<>());
         // 查看gt 在售的商品 这边有多少相似的货号
         gtSaleBasicList.stream().map(GtProdSkuVO::getArticle_number).distinct()
-                // 过滤掉需要特殊处理的货号
-                .filter(article_number -> !initVO.getExcludeArtNoList().contains(article_number))
                 .forEach(article_number -> {
                     // 只保留核心连续的数字，去除其他所有符号
                     String cleanArtNo = this.extractCoreArticleNumber(article_number);
-                    List<String> existList = multiSaleSameGoMap.containsKey(cleanArtNo) ? multiSaleSameGoMap.get(cleanArtNo) : new ArrayList<>();
-                    existList.add(article_number);
-                    multiSaleSameGoMap.put(cleanArtNo, existList);
+                    // 过滤掉需要特殊处理的货号
+                    if (CollectionUtils.isEmpty(initVO.getExcludeArtNoList()) || !initVO.getExcludeArtNoList().contains(cleanArtNo)) {
+                        List<String> existList = multiSaleSameGoMap.containsKey(cleanArtNo) ? multiSaleSameGoMap.get(cleanArtNo) : new ArrayList<>();
+                        existList.add(article_number);
+                        multiSaleSameGoMap.put(cleanArtNo, existList);
+                    }
                 });
 
         // 查看gt 下架的商品有多少相似的货号
@@ -246,16 +256,16 @@ public class GtAndFhbBizController extends BaseController {
         List<FhbProdVO.SMIVO> fhbProdList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_PROD_KEY + initVO.getSupplierId()), new ArrayList<>());
         // Fhb按照颜色分类
-        Map<String, List<FhbProdVO.SMIVO>> fhbProdGroupMap = fhbProdList.stream().collect(Collectors.groupingBy(FhbProdVO.SMIVO::getArtNo));
         fhbProdList.stream().map(FhbProdVO.SMIVO::getArtNo).distinct()
-                // 过滤掉需要特殊处理的货号
-                .filter(artNo -> !initVO.getExcludeArtNoList().contains(artNo))
                 .forEach(artNo -> {
                     // 只保留核心连续的数字，去除其他所有符号
                     String cleanArtNo = this.extractCoreArticleNumber(artNo);
-                    List<String> existList = multiSameFhbMap.containsKey(cleanArtNo) ? multiSameFhbMap.get(cleanArtNo) : new ArrayList<>();
-                    existList.add(artNo);
-                    multiSameFhbMap.put(cleanArtNo, existList);
+                    // 过滤掉需要特殊处理的货号
+                    if (CollectionUtils.isEmpty(initVO.getExcludeArtNoList()) || !initVO.getExcludeArtNoList().contains(cleanArtNo)) {
+                        List<String> existList = multiSameFhbMap.containsKey(cleanArtNo) ? multiSameFhbMap.get(cleanArtNo) : new ArrayList<>();
+                        existList.add(artNo);
+                        multiSameFhbMap.put(cleanArtNo, existList);
+                    }
                 });
         // gt按照货号分组
         Map<String, List<GtProdSkuVO>> gtSaleGroupMap = gtSaleBasicList.stream().collect(Collectors.groupingBy(GtProdSkuVO::getArticle_number));
@@ -273,7 +283,6 @@ public class GtAndFhbBizController extends BaseController {
             cateRelationMap.put(gtCate.getId(), cateId);
         });
 
-        System.err.println("============ 两边系统“一致”的货号 ============");
         // 清洗后，相同货号映射
         Set<String> commonArtNos = new HashSet<>(multiSaleSameGoMap.keySet());
         commonArtNos.retainAll(multiSameFhbMap.keySet());
@@ -325,13 +334,11 @@ public class GtAndFhbBizController extends BaseController {
 
 
     /**
+     * step3
      * 商品颜色及商品颜色尺码
-     *
-     * @param initVO
-     * @return
      */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @PutMapping("/init-color")
+    @PostMapping("/init-color")
     @Transactional
     public R<Integer> initColor(@Validated @RequestBody GtAndFHBInitVO initVO) {
         // 从数据库查询最新数据
@@ -341,6 +348,15 @@ public class GtAndFhbBizController extends BaseController {
                 .eq(StoreColor::getStoreId, initVO.getStoreId()).eq(StoreColor::getDelFlag, Constants.UNDELETED));
         Map<String, StoreColor> storeColorMap = storeColorList.stream().collect(Collectors.toMap(StoreColor::getColorName, x -> x, (v1, v2) -> v2));
 
+        // TODO 临时处理，10-11之后的数据
+        // TODO 临时处理，10-11之后的数据
+        // TODO 临时处理，10-11之后的数据
+        storeProdList = storeProdList.stream().filter(x -> x.getCreateTime().after(DateUtils.parseDate("2025-10-11 00:00:00"))).collect(Collectors.toList());
+
+
+
+
+
         Map<String, List<String>> multiSaleSameGoMap = new HashMap<>();
         Map<String, List<String>> multiOffSaleSameGoMap = new HashMap<>();
         Map<String, List<String>> multiSameFhbMap = new HashMap<>();
@@ -348,14 +364,15 @@ public class GtAndFhbBizController extends BaseController {
                 .getCacheObject(CacheConstants.MIGRATION_GT_SALE_BASIC_KEY + initVO.getUserId()), new ArrayList<>());
         // 查看gt 在售的商品 这边有多少相似的货号
         gtSaleBasicList.stream().map(GtProdSkuVO::getArticle_number).distinct()
-                // 过滤掉需要特殊处理的货号
-                .filter(article_number -> !initVO.getExcludeArtNoList().contains(article_number))
                 .forEach(article_number -> {
                     // 只保留核心连续的数字，去除其他所有符号
                     String cleanArtNo = this.extractCoreArticleNumber(article_number);
-                    List<String> existList = multiSaleSameGoMap.containsKey(cleanArtNo) ? multiSaleSameGoMap.get(cleanArtNo) : new ArrayList<>();
-                    existList.add(article_number);
-                    multiSaleSameGoMap.put(cleanArtNo, existList);
+                    // 过滤掉需要特殊处理的货号
+                    if (CollectionUtils.isEmpty(initVO.getExcludeArtNoList()) || !initVO.getExcludeArtNoList().contains(cleanArtNo)) {
+                        List<String> existList = multiSaleSameGoMap.containsKey(cleanArtNo) ? multiSaleSameGoMap.get(cleanArtNo) : new ArrayList<>();
+                        existList.add(article_number);
+                        multiSaleSameGoMap.put(cleanArtNo, existList);
+                    }
                 });
 
         // 查看gt 下架的商品有多少相似的货号
@@ -375,14 +392,15 @@ public class GtAndFhbBizController extends BaseController {
         // Fhb按照颜色分类
         Map<String, List<FhbProdVO.SMIVO>> fhbProdGroupMap = fhbProdList.stream().collect(Collectors.groupingBy(FhbProdVO.SMIVO::getArtNo));
         fhbProdList.stream().map(FhbProdVO.SMIVO::getArtNo).distinct()
-                // 过滤掉需要特殊处理的货号
-                .filter(artNo -> !initVO.getExcludeArtNoList().contains(artNo))
                 .forEach(artNo -> {
                     // 只保留核心连续的数字，去除其他所有符号
                     String cleanArtNo = this.extractCoreArticleNumber(artNo);
-                    List<String> existList = multiSameFhbMap.containsKey(cleanArtNo) ? multiSameFhbMap.get(cleanArtNo) : new ArrayList<>();
-                    existList.add(artNo);
-                    multiSameFhbMap.put(cleanArtNo, existList);
+                    // 过滤掉需要特殊处理的货号
+                    if (CollectionUtils.isEmpty(initVO.getExcludeArtNoList()) || !initVO.getExcludeArtNoList().contains(cleanArtNo)) {
+                        List<String> existList = multiSameFhbMap.containsKey(cleanArtNo) ? multiSameFhbMap.get(cleanArtNo) : new ArrayList<>();
+                        existList.add(artNo);
+                        multiSameFhbMap.put(cleanArtNo, existList);
+                    }
                 });
         // gt按照货号分组
         Map<String, List<GtProdSkuVO>> gtSaleGroupMap = gtSaleBasicList.stream().collect(Collectors.groupingBy(GtProdSkuVO::getArticle_number));
@@ -432,11 +450,13 @@ public class GtAndFhbBizController extends BaseController {
         return R.ok();
     }
 
+    /**
+     * step4
+     */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @PutMapping("/init-cus-disc")
+    @PostMapping("/init-cus-disc")
     @Transactional
     public R<Integer> initCusDisc(@Validated @RequestBody GtAndFHBInitVO initVO) {
-
         List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getStoreId, initVO.getStoreId()).eq(StoreProduct::getDelFlag, Constants.UNDELETED));
         List<StoreProductColor> prodColorList = this.prodColorMapper.selectList(new LambdaQueryWrapper<StoreProductColor>()
@@ -444,19 +464,28 @@ public class GtAndFhbBizController extends BaseController {
         List<StoreCustomer> storeCusList = this.storeCusMapper.selectList(new LambdaQueryWrapper<StoreCustomer>()
                 .eq(StoreCustomer::getStoreId, initVO.getStoreId()).eq(StoreCustomer::getDelFlag, Constants.UNDELETED));
 
+        // TODO 临时处理，10-11之后的数据
+        // TODO 临时处理，10-11之后的数据
+        // TODO 临时处理，10-11之后的数据
+        storeProdList = storeProdList.stream().filter(x -> x.getCreateTime().after(DateUtils.parseDate("2025-10-11 00:00:00"))).collect(Collectors.toList());
+        storeCusList = storeCusList.stream().filter(x -> x.getCreateTime().after(DateUtils.parseDate("2025-10-11 00:00:00"))).collect(Collectors.toList());
+        prodColorList = prodColorList.stream().filter(x -> x.getCreateTime().after(DateUtils.parseDate("2025-10-11 00:00:00"))).collect(Collectors.toList());
+
+
         Map<String, List<String>> multiSameFhbMap = new HashMap<>();
         // 查看Fhb 这边有多少相似的货号
         List<FhbProdVO.SMIVO> fhbProdList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_PROD_KEY + initVO.getSupplierId()), new ArrayList<>());
         fhbProdList.stream().map(FhbProdVO.SMIVO::getArtNo).distinct()
-                // 过滤掉需要特殊处理的货号
-                .filter(artNo -> !initVO.getExcludeArtNoList().contains(artNo))
                 .forEach(artNo -> {
                     // 只保留核心连续的数字，去除其他所有符号
                     String cleanArtNo = this.extractCoreArticleNumber(artNo);
-                    List<String> existList = multiSameFhbMap.containsKey(cleanArtNo) ? multiSameFhbMap.get(cleanArtNo) : new ArrayList<>();
-                    existList.add(artNo);
-                    multiSameFhbMap.put(cleanArtNo, existList);
+                    // 过滤掉需要特殊处理的货号
+                    if (CollectionUtils.isEmpty(initVO.getExcludeArtNoList()) || !initVO.getExcludeArtNoList().contains(cleanArtNo)) {
+                        List<String> existList = multiSameFhbMap.containsKey(cleanArtNo) ? multiSameFhbMap.get(cleanArtNo) : new ArrayList<>();
+                        existList.add(artNo);
+                        multiSameFhbMap.put(cleanArtNo, existList);
+                    }
                 });
 
         // 从redis中获取客户优惠数据

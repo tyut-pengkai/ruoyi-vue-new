@@ -71,7 +71,7 @@ public class GtAndTyBizController extends BaseController {
 
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @PutMapping("/sync-es/{storeId}")
+    @PostMapping("/sync-es/{storeId}")
     public void syncToEs(@PathVariable("storeId") Long storeId) {
         // 同步主图 到 图搜 服务器
 
@@ -82,7 +82,7 @@ public class GtAndTyBizController extends BaseController {
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @PutMapping("/sync-pic/{storeId}")
+    @PostMapping("/sync-pic/{storeId}")
     public void syncToPicSearch(@PathVariable("storeId") Long storeId) {
         // 同步主图 到 图搜 服务器
 
@@ -94,7 +94,7 @@ public class GtAndTyBizController extends BaseController {
 
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @GetMapping("/-R/compare/{userId}")
+    @GetMapping("/compare/{userId}")
     public void compare(HttpServletResponse response, @PathVariable("userId") Integer userId) throws UnsupportedEncodingException {
         Map<String, List<String>> multiSaleSameGoMap = new HashMap<>();
         Map<String, List<String>> multiOffSaleSameGoMap = new HashMap<>();
@@ -203,7 +203,7 @@ public class GtAndTyBizController extends BaseController {
      * @return
      */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @PutMapping("/init-prod")
+    @PostMapping("/init-prod")
     @Transactional
     public R<Integer> initProd(@Validated @RequestBody GtAndTYInitVO initVO) {
         // 去掉可能的空格
@@ -323,7 +323,7 @@ public class GtAndTyBizController extends BaseController {
      * @return
      */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @PutMapping("/init-color")
+    @PostMapping("/init-color")
     @Transactional
     public R<Integer> initColor(@Validated @RequestBody GtAndTYInitVO initVO) {
         // 从数据库查询最新数据
@@ -421,7 +421,7 @@ public class GtAndTyBizController extends BaseController {
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @PutMapping("/init-cus-disc")
+    @PostMapping("/init-cus-disc")
     @Transactional
     public R<Integer> initCusDisc(@Validated @RequestBody GtAndTYInitVO initVO) {
 

@@ -424,8 +424,8 @@ public class XktTask {
         this.tagNewProd(yesterday, oneWeekAgo, tagList);
         // 5. 打 关注榜 标签，根据关注量，进行排序
         this.tagAttentionRank(yesterday, tagList);
-        // 6. 打 库存榜 标签，根据库存量，进行排序
-        this.tagStockTag(yesterday, oneMonthAgo, tagList);
+        // 6. 打 库存榜 标签，根据库存量，进行排序  2025.10.11 注释
+//        this.tagStockTag(yesterday, oneMonthAgo, tagList);
         // 7. 打 七日上新 标签
         this.tag7DaysNewTag(yesterday, oneWeekAgo, tagList);
         if (CollectionUtils.isEmpty(tagList)) {
