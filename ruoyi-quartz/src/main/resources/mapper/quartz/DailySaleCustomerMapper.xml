@@ -30,10 +30,9 @@
             SUM(IFNULL( dsc.sale_num, 0 )) AS saleNum,
             SUM(IFNULL( dsc.refund_num, 0 )) AS refundNum,
             CASE
-                WHEN SUM(IFNULL( dsc.sale_num, 0 )) = 0 THEN
-                    0 ELSE ROUND(
-                                SUM(IFNULL( dsc.refund_num, 0 )) * 1.0 / SUM(IFNULL( dsc.sale_num, 0 )) * 100, 2)
-                END AS refundRate
+                WHEN SUM(IFNULL(dsc.sale_num, 0)) = 0 THEN '0%'
+                ELSE CONCAT( ROUND( ABS(SUM(IFNULL(dsc.refund_num, 0))) * 1.0 / SUM(IFNULL(dsc.sale_num, 0)) * 100, 2 ), '%' )
+            END AS refundRate
         FROM
             daily_sale_customer dsc
                 JOIN store_customer sc ON dsc.store_cus_id = sc.id

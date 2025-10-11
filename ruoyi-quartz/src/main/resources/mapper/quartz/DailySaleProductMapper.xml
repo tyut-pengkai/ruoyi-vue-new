@@ -60,10 +60,9 @@
             SUM(IFNULL( dsp.sale_num, 0 )) AS saleNum,
             SUM(IFNULL( dsp.refund_num, 0 )) AS refundNum,
             CASE
-                WHEN SUM(IFNULL( dsp.sale_num, 0 )) = 0 THEN
-                    0 ELSE ROUND(
-                                SUM(IFNULL( dsp.refund_num, 0 )) * 1.0 / SUM(IFNULL( dsp.sale_num, 0 )) * 100, 2)
-                END AS refundRate
+                WHEN SUM( IFNULL( dsp.sale_num, 0 )) = 0 THEN '0%'
+                ELSE CONCAT( ROUND( ABS( SUM( IFNULL( dsp.refund_num, 0 ))) * 1.0 / SUM( IFNULL( dsp.sale_num, 0 )) * 100, 2 ), '%')
+            END AS refundRate
         FROM
             daily_sale_product dsp
                 LEFT JOIN store_product_file spf ON dsp.store_prod_id = spf.store_prod_id AND spf.file_type = 1 AND spf.order_num = 1
