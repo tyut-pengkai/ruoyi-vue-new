@@ -212,7 +212,7 @@ public class Constants
     /**
      * 档口默认权重 0
      */
-    public static final Integer STORE_WEIGHT_DEFAULT_ZERO = 0;
+    public static final Integer WEIGHT_DEFAULT_ZERO = 0;
 
     public static final String VERSION_LOCK_ERROR_COMMON_MSG = "系统繁忙，请稍后再试";
 

@@ -225,7 +225,7 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
         Date oneYearAfter = Date.from(LocalDate.now().plusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
         store.setTrialEndTime(oneYearAfter);
         // 设置档口默认权重 0
-        store.setStoreWeight(Constants.STORE_WEIGHT_DEFAULT_ZERO);
+        store.setStoreWeight(Constants.WEIGHT_DEFAULT_ZERO);
         // 设置默认的库存系统为 步橘 ，后续可在条码迁移之处修改
         store.setStockSys(StockSysType.BU_JU.getValue());
         // 档口浏览次数设置为0

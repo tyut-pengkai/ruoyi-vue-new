@@ -1142,11 +1142,19 @@ public class StoreProductServiceImpl implements IStoreProductService {
         String season = updateDTO.getCateAttr().getSuitableSeason();
         // 获取风格
         String style = updateDTO.getCateAttr().getStyle();
-        return BeanUtil.toBean(storeProd, ESProductDTO.class).setHasVideo(hasVideo)
-                .setProdCateName(updateDTO.getProdCateName()).setSaleWeight("0").setRecommendWeight("0").setPopularityWeight("0")
-                .setCreateTime(DateUtils.getTime()).setStoreName(storeName).setMainPicUrl(firstMainPic)
-                .setParCateId(parCate.getProdCateId().toString()).setParCateName(parCate.getName()).setProdPrice(minPrice.toString())
-                .setSeason(season).setStyle(style).setTags(Collections.singletonList(style));
+        // 组装
+        ESProductDTO esProdDTO = BeanUtil.toBean(storeProd, ESProductDTO.class).setHasVideo(hasVideo)
+                .setProdCateName(updateDTO.getProdCateName()).setCreateTime(DateUtils.getTime()).setStoreName(storeName).setMainPicUrl(firstMainPic)
+                .setSaleWeight(WEIGHT_DEFAULT_ZERO.toString()).setRecommendWeight(WEIGHT_DEFAULT_ZERO.toString()).setPopularityWeight(WEIGHT_DEFAULT_ZERO.toString())
+                .setParCateId(parCate.getProdCateId().toString()).setParCateName(parCate.getName()).setProdPrice(minPrice.toString());
+        if (StringUtils.isNotBlank(season)) {
+            esProdDTO.setSeason(season);
+        }
+        if (StringUtils.isNotBlank(style)) {
+            esProdDTO.setStyle(style);
+            esProdDTO.setTags(Collections.singletonList(style));
+        }
+        return esProdDTO;
     }
 
     /**

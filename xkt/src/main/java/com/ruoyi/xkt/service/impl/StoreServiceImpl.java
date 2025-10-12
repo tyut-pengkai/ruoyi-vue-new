@@ -97,7 +97,7 @@ public class StoreServiceImpl implements IStoreService {
         Date oneYearAfter = Date.from(LocalDate.now().plusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
         store.setTrialEndTime(oneYearAfter);
         // 设置档口默认权重 0
-        store.setStoreWeight(Constants.STORE_WEIGHT_DEFAULT_ZERO);
+        store.setStoreWeight(Constants.WEIGHT_DEFAULT_ZERO);
         int count = this.storeMapper.insert(store);
         // 创建档口账户
         assetService.createInternalAccountIfNotExists(store.getId());

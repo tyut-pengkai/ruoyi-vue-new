@@ -785,7 +785,7 @@ public class XktTask {
             // 构建部分文档更新请求
             list.add(new BulkOperation.Builder().update(u -> u
                             .action(a -> a.doc(new HashMap<String, Object>() {{
-                                put("storeWeight", ObjectUtils.defaultIfNull(storeWeightMap.get(storeProd.getStoreId()), Constants.STORE_WEIGHT_DEFAULT_ZERO));
+                                put("storeWeight", ObjectUtils.defaultIfNull(storeWeightMap.get(storeProd.getStoreId()), Constants.WEIGHT_DEFAULT_ZERO));
                             }}))
                             .id(String.valueOf(storeProd.getId()))
                             .index(Constants.ES_IDX_PRODUCT_INFO))
