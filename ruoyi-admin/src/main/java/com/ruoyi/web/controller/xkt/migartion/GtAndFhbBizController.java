@@ -51,6 +51,8 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import static com.ruoyi.common.constant.Constants.WEIGHT_DEFAULT_ZERO;
+
 /**
  * Compare 相关
  *
@@ -561,11 +563,11 @@ public class GtAndFhbBizController extends BaseController {
             final Store store = storeMap.get(product.getStoreId());
             final BigDecimal prodMinPrice = prodMinPriceMap.get(product.getId());
             final StoreProductCategoryAttribute cateAttr = cateAttrMap.get(product.getId());
-            final Boolean hasVideo = Boolean.FALSE;
             ESProductDTO esProductDTO = new ESProductDTO().setStoreProdId(product.getId().toString()).setProdArtNum(product.getProdArtNum())
-                    .setHasVideo(hasVideo).setProdCateId(product.getProdCateId().toString()).setCreateTime(DateUtils.getTime())
+                    .setHasVideo(Boolean.FALSE).setProdCateId(product.getProdCateId().toString()).setCreateTime(DateUtils.getTime())
                     .setProdCateName(ObjectUtils.isNotEmpty(cate) ? cate.getName() : "")
-                    .setSaleWeight("0").setRecommendWeight("0").setPopularityWeight("0")
+                    .setSaleWeight(WEIGHT_DEFAULT_ZERO.toString()).setRecommendWeight(WEIGHT_DEFAULT_ZERO.toString())
+                    .setPopularityWeight(WEIGHT_DEFAULT_ZERO.toString())
                     .setMainPicUrl("").setMainPicName("").setMainPicSize(BigDecimal.ZERO)
                     .setParCateId(ObjectUtils.isNotEmpty(parCate) ? parCate.getId().toString() : "")
                     .setParCateName(ObjectUtils.isNotEmpty(parCate) ? parCate.getName() : "")
@@ -575,8 +577,10 @@ public class GtAndFhbBizController extends BaseController {
                     .setStoreId(product.getStoreId().toString())
                     .setStoreName(ObjectUtils.isNotEmpty(store) ? store.getStoreName() : "")
                     .setStyle(ObjectUtils.isNotEmpty(cateAttr) ? cateAttr.getStyle() : "")
-                    .setTags(ObjectUtils.isNotEmpty(cateAttr) ? Collections.singletonList(cateAttr.getStyle()) : new ArrayList<>())
                     .setProdTitle(product.getProdTitle());
+            if (ObjectUtils.isNotEmpty(cateAttr) && StringUtils.isNotBlank(cateAttr.getStyle())) {
+                esProductDTO.setTags(Collections.singletonList(cateAttr.getStyle()));
+            }
             esProductDTOList.add(esProductDTO);
         }
         // 构建批量操作请求
