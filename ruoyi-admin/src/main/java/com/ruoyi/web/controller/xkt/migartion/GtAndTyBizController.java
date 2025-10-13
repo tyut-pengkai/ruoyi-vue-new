@@ -477,12 +477,12 @@ public class GtAndTyBizController extends BaseController {
             Map<String, StoreProductColor> buJuProdColorMap = Optional.ofNullable(prodColorGroupMap.get(storeProd.getId())).orElseThrow(() -> new ServiceException("没有商品颜色!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
             // 根据步橘货号 找到TY对应的货号，可能是列表
             List<String> tyAtrNoList = Optional.ofNullable(multiSameTyMap.get(cleanArtNo)).orElseThrow(() -> new ServiceException("没有TY货号!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
-            tyAtrNoList.forEach(tyAtrNo -> {
-                // 处理客户优惠
-                this.handleCusDisc(tyAtrNo, tyCusDiscGroupMap, buJuProdColorMap, buJuStoreCusMap, prodCusDiscList, storeProd.getStoreId(), storeProd.getId());
-                // 处理档口商品库存
-                this.handleProdStock(tyAtrNo, tyProdStockMap, buJuProdColorMap, storeProd.getStoreId(), storeProd.getId(), storeProd.getProdArtNum(), prodStockList);
-            });
+            // 取TY第一个货号（因为可能对应TY多个货号，只需取其中一个货号的优惠、库存等）
+            final String tyAtrNo = tyAtrNoList.get(0);
+            // 处理客户优惠
+            this.handleCusDisc(tyAtrNo, tyCusDiscGroupMap, buJuProdColorMap, buJuStoreCusMap, prodCusDiscList, storeProd.getStoreId(), storeProd.getId());
+            // 处理档口商品库存
+            this.handleProdStock(tyAtrNo, tyProdStockMap, buJuProdColorMap, storeProd.getStoreId(), storeProd.getId(), storeProd.getProdArtNum(), prodStockList);
         });
         // 档口客户优惠
         this.storeCusProdDiscMapper.insert(prodCusDiscList);
