@@ -67,6 +67,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -640,7 +641,13 @@ public class StoreProductServiceImpl implements IStoreProductService {
     public PicPackInfoDTO getPicPackDownloadUrl(PicPackReqDTO picPackReqDTO) {
         Assert.notNull(picPackReqDTO.getUserId());
         String reqCacheKey = CacheConstants.PIC_PACK_USER_REQ_COUNT_CACHE + picPackReqDTO.getUserId();
+        String dailyReqCacheKey = CacheConstants.PIC_PACK_USER_DAILY_REQ_COUNT_CACHE + picPackReqDTO.getUserId();
         int reqCount = Optional.ofNullable((Integer) redisCache.getCacheObject(reqCacheKey)).orElse(0);
+        int dailyReqCount = Optional.ofNullable((Integer) redisCache.getCacheObject(dailyReqCacheKey)).orElse(0);
+        //每日下载次数限制：50次
+        if (dailyReqCount > 49) {
+            throw new ServiceException("您今日的免费下载限额(50款/日)已用完，请明日再来!如需扩大下载限额，请联系平台客服");
+        }
         //5次请求后需要输入验证码
         if (reqCount > 4) {
             //需验证验证码
@@ -669,6 +676,12 @@ public class StoreProductServiceImpl implements IStoreProductService {
         }
         //请求次数+1
         redisCache.setCacheObject(reqCacheKey, reqCount + 1);
+        redisCache.setCacheObject(dailyReqCacheKey, dailyReqCount + 1);
+        if (0 == dailyReqCount) {
+            //每日首次下载
+            long expire = DateUtil.endOfDay(new Date()).getTime() - System.currentTimeMillis();
+            redisCache.expire(dailyReqCacheKey, expire, TimeUnit.MILLISECONDS);
+        }
         return new PicPackInfoDTO(file.getId(), file.getFileName(), file.getFileUrl(), file.getFileSize(), downloadUrl, false);
     }
 
