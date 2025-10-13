@@ -27,6 +27,7 @@ public class FhbCusDiscountVO {
         private String customerName;
         private Integer supplierId;
         private Integer discount;
+        private String updateTime;
     }
 
 

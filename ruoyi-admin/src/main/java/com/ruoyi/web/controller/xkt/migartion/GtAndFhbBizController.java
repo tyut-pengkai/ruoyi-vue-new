@@ -49,6 +49,8 @@ import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.ruoyi.common.constant.Constants.WEIGHT_DEFAULT_ZERO;
@@ -101,7 +103,7 @@ public class GtAndFhbBizController extends BaseController {
                 .getCacheObject(CacheConstants.MIGRATION_GT_SALE_BASIC_KEY + userId), new ArrayList<>());
         Map<String, String> articleNoColorMap = gtSaleBasicList.stream().collect(Collectors.groupingBy(GtProdSkuVO::getArticle_number,
                 Collectors.collectingAndThen(Collectors.mapping(GtProdSkuVO::getColor, Collectors.toList()),
-                        list -> "(" + list.stream().sorted(Comparator.naturalOrder()).distinct().collect(Collectors.joining(",")) + ")")));
+                        list -> "(" + list.stream().sorted(Comparator.naturalOrder()).collect(Collectors.joining(",")) + ")")));
         List<String> doubleRunSaleArtNoList = gtSaleBasicList.stream().map(GtProdSkuVO::getArticle_number)
                 .distinct().collect(Collectors.toList());
         // 查看gt 在售的商品 这边有多少相似的货号
@@ -131,10 +133,9 @@ public class GtAndFhbBizController extends BaseController {
                 .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_PROD_KEY + supplierId), new ArrayList<>());
         Map<String, String> fhbArticleNoColorMap = fhbProdList.stream().collect(Collectors.groupingBy(FhbProdVO.SMIVO::getArtNo,
                 Collectors.collectingAndThen(Collectors.mapping(FhbProdVO.SMIVO::getColor, Collectors.toList()),
-                        list -> "(" + list.stream().sorted(Comparator.naturalOrder()).distinct().collect(Collectors.joining(",")) + ")")));
-        List<String> shipArtNoList = fhbProdList.stream().map(FhbProdVO.SMIVO::getArtNo)
-                .distinct().collect(Collectors.toList());
-        shipArtNoList.forEach(artNo -> {
+                        list -> "(" + list.stream().sorted(Comparator.naturalOrder()).collect(Collectors.joining(",")) + ")")));
+        List<String> fhbArtNoList = fhbProdList.stream().map(FhbProdVO.SMIVO::getArtNo).distinct().collect(Collectors.toList());
+        fhbArtNoList.forEach(artNo -> {
             // 只保留核心连续的数字，去除其他所有符号
             String cleanArtNo = this.extractCoreArticleNumber(artNo);
             List<String> existList = multiSameFhbMap.containsKey(cleanArtNo) ? multiSameFhbMap.get(cleanArtNo) : new ArrayList<>();
@@ -460,6 +461,14 @@ public class GtAndFhbBizController extends BaseController {
         prodColorList = prodColorList.stream().filter(x -> x.getCreateTime().after(DateUtils.parseDate("2025-10-11 00:00:00"))).collect(Collectors.toList());
 
 
+        List<FhbProdVO.SMIVO> cacheList = ObjectUtils.defaultIfNull(redisCache
+                .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_PROD_KEY + initVO.getSupplierId()), new ArrayList<>());
+        if (CollectionUtils.isEmpty(cacheList)) {
+            throw new ServiceException("FHB商品列表为空", HttpStatus.ERROR);
+        }
+        // fhb货号正在生效的颜色map，因为客户优惠有些是删除的颜色，需要通过这里去过滤
+        Map<String, Set<String>> fhbExistArtNoColorMap = cacheList.stream().collect(Collectors
+                .groupingBy(FhbProdVO.SMIVO::getArtNo, Collectors.mapping(FhbProdVO.SMIVO::getColor, Collectors.toSet())));
         Map<String, List<String>> multiSameFhbMap = new HashMap<>();
         // 查看Fhb 这边有多少相似的货号
         List<FhbProdVO.SMIVO> fhbProdList = ObjectUtils.defaultIfNull(redisCache
@@ -506,12 +515,12 @@ public class GtAndFhbBizController extends BaseController {
             // 当前商品颜色列表 key 颜色中文名称
             Map<String, StoreProductColor> buJuProdColorMap = Optional.ofNullable(prodColorGroupMap.get(storeProd.getId())).orElseThrow(() -> new ServiceException("没有商品颜色!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
             // 根据步橘货号 找到FHB对应的货号，可能是列表
-            List<String> fhbAtrNoList = Optional.ofNullable(multiSameFhbMap.get(cleanArtNo)).orElseThrow(() -> new ServiceException("没有FHB货号!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
-            fhbAtrNoList.forEach(fhbAtrNo -> {
+            List<String> fhbArtNoList = Optional.ofNullable(multiSameFhbMap.get(cleanArtNo)).orElseThrow(() -> new ServiceException("没有FHB货号!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
+            // 处理档口商品库存
+            this.handleProdStock(fhbArtNoList, fhbStockGroupMap, buJuProdColorMap, storeProd.getStoreId(), storeProd.getId(), storeProd.getProdArtNum(), prodStockList);
+            fhbArtNoList.forEach(fhbArtNo -> {
                 // 处理档口客户商品优惠
-                this.handleCusDisc(fhbAtrNo, fhbCusDiscGroupMap, buJuProdColorMap, buJuStoreCusMap, storeProd.getStoreId(), storeProd.getId(), prodCusDiscList);
-                // 处理档口商品库存
-                this.handleProdStock(fhbAtrNo, fhbStockGroupMap, buJuProdColorMap, storeProd.getStoreId(), storeProd.getId(), storeProd.getProdArtNum(), prodStockList);
+                this.handleCusDisc(fhbArtNo, fhbExistArtNoColorMap, fhbCusDiscGroupMap, buJuProdColorMap, buJuStoreCusMap, storeProd.getStoreId(), storeProd.getId(), prodCusDiscList);
             });
         });
         // 档口客户优惠
@@ -520,6 +529,7 @@ public class GtAndFhbBizController extends BaseController {
         this.prodStockMapper.insert(prodStockList);
         return R.ok();
     }
+
 
     /**
      * step5
@@ -611,19 +621,50 @@ public class GtAndFhbBizController extends BaseController {
     }
 
     /**
-     * 处理货号颜色的库存
-     *
-     * @param fhbAtrNo
-     * @param fhbStockGroupMap
-     * @param buJuProdColorMap
-     * @param storeId
-     * @param storeProdId
-     * @param prodArtNum
-     * @param prodStockList
+     * 处理客户优惠
      */
-    private void handleProdStock(String fhbAtrNo, Map<String, Map<String, FhbProdStockVO.SMPSRecordVO>> fhbStockGroupMap, Map<String, StoreProductColor> buJuProdColorMap,
-                                 Long storeId, Long storeProdId, String prodArtNum, List<StoreProductStock> prodStockList) {
-        Map<String, FhbProdStockVO.SMPSRecordVO> fhbColorStockMap = fhbStockGroupMap.getOrDefault(fhbAtrNo, new HashMap<>());
+    private void handleCusDisc(String fhbAtrNo, Map<String, Set<String>> fhbExistArtNoColorMap,
+                               Map<String, Map<String, List<FhbCusDiscountVO.SMCDRecordVO>>> fhbCusDiscGroupMap,
+                               Map<String, StoreProductColor> buJuProdColorMap, Map<String, StoreCustomer> buJuStoreCusMap, Long storeId, Long storeProdId,
+                               List<StoreCustomerProductDiscount> prodCusDiscList) {
+        // FHB货号下有哪些颜色存在客户优惠
+        Map<String, List<FhbCusDiscountVO.SMCDRecordVO>> fhbColorCusDiscMap = fhbCusDiscGroupMap.get(fhbAtrNo);
+        if (MapUtils.isEmpty(fhbColorCusDiscMap)) {
+            return;
+        }
+        // fhb当前货号正在生效的颜色列表
+        Set<String> existColorSet = fhbExistArtNoColorMap.getOrDefault(fhbAtrNo, Collections.emptySet());
+        // 依次遍历存在优惠的颜色，设置步橘系统客户优惠关系
+        fhbColorCusDiscMap.forEach((fhbColor, fhbCusDiscList) -> {
+            // 必须是现在正在生效的颜色，才会被添加到系统中
+            if (!existColorSet.contains(fhbColor)) {
+                return;
+            }
+            // fhb优惠列表，如果对同一客户有多个优惠，则取修改时间最新的那条优惠
+            Map<String, FhbCusDiscountVO.SMCDRecordVO> latestCusDiscMap = fhbCusDiscList.stream().collect(Collectors.toMap(FhbCusDiscountVO.SMCDRecordVO::getCustomerName, Function.identity(),
+                    BinaryOperator.maxBy(Comparator.comparing(FhbCusDiscountVO.SMCDRecordVO::getUpdateTime))));
+            latestCusDiscMap.forEach((cusName, fhbCusDisc) -> {
+                // 获取步橘系统对应的颜色
+                StoreProductColor buJuProdColor = buJuProdColorMap.get(fhbColor);
+                if (ObjectUtils.isNotEmpty(buJuProdColor)) {
+                    StoreCustomer storeCus = Optional.ofNullable(buJuStoreCusMap.get(fhbCusDisc.getCustomerName()))
+                            .orElseThrow(() -> new ServiceException("没有步橘系统对应的客户!" + fhbCusDisc.getCustomerName(), HttpStatus.ERROR));
+                    // 将FHB客户优惠 转为步橘系统优惠
+                    prodCusDiscList.add(new StoreCustomerProductDiscount().setStoreId(storeId).setStoreProdId(storeProdId).setStoreCusId(storeCus.getId())
+                            .setStoreCusName(storeCus.getCusName()).setStoreProdColorId(buJuProdColor.getId()).setDiscount(fhbCusDisc.getDiscount()));
+                }
+            });
+        });
+    }
+
+    /**
+     * 匹配fhb货号颜色的库存
+     */
+    private void handleProdStock(List<String> fhbArtNoList, Map<String, Map<String, FhbProdStockVO.SMPSRecordVO>> fhbStockGroupMap,
+                                 Map<String, StoreProductColor> buJuProdColorMap, Long storeId, Long storeProdId, String prodArtNum, List<StoreProductStock> prodStockList) {
+        // 获取fhb货号所有颜色的库存
+        Map<String, FhbProdStockVO.SMPSRecordVO> fhbColorStockMap = new HashMap<>();
+        fhbArtNoList.forEach(fhbArtNo -> fhbColorStockMap.putAll(fhbStockGroupMap.getOrDefault(fhbArtNo, new HashMap<>())));
         buJuProdColorMap.forEach((buJuColor, buJuProdColor) -> {
             StoreProductStock stock = new StoreProductStock().setStoreId(storeId).setStoreProdId(storeProdId).setProdArtNum(prodArtNum)
                     .setColorName(buJuProdColorMap.get(buJuColor).getColorName()).setStoreProdColorId(buJuProdColorMap.get(buJuColor).getId())
@@ -648,27 +689,6 @@ public class GtAndFhbBizController extends BaseController {
             }
             prodStockList.add(stock);
         });
-    }
-
-    private void handleCusDisc(String fhbAtrNo, Map<String, Map<String, List<FhbCusDiscountVO.SMCDRecordVO>>> fhbCusDiscGroupMap, Map<String, StoreProductColor> buJuProdColorMap,
-                               Map<String, StoreCustomer> buJuStoreCusMap, Long storeId, Long storeProdId, List<StoreCustomerProductDiscount> prodCusDiscList) {
-        // FHB货号下有哪些颜色存在客户优惠
-        Map<String, List<FhbCusDiscountVO.SMCDRecordVO>> fhbColorCusDiscMap = fhbCusDiscGroupMap.get(fhbAtrNo);
-        if (MapUtils.isEmpty(fhbColorCusDiscMap)) {
-            return;
-        }
-        // 依次遍历存在优惠的颜色，设置步橘系统客户优惠关系
-        fhbColorCusDiscMap.forEach((fhbColor, fhbCusDiscList) -> fhbCusDiscList.forEach(fhbCusDisc -> {
-            // 获取步橘系统对应的颜色 Z1065 黑手抓纹绒里、黑手抓纹单里
-            StoreProductColor buJuProdColor = buJuProdColorMap.get(fhbColor);
-            if (ObjectUtils.isNotEmpty(buJuProdColor)) {
-                StoreCustomer storeCus = Optional.ofNullable(buJuStoreCusMap.get(fhbCusDisc.getCustomerName()))
-                        .orElseThrow(() -> new ServiceException("没有步橘系统对应的客户!" + fhbCusDisc.getCustomerName(), HttpStatus.ERROR));
-                // 将FHB客户优惠 转为步橘系统优惠
-                prodCusDiscList.add(new StoreCustomerProductDiscount().setStoreId(storeId).setStoreProdId(storeProdId).setStoreCusId(storeCus.getId())
-                        .setStoreCusName(storeCus.getCusName()).setStoreProdColorId(buJuProdColor.getId()).setDiscount(fhbCusDisc.getDiscount()));
-            }
-        }));
     }
 
     /**
@@ -825,11 +845,10 @@ public class GtAndFhbBizController extends BaseController {
 
     /**
      * 初始化档口颜色
-     *
-     * @param storeId    档口ID
+     *  @param storeId    档口ID
      * @param supplierId 供应商ID
      */
-    private Map<String, StoreColor> initStoreColorList(Long storeId, Integer supplierId) {
+    private void initStoreColorList(Long storeId, Integer supplierId) {
         List<FhbProdVO.SMIVO> cacheList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_PROD_KEY + supplierId), new ArrayList<>());
         if (CollectionUtils.isEmpty(cacheList)) {
@@ -841,7 +860,6 @@ public class GtAndFhbBizController extends BaseController {
             storeColorList.add(new StoreColor().setStoreId(storeId).setColorName(fhbColorList.get(i)).setOrderNum(i + 1));
         }
         this.storeColorMapper.insert(storeColorList);
-        return storeColorList.stream().collect(Collectors.toMap(StoreColor::getColorName, x -> x));
     }
 
 
@@ -866,6 +884,9 @@ public class GtAndFhbBizController extends BaseController {
         // 如果没有找到数字，返回空字符串
         throw new ServiceException("货号格式错误", HttpStatus.ERROR);
     }
+
+
+
 
 
 }
