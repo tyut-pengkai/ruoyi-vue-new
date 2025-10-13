@@ -507,12 +507,12 @@ public class GtAndFhbBizController extends BaseController {
             Map<String, StoreProductColor> buJuProdColorMap = Optional.ofNullable(prodColorGroupMap.get(storeProd.getId())).orElseThrow(() -> new ServiceException("没有商品颜色!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
             // 根据步橘货号 找到FHB对应的货号，可能是列表
             List<String> fhbAtrNoList = Optional.ofNullable(multiSameFhbMap.get(cleanArtNo)).orElseThrow(() -> new ServiceException("没有FHB货号!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
-            // 取FHB第一个货号（因为可能对应FHB多个货号，只需取其中一个货号的优惠、库存等）
-            final String fhbAtrNo = fhbAtrNoList.get(0);
-            // 处理档口客户商品优惠
-            this.handleCusDisc(fhbAtrNo, fhbCusDiscGroupMap, buJuProdColorMap, buJuStoreCusMap, storeProd.getStoreId(), storeProd.getId(), prodCusDiscList);
-            // 处理档口商品库存
-            this.handleProdStock(fhbAtrNo, fhbStockGroupMap, buJuProdColorMap, storeProd.getStoreId(), storeProd.getId(), storeProd.getProdArtNum(), prodStockList);
+            fhbAtrNoList.forEach(fhbAtrNo -> {
+                // 处理档口客户商品优惠
+                this.handleCusDisc(fhbAtrNo, fhbCusDiscGroupMap, buJuProdColorMap, buJuStoreCusMap, storeProd.getStoreId(), storeProd.getId(), prodCusDiscList);
+                // 处理档口商品库存
+                this.handleProdStock(fhbAtrNo, fhbStockGroupMap, buJuProdColorMap, storeProd.getStoreId(), storeProd.getId(), storeProd.getProdArtNum(), prodStockList);
+            });
         });
         // 档口客户优惠
         this.storeCusProdDiscMapper.insert(prodCusDiscList);
