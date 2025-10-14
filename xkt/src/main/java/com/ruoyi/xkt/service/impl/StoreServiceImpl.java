@@ -156,11 +156,18 @@ public class StoreServiceImpl implements IStoreService {
                     !Objects.equals(store.getStoreStatus(), StoreStatus.AUDIT_REJECTED.getValue())) {
                 throw new ServiceException("当前状态不为待审核 或 审核驳回，不可审核!", HttpStatus.ERROR);
             }
+            // 如果库存系统为空 则报错
+            if (ObjectUtils.isEmpty(auditDTO.getStoreCert().getStoreBasic().getStockSys())) {
+                throw new ServiceException("库存系统不能为空!", HttpStatus.ERROR);
+            }
+            // 判断库存系统的值在系统是否存在
+            StockSysType.of(auditDTO.getStoreCert().getStoreBasic().getStockSys());
             auditDTO.getStoreCert().setStoreId(auditDTO.getStoreId());
             // 更新档口认证信息
             this.updateStoreCert(auditDTO.getStoreCert());
             store.setStoreStatus(StoreStatus.TRIAL_PERIOD.getValue());
             store.setRejectReason("");
+            store.setStockSys(auditDTO.getStoreCert().getStoreBasic().getStockSys());
             // 将store存到redis中
             redisCache.setCacheObject(CacheConstants.STORE_KEY + store.getId(), store);
         } else {
