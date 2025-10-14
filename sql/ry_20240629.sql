@@ -3892,6 +3892,8 @@ CREATE TABLE `store_sale`
     `round_off`       decimal(10, 2) UNSIGNED NULL DEFAULT NULL COMMENT '抹零金额',
     `voucher_date`    date                                                          NOT NULL COMMENT '单据日期',
     `quantity`        int           NOT NULL COMMENT '数量',
+    `sale_quantity`   int UNSIGNED NULL DEFAULT NULL COMMENT '销售数量',
+    `refund_quantity` int NULL DEFAULT NULL COMMENT '退货数量',
     `amount`          decimal(10, 2) NOT NULL COMMENT '总金额',
     `pay_way`         tinyint UNSIGNED NOT NULL COMMENT '支付方式（1支付宝、2微信、3现金、4欠款）',
     `payment_status`  varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '结款状态（已结清、欠款）',
@@ -3904,8 +3906,6 @@ CREATE TABLE `store_sale`
     `create_time`     datetime NULL DEFAULT NULL COMMENT '创建时间',
     `update_by`       varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '更新者',
     `update_time`     datetime NULL DEFAULT NULL COMMENT '更新时间',
-    `sale_quantity`   int UNSIGNED NULL DEFAULT NULL COMMENT '销售数量',
-    `refund_quantity` int NULL DEFAULT NULL COMMENT '退货数量',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '档口销售出库' ROW_FORMAT = DYNAMIC;
 CREATE INDEX idx_ss_store_del_cus ON store_sale(store_id, del_flag, store_cus_id);
@@ -3959,6 +3959,8 @@ CREATE TABLE `store_sale_refund_record`
     `code`           varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '单据编号',
     `voucher_date`   date                                                          NOT NULL COMMENT '单据日期',
     `quantity`       int          NOT NULL COMMENT '数量',
+    `sale_quantity`   int UNSIGNED NULL DEFAULT NULL COMMENT '销售数量',
+    `refund_quantity` int NULL DEFAULT NULL COMMENT '退货数量',
     `amount`         decimal(10, 2) UNSIGNED NOT NULL COMMENT '总金额',
     `payment_status` int UNSIGNED NULL DEFAULT NULL COMMENT '结款状态（已结清、欠款）',
     `operator_id`    bigint UNSIGNED NOT NULL COMMENT '当前操作人ID sys_user.id',
