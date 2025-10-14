@@ -65,8 +65,6 @@ public class StoreCertCreateVO {
         private String facAddress;
         @ApiModelProperty(value = "生产规模")
         private Integer prodScale;
-        @ApiModelProperty(value = "库存系统 1步橘 2天友 3发货宝")
-        private Integer stockSys;
     }
 
     @Data

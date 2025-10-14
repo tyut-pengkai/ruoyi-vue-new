@@ -30,5 +30,7 @@ public class StoreAuditVO {
     private String rejectReason;
     @ApiModelProperty(value = "档口认证信息")
     private StoreCertCreateVO storeCert;
+    @ApiModelProperty(value = "库存系统 1步橘 2天友 3发货宝")
+    private Integer stockSys;
 
 }
