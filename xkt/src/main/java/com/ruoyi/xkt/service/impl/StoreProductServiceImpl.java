@@ -1157,7 +1157,8 @@ public class StoreProductServiceImpl implements IStoreProductService {
         String style = updateDTO.getCateAttr().getStyle();
         // 组装
         ESProductDTO esProdDTO = BeanUtil.toBean(storeProd, ESProductDTO.class).setHasVideo(hasVideo)
-                .setProdCateName(updateDTO.getProdCateName()).setCreateTime(DateUtils.getTime()).setStoreName(storeName).setMainPicUrl(firstMainPic)
+                .setProdCateName(updateDTO.getProdCateName()).setStoreName(storeName).setMainPicUrl(firstMainPic)
+                .setCreateTime(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, storeProd.getCreateTime()))
                 .setSaleWeight(WEIGHT_DEFAULT_ZERO.toString()).setRecommendWeight(WEIGHT_DEFAULT_ZERO.toString()).setPopularityWeight(WEIGHT_DEFAULT_ZERO.toString())
                 .setParCateId(parCate.getProdCateId().toString()).setParCateName(parCate.getName()).setProdPrice(minPrice.toString());
         if (StringUtils.isNotBlank(season)) {
