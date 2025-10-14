@@ -15,7 +15,7 @@
             COALESCE ( SUM( CASE WHEN ssd.sale_type = 2 THEN ssd.quantity ELSE 0 END ), 0 ) AS refundNum
         FROM
             store_sale_detail ssd
-                LEFT JOIN store_product sp ON ssd.store_prod_id = sp.id
+                JOIN store_product sp ON ssd.store_prod_id = sp.id
         WHERE
             ssd.del_flag = 0
           AND ssd.voucher_date = #{voucherDate}
@@ -35,9 +35,9 @@
             SUM(dsp.sale_num) AS saleNum
         FROM
             daily_sale_product dsp
-                LEFT JOIN store_product sp ON dsp.store_prod_id = sp.id
-                LEFT JOIN store s ON dsp.store_id = s.id
-                LEFT JOIN sys_product_category spc ON sp.prod_cate_id = spc.id
+                JOIN store_product sp ON dsp.store_prod_id = sp.id
+                JOIN store s ON dsp.store_id = s.id
+                JOIN sys_product_category spc ON sp.prod_cate_id = spc.id
         WHERE
             dsp.del_flag = 0
             AND dsp.voucher_date BETWEEN #{oneMonthAgo} AND #{now}
@@ -159,8 +159,8 @@
                 ROW_NUMBER() OVER ( PARTITION BY sp.prod_cate_id ORDER BY COALESCE ( SUM( dsp.sale_num ), 0 ) DESC ) AS rank_in_category
             FROM
                 daily_sale_product dsp
-                LEFT JOIN store_product sp ON dsp.store_prod_id = sp.id
-                LEFT JOIN sys_product_category spc ON sp.prod_cate_id = spc.id
+                    JOIN store_product sp ON dsp.store_prod_id = sp.id
+                    JOIN sys_product_category spc ON sp.prod_cate_id = spc.id
             WHERE
                 dsp.del_flag = 0
             GROUP BY
