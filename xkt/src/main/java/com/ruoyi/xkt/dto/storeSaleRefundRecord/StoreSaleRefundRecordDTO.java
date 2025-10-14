@@ -28,8 +28,10 @@ public class StoreSaleRefundRecordDTO {
     private Date createTime;
     @ApiModelProperty(value = "支付方式（支付宝、微信、现金、欠款）ALIPAY WECHAT_PAY CASH DEBT")
     private Integer payWay;
-    @ApiModelProperty(value = "数量")
-    private Integer quantity;
+    @ApiModelProperty(value = "销售数量")
+    private Integer saleQuantity;
+    @ApiModelProperty(value = "退货数量")
+    private Integer refundQuantity;
     @ApiModelProperty(value = "总金额")
     private BigDecimal amount;
 

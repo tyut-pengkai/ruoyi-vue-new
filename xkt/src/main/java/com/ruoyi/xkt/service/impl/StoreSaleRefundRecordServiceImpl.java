@@ -49,7 +49,8 @@ public class StoreSaleRefundRecordServiceImpl implements IStoreSaleRefundRecordS
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         List<StoreSaleRefundRecord> refundRecordList = this.refundRecordMapper.selectList(new LambdaQueryWrapper<StoreSaleRefundRecord>()
-                .eq(StoreSaleRefundRecord::getStoreId, storeId).eq(StoreSaleRefundRecord::getStoreSaleId, storeSaleId).eq(StoreSaleRefundRecord::getDelFlag, Constants.UNDELETED));
+                .eq(StoreSaleRefundRecord::getStoreId, storeId).eq(StoreSaleRefundRecord::getStoreSaleId, storeSaleId)
+                .eq(StoreSaleRefundRecord::getDelFlag, Constants.UNDELETED));
         if (CollectionUtils.isEmpty(refundRecordList)) {
             return new ArrayList<>();
         }

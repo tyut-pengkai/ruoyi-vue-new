@@ -72,6 +72,14 @@ public class StoreSaleRefundRecord extends XktBaseEntity {
     @Excel(name = "数量")
     private Integer quantity;
     /**
+     * 销售数量
+     */
+    private Integer saleQuantity;
+    /**
+     * 退货数量
+     */
+    private Integer refundQuantity;
+    /**
      * 总金额
      */
     @Excel(name = "总金额")

@@ -35,8 +35,7 @@ public class StoreSaleRefundRecordController extends XktBaseController {
     @ApiOperation(value = "查询档口销售出库返单记录", httpMethod = "POST", response = R.class)
     @GetMapping("/list/{storeId}/{storeSaleId}")
     public R<List<StoreSaleRefundRecordVO>> selectPage(@PathVariable("storeId") Long storeId, @PathVariable("storeSaleId") Long storeSaleId) {
-        List<StoreSaleRefundRecordDTO> refundDTOList = this.storeSaleRefundRecordService.selectList(storeId, storeSaleId);
-        return R.ok(BeanUtil.copyToList(refundDTOList, StoreSaleRefundRecordVO.class));
+        return R.ok(BeanUtil.copyToList(this.storeSaleRefundRecordService.selectList(storeId, storeSaleId), StoreSaleRefundRecordVO.class));
     }
 
 }
