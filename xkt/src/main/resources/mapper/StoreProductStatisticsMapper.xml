@@ -12,6 +12,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             store_product_statistics sps
         WHERE
             sps.del_flag = 0
+            AND sps.img_search_count > 0
             AND sps.voucher_date BETWEEN #{beginDate} AND #{endDate}
         GROUP BY
             sps.store_prod_id

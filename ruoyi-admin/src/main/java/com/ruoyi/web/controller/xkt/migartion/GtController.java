@@ -154,47 +154,19 @@ public class GtController extends BaseController {
         return R.ok();
     }
 
-
+    /**
+     * step5
+     */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @GetMapping("/prod/cache/{userId}")
-    public R<Integer> getProdCache(@PathVariable Integer userId) {
-        // 从redis中获取数据
-        List<GtProdSkuVO> cacheList = ObjectUtils.defaultIfNull(redisCache
-                .getCacheObject(CacheConstants.MIGRATION_GT_SALE_BASIC_KEY + userId), new ArrayList<>());
-        if (CollectionUtils.isEmpty(cacheList)) {
-            return R.fail();
-        }
-        Map<String, List<GtProdSkuVO>> artNoGroup = cacheList.stream()
-                .sorted(Comparator.comparing(GtProdSkuVO::getArticle_number)
-                        .thenComparing(GtProdSkuVO::getColor))
-                .collect(Collectors
-                        .groupingBy(GtProdSkuVO::getArticle_number, LinkedHashMap::new, Collectors.toList()));
-        // 货号 颜色 map
-        Map<String, Set<String>> artNoColorMap = new LinkedHashMap<>();
-        artNoGroup.forEach((artNo, colorList) -> {
-            artNoColorMap.put(artNo, colorList.stream().map(GtProdSkuVO::getColor).collect(Collectors.toSet()));
-        });
+    @DeleteMapping("/clear/cache/{user_id}/{product_id}")
+    public R<Integer> clearCache(@PathVariable(value = "user_id") Integer userId, @PathVariable("product_id") Integer productId) {
 
-        artNoColorMap.forEach((k, v) -> {
-            System.err.println(k + ":" + v);
-        });
-
-        // cacheList 按照货号分组，获取所有价格，价格去重
-        Map<String, Set<BigDecimal>> artNoPriceMap = cacheList.stream().collect(Collectors.groupingBy(
-                GtProdSkuVO::getArticle_number, Collectors.mapping(GtProdSkuVO::getPrice, Collectors.toSet())));
-        AtomicInteger count = new AtomicInteger();
-        artNoPriceMap.forEach((k, v) -> {
-            if (v.size() > 1) {
-                count.addAndGet(1);
-                System.err.println(k + ":" + v);
-            }
-        });
-        System.err.println(count);
-
-//        Map<String, List<Integer>> artNoPriceMap =
-
-
-        // TODO 如何对比？？
+        // 清除GT在售商品缓存
+        redisCache.deleteObject(CacheConstants.MIGRATION_GT_SALE_BASIC_KEY + userId);
+        // 清除GT下架商品缓存
+        redisCache.deleteObject(CacheConstants.MIGRATION_GT_OFF_SALE_BASIC_KEY + userId);
+        // 清除GT在售商品属性缓存
+        redisCache.deleteObject(CacheConstants.MIGRATION_GT_SALE_ATTR_KEY + userId + "_" + productId);
 
         return R.ok();
     }
