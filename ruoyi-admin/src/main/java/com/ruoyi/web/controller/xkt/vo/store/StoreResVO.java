@@ -60,6 +60,8 @@ public class StoreResVO {
     private String rejectReason;
     @ApiModelProperty(value = "档口模板ID")
     private Integer templateNum;
+    @ApiModelProperty(value = "库存系统 1步橘 2天友 3发货宝")
+    private Integer stockSys;
 
     @Data
     public static class SFileVO {
