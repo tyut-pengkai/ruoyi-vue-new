@@ -11,7 +11,6 @@ import com.ruoyi.web.controller.xkt.migartion.vo.fhb.FhbCusDiscountVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.fhb.FhbCusVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.fhb.FhbProdStockVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.fhb.FhbProdVO;
-import com.ruoyi.xkt.service.shipMaster.IShipMasterService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -33,7 +32,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/rest/v1/fhb")
 public class FhbController extends BaseController {
 
-    final IShipMasterService shipMasterService;
     final RedisCache redisCache;
 
     /**
@@ -130,11 +128,12 @@ public class FhbController extends BaseController {
 
     /**
      * step5
+     *
      * @return
      */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @GetMapping("/error/cus/disc/{supplierId}")
-    public R<CusDiscErrorVO> getErrorCusDisc(@PathVariable Integer supplierId){
+    public R<CusDiscErrorVO> getErrorCusDisc(@PathVariable Integer supplierId) {
         // 先从redis中获取列表数据
         List<FhbCusDiscountVO.SMCDRecordVO> cacheList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_CUS_DISCOUNT_KEY + supplierId), new ArrayList<>());
@@ -168,9 +167,7 @@ public class FhbController extends BaseController {
     }
 
 
-
     // ======================================================================================================================================
-
 
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")

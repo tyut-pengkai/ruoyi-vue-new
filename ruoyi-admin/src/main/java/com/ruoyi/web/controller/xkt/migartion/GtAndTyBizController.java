@@ -1,5 +1,8 @@
 package com.ruoyi.web.controller.xkt.migartion;
 
+import co.elastic.clients.elasticsearch.core.BulkResponse;
+import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
+import co.elastic.clients.elasticsearch.core.bulk.BulkResponseItem;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
@@ -9,7 +12,10 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.framework.es.EsClientWrapper;
+import com.ruoyi.framework.notice.fs.FsNotice;
 import com.ruoyi.web.controller.xkt.migartion.vo.GtAndTYCompareDownloadVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.GtAndTYInitVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.gt.GtCateVO;
@@ -19,11 +25,13 @@ import com.ruoyi.web.controller.xkt.migartion.vo.ty.TyCusImportVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.ty.TyProdImportVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.ty.TyProdStockVO;
 import com.ruoyi.xkt.domain.*;
+import com.ruoyi.xkt.dto.es.ESProductDTO;
+import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdMinPriceDTO;
 import com.ruoyi.xkt.enums.EProductStatus;
 import com.ruoyi.xkt.enums.ListingType;
 import com.ruoyi.xkt.mapper.*;
-import com.ruoyi.xkt.service.shipMaster.IShipMasterService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -34,23 +42,26 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import static com.ruoyi.common.constant.Constants.WEIGHT_DEFAULT_ZERO;
+
 /**
  * Compare 相关
  *
  * @author ruoyi
  */
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/rest/v1/gt-ty")
 public class GtAndTyBizController extends BaseController {
 
-    final IShipMasterService shipMasterService;
     final RedisCache redisCache;
     final StoreProductColorMapper prodColorMapper;
     final StoreProductColorSizeMapper prodColorSizeMapper;
@@ -63,34 +74,8 @@ public class GtAndTyBizController extends BaseController {
     final StoreProductServiceMapper prodSvcMapper;
     final StoreProductCategoryAttributeMapper prodCateAttrMapper;
     final SysProductCategoryMapper prodCateMapper;
-
-
-    // TODO 提供导出测试环境数据的接口，不然迁移到生产还要重新来一遍
-    // TODO 提供导出测试环境数据的接口，不然迁移到生产还要重新来一遍
-    // TODO 提供导出测试环境数据的接口，不然迁移到生产还要重新来一遍
-
-
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @PostMapping("/sync-es/{storeId}")
-    public void syncToEs(@PathVariable("storeId") Long storeId) {
-        // 同步主图 到 图搜 服务器
-
-        // TODO 上传到ES之后还需要确认
-        // TODO 上传到ES之后还需要确认
-        // TODO 上传到ES之后还需要确认
-
-    }
-
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @PostMapping("/sync-pic/{storeId}")
-    public void syncToPicSearch(@PathVariable("storeId") Long storeId) {
-        // 同步主图 到 图搜 服务器
-
-        // TODO 上传到图搜服务器之后还要确认
-        // TODO 上传到图搜服务器之后还要确认
-        // TODO 上传到图搜服务器之后还要确认
-
-    }
+    final EsClientWrapper esClientWrapper;
+    final FsNotice fsNotice;
 
     /**
      * step1
@@ -485,13 +470,93 @@ public class GtAndTyBizController extends BaseController {
             });
 
 
-
-
         });
         // 档口客户优惠
         this.storeCusProdDiscMapper.insert(prodCusDiscList);
         // 档口客户库存
         this.prodStockMapper.insert(prodStockList);
+        return R.ok();
+    }
+
+    /**
+     * step5
+     */
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @PostMapping("/sync-es/{storeId}")
+    public R<Integer> syncToEs(@PathVariable("storeId") Long storeId) {
+        // 将公共的商品同步到ES
+        List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+                .eq(StoreProduct::getDelFlag, Constants.UNDELETED).eq(StoreProduct::getStoreId, storeId));
+        if (CollectionUtils.isEmpty(storeProdList)) {
+            return R.fail();
+        }
+        final List<String> storeProdIdList = storeProdList.stream().map(StoreProduct::getId).map(String::valueOf).collect(Collectors.toList());
+        // 所有的分类
+        List<SysProductCategory> prodCateList = this.prodCateMapper.selectList(new LambdaQueryWrapper<SysProductCategory>()
+                .eq(SysProductCategory::getDelFlag, Constants.UNDELETED));
+        Map<Long, SysProductCategory> prodCateMap = prodCateList.stream().collect(Collectors.toMap(SysProductCategory::getId, x -> x));
+        // 获取当前商品最低价格
+        Map<Long, BigDecimal> prodMinPriceMap = this.prodColorSizeMapper.selectStoreProdMinPriceList(storeProdIdList).stream().collect(Collectors
+                .toMap(StoreProdMinPriceDTO::getStoreProdId, StoreProdMinPriceDTO::getPrice));
+        // 档口商品的属性map
+        Map<Long, StoreProductCategoryAttribute> cateAttrMap = this.prodCateAttrMapper.selectList(new LambdaQueryWrapper<StoreProductCategoryAttribute>()
+                        .eq(StoreProductCategoryAttribute::getDelFlag, Constants.UNDELETED).in(StoreProductCategoryAttribute::getStoreProdId, storeProdIdList))
+                .stream().collect(Collectors.toMap(StoreProductCategoryAttribute::getStoreProdId, x -> x));
+        // 档口商品对应的档口
+        Map<Long, Store> storeMap = this.storeMapper.selectList(new LambdaQueryWrapper<Store>().eq(Store::getDelFlag, Constants.UNDELETED)
+                        .in(Store::getId, storeProdList.stream().map(StoreProduct::getStoreId).collect(Collectors.toList())))
+                .stream().collect(Collectors.toMap(Store::getId, x -> x));
+        List<ESProductDTO> esProductDTOList = new ArrayList<>();
+        for (StoreProduct product : storeProdList) {
+            final SysProductCategory cate = prodCateMap.get(product.getProdCateId());
+            final SysProductCategory parCate = ObjectUtils.isEmpty(cate) ? null : prodCateMap.get(cate.getParentId());
+            final Store store = storeMap.get(product.getStoreId());
+            final BigDecimal prodMinPrice = prodMinPriceMap.get(product.getId());
+            final StoreProductCategoryAttribute cateAttr = cateAttrMap.get(product.getId());
+            ESProductDTO esProductDTO = new ESProductDTO().setStoreProdId(product.getId().toString()).setProdArtNum(product.getProdArtNum())
+                    .setHasVideo(Boolean.FALSE).setProdCateId(product.getProdCateId().toString()).setCreateTime(DateUtils.getTime())
+                    .setProdCateName(ObjectUtils.isNotEmpty(cate) ? cate.getName() : "")
+                    .setSaleWeight(WEIGHT_DEFAULT_ZERO.toString()).setRecommendWeight(WEIGHT_DEFAULT_ZERO.toString())
+                    .setPopularityWeight(WEIGHT_DEFAULT_ZERO.toString())
+                    .setMainPicUrl("").setMainPicName("").setMainPicSize(BigDecimal.ZERO)
+                    .setParCateId(ObjectUtils.isNotEmpty(parCate) ? parCate.getId().toString() : "")
+                    .setParCateName(ObjectUtils.isNotEmpty(parCate) ? parCate.getName() : "")
+                    .setProdPrice(ObjectUtils.isNotEmpty(prodMinPrice) ? prodMinPrice.toString() : "")
+                    .setSeason(ObjectUtils.isNotEmpty(cateAttr) ? cateAttr.getSuitableSeason() : "")
+                    .setProdStatus(product.getProdStatus().toString())
+                    .setStoreId(product.getStoreId().toString())
+                    .setStoreName(ObjectUtils.isNotEmpty(store) ? store.getStoreName() : "")
+                    .setStyle(ObjectUtils.isNotEmpty(cateAttr) ? cateAttr.getStyle() : "")
+                    .setProdTitle(product.getProdTitle());
+            if (ObjectUtils.isNotEmpty(cateAttr) && StringUtils.isNotBlank(cateAttr.getStyle())) {
+                esProductDTO.setTags(Collections.singletonList(cateAttr.getStyle()));
+            }
+            esProductDTOList.add(esProductDTO);
+        }
+        // 构建批量操作请求
+        List<BulkOperation> bulkOperations = new ArrayList<>();
+        for (ESProductDTO esProductDTO : esProductDTOList) {
+            BulkOperation bulkOperation = new BulkOperation.Builder()
+                    .index(i -> i.id(esProductDTO.getStoreProdId()).index(Constants.ES_IDX_PRODUCT_INFO).document(esProductDTO))
+                    .build();
+            bulkOperations.add(bulkOperation);
+        }
+        // 执行批量插入
+        try {
+            BulkResponse response = esClientWrapper.getEsClient().bulk(b -> b.index(Constants.ES_IDX_PRODUCT_INFO).operations(bulkOperations));
+            log.info("批量新增到 ES 成功的 id列表: {}", response.items().stream().map(BulkResponseItem::id).collect(Collectors.toList()));
+            // 有哪些没执行成功的，需要发飞书通知
+            List<String> successIdList = response.items().stream().map(BulkResponseItem::id).collect(Collectors.toList());
+            List<String> unExeIdList = storeProdIdList.stream().map(String::valueOf).filter(x -> !successIdList.contains(x)).collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(unExeIdList)) {
+                fsNotice.sendMsg2DefaultChat(storeId + "，批量新增商品到 ES 失败", "以下storeProdId未执行成功: " + unExeIdList);
+            } else {
+                fsNotice.sendMsg2DefaultChat(storeId + "，批量新增商品到 ES 成功", "共处理 " + response.items().size() + " 条记录");
+            }
+        } catch (Exception e) {
+            log.error("批量新增到 ES 失败", e);
+            fsNotice.sendMsg2DefaultChat(storeId + "，批量新增商品到 ES 失败", e.getMessage());
+        }
         return R.ok();
     }
 
@@ -573,7 +638,7 @@ public class GtAndTyBizController extends BaseController {
             // TODO 该处TY 与 FHB处理不同
             // TODO 该处TY 与 FHB处理不同
             // TODO 该处TY 与 FHB处理不同
-            tyCusDiscList.forEach(tyCusDisc -> {
+            tyCusDiscList.stream().filter(x -> x.getDiscount() > 0).forEach(tyCusDisc -> {
                 StoreProductColor buJuProdColor = Optional.ofNullable(buJuProdColorMap.get(tyColor)).orElseThrow(() -> new ServiceException("没有步橘系统对应的颜色!" + tyColor, HttpStatus.ERROR));
                 StoreCustomer storeCus = Optional.ofNullable(buJuStoreCusMap.get(tyCusDisc.getCusName())).orElseThrow(() -> new ServiceException("没有步橘系统对应的客户!" + tyCusDisc.getCusName(), HttpStatus.ERROR));
                 // 将FHB客户优惠 转为步橘系统优惠

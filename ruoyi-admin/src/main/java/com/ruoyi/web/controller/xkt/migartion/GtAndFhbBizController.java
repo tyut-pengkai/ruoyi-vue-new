@@ -31,7 +31,6 @@ import com.ruoyi.xkt.enums.EProductStatus;
 import com.ruoyi.xkt.enums.ListingType;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IPictureService;
-import com.ruoyi.xkt.service.shipMaster.IShipMasterService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -66,7 +65,6 @@ import static com.ruoyi.common.constant.Constants.WEIGHT_DEFAULT_ZERO;
 @RequestMapping("/rest/v1/gt-fhb")
 public class GtAndFhbBizController extends BaseController {
 
-    final IShipMasterService shipMasterService;
     final RedisCache redisCache;
     final StoreProductColorMapper prodColorMapper;
     final StoreProductColorSizeMapper prodColorSizeMapper;
@@ -846,7 +844,8 @@ public class GtAndFhbBizController extends BaseController {
 
     /**
      * 初始化档口颜色
-     *  @param storeId    档口ID
+     *
+     * @param storeId    档口ID
      * @param supplierId 供应商ID
      */
     private void initStoreColorList(Long storeId, Integer supplierId) {
@@ -885,9 +884,6 @@ public class GtAndFhbBizController extends BaseController {
         // 如果没有找到数字，返回空字符串
         throw new ServiceException("货号格式错误", HttpStatus.ERROR);
     }
-
-
-
 
 
 }

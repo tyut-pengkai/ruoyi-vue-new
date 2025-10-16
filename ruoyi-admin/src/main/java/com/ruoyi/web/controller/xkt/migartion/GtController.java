@@ -11,7 +11,6 @@ import com.ruoyi.web.controller.xkt.migartion.vo.gt.GtCateVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.gt.GtProdSkuVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.gt.GtProdVO;
 import com.ruoyi.xkt.mapper.SysProductCategoryMapper;
-import com.ruoyi.xkt.service.shipMaster.IShipMasterService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -21,10 +20,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -37,7 +34,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/rest/v1/gt")
 public class GtController extends BaseController {
 
-    final IShipMasterService shipMasterService;
     final RedisCache redisCache;
     final SysProductCategoryMapper prodCateMapper;
 

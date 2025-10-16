@@ -181,7 +181,7 @@ public class TyController extends BaseController {
      */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @GetMapping("/error/cus/disc/{userId}")
-    public R<CusDiscErrorVO> getErrorCusDisc(@PathVariable Integer userId){
+    public R<CusDiscErrorVO> getErrorCusDisc(@PathVariable Integer userId) {
         List<TyCusDiscImportVO> cacheList = redisCache.getCacheObject(CacheConstants.MIGRATION_TY_CUS_DISCOUNT_KEY + userId);
         List<String> errDiscList = new ArrayList<>();
         // 1. 有哪些是优惠价大于销售价的
@@ -226,11 +226,7 @@ public class TyController extends BaseController {
         if (cusDiscMap.containsKey(cusName)) {
             throw new ServiceException(cusName + " : 客户已导入过优惠数据", HttpStatus.ERROR);
         }
-
-        // TODO 临时去掉
-        // TODO 临时去掉
-
-     /*   // 判断货号 + 颜色是否存在，“图识”可能不准
+        // 判断货号 + 颜色是否存在，“图识”可能不准
         List<TyProdImportVO> tyProdVOList = redisCache.getCacheObject(CacheConstants.MIGRATION_TY_PROD_KEY + userId);
         // key prod+colorName
         Map<String, TyProdImportVO> tyProdColorMap = tyProdVOList.stream().collect(Collectors.toMap(x -> x.getProdArtNum() + ":" + x.getColorName(), x -> x));
@@ -243,11 +239,7 @@ public class TyController extends BaseController {
         });
         if (CollectionUtils.isNotEmpty(errorList)) {
             throw new ServiceException(errorList.toString(), HttpStatus.ERROR);
-        }*/
-
-
-
-
+        }
     }
 
 }
