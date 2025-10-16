@@ -431,7 +431,8 @@ public class StoreProductServiceImpl implements IStoreProductService {
         dbProdStockList.stream().filter(x -> !validColorIdList.contains(x.getStoreProdColorId())).forEach(x -> x.setDelFlag(Constants.DELETED));
         // 有哪些是新增的颜色
         validColorList.stream().filter(x -> !dbExistStockColorIdList.contains(x.getId()))
-                .forEach(x -> dbProdStockList.add(BeanUtil.toBean(x, StoreProductStock.class).setProdArtNum(prodArtNum).setStoreProdColorId(x.getId())));
+                .forEach(x -> dbProdStockList.add(new StoreProductStock().setStoreId(storeId).setStoreProdId(storeProdId).setStoreProdColorId(x.getId())
+                        .setProdArtNum(prodArtNum).setStoreColorId(x.getStoreColorId()).setColorName(x.getColorName())));
         this.prodStockMapper.insertOrUpdate(dbProdStockList);
     }
 
@@ -508,8 +509,10 @@ public class StoreProductServiceImpl implements IStoreProductService {
         prodColorSizeList.forEach(x -> x.setSnPrefix(storeId + String.format("%08d", x.getId())));
         this.storeProdColorSizeMapper.updateById(prodColorSizeList);
         // 新增档口库存初始化数据
-        List<StoreProductStock> prodStockList = prodColorList.stream().map(x -> BeanUtil.toBean(x, StoreProductStock.class)
-                .setProdArtNum(prodArtNum).setStoreProdColorId(x.getId())).collect(Collectors.toList());
+        List<StoreProductStock> prodStockList = prodColorList.stream().map(x -> new StoreProductStock().setStoreId(storeId)
+                        .setStoreProdId(storeProdId).setStoreProdColorId(x.getId()).setProdArtNum(prodArtNum)
+                        .setStoreColorId(x.getStoreColorId()).setColorName(x.getColorName()))
+                .collect(Collectors.toList());
         this.prodStockMapper.insert(prodStockList);
         // 设置了档口商品全部优惠的客户，新增商品优惠
         this.createStoreCusDiscount(prodColorList, storeProdId);
