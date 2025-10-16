@@ -6,6 +6,7 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.web.controller.xkt.migartion.vo.CusDiscErrorVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.fhb.FhbCusDiscountVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.fhb.FhbCusVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.fhb.FhbProdStockVO;
@@ -93,20 +94,12 @@ public class FhbController extends BaseController {
         if (ObjectUtils.isEmpty(cusDiscountVO.getData()) || ObjectUtils.isEmpty(cusDiscountVO.getData().getRecords())) {
             return R.ok();
         }
-        // 错误的折扣列表
-        List<String> errorCusDiscList = new ArrayList<>();
         // 设置优惠价格
         cusDiscountVO.getData().getRecords().forEach(record -> {
             final Integer supplyPrice = ObjectUtils.defaultIfNull(record.getSupplyPrice(), 0);
             final Integer customerPrice = ObjectUtils.defaultIfNull(record.getCustomerPrice(), 0);
-            if (supplyPrice - customerPrice < 0) {
-                errorCusDiscList.add(record.getArtNo() + ":" + record.getCustomerName() + ":" + record.getColor());
-            }
             record.setDiscount(supplyPrice - customerPrice);
         });
-        if (CollectionUtils.isNotEmpty(errorCusDiscList)) {
-            throw new ServiceException("供应商商品价格有误!" + errorCusDiscList, HttpStatus.ERROR);
-        }
         // 先从redis中获取列表数据
         List<FhbCusDiscountVO.SMCDRecordVO> cacheList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_CUS_DISCOUNT_KEY + supplierId), new ArrayList<>());
@@ -135,6 +128,44 @@ public class FhbController extends BaseController {
         return R.ok();
     }
 
+    /**
+     * step5
+     * @return
+     */
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @GetMapping("/error/cus/disc/{supplierId}")
+    public R<CusDiscErrorVO> getErrorCusDisc(@PathVariable Integer supplierId){
+        // 先从redis中获取列表数据
+        List<FhbCusDiscountVO.SMCDRecordVO> cacheList = ObjectUtils.defaultIfNull(redisCache
+                .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_CUS_DISCOUNT_KEY + supplierId), new ArrayList<>());
+        if (CollectionUtils.isEmpty(cacheList)) {
+            return R.ok();
+        }
+        List<String> errDiscList = new ArrayList<>();
+        // 1. 有哪些是优惠价大于销售价的
+        cacheList.forEach(record -> {
+            final Integer supplyPrice = ObjectUtils.defaultIfNull(record.getSupplyPrice(), 0);
+            final Integer customerPrice = ObjectUtils.defaultIfNull(record.getCustomerPrice(), 0);
+            if (supplyPrice - customerPrice <= 0) {
+                errDiscList.add(record.getArtNo() + ":" + record.getCustomerName() + ":" + record.getColor() + "，优惠价大于原售价");
+            }
+        });
+        // 2. 有哪些优惠是同一货号不同颜色优惠金额不一致
+        List<String> errCusDiscUnSameList = new ArrayList<>();
+        Map<String, Map<String, List<FhbCusDiscountVO.SMCDRecordVO>>> artNoCusDiscMap = cacheList.stream().collect(Collectors
+                .groupingBy(FhbCusDiscountVO.SMCDRecordVO::getArtNo, Collectors.groupingBy(FhbCusDiscountVO.SMCDRecordVO::getCustomerName)));
+        artNoCusDiscMap.forEach((artNo, cusDiscMap) -> cusDiscMap.forEach((cusName, cusDiscList) -> {
+            Map<String, Integer> colorDiscMap = cusDiscList.stream().collect(Collectors.groupingBy(FhbCusDiscountVO.SMCDRecordVO::getColor,
+                    Collectors.collectingAndThen(Collectors.maxBy(Comparator.comparing(FhbCusDiscountVO.SMCDRecordVO::getUpdateTime,
+                            Comparator.nullsFirst(String::compareTo))), record -> record.get().getDiscount())));
+            // 判断所有颜色的优惠金额是否一致
+            Set<Integer> discValueSet = new HashSet<>(colorDiscMap.values());
+            if (discValueSet.size() > 1) {
+                errCusDiscUnSameList.add(artNo + ":" + cusName + ":" + colorDiscMap.keySet() + "，优惠金额不一致");
+            }
+        }));
+        return R.ok(new CusDiscErrorVO().setErrDiscList(errDiscList).setErrCusDiscUnSameList(errCusDiscUnSameList));
+    }
 
 
 

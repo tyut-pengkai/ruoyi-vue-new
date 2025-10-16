@@ -41,14 +41,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
- * Compare 相关
+ * Compare 相关 处理主要是 匹配非常贴近的数据
  *
  * @author ruoyi
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/rest/v1/gt-ty")
-public class GtAndTyBizController extends BaseController {
+@RequestMapping("/rest/v1/gt-ty/t2")
+public class GtAndTyBiz2Controller extends BaseController {
 
     final IShipMasterService shipMasterService;
     final RedisCache redisCache;
@@ -92,99 +92,81 @@ public class GtAndTyBizController extends BaseController {
 
     }
 
+
     /**
      * step1
      */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @GetMapping("/compare/{userId}")
     public void compare(HttpServletResponse response, @PathVariable("userId") Integer userId) throws UnsupportedEncodingException {
-        Map<String, List<String>> multiSaleSameGoMap = new HashMap<>();
-        Map<String, List<String>> multiOffSaleSameGoMap = new HashMap<>();
-        Map<String, List<String>> multiSameTyMap = new HashMap<>();
-
-        List<GtProdSkuVO> gtSaleBasicList = ObjectUtils.defaultIfNull(redisCache
+        // 处理的思路，以GT为主，根据GT的货号 去匹配TY的货号，有些档口写的比较规范，这种就比较好处理
+        List<GtProdSkuVO> gtOnSaleList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_GT_SALE_BASIC_KEY + userId), new ArrayList<>());
-        Map<String, String> articleNoColorMap = gtSaleBasicList.stream().collect(Collectors.groupingBy(GtProdSkuVO::getArticle_number,
+        // gt所有在售的货号列表
+        List<String> gtArtNoList = gtOnSaleList.stream().map(GtProdSkuVO::getArticle_number).map(String::trim).distinct().collect(Collectors.toList());
+        Map<String, String> gtOnSaleArtNoColorMap = gtOnSaleList.stream().collect(Collectors.groupingBy(GtProdSkuVO::getArticle_number,
                 Collectors.collectingAndThen(Collectors.mapping(GtProdSkuVO::getColor, Collectors.toList()),
                         list -> "(" + list.stream().distinct().collect(Collectors.joining(",")) + ")")));
-        List<String> doubleRunSaleArtNoList = gtSaleBasicList.stream().map(GtProdSkuVO::getArticle_number).distinct().collect(Collectors.toList());
-        // 查看double_run 在售的商品 这边有多少相似的货号
-        doubleRunSaleArtNoList.forEach(article_number -> {
-            // 只保留核心连续的数字，去除其他所有符号
-            String cleanArtNo = this.extractCoreArticleNumber(article_number);
-            List<String> existList = multiSaleSameGoMap.containsKey(cleanArtNo) ? multiSaleSameGoMap.get(cleanArtNo) : new ArrayList<>();
-            existList.add(article_number + articleNoColorMap.get(article_number));
-            multiSaleSameGoMap.put(cleanArtNo, existList);
-        });
 
         // 查看gt 下架的商品有多少相似的货号
-        List<GtProdSkuVO> doubleRunOffSaleBasicList = ObjectUtils.defaultIfNull(redisCache
+        List<GtProdSkuVO> gtOffSaleBasicList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_GT_OFF_SALE_BASIC_KEY + userId), new ArrayList<>());
-        List<String> doubleRunOffSaleArtNoList = doubleRunOffSaleBasicList.stream().map(GtProdSkuVO::getArticle_number).distinct().collect(Collectors.toList());
-        doubleRunOffSaleArtNoList.forEach(article_number -> {
-            // 只保留核心连续的数字，去除其他所有符号
-            String cleanArtNo = this.extractCoreArticleNumber(article_number);
-            List<String> existList = multiOffSaleSameGoMap.containsKey(cleanArtNo) ? multiOffSaleSameGoMap.get(cleanArtNo) : new ArrayList<>();
-            existList.add(article_number);
-            multiOffSaleSameGoMap.put(cleanArtNo, existList);
-        });
+        List<String> gtOffSaleArtNoList = gtOffSaleBasicList.stream().map(GtProdSkuVO::getArticle_number).distinct().collect(Collectors.toList());
 
-        // 查看ty 这边有多少相似的货号
+        // 找到TY对应的商品
         List<TyProdImportVO> tyProdList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_TY_PROD_KEY + userId), new ArrayList<>());
-        Map<String, String> tyProdArtNumColorMap = tyProdList.stream().collect(Collectors.groupingBy(TyProdImportVO::getProdArtNum,
+        Map<String, String> tyArtNoColorMap = tyProdList.stream().collect(Collectors.groupingBy(TyProdImportVO::getProdArtNum,
                 Collectors.collectingAndThen(Collectors.mapping(TyProdImportVO::getColorName, Collectors.toList()),
                         list -> "(" + list.stream().distinct().collect(Collectors.joining(",")) + ")")));
-        List<String> tyArtNoList = tyProdList.stream().map(TyProdImportVO::getProdArtNum).distinct().collect(Collectors.toList());
-        tyArtNoList.forEach(prodArtNum -> {
-            // 只保留核心连续的数字，去除其他所有符号
-            String cleanArtNo = this.extractCoreArticleNumber(prodArtNum);
-            List<String> existList = multiSameTyMap.containsKey(cleanArtNo) ? multiSameTyMap.get(cleanArtNo) : new ArrayList<>();
-            existList.add(prodArtNum + tyProdArtNumColorMap.get(prodArtNum));
-            multiSameTyMap.put(cleanArtNo, existList);
-        });
-        // 清洗数据之后，GO平台和TY平台 货号一致的，按照这种来展示: GT => [Z1110(黑色,黑色绒里,棕色,棕色绒里)] <= 清洗后的货号 => [Z1110(黑色,黑色绒里,棕色,棕色绒里)] <= TY
+        // GT和TY匹配的货号map
+        Map<String, List<String>> gtMatchTyArtNoMap = new HashMap<>();
+        // 以GT为准在，找TY匹配的货号
+        gtArtNoList.forEach(gtOnSaleArtNo -> tyArtNoColorMap.forEach((tyArtNo, tyArtNoColorStr) -> {
+            if (tyArtNo.contains(gtOnSaleArtNo)) {
+                List<String> existMatchArtNoList = gtMatchTyArtNoMap.getOrDefault(gtOnSaleArtNo, new ArrayList<>());
+                existMatchArtNoList.add(tyArtNo);
+                gtMatchTyArtNoMap.put(gtOnSaleArtNo, existMatchArtNoList);
+            }
+        }));
 
-        System.err.println("============ 两边系统“一致”的货号 ============");
         // 清洗后，相同货号映射
         List<String> matchArtNoList = new ArrayList<>();
-        Set<String> commonArtNos = new HashSet<>(multiSaleSameGoMap.keySet());
-        commonArtNos.retainAll(multiSameTyMap.keySet());
-        commonArtNos.forEach(artNo -> {
-            final String sameArtNo = "GT => " + multiSaleSameGoMap.get(artNo) + " <= " + artNo + " => " + multiSameTyMap.get(artNo) + " <= TY";
+        List<String> multiMatchGtArtNoList = new ArrayList<>();
+        matchArtNoList.add("============ GT和TY匹配的货号 ============");
+        // 清洗数据之后，GO平台和TY平台 货号一致的，按照这种来展示: GT => [Z1110(黑色,黑色绒里,棕色,棕色绒里)] <= 清洗后的货号 => [Z1110(黑色,黑色绒里,棕色,棕色绒里)] <= TY
+        gtMatchTyArtNoMap.forEach((gtArtNo, tyArtNoList) -> {
+            List<String> tyArtNoColorList = tyArtNoList.stream().map(tyArtNo -> tyArtNo + tyArtNoColorMap.get(tyArtNo)).collect(Collectors.toList());
+            final String sameArtNo = "GT => " + gtArtNo + gtOnSaleArtNoColorMap.get(gtArtNo) + " <= " + gtArtNo + " => " + tyArtNoColorList + " <= TY";
             matchArtNoList.add(sameArtNo);
+            multiMatchGtArtNoList.add(gtArtNo);
         });
-        // 输出货号清洗后相同的货号
-        matchArtNoList.forEach(System.out::println);
 
         matchArtNoList.add("============ GT独有的货号 ============");
         matchArtNoList.add("============ GT独有的货号 ============");
-
-        System.err.println("============ GT独有的key ============");
-        // 获取GO2独有的key
-        Set<String> onlyInGoMap = new HashSet<>(multiSaleSameGoMap.keySet());
-        onlyInGoMap.removeAll(commonArtNos);
-        if (CollectionUtils.isNotEmpty(onlyInGoMap)) {
-            onlyInGoMap.forEach(x -> {
-                matchArtNoList.addAll(multiSaleSameGoMap.get(x));
-                System.out.println(multiSaleSameGoMap.get(x));
-            });
-        }
+        // 只存在于GT的货号列表
+        gtOnSaleArtNoColorMap.forEach((gtArtNo, gtArtNoColorStr) -> {
+            if (!multiMatchGtArtNoList.contains(gtArtNo)) {
+                matchArtNoList.add(gtArtNo + gtArtNoColorStr);
+            }
+        });
 
         matchArtNoList.add("============ TY独有的货号 ============");
         matchArtNoList.add("============ TY独有的货号 ============");
-
-        System.err.println("============ TY 去掉公共的、下架的 独有的key ============");
-        // 获取TY独有的key  去掉公共的、去掉下架的商品
-        Set<String> onlyInTYMap = new HashSet<>(multiSameTyMap.keySet());
-        onlyInTYMap.removeAll(commonArtNos);
-        onlyInTYMap.removeAll(multiOffSaleSameGoMap.keySet());
-        if (CollectionUtils.isNotEmpty(onlyInTYMap)) {
-            onlyInTYMap.forEach(x -> {
-                matchArtNoList.addAll(multiSameTyMap.get(x));
-                System.out.println(multiSameTyMap.get(x));
-            });
-        }
+        List<String> matchTyArtNoList = new ArrayList<>();
+        // 共同存在GT 和 TY的TY货号
+        gtMatchTyArtNoMap.forEach((gtArtNo, tyArtNoList) -> matchTyArtNoList.addAll(tyArtNoList));
+        // 已下架的GT货号，如果能在TY找到匹配的，也要剔除
+        gtOffSaleArtNoList.forEach(gtOffSaleArtNo -> tyArtNoColorMap.forEach((tyArtNo, colorNameStr) -> {
+            if (tyArtNo.contains(gtOffSaleArtNo)) {
+                matchTyArtNoList.add(tyArtNo);
+            }
+        }));
+        tyArtNoColorMap.forEach((tyArtNo, colorNameStr) -> {
+            if (!matchTyArtNoList.contains(tyArtNo)) {
+                matchArtNoList.add(tyArtNo + colorNameStr);
+            }
+        });
 
         List<GtAndTYCompareDownloadVO> downloadList = new ArrayList<>();
         for (int i = 0; i < matchArtNoList.size(); i++) {
@@ -213,47 +195,31 @@ public class GtAndTyBizController extends BaseController {
         this.initStoreColorList(initVO.getStoreId(), initVO.getUserId());
         // 步骤2: 客户初始化
         this.initStoreCusList(initVO);
-        // 步骤3: 商品初始化
-        Map<String, List<String>> multiSaleSameGoMap = new HashMap<>();
-        Map<String, List<String>> multiOffSaleSameGoMap = new HashMap<>();
-        Map<String, List<String>> multiSameTyMap = new HashMap<>();
-        List<GtProdSkuVO> gtSaleBasicList = ObjectUtils.defaultIfNull(redisCache
-                .getCacheObject(CacheConstants.MIGRATION_GT_SALE_BASIC_KEY + initVO.getUserId()), new ArrayList<>());
-        // 查看gt 在售的商品 这边有多少相似的货号
-        gtSaleBasicList.stream().map(GtProdSkuVO::getArticle_number).distinct()
-                .forEach(article_number -> {
-                    // 只保留核心连续的数字，去除其他所有符号
-                    String cleanArtNo = this.extractCoreArticleNumber(article_number);
-                    if (CollectionUtils.isEmpty(initVO.getExcludeArtNoList()) || !initVO.getExcludeArtNoList().contains(cleanArtNo)) {
-                        List<String> existList = multiSaleSameGoMap.containsKey(cleanArtNo) ? multiSaleSameGoMap.get(cleanArtNo) : new ArrayList<>();
-                        existList.add(article_number);
-                        multiSaleSameGoMap.put(cleanArtNo, existList);
-                    }
-                });
-        // 查看gt 下架的商品有多少相似的货号
-        List<GtProdSkuVO> gtOffSaleBasicList = ObjectUtils.defaultIfNull(redisCache
-                .getCacheObject(CacheConstants.MIGRATION_GT_OFF_SALE_BASIC_KEY + initVO.getUserId()), new ArrayList<>());
-        gtOffSaleBasicList.stream().map(GtProdSkuVO::getArticle_number).distinct().forEach(article_number -> {
-            // 只保留核心连续的数字，去除其他所有符号
-            String cleanArtNo = this.extractCoreArticleNumber(article_number);
-            List<String> existList = multiOffSaleSameGoMap.containsKey(cleanArtNo) ? multiOffSaleSameGoMap.get(cleanArtNo) : new ArrayList<>();
-            existList.add(article_number);
-            multiOffSaleSameGoMap.put(cleanArtNo, existList);
-        });
-        // 查看TY 这边有多少相似的货号
-        List<TyProdImportVO> tyProdList = redisCache.getCacheObject(CacheConstants.MIGRATION_TY_PROD_KEY + initVO.getUserId());
-        tyProdList.stream().map(TyProdImportVO::getProdArtNum).distinct()
-                .forEach(artNo -> {
-                    // 只保留核心连续的数字，去除其他所有符号
-                    String cleanArtNo = this.extractCoreArticleNumber(artNo);
-                    if (CollectionUtils.isEmpty(initVO.getExcludeArtNoList()) || !initVO.getExcludeArtNoList().contains(cleanArtNo)) {
-                        List<String> existList = multiSameTyMap.containsKey(cleanArtNo) ? multiSameTyMap.get(cleanArtNo) : new ArrayList<>();
-                        existList.add(artNo);
-                        multiSameTyMap.put(cleanArtNo, existList);
-                    }
-                });
+
+        // 处理的思路，以GT为主，根据GT的货号 去匹配TY的货号，有些档口写的比较规范，这种就比较好处理
+        List<GtProdSkuVO> gtOnSaleList = ObjectUtils.defaultIfNull(redisCache.getCacheObject(CacheConstants.MIGRATION_GT_SALE_BASIC_KEY + initVO.getUserId()), new ArrayList<>());
+        // gt所有在售的货号列表
+        List<String> gtArtNoList = gtOnSaleList.stream().map(GtProdSkuVO::getArticle_number).map(String::trim).distinct().collect(Collectors.toList());
+
+        // 找到TY对应的商品
+        List<TyProdImportVO> tyProdList = ObjectUtils.defaultIfNull(redisCache.getCacheObject(CacheConstants.MIGRATION_TY_PROD_KEY + initVO.getUserId()), new ArrayList<>());
+        Map<String, String> tyArtNoColorMap = tyProdList.stream().collect(Collectors.groupingBy(TyProdImportVO::getProdArtNum,
+                Collectors.collectingAndThen(Collectors.mapping(TyProdImportVO::getColorName, Collectors.toList()),
+                        list -> "(" + list.stream().distinct().collect(Collectors.joining(",")) + ")")));
+
+        // GT和TY匹配的货号map
+        Map<String, List<String>> gtMatchTyArtNoMap = new HashMap<>();
+        // 以GT为准在，找TY匹配的货号
+        gtArtNoList.forEach(gtOnSaleArtNo -> tyArtNoColorMap.forEach((tyArtNo, tyArtNoColorStr) -> {
+            if (tyArtNo.contains(gtOnSaleArtNo)) {
+                List<String> existMatchArtNoList = gtMatchTyArtNoMap.getOrDefault(gtOnSaleArtNo, new ArrayList<>());
+                existMatchArtNoList.add(tyArtNo);
+                gtMatchTyArtNoMap.put(gtOnSaleArtNo, existMatchArtNoList);
+            }
+        }));
+
         // gt按照货号分组
-        Map<String, List<GtProdSkuVO>> gtSaleGroupMap = gtSaleBasicList.stream().collect(Collectors.groupingBy(GtProdSkuVO::getArticle_number));
+        Map<String, List<GtProdSkuVO>> gtSaleGroupMap = gtOnSaleList.stream().collect(Collectors.groupingBy(GtProdSkuVO::getArticle_number));
         // GT分类
         List<GtCateVO.GCIDataVO> cacheList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_GT_SALE_CATE_KEY + initVO.getUserId()), new ArrayList<>());
@@ -267,28 +233,25 @@ public class GtAndTyBizController extends BaseController {
             cateRelationMap.put(gtCate.getId(), cateId);
         });
 
-        System.err.println("============ 两边系统“一致”的货号 ============");
-        // 清洗后，相同货号映射
-        Set<String> commonArtNos = new HashSet<>(multiSaleSameGoMap.keySet());
-        commonArtNos.retainAll(multiSameTyMap.keySet());
-        // 待导入的商品
-        List<StoreProduct> storeProdList = new ArrayList<>();
         // 当天
         final Date voucherDate = java.sql.Date.valueOf(LocalDate.now());
         // 所有商品的类目属性map  key gt的product_id value StoreProductCategoryAttribute
         Map<Integer, StoreProductCategoryAttribute> prodAttrMap = new HashMap<>();
-        commonArtNos.forEach(cleanArtNo -> {
-            // 获取GT匹配的商品中的第一个商品
-            List<GtProdSkuVO> gtMatchSkuList = this.getGtFirstSku(multiSaleSameGoMap, gtSaleGroupMap, cleanArtNo);
-            // 初始化档口商品
-            StoreProduct storeProd = new StoreProduct().setStoreId(initVO.getStoreId())
-                    .setProdCateId(cateRelationMap.get(gtMatchSkuList.get(0).getCategory_nid())).setPrivateItem(0)
-                    .setProdArtNum(gtMatchSkuList.get(0).getArticle_number()).setProdTitle(gtMatchSkuList.get(0).getCharacters())
-                    .setListingWay(ListingType.RIGHT_NOW.getValue()).setVoucherDate(voucherDate).setProdStatus(EProductStatus.ON_SALE.getValue())
-                    .setRecommendWeight(0L).setSaleWeight(0L).setPopularityWeight(0L);
-            // 提前设置档口商品的类目属性
-            this.preMatchAttr(gtMatchSkuList.get(0).getProduct_id(), initVO.getUserId(), prodAttrMap);
-            storeProdList.add(storeProd);
+        // 待导入的商品
+        List<StoreProduct> storeProdList = new ArrayList<>();
+        gtMatchTyArtNoMap.forEach((gtArtNo, tyArtNoList) -> {
+            // 排除掉需要特殊处理的货号
+            if (CollectionUtils.isEmpty(initVO.getExcludeArtNoList()) || !initVO.getExcludeArtNoList().contains(gtArtNo)) {
+                // 获取GT匹配的商品中的第一个商品
+                List<GtProdSkuVO> gtMatchSkuList = gtSaleGroupMap.get(gtArtNo);
+                // 初始化档口商品
+                StoreProduct storeProd = new StoreProduct().setStoreId(initVO.getStoreId()).setProdCateId(cateRelationMap.get(gtMatchSkuList.get(0).getCategory_nid()))
+                        .setPrivateItem(0).setProdArtNum(gtMatchSkuList.get(0).getArticle_number()).setProdTitle(gtMatchSkuList.get(0).getCharacters()).setListingWay(ListingType.RIGHT_NOW.getValue())
+                        .setVoucherDate(voucherDate).setProdStatus(EProductStatus.ON_SALE.getValue()).setRecommendWeight(0L).setSaleWeight(0L).setPopularityWeight(0L);
+                // 提前设置档口商品的类目属性
+                this.preMatchAttr(gtMatchSkuList.get(0).getProduct_id(), initVO.getUserId(), prodAttrMap);
+                storeProdList.add(storeProd);
+            }
         });
         this.storeProdMapper.insert(storeProdList);
 
@@ -296,10 +259,8 @@ public class GtAndTyBizController extends BaseController {
         List<StoreProductService> prodSvcList = new ArrayList<>();
         List<StoreProductCategoryAttribute> prodAttrList = new ArrayList<>();
         storeProdList.forEach(storeProd -> {
-            // 获取clearArtNo
-            String clearArtNo = this.extractCoreArticleNumber(storeProd.getProdArtNum());
             // 获取GT匹配的商品sku列表
-            List<GtProdSkuVO> gtMatchSkuList = this.getGtFirstSku(multiSaleSameGoMap, gtSaleGroupMap, clearArtNo);
+            List<GtProdSkuVO> gtMatchSkuList = gtSaleGroupMap.get(storeProd.getProdArtNum());
             // 初始化商品服务承诺
             prodSvcList.add(new StoreProductService().setStoreProdId(storeProd.getId()).setCustomRefund("0")
                     .setThirtyDayRefund("0").setOneBatchSale("1").setRefundWithinThreeDay("0"));
@@ -330,49 +291,40 @@ public class GtAndTyBizController extends BaseController {
                 .eq(StoreColor::getStoreId, initVO.getStoreId()).eq(StoreColor::getDelFlag, Constants.UNDELETED));
         Map<String, StoreColor> storeColorMap = storeColorList.stream().collect(Collectors.toMap(StoreColor::getColorName, x -> x));
 
-        Map<String, List<String>> multiSaleSameGoMap = new HashMap<>();
-        Map<String, List<String>> multiSameTyMap = new HashMap<>();
-        List<GtProdSkuVO> gtSaleBasicList = ObjectUtils.defaultIfNull(redisCache
-                .getCacheObject(CacheConstants.MIGRATION_GT_SALE_BASIC_KEY + initVO.getUserId()), new ArrayList<>());
-        // 查看gt 在售的商品 这边有多少相似的货号
-        gtSaleBasicList.stream().map(GtProdSkuVO::getArticle_number).distinct()
-                .forEach(article_number -> {
-                    // 只保留核心连续的数字，去除其他所有符号
-                    String cleanArtNo = this.extractCoreArticleNumber(article_number);
-                    if (CollectionUtils.isEmpty(initVO.getExcludeArtNoList()) || !initVO.getExcludeArtNoList().contains(cleanArtNo)) {
-                        List<String> existList = multiSaleSameGoMap.containsKey(cleanArtNo) ? multiSaleSameGoMap.get(cleanArtNo) : new ArrayList<>();
-                        existList.add(article_number);
-                        multiSaleSameGoMap.put(cleanArtNo, existList);
-                    }
-                });
-
-        // 查看TY 这边有多少相似的货号
-        List<TyProdImportVO> tyProdList = redisCache.getCacheObject(CacheConstants.MIGRATION_TY_PROD_KEY + initVO.getUserId());
-        // TY按照颜色分类
-        Map<String, List<TyProdImportVO>> tyProdGroupMap = tyProdList.stream().collect(Collectors.groupingBy(TyProdImportVO::getProdArtNum));
-        tyProdList.stream().map(TyProdImportVO::getProdArtNum).distinct()
-                .forEach(artNo -> {
-                    // 只保留核心连续的数字，去除其他所有符号
-                    String cleanArtNo = this.extractCoreArticleNumber(artNo);
-                    if (CollectionUtils.isEmpty(initVO.getExcludeArtNoList()) || !initVO.getExcludeArtNoList().contains(cleanArtNo)) {
-                        List<String> existList = multiSameTyMap.containsKey(cleanArtNo) ? multiSameTyMap.get(cleanArtNo) : new ArrayList<>();
-                        existList.add(artNo);
-                        multiSameTyMap.put(cleanArtNo, existList);
-                    }
-                });
+        // 处理的思路，以GT为主，根据GT的货号 去匹配TY的货号，有些档口写的比较规范，这种就比较好处理
+        List<GtProdSkuVO> gtOnSaleList = ObjectUtils.defaultIfNull(redisCache.getCacheObject(CacheConstants.MIGRATION_GT_SALE_BASIC_KEY + initVO.getUserId()), new ArrayList<>());
+        // gt所有在售的货号列表
+        List<String> gtArtNoList = gtOnSaleList.stream().map(GtProdSkuVO::getArticle_number).map(String::trim).distinct().collect(Collectors.toList());
         // gt按照货号分组
-        Map<String, List<GtProdSkuVO>> gtSaleGroupMap = gtSaleBasicList.stream().collect(Collectors.groupingBy(GtProdSkuVO::getArticle_number));
+        Map<String, List<GtProdSkuVO>> gtSaleGroupMap = gtOnSaleList.stream().collect(Collectors.groupingBy(GtProdSkuVO::getArticle_number));
+
+        // 找到TY对应的商品
+        List<TyProdImportVO> tyProdList = ObjectUtils.defaultIfNull(redisCache.getCacheObject(CacheConstants.MIGRATION_TY_PROD_KEY + initVO.getUserId()), new ArrayList<>());
+        // TY货号下颜色的map
+        Map<String, List<TyProdImportVO>> tyProdGroupMap = tyProdList.stream().collect(Collectors.groupingBy(TyProdImportVO::getProdArtNum));
+        Map<String, String> tyArtNoColorMap = tyProdList.stream().collect(Collectors.groupingBy(TyProdImportVO::getProdArtNum,
+                Collectors.collectingAndThen(Collectors.mapping(TyProdImportVO::getColorName, Collectors.toList()),
+                        list -> "(" + list.stream().distinct().collect(Collectors.joining(",")) + ")")));
+
+        // GT和TY匹配的货号map
+        Map<String, List<String>> gtMatchTyArtNoMap = new HashMap<>();
+        // 以GT为准在，找TY匹配的货号
+        gtArtNoList.forEach(gtOnSaleArtNo -> tyArtNoColorMap.forEach((tyArtNo, tyArtNoColorStr) -> {
+            if (tyArtNo.contains(gtOnSaleArtNo)) {
+                List<String> existMatchArtNoList = gtMatchTyArtNoMap.getOrDefault(gtOnSaleArtNo, new ArrayList<>());
+                existMatchArtNoList.add(tyArtNo);
+                gtMatchTyArtNoMap.put(gtOnSaleArtNo, existMatchArtNoList);
+            }
+        }));
 
         // 商品所有颜色 尺码 颜色库存初始化
         List<StoreProductColor> prodColorList = new ArrayList<>();
         List<StoreProductColorSize> prodColorSizeList = new ArrayList<>();
         storeProdList.forEach(storeProd -> {
-            // 取clearArtNo
-            String clearArtNo = this.extractCoreArticleNumber(storeProd.getProdArtNum());
             // TY匹配的货号
-            List<String> tyMatchArtNoList = multiSameTyMap.get(clearArtNo);
+            List<String> tyMatchArtNoList = gtMatchTyArtNoMap.get(storeProd.getProdArtNum());
             // 获取GT匹配的商品sku列表
-            List<GtProdSkuVO> gtMatchSkuList = this.getGtFirstSku(multiSaleSameGoMap, gtSaleGroupMap, clearArtNo);
+            List<GtProdSkuVO> gtMatchSkuList = gtSaleGroupMap.get(storeProd.getProdArtNum());
             // 当前货号在GT的所有尺码，作为标准尺码
             List<Integer> gtStandardSizeList = gtMatchSkuList.stream().map(sku -> (int) Math.floor(Double.parseDouble(sku.getSize()))).collect(Collectors.toList());
             AtomicInteger orderNum = new AtomicInteger();
@@ -404,6 +356,15 @@ public class GtAndTyBizController extends BaseController {
         this.prodColorSizeMapper.updateById(prodColorSizeList);
         return R.ok();
     }
+
+
+
+
+
+
+
+
+
 
     /**
      * step4
@@ -447,9 +408,6 @@ public class GtAndTyBizController extends BaseController {
         if (CollectionUtils.isEmpty(tyCusDiscCacheList)) {
             throw new ServiceException("ty供应商客户优惠列表为空!" + initVO.getUserId(), HttpStatus.ERROR);
         }
-        // 增加一重保险，客户优惠必须大于0
-        tyCusDiscCacheList = tyCusDiscCacheList.stream().filter(x -> x.getDiscount() > 0).collect(Collectors.toList());
-
         // 从redis中获取已存在的商品库存数据
         List<TyProdStockVO> tyStockList = redisCache.getCacheObject(CacheConstants.MIGRATION_TY_PROD_STOCK_KEY + initVO.getUserId());
         if (CollectionUtils.isEmpty(tyStockList)) {
@@ -483,8 +441,6 @@ public class GtAndTyBizController extends BaseController {
                 // 处理客户优惠
                 this.handleCusDisc(tyAtrNo, tyExistArtNoColorMap, tyCusDiscGroupMap, buJuProdColorMap, buJuStoreCusMap, prodCusDiscList, storeProd.getStoreId(), storeProd.getId());
             });
-
-
 
 
         });

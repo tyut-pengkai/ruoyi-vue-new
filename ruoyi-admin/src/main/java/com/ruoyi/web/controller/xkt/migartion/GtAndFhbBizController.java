@@ -311,8 +311,7 @@ public class GtAndFhbBizController extends BaseController {
             prodSvcList.add(new StoreProductService().setStoreProdId(storeProd.getId()).setCustomRefund("0")
                     .setThirtyDayRefund("0").setOneBatchSale("1").setRefundWithinThreeDay("0"));
             // 初始化商品的类目属性
-            StoreProductCategoryAttribute cateAttr = Optional.ofNullable(prodAttrMap.get(gtMatchSkuList.get(0).getProduct_id()))
-                    .orElseThrow(() -> new ServiceException("没有GT商品类目属性!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
+            StoreProductCategoryAttribute cateAttr = Optional.ofNullable(prodAttrMap.get(gtMatchSkuList.get(0).getProduct_id())).orElse(new StoreProductCategoryAttribute());
             cateAttr.setStoreId(storeProd.getStoreId()).setStoreProdId(storeProd.getId());
             prodAttrList.add(cateAttr);
         });
@@ -491,6 +490,8 @@ public class GtAndFhbBizController extends BaseController {
         if (CollectionUtils.isEmpty(fhbCusDiscCacheList)) {
             throw new ServiceException("fhb供应商客户优惠列表为空!" + initVO.getSupplierId(), HttpStatus.ERROR);
         }
+        // 2025.10.16 增加一重保险，客户优惠必须是大于0的
+        fhbCusDiscCacheList = fhbCusDiscCacheList.stream().filter(x -> x.getDiscount() > 0).collect(Collectors.toList());
         List<FhbProdStockVO.SMPSRecordVO> fhbStockCacheList = redisCache
                 .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_PROD_STOCK_KEY + initVO.getSupplierId());
         if (CollectionUtils.isEmpty(fhbStockCacheList)) {

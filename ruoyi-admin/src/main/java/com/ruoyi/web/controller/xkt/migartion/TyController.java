@@ -8,6 +8,7 @@ import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.web.controller.xkt.migartion.vo.CusDiscErrorVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.ty.TyCusDiscImportVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.ty.TyCusImportVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.ty.TyProdImportVO;
@@ -20,12 +21,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -94,47 +91,18 @@ public class TyController extends BaseController {
      */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @PostMapping("/cus/disc/cache")
-    public R<Integer> createCusDiscCache(@RequestParam(value = "userId") Long userId, @RequestParam(value = "cusName") String cusName,
-                                         @RequestParam(value = "selfCheck") Boolean selfCheck, MultipartFile file) throws IOException {
-        // 判断客户是否存在
-        List<TyCusImportVO> tyCusVOList = redisCache.getCacheObject(CacheConstants.MIGRATION_TY_CUS_KEY + userId);
-        Map<String, TyCusImportVO> tyCusMap = tyCusVOList.stream().collect(Collectors.toMap(TyCusImportVO::getCusName, x -> x));
-        if (!tyCusMap.containsKey(cusName)) {
-            throw new ServiceException(cusName + " : 客户不存在", HttpStatus.ERROR);
-        }
+    public R<Integer> createCusDiscCache(@RequestParam(value = "userId") Long userId,
+                                         @RequestParam(value = "cusName") String cusName, MultipartFile file) throws IOException {
+        ExcelUtil<TyCusDiscImportVO> util = new ExcelUtil<>(TyCusDiscImportVO.class);
+        List<TyCusDiscImportVO> tyProdVOList = util.importExcel(file.getInputStream());
         // 从redis中获取已存在的客户优惠数据
         List<TyCusDiscImportVO> cacheList = redisCache.getCacheObject(CacheConstants.MIGRATION_TY_CUS_DISCOUNT_KEY + userId);
         cacheList = Optional.ofNullable(cacheList).orElse(new ArrayList<>());
-        // 判断当前客户是否已导入过，若是则直接报错
-        Map<String, List<TyCusDiscImportVO>> cusDiscMap = cacheList.stream().collect(Collectors.groupingBy(TyCusDiscImportVO::getCusName));
-        if (cusDiscMap.containsKey(cusName)) {
-            throw new ServiceException(cusName + " : 客户已导入过优惠数据", HttpStatus.ERROR);
-        }
-        ExcelUtil<TyCusDiscImportVO> util = new ExcelUtil<>(TyCusDiscImportVO.class);
-        List<TyCusDiscImportVO> tyProdVOList = util.importExcel(file.getInputStream());
-        // 是否要自校验，校验识图是否准确
-        if (selfCheck) {
-            Map<String, Map<String, Integer>> artNoColorDiscountMap = tyProdVOList.stream()
-                    // 只设置有优惠的存货及颜色
-                    .filter(x -> ObjectUtils.isNotEmpty(x.getBasicPrice()))
-                    .collect(Collectors.groupingBy(TyCusDiscImportVO::getProdArtNum, Collectors.toMap(TyCusDiscImportVO::getColorName, x ->
-                            ObjectUtils.defaultIfNull(x.getBasicPrice(), 0) - ObjectUtils.defaultIfNull(x.getCustomerPrice(), 0), (v1, v2) -> v2)));
-            // 校验同一客户在同一货号不同颜色存在优惠是否相同，不同则需要提示
-            List<String> discErrorList = new ArrayList<>();
-            artNoColorDiscountMap.forEach((artNo, colorDiscMap) -> {
-                // 判断colorDiscMap所有颜色的优惠是否相同
-                if (colorDiscMap.values().stream().distinct().count() > 1) {
-                    discErrorList.add(cusName + ":" + artNo + "，" + "不同颜色优惠力度不同!");
-                }
-            });
-            if (CollectionUtils.isNotEmpty(discErrorList)) {
-                throw new ServiceException(discErrorList.toString(), HttpStatus.ERROR);
-            }
-        }
+        // 前置校验
+        this.cusDiscPrefixFilter(userId, cusName, cacheList);
         // 因为是采用的截图转excel方式，所以每个张图会冗余部分数据长度，导入是需要判断是否已存在
-        Map<String, TyCusDiscImportVO> importCusDiscMap = new ConcurrentHashMap<>();
+        Map<String, TyCusDiscImportVO> importCusDiscMap = new HashMap<>();
         List<TyCusDiscImportVO> importList = new ArrayList<>();
-        List<String> errorList = new ArrayList<>();
         tyProdVOList.stream()
                 // 只设置有优惠的存货及颜色
                 .filter(x -> ObjectUtils.isNotEmpty(x.getBasicPrice()) && ObjectUtils.isNotEmpty(x.getCustomerPrice()))
@@ -142,10 +110,7 @@ public class TyController extends BaseController {
                     if (importCusDiscMap.containsKey(x.getProdArtNum() + ":" + x.getColorName())) {
                         System.err.println(x.getProdArtNum() + ":" + x.getColorName());
                     } else {
-                        final int discount = x.getBasicPrice() - x.getCustomerPrice();
-                        if (discount <= 0) {
-                            errorList.add(cusName + ":" + x.getProdArtNum() + ":" + x.getColorName() + ":优惠金额不能小于等于0");
-                        }
+                        final int discount = ObjectUtils.defaultIfNull(x.getBasicPrice(), 0) - ObjectUtils.defaultIfNull(x.getCustomerPrice(), 0);
                         String prodArtNum = x.getProdArtNum().trim();
                         String colorName = x.getColorName().trim();
                         // 如果货号包括-R 则表明是 货号为绒里，手动给颜色添加后缀“绒里”
@@ -157,15 +122,14 @@ public class TyController extends BaseController {
                         importList.add(x);
                     }
                 });
-        if (CollectionUtils.isNotEmpty(errorList)) {
-            throw new ServiceException(errorList.toString(), HttpStatus.ERROR);
-        }
         // 加到总的客户优惠上
         CollectionUtils.addAll(cacheList, importList);
+        // TODO 过滤优惠大于0 是在比较插入数据的时候做的
         // 存到redis中
         redisCache.setCacheObject(CacheConstants.MIGRATION_TY_CUS_DISCOUNT_KEY + userId, cacheList);
         return R.ok();
     }
+
 
     /**
      * step4
@@ -175,6 +139,22 @@ public class TyController extends BaseController {
     public R<Integer> createTyProdStockCache(@PathVariable Integer userId, MultipartFile file) throws IOException {
         ExcelUtil<TyProdStockVO> util = new ExcelUtil<>(TyProdStockVO.class);
         List<TyProdStockVO> tyStockList = util.importExcel(file.getInputStream());
+
+        /*// 判断货号 + 颜色是否存在，“图识”可能不准
+        List<TyProdImportVO> tyProdVOList = redisCache.getCacheObject(CacheConstants.MIGRATION_TY_PROD_KEY + userId);
+        // key prod+colorName
+        Map<String, TyProdImportVO> tyProdColorMap = tyProdVOList.stream().collect(Collectors.toMap(x -> x.getProdArtNum() + ":" + x.getColorName(), x -> x));
+        // 错误的货号和颜色，“图识”不准的部分
+        List<String> errorList = new ArrayList<>();
+        tyStockList.forEach(x -> {
+            if (!tyProdColorMap.containsKey(x.getProdArtNum() + ":" + x.getColorName())) {
+                errorList.add(x.getProdArtNum() + ":" + x.getColorName() + ":货号 + 颜色不存在");
+            }
+        });
+        if (CollectionUtils.isNotEmpty(errorList)) {
+            throw new ServiceException(errorList.toString(), HttpStatus.ERROR);
+        }*/
+
         // 因为是采用的截图转excel方式，所以每个张图会冗余部分数据长度，导入是需要判断是否已存在
         Map<String, TyProdStockVO> importStockMap = new ConcurrentHashMap<>();
         List<TyProdStockVO> cacheList = new ArrayList<>();
@@ -196,5 +176,78 @@ public class TyController extends BaseController {
         return R.ok();
     }
 
+    /**
+     * step5
+     */
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @GetMapping("/error/cus/disc/{userId}")
+    public R<CusDiscErrorVO> getErrorCusDisc(@PathVariable Integer userId){
+        List<TyCusDiscImportVO> cacheList = redisCache.getCacheObject(CacheConstants.MIGRATION_TY_CUS_DISCOUNT_KEY + userId);
+        List<String> errDiscList = new ArrayList<>();
+        // 1. 有哪些是优惠价大于销售价的
+        cacheList.forEach(record -> {
+            final Integer basicPrice = ObjectUtils.defaultIfNull(record.getBasicPrice(), 0);
+            final Integer customerPrice = ObjectUtils.defaultIfNull(record.getCustomerPrice(), 0);
+            if (basicPrice - customerPrice <= 0) {
+                errDiscList.add(record.getProdArtNum() + ":" + record.getCusName() + ":" + record.getColorName() + "，优惠价大于等于原售价");
+            }
+        });
+        // 2. 有哪些优惠是同一货号不同颜色优惠金额不一致
+        List<String> errCusDiscUnSameList = new ArrayList<>();
+        Map<String, Map<String, List<TyCusDiscImportVO>>> artNoCusDiscMap = cacheList.stream().collect(Collectors
+                .groupingBy(TyCusDiscImportVO::getProdArtNum, Collectors.groupingBy(TyCusDiscImportVO::getCusName)));
+        // 货号下客户优惠的map
+        artNoCusDiscMap.forEach((artNo, cusDiscMap) -> cusDiscMap.forEach((cusName, cusDiscList) -> {
+            // 不同颜色优惠的map
+            Map<String, Integer> colorDiscMap = cusDiscList.stream().collect(Collectors
+                    .toMap(TyCusDiscImportVO::getColorName, x -> ObjectUtils.defaultIfNull(x.getDiscount(), 0)));
+            // 判断所有颜色的优惠金额是否一致
+            Set<Integer> discValueSet = new HashSet<>(colorDiscMap.values());
+            if (discValueSet.size() > 1) {
+                errCusDiscUnSameList.add(artNo + ":" + cusName + ":" + colorDiscMap.keySet() + "，优惠金额不一致");
+            }
+        }));
+        return R.ok(new CusDiscErrorVO().setErrCusDiscUnSameList(errCusDiscUnSameList).setErrDiscList(errDiscList));
+    }
+
+
+    /**
+     * 客户优惠前置校验
+     */
+    private void cusDiscPrefixFilter(Long userId, String cusName, List<TyCusDiscImportVO> cacheList) {
+        // 判断客户是否存在
+        List<TyCusImportVO> tyCusVOList = redisCache.getCacheObject(CacheConstants.MIGRATION_TY_CUS_KEY + userId);
+        Map<String, TyCusImportVO> tyCusMap = tyCusVOList.stream().collect(Collectors.toMap(TyCusImportVO::getCusName, x -> x));
+        if (!tyCusMap.containsKey(cusName)) {
+            throw new ServiceException(cusName + " : 客户不存在", HttpStatus.ERROR);
+        }
+        // 判断当前客户是否已导入过，若是则直接报错
+        Map<String, List<TyCusDiscImportVO>> cusDiscMap = cacheList.stream().collect(Collectors.groupingBy(TyCusDiscImportVO::getCusName));
+        if (cusDiscMap.containsKey(cusName)) {
+            throw new ServiceException(cusName + " : 客户已导入过优惠数据", HttpStatus.ERROR);
+        }
+
+        // TODO 临时去掉
+        // TODO 临时去掉
+
+     /*   // 判断货号 + 颜色是否存在，“图识”可能不准
+        List<TyProdImportVO> tyProdVOList = redisCache.getCacheObject(CacheConstants.MIGRATION_TY_PROD_KEY + userId);
+        // key prod+colorName
+        Map<String, TyProdImportVO> tyProdColorMap = tyProdVOList.stream().collect(Collectors.toMap(x -> x.getProdArtNum() + ":" + x.getColorName(), x -> x));
+        // 错误的货号和颜色，“图识”不准的部分
+        List<String> errorList = new ArrayList<>();
+        cacheList.forEach(x -> {
+            if (!tyProdColorMap.containsKey(x.getProdArtNum() + ":" + x.getColorName())) {
+                errorList.add(cusName + ":" + x.getProdArtNum() + ":" + x.getColorName() + ":货号 + 颜色不存在");
+            }
+        });
+        if (CollectionUtils.isNotEmpty(errorList)) {
+            throw new ServiceException(errorList.toString(), HttpStatus.ERROR);
+        }*/
+
+
+
+
+    }
 
 }
