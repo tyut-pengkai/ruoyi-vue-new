@@ -709,6 +709,8 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         for (int i = 0; i < top4CateEntries.size(); i++) {
             Long cateId = top4CateEntries.get(i).getKey();
             List<CateSaleRankDTO> cateDetailList = topSaleMap.getOrDefault(cateId, Collections.emptyList());
+            // 过滤掉销量为0
+            cateDetailList = cateDetailList.stream().filter(x -> ObjectUtils.defaultIfNull(x.getSaleNum(), 0) > 0).collect(Collectors.toList());
             List<PCIndexMidSalesDTO.PCIMSSaleDTO> saleDTOList = new ArrayList<>();
             for (int j = 0; j < cateDetailList.size(); j++) {
                 CateSaleRankDTO dto = cateDetailList.get(j);
