@@ -6,6 +6,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 
 /**
@@ -20,6 +21,7 @@ public class UserAuthCreateVO {
 
     @NotBlank(message = "真实名称不能为空")
     @ApiModelProperty(value = "真实名称", required = true)
+    @Size(max = 50, message = "真实名称长度不能超过50个字符!")
     private String realName;
     @NotBlank(message = "联系电话不能为空")
     @ApiModelProperty(value = "联系电话", required = true)

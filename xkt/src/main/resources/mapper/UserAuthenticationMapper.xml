@@ -35,11 +35,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             u.avatar
         FROM
             user_authentication ua JOIN sys_user u ON ua.user_id = u.user_id
-        <where>
+        WHERE
+            ua.del_flag = 0 AND ua.auth_status = 3
             <if test="realName != null and realName != ''">
                 AND ua.real_name LIKE concat('%', #{realName}, '%')
             </if>
-        </where>
     </select>
 
 </mapper>

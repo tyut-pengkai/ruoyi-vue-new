@@ -8,6 +8,7 @@ import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.SysFile;
 import com.ruoyi.xkt.domain.UserAuthentication;
 import com.ruoyi.xkt.dto.userAuthentication.*;
@@ -16,6 +17,7 @@ import com.ruoyi.xkt.mapper.SysFileMapper;
 import com.ruoyi.xkt.mapper.UserAuthenticationMapper;
 import com.ruoyi.xkt.service.IUserAuthenticationService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,8 +47,20 @@ public class UserAuthenticationServiceImpl implements IUserAuthenticationService
     @Override
     @Transactional
     public Integer create(UserAuthCreateDTO createDTO) {
-        UserAuthentication userAuth = BeanUtil.toBean(createDTO, UserAuthentication.class);
-        userAuth.setAuthStatus(UserAuthStatus.UN_AUDITED.getValue());
+        Long userId = SecurityUtils.getUserIdSafe();
+        if (ObjectUtils.isEmpty(userId)) {
+            throw new ServiceException("用户未登录，请先登录!", HttpStatus.ERROR);
+        }
+
+        // 保存身份证人脸
+        SysFile idCardFace = BeanUtil.toBean(createDTO.getFaceFile(), SysFile.class);
+        this.fileMapper.insert(idCardFace);
+        // 保存身份证国徽
+        SysFile idCardEmblem = BeanUtil.toBean(createDTO.getEmblemFile(), SysFile.class);
+        this.fileMapper.insert(idCardEmblem);
+        UserAuthentication userAuth = new UserAuthentication().setIdCard(createDTO.getIdCard())
+                .setRealName(createDTO.getRealName()).setUserId(userId).setAuthStatus(UserAuthStatus.UN_AUDITED.getValue())
+                .setIdCardFaceFileId(idCardFace.getId()).setIdCardEmblemFileId(idCardEmblem.getId());
         return userAuthMapper.insert(userAuth);
     }
 
