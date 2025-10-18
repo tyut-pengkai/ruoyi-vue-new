@@ -31,10 +31,19 @@ public class UserAuthenticationController extends XktBaseController {
     final IUserAuthenticationService userAuthService;
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,agent')")
-    @ApiOperation(value = "新增代发 ", httpMethod = "POST", response = R.class)
+    @ApiOperation(value = "新增代发", httpMethod = "POST", response = R.class)
+    @Log(title = "新增代发", businessType = BusinessType.INSERT)
     @PostMapping()
     public R<Integer> create(@Validated @RequestBody UserAuthCreateVO createVO) {
         return R.ok(userAuthService.create(BeanUtil.toBean(createVO, UserAuthCreateDTO.class)));
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,agent')")
+    @ApiOperation(value = "代发编辑", httpMethod = "PUT", response = R.class)
+    @Log(title = "代发编辑", businessType = BusinessType.UPDATE)
+    @PutMapping()
+    public R<Integer> update(@Validated @RequestBody UserAuthUpdateVO updateVO) {
+        return R.ok(userAuthService.update(BeanUtil.toBean(updateVO, UserAuthUpdateDTO.class)));
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store,seller,agent')||@ss.hasSupplierSubRole()")
@@ -51,7 +60,7 @@ public class UserAuthenticationController extends XktBaseController {
         return R.ok(userAuthService.page(BeanUtil.toBean(pageVO, UserAuthPageDTO.class)));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,agent')")
     @ApiOperation(value = "查询代发详情", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{userAuthId}")
     public R<UserAuthResVO> getInfo(@PathVariable("userAuthId") Long userAuthId) {

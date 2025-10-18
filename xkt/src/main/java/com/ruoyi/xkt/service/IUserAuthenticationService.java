@@ -59,4 +59,11 @@ public interface IUserAuthenticationService {
      */
     Page<UserAuthAppPageResDTO> appPage(UserAuthPageDTO pageDTO);
 
+    /**
+     * 编辑代发
+     *
+     * @param updateDTO 编辑入参
+     * @return Integer
+     */
+    Integer update(UserAuthUpdateDTO updateDTO);
 }

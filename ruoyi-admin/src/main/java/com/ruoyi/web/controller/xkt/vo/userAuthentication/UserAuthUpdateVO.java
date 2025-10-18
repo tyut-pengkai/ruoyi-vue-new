@@ -17,9 +17,11 @@ import java.math.BigDecimal;
  */
 @Data
 @ApiModel
+public class UserAuthUpdateVO {
 
-public class UserAuthCreateVO {
-
+    @NotNull(message = "代发ID不能为空!")
+    @ApiModelProperty(value = "代发ID", required = true)
+    private Long userAuthId;
     @NotBlank(message = "真实名称不能为空")
     @ApiModelProperty(value = "真实名称", required = true)
     @Size(max = 50, message = "真实名称长度不能超过50个字符!")

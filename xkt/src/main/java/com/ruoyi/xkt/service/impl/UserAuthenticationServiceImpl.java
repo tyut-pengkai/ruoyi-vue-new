@@ -51,7 +51,6 @@ public class UserAuthenticationServiceImpl implements IUserAuthenticationService
         if (ObjectUtils.isEmpty(userId)) {
             throw new ServiceException("用户未登录，请先登录!", HttpStatus.ERROR);
         }
-
         // 保存身份证人脸
         SysFile idCardFace = BeanUtil.toBean(createDTO.getFaceFile(), SysFile.class);
         this.fileMapper.insert(idCardFace);
@@ -62,6 +61,34 @@ public class UserAuthenticationServiceImpl implements IUserAuthenticationService
                 .setRealName(createDTO.getRealName()).setUserId(userId).setAuthStatus(UserAuthStatus.UN_AUDITED.getValue())
                 .setIdCardFaceFileId(idCardFace.getId()).setIdCardEmblemFileId(idCardEmblem.getId());
         return userAuthMapper.insert(userAuth);
+    }
+
+    /**
+     * 编辑代发
+     *
+     * @param updateDTO 编辑入参
+     * @return Integer
+     */
+    @Override
+    @Transactional
+    public Integer update(UserAuthUpdateDTO updateDTO) {
+        Long userId = SecurityUtils.getUserIdSafe();
+        if (ObjectUtils.isEmpty(userId)) {
+            throw new ServiceException("用户未登录，请先登录!", HttpStatus.ERROR);
+        }
+        UserAuthentication userAuth = Optional.ofNullable(this.userAuthMapper.selectOne(new LambdaQueryWrapper<UserAuthentication>()
+                        .eq(UserAuthentication::getId, updateDTO.getUserAuthId()).eq(UserAuthentication::getDelFlag, Constants.UNDELETED)))
+                .orElseThrow(() -> new ServiceException("代发专员不存在!", HttpStatus.ERROR));
+        // 保存身份证人脸
+        SysFile idCardFace = BeanUtil.toBean(updateDTO.getFaceFile(), SysFile.class);
+        this.fileMapper.insert(idCardFace);
+        // 保存身份证国徽
+        SysFile idCardEmblem = BeanUtil.toBean(updateDTO.getEmblemFile(), SysFile.class);
+        this.fileMapper.insert(idCardEmblem);
+        userAuth.setIdCard(updateDTO.getIdCard())
+                .setRealName(updateDTO.getRealName()).setUserId(userId).setAuthStatus(UserAuthStatus.UN_AUDITED.getValue())
+                .setIdCardFaceFileId(idCardFace.getId()).setIdCardEmblemFileId(idCardEmblem.getId());
+        return userAuthMapper.updateById(userAuth);
     }
 
     /**
@@ -77,6 +104,8 @@ public class UserAuthenticationServiceImpl implements IUserAuthenticationService
         List<UserAuthAppPageResDTO> list = this.userAuthMapper.selectUserAuthAppPage(pageDTO);
         return Page.convert(new PageInfo<>(list));
     }
+
+
 
 
     /**
@@ -108,8 +137,8 @@ public class UserAuthenticationServiceImpl implements IUserAuthenticationService
                 .orElseThrow(() -> new ServiceException("代发不存在!", HttpStatus.ERROR));
         SysFile faceFile = this.fileMapper.selectById(userAuth.getIdCardFaceFileId());
         SysFile emblemFile = this.fileMapper.selectById(userAuth.getIdCardEmblemFileId());
-        return BeanUtil.toBean(userAuth, UserAuthResDTO.class).setFaceUrl(faceFile.getFileUrl())
-                .setEmblemUrl(emblemFile.getFileUrl());
+        return BeanUtil.toBean(userAuth, UserAuthResDTO.class).setUserAuthId(userAuthId)
+                .setFaceUrl(faceFile.getFileUrl()).setEmblemUrl(emblemFile.getFileUrl());
     }
 
     /**
