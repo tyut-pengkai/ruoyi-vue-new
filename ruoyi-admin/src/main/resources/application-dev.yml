@@ -7,22 +7,22 @@ ruoyi:
   # 版权年份
   copyrightYear: 2025
   # 文件路径 示例（ Windows配置D:/ruoyi/uploadPath，Linux配置 /home/ruoyi/uploadPath）
-  profile: D:/ruoyi/uploadPath
+  profile: /ruoyi/uploadPath
   # 获取ip地址开关
   addressEnabled: false
   # 验证码类型 math 数字计算 char 字符验证  num 纯数字
   captchaType: num
 oss:
-  endPoint: oss-cn-hangzhou.aliyuncs.com
-  accessKeyId: LTAI5tCrN19aDVWLLfpKVEZw
-  accessKeySecret: aVddl48X8SoKua7NaI51CL1Am84XNp
-  bucketName: cdbuju-pri
-  publicBucketName: cdbuju
+  endPoint: oss-cn-beijing.aliyuncs.com
+  accessKeyId: LTAI5tFXTfY5Rsiwvrg9gUuk
+  accessKeySecret: Ebbj7anXSdbJwfm5zbTfHkJ5QWDbTP
+  bucketName: lyq-private
+  publicBucketName: lyq-public
   https: true
-  regionId: cn-hangzhou
-  roleArn: acs:ram::1970150216435822:role/oss-upload
+  regionId: cn-beijing
+  roleArn: acs:ram::1919425406190533:role/sts-role
   expiredDuration: 3600
-  tempDir: E:/temp/
+  tempDir: /temp/
   stsCacheDuration: 1800
 img-search:
   endPoint: imagesearch.cn-hangzhou.aliyuncs.com
@@ -38,7 +38,7 @@ sms:
   regionId:
   send: true
   verificationCode:
-    testModel: false
+    testModel: true
     signName: 成都智创步橘科技
     templateCode: SMS_323190329
 ocr:
@@ -47,10 +47,10 @@ ocr:
   endpoint: ocr-api.cn-hangzhou.aliyuncs.com
 es:
   #多个用","分割
-  hosts: es-cn-em94bkrrl0005djma.public.elasticsearch.aliyuncs.com:9200
+  hosts: 49.234.41.39:9222
   ssl: false
   username: elastic
-  password: 0tP&3!GZZDMrglBm&kWJyw
+  password: eguMAH-Fg*dPETkgJTkD
   maxConnTotal: 4
   maxConnPerRoute: 2
 # 开发环境配置
@@ -110,9 +110,9 @@ spring:
     druid:
       # 主库数据源
       master:
-        url: jdbc:mysql://rm-bp17756y86qdc110z5o.mysql.rds.aliyuncs.com:3306/xiekutong?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-        username: xkt
-        password: mtd@3XKSoXm671Yc7oZ5G
+        url: jdbc:mysql://127.0.0.1:3306/buju?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+        username: root
+        password: xvV@1WaZbkjSJjRO
       # 从库数据源
       slave:
         # 从数据源开关/默认关闭
@@ -166,13 +166,13 @@ spring:
   # redis 配置
   redis:
     # 地址
-    host: r-bp1qhhpf6g2wcvvt71pd.redis.rds.aliyuncs.com
+    host: 127.0.0.1
     # 端口，默认为6379
     port: 6379
     # 数据库索引
     database: 0
     # 密码
-    password: E5tVB*dSkc38UDP%F1#WjZ
+    password: PamdI7H1owqQmYfA
     # 连接超时时间
     timeout: 10s
     lettuce:
@@ -270,10 +270,10 @@ yto:
 alipay:
   appId: 9021000144616672
   appPrivateKey: MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCLx2n7L1HNr8Tq92TUNJ/q66hWWHvoAwDxP27mpOrVbBwMCquxOW8ajMXooO6S/+d5PCZ1CXEjT2JpA264ptuY3LWnVbBWg6gxFzq2dX8XKk10GxdYQ63H3ZGHdPSgvUnHrG7AWSckbPSyutWXkeZITQJiD0Md/YxtjwxlW490EwTWRGLPgjoooJ9CdDgmvMgwJzUqV03rHLAPRVW1MhEBg4dJ2XtSMY0UzVejb+esOyrshNHTPoTQNUIONjPMEiihX7/ujRxUif8c/AYQh8sF3igVXSojghkJAhGboZbdBXf5VRx4DURgR0O1oujE1eG+qxYYk00Z5wa14+FPlP7RAgMBAAECggEAKru4hvach8mo5jzkMow0J9oMCPncR75DV34RJapdsQnwOS4592Cbuv42szwgNAjQd5wQFc/hKu5mI7zM6N76W+1+C76CvrBZh0iWxpl9VVO1gj2WEYH/aw8uIr962nmESOtKoLug393/oXTFQCV2xbvlcp0/47dUa1pEa+hmHxINZ7CJGQKiCjL9826lvpOyXigHaTYDu/fZluviu73lPIFyE62ZvEPfEPhpdt41pP/7ooCqarPMvqHb+7joKFSHDLJwjqdmZreh0vy5r9Dl2v79q1sbZ/30DWxa4Beb/y6SJT5lC2T7s+JZFIJ8igHXPsd7tY46Ko2AJmAg/JdvwQKBgQDNPniD8ssGdJ/M4jRrjqMwqpixBZvkgQwyl2HNp9LKRGDTuxT+4oDe9Y8e1a/jzYx64MJWOr0syR3HNggb09/mLpba8SBWqUqHCdU20hLbkAhs9kC18eBTAyKP1lDJgGKIM9AckYnJl0wwk6uD8r960kwkPjPNhLniuUMPMaDJbQKBgQCuWH/3EU8of/ZKpzsH90u3fdwhFJBQzlf4ZhWYnbFyDDdrEnobGlG642b5l6F/QTKj8+NvitTCWjYPZSz4hbSk3eNaN71bIf84KAWu1ab/+DNaMNXwzoQhXGTK86OLf8QWt93l90BIvUA2KACunUM1L/OwN5G9uFfH/nbrnFawdQKBgCfVGvCIu0xKcAUEVaYWLaexRCb+7q1fOi3LYWjXTDqDIMOWyFFbRiV/RMJ4OEWey8fBPRYdGj/J3GSgINy9tvNmUVK2f08yVct1ZhLYnF5OSsRS2mY1RhL2RcvijRU+PGEwpRAWUsZz/Y5j6mKWRwEgNTTHeahGPQk6aUBWolzVAoGAMml4pvIkV2uYxcFROl5xUF9eNVqC2DqyCStLd1OxqW6K37T6Bbg4hbeXYPhNRESP5gRxcSFNn90B4LW6qSnQMBPQ15dic2WDLLO14PX6Ue1su9l/IyAz6ImUw3Jribyp8H+98+7ocZ/3XzF18QecFVcGOZ/3zkntZ/DWZg5QqrkCgYBELNA1N1td+MA0VrncUF8c5kH7XI6KGfYqZR6QW4ouQa2Xu5WhfWAv68GsEBUmTIFDZQHNOKMC6qNq4BrGZ+C0S3A8FZIBvo3ztKxG1MQvznuh28vjN/yQu0qAx55JPXvJJVSPfvGXIk4lvhw53ZwYTvHjyR517AiQKemdESKQKw==
-  appCertPath: C:/alipay/test/appPublicCert.crt
-  rootCertPath: C:/alipay/test/alipayRootCert.crt
-  alipayPublicCertPath: C:/alipay/test/alipayPublicCert.crt
-  notifyUrl: http://101.34.251.164:9310/rest/v1/alipay-callback/notify
+  appCertPath: /alipay/test/appPublicCert.crt
+  rootCertPath: /alipay/test/alipayRootCert.crt
+  alipayPublicCertPath: /alipay/test/alipayPublicCert.crt
+  notifyUrl: http://120.27.136.161:9310/rest/v1/alipay-callback/notify
   defaultReturnUrl: http://121.40.214.172/index.html
   orderReturnUrl: http://121.40.214.172/index.html
   signType: RSA2
