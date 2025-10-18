@@ -7,7 +7,7 @@ ruoyi:
   # 版权年份
   copyrightYear: 2025
   # 文件路径 示例（ Windows配置D:/ruoyi/uploadPath，Linux配置 /home/ruoyi/uploadPath）
-  profile: /ruoyi/uploadPath
+  profile: D:/ruoyi/uploadPath
   # 获取ip地址开关
   addressEnabled: false
   # 验证码类型 math 数字计算 char 字符验证  num 纯数字
@@ -22,16 +22,16 @@ oss:
   regionId: cn-hangzhou
   roleArn: acs:ram::1970150216435822:role/oss-upload
   expiredDuration: 3600
-  tempDir: /temp/
+  tempDir: E:/temp/
   stsCacheDuration: 1800
 img-search:
-  endPoint: imagesearch-vpc.cn-hangzhou.aliyuncs.com
-  accessKeyId: LTAI5t9e53VpzuR22AFtppMR
-  accessKeySecret: 5pxzQtfGRK6q3CXmuFBy7KuL6T8zPs
+  endPoint: imagesearch.cn-hangzhou.aliyuncs.com
+  accessKeyId: LTAI5tBFXhTu7Di1ZumRPYZs
+  accessKeySecret: HJqVUr8UoFRzYDAiBf2pn55rE2TLbu
   regionId: cn-hangzhou
-  instanceName: buju0115
+  instanceName: search20250826
   # 如果是内网访问图像搜索服务，则endpointType为必填项，值统一为"internal"
-  endpointType: internal
+  endpointType:
 sms:
   accessKeyId: LTAI5tFmJ5DiJ1iq2hNe9PPB
   accessKeySecret: lCoSOQPkxgdQ6bDoi3TbAlsKXmOLp1
@@ -47,12 +47,12 @@ ocr:
   endpoint: ocr-api.cn-hangzhou.aliyuncs.com
 es:
   #多个用","分割
-  hosts: es-cn-em94bkrrl0005djma.elasticsearch.aliyuncs.com:9200
+  hosts: es-cn-em94bkrrl0005djma.public.elasticsearch.aliyuncs.com:9200
   ssl: false
   username: elastic
   password: 0tP&3!GZZDMrglBm&kWJyw
-  maxConnTotal: 100
-  maxConnPerRoute: 50
+  maxConnTotal: 4
+  maxConnPerRoute: 2
 # 开发环境配置
 server:
   # 服务器的HTTP端口，默认为9310
@@ -102,7 +102,7 @@ spring:
   devtools:
     restart:
       # 热部署开关
-      enabled: false
+      enabled: true
   # 数据源配置
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
@@ -110,7 +110,7 @@ spring:
     druid:
       # 主库数据源
       master:
-        url: jdbc:mysql://rm-bp17756y86qdc110z.mysql.rds.aliyuncs.com:3306/xiekutong?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+        url: jdbc:mysql://rm-bp17756y86qdc110z5o.mysql.rds.aliyuncs.com:3306/xiekutong?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
         username: xkt
         password: mtd@3XKSoXm671Yc7oZ5G
       # 从库数据源
@@ -121,11 +121,11 @@ spring:
         username:
         password:
       # 初始连接数
-      initialSize: 100
+      initialSize: 5
       # 最小连接池数量
-      minIdle: 100
+      minIdle: 10
       # 最大连接池数量
-      maxActive: 200
+      maxActive: 20
       # 配置获取连接等待超时的时间
       maxWait: 60000
       # 配置连接超时时间
@@ -166,7 +166,7 @@ spring:
   # redis 配置
   redis:
     # 地址
-    host: r-bp1qhhpf6g2wcvvt71.redis.rds.aliyuncs.com
+    host: r-bp1qhhpf6g2wcvvt71pd.redis.rds.aliyuncs.com
     # 端口，默认为6379
     port: 6379
     # 数据库索引
@@ -178,11 +178,11 @@ spring:
     lettuce:
       pool:
         # 连接池中的最小空闲连接
-        min-idle: 50
+        min-idle: 0
         # 连接池中的最大空闲连接
-        max-idle: 100
+        max-idle: 8
         # 连接池的最大数据库连接数
-        max-active: 200
+        max-active: 8
         # #连接池最大阻塞等待时间（使用负值表示没有限制）
         max-wait: -1ms
   mvc:
@@ -252,33 +252,33 @@ express:
 
 # 中通配置
 zto:
-  appKey: 1907975e6c6eadc096284
-  appSecret: f67e08e72825d857495105c7ed78bf14
-  gatewayUrl: https://japi.zto.com/
-  accountId: ZTO761752114633049
-  accountPassword: AJXVWZMM
+  appKey: 95dc4ecf72fce1a2fbe79
+  appSecret: 694ea7e3ea89e3b6aa21aea1a0285d25
+  gatewayUrl: https://japi-test.zto.com/
+  accountId: test
+  accountPassword: ZTO123
 
 # 圆通配置
 yto:
-  appKey: K280280756
-  appSecret: iplud2s6
-  appKey2: ZCBJ_STD
-  appSecret2: xJa1tc2A
-  gatewayUrl: https://openapi.yto.net.cn:11443/
+  appKey: K9991024989
+  appSecret: u2Z1F7Fh
+  appKey2: TEST
+  appSecret2: 123456
+  gatewayUrl: https://openuat.yto56test.com:6443/
 
 # 支付宝配置
 alipay:
-  appId: 2021005194684036
-  appPrivateKey: MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCaD/WcIXsHs11Qgm9c32XbxZUZ/sTK4KxRLM6dvbZnLqxAgLKOf5zoEnuKIWP/PMvvymTfVPD1tWf5DC+xHRu4a/TLJawv2WZW4Y2FGUV5VTs0FRxnQqFB+5s2EdN/XS+FWCAaKjK86kdgzRNf3R4BCGaA2wUiIoYOv30PsrrDdzjrTk+9TXgXWVlldY1xEiEkB+J8C+PxyKdPJ2JCLKnPik+VmUZ/1fvGmVuTJj/4ofqCP3YmyBJSKQVi0IDQixLmawtawKf2FzGvLn6JQMRgzizFxtmYL2blbmwQ2Y93usIr2q1QRzbwNfxqzeu4h7DkRO7kPJPxjQiA91KL3dC/AgMBAAECggEAErWzd0Wdol7HC1r72USMIzeIlwKYtaa5ZpZRdVivyTIi2yaGCMY4sPplpG3PrhSdE775pyGyrbRdLyKqvBCz6B68ONuXYKw/QHfd7vcVt9mA+h9CNswht1iuDc/2ZnZTqhb8txC+3rB5AKmHG9JHrYpuoGF46x9UNoBM2NY01j349G63uqy0LEKiAqgDcWk2aH0jXG31q23aR4gOjirS47NApApPeAH7AKv1KQsWdzCSnWn0Tez7/qa+fi7J/O5mgxxcezLqkuSz3/pv+pQrj9+cOwqwrou9j82ZkESvCHY/7b5ewwu8YkdZLwJg/0/VG66cfk33QBgZ26aRHTBD+QKBgQDYAXS+d8sY2SfGyjBPfmgzxxqJTW173ybJFAjJQUQSj1ijdtoK/KL+Ql9smfs+hnKM9tHReIcgn+LDrEm1bEAxXAvRd1xlGHEP/H04V3liznvxvTa/u7oZIdkU+6R+P7urVM7cYoqCnsVs4jRI2GdrSAStQOezEyVeOAFFEBMkhQKBgQC2lmy/o/7jFnnvVBbCtfKX6R26p847gxBU3+ve9HLVYFq0JuLjDIdTgRuLCX/vx1MKabu/o4BX9cv+VHqhdTLfLRDagGAehpHgD1Ey/dPrwBYUOL+V0R9jVEFxRO6VmsP9Zdk0XnV6QpaQjSZCvqXfBSZLMZT3D4JlTKV8v+eVcwKBgQCmMbiZM6JYI/yuvrIc961E6VRJgAFU5YT6ASghcM3nWdNhMfjhqy/dYUP6Ux80JE3Ol7kn6gxN1barxsuPgxKA58lQCP5V6lBTdHkD+Im0tBo5DNQrAU1WOOzFcDhHytGiKUZf2pGnnnFYLVL9GUO5D1hJ1T5wUbLWo1CWyp9v4QKBgARmLWqUnfCEux1cDkxUq+qjEDdOEbb3Wm5hEsLFavrfHnBWu4Ky65PEeZBpAy8Yw1Rt5bshSldUMb0H9ghr1XTxFgXdr/MsVNlsJQ2wdempMB7+mwcWCcaP4h/DhGgQWYaCbLBJUlVGw2/qJrDW/RIZgqmvISKuufqM1TPjP8YnAoGBAKQF9JYZgNjJW3jVuwecPhvH6rrQLDGKRTLjZphO2mFljzjxy/nGcqdyrgplNk4MiKSGsNZPPS8L88epktEbow1YrrF0ESEVq4WYCHW1kMHs2ab8vieehjDbBYcIHtXywjphLNHNkfICIIWBoCrrR+gd1noEjOuEllcnbPHuDREn
-  appCertPath: /alipay/prod/appCertPublicKey_2021005194684036.crt
-  rootCertPath: /alipay/prod/alipayRootCert.crt
-  alipayPublicCertPath: /alipay/prod/alipayCertPublicKey_RSA2.crt
-  notifyUrl: http://121.40.117.244:9310/rest/v1/alipay-callback/notify
+  appId: 9021000144616672
+  appPrivateKey: MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCLx2n7L1HNr8Tq92TUNJ/q66hWWHvoAwDxP27mpOrVbBwMCquxOW8ajMXooO6S/+d5PCZ1CXEjT2JpA264ptuY3LWnVbBWg6gxFzq2dX8XKk10GxdYQ63H3ZGHdPSgvUnHrG7AWSckbPSyutWXkeZITQJiD0Md/YxtjwxlW490EwTWRGLPgjoooJ9CdDgmvMgwJzUqV03rHLAPRVW1MhEBg4dJ2XtSMY0UzVejb+esOyrshNHTPoTQNUIONjPMEiihX7/ujRxUif8c/AYQh8sF3igVXSojghkJAhGboZbdBXf5VRx4DURgR0O1oujE1eG+qxYYk00Z5wa14+FPlP7RAgMBAAECggEAKru4hvach8mo5jzkMow0J9oMCPncR75DV34RJapdsQnwOS4592Cbuv42szwgNAjQd5wQFc/hKu5mI7zM6N76W+1+C76CvrBZh0iWxpl9VVO1gj2WEYH/aw8uIr962nmESOtKoLug393/oXTFQCV2xbvlcp0/47dUa1pEa+hmHxINZ7CJGQKiCjL9826lvpOyXigHaTYDu/fZluviu73lPIFyE62ZvEPfEPhpdt41pP/7ooCqarPMvqHb+7joKFSHDLJwjqdmZreh0vy5r9Dl2v79q1sbZ/30DWxa4Beb/y6SJT5lC2T7s+JZFIJ8igHXPsd7tY46Ko2AJmAg/JdvwQKBgQDNPniD8ssGdJ/M4jRrjqMwqpixBZvkgQwyl2HNp9LKRGDTuxT+4oDe9Y8e1a/jzYx64MJWOr0syR3HNggb09/mLpba8SBWqUqHCdU20hLbkAhs9kC18eBTAyKP1lDJgGKIM9AckYnJl0wwk6uD8r960kwkPjPNhLniuUMPMaDJbQKBgQCuWH/3EU8of/ZKpzsH90u3fdwhFJBQzlf4ZhWYnbFyDDdrEnobGlG642b5l6F/QTKj8+NvitTCWjYPZSz4hbSk3eNaN71bIf84KAWu1ab/+DNaMNXwzoQhXGTK86OLf8QWt93l90BIvUA2KACunUM1L/OwN5G9uFfH/nbrnFawdQKBgCfVGvCIu0xKcAUEVaYWLaexRCb+7q1fOi3LYWjXTDqDIMOWyFFbRiV/RMJ4OEWey8fBPRYdGj/J3GSgINy9tvNmUVK2f08yVct1ZhLYnF5OSsRS2mY1RhL2RcvijRU+PGEwpRAWUsZz/Y5j6mKWRwEgNTTHeahGPQk6aUBWolzVAoGAMml4pvIkV2uYxcFROl5xUF9eNVqC2DqyCStLd1OxqW6K37T6Bbg4hbeXYPhNRESP5gRxcSFNn90B4LW6qSnQMBPQ15dic2WDLLO14PX6Ue1su9l/IyAz6ImUw3Jribyp8H+98+7ocZ/3XzF18QecFVcGOZ/3zkntZ/DWZg5QqrkCgYBELNA1N1td+MA0VrncUF8c5kH7XI6KGfYqZR6QW4ouQa2Xu5WhfWAv68GsEBUmTIFDZQHNOKMC6qNq4BrGZ+C0S3A8FZIBvo3ztKxG1MQvznuh28vjN/yQu0qAx55JPXvJJVSPfvGXIk4lvhw53ZwYTvHjyR517AiQKemdESKQKw==
+  appCertPath: C:/alipay/test/appPublicCert.crt
+  rootCertPath: C:/alipay/test/alipayRootCert.crt
+  alipayPublicCertPath: C:/alipay/test/alipayPublicCert.crt
+  notifyUrl: http://101.34.251.164:9310/rest/v1/alipay-callback/notify
   defaultReturnUrl: http://121.40.214.172/index.html
   orderReturnUrl: http://121.40.214.172/index.html
   signType: RSA2
   charset: UTF-8
-  gatewayUrl: https://openapi.alipay.com/gateway.do
+  gatewayUrl: https://openapi-sandbox.dl.alipaydev.com/gateway.do
 
 # 阿里认证
 aliauth:
