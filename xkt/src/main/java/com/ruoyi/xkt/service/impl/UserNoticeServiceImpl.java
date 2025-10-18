@@ -84,10 +84,23 @@ public class UserNoticeServiceImpl implements IUserNoticeService {
      * @return List<UserNoticeAppResDTO>
      */
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public Page<UserNoticeAppResDTO> appTypePage(UserNoticeAppTypePageDTO pageDTO) {
+        Long userId = SecurityUtils.getUserIdSafe();
+        if (ObjectUtils.isEmpty(userId)) {
+            throw new ServiceException("用户未登录，请先登录!", HttpStatus.ERROR);
+        }
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
         List<UserNoticeAppResDTO> list = this.userNoticeMapper.selectAppTypePage(SecurityUtils.getUserId(), pageDTO.getTargetNoticeType());
+        // 将用户所有未读消息设为已读
+        List<UserNotice> targetUserNoticeList = this.userNoticeMapper.selectList(new LambdaQueryWrapper<UserNotice>()
+                .eq(UserNotice::getUserId, userId).eq(UserNotice::getReadStatus, 0)
+                .eq(UserNotice::getTargetNoticeType, pageDTO.getTargetNoticeType())
+                .eq(UserNotice::getDelFlag, Constants.UNDELETED));
+        if (CollectionUtils.isNotEmpty(targetUserNoticeList)) {
+            targetUserNoticeList.forEach(x -> x.setReadStatus(1));
+            this.userNoticeMapper.updateById(targetUserNoticeList);
+        }
         return Page.convert(new PageInfo<>(list));
     }
 

@@ -58,11 +58,5 @@ public class UserNoticeController extends XktBaseController {
         return R.ok(userNoticeService.appBatchRead());
     }
 
-    @ApiOperation(value = "APP - 未读的分类，点击进入分类列表时调用变为已读", httpMethod = "PUT", response = R.class)
-    @PutMapping("/app/read/type/{targetNoticeType}")
-    public R<Integer> appTypeRead(@PathVariable Integer targetNoticeType) {
-        return R.ok(userNoticeService.appTypeRead(targetNoticeType));
-    }
-
 
 }

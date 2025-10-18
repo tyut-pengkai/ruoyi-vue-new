@@ -30,14 +30,14 @@ public class UserAuthenticationController extends XktBaseController {
 
     final IUserAuthenticationService userAuthService;
 
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,seller')")
     @ApiOperation(value = "新增代发 ", httpMethod = "POST", response = R.class)
     @PostMapping()
     public R<Integer> create(@Validated @RequestBody UserAuthCreateVO createVO) {
         return R.ok(userAuthService.create(BeanUtil.toBean(createVO, UserAuthCreateDTO.class)));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,seller')")
     @ApiOperation(value = "APP 代发列表 ", httpMethod = "POST", response = R.class)
     @PostMapping("/app/page")
     public R<Page<UserAuthAppPageResDTO>> appPage(@Validated @RequestBody UserAuthPageVO pageVO) {
