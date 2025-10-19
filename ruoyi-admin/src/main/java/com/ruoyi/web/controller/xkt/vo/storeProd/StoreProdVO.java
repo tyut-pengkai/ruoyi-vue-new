@@ -52,7 +52,7 @@ public class StoreProdVO {
     @ApiModelProperty(value = "商品重量")
     private BigDecimal prodWeight;
     @ApiModelProperty(value = "生产价格")
-    private Integer producePrice;
+    private BigDecimal producePrice;
     @ApiModelProperty(value = "发货时效")
     private Integer deliveryTime;
     @ApiModelProperty(value = "上架方式:1 立即上架 2 定时上架", required = true)
