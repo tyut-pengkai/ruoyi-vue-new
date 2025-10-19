@@ -6,7 +6,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectExportList" resultType="com.ruoyi.xkt.dto.storeProdStorage.StoreStorageDetailDownloadDTO">
         SELECT
-            DENSE_RANK() OVER (ORDER BY sps.code, sps.create_time DESC) AS orderNum,
+            DENSE_RANK() OVER (ORDER BY sps.code, sps.create_time) AS orderNum,
             sps.`code`,
             sf.fac_name,
             sps.create_time,
@@ -62,7 +62,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectExportListVoucherDateBetween" resultType="com.ruoyi.xkt.dto.storeProdStorage.StoreStorageDetailDownloadDTO">
         SELECT
-            DENSE_RANK() OVER (ORDER BY sps.code, sps.create_time DESC) AS orderNum,
+            DENSE_RANK() OVER (ORDER BY sps.code, sps.create_time) AS orderNum,
             sps.`code`,
             sf.fac_name,
             sps.create_time,

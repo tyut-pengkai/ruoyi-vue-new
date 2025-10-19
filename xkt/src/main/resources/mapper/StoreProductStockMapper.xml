@@ -96,7 +96,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectExportList" resultType="com.ruoyi.xkt.dto.storeProductStock.StoreProdStockDownloadDTO">
         SELECT
-            DENSE_RANK() OVER ( ORDER BY sps.create_time DESC ) AS orderNum,
+            DENSE_RANK() OVER ( ORDER BY sps.create_time ) AS orderNum,
             sps.prod_art_num,
             sps.color_name,
             sps.size_30 AS size30Quantity,
@@ -131,7 +131,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectAllStockList" resultType="com.ruoyi.xkt.dto.storeProductStock.StoreProdStockDownloadDTO">
         SELECT
-            DENSE_RANK() OVER ( ORDER BY sps.create_time DESC ) AS orderNum,
+            DENSE_RANK() OVER ( ORDER BY sps.create_time ) AS orderNum,
             sps.prod_art_num,
             sps.color_name,
             sps.size_30 AS size30Quantity,
