@@ -326,7 +326,7 @@ public class GtAndTyBiz2Controller extends BaseController {
                         // TY系统条码前缀
                         final String otherSnPrefix = tyProdImportVO.getTySnPrefix() + Constants.SIZE_LIST.get(j);
                         prodColorSizeList.add(new StoreProductColorSize().setSize(Constants.SIZE_LIST.get(j)).setStoreColorId(storeColor.getId())
-                                .setStoreProdId(storeProd.getId()).setPrice(tyProdImportVO.getPrice()).setOtherSnPrefix(otherSnPrefix).setNextSn(0)
+                                .setStoreProdId(storeProd.getId()).setPrice(tyProdImportVO.getPrice()).setOtherSnPrefix(otherSnPrefix).setNextSn(1)
                                 .setStandard(gtStandardSizeList.contains(Constants.SIZE_LIST.get(j)) ? 1 : 0));
                     }
                 }

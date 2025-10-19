@@ -409,7 +409,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
                 // 不存在则新增
                 dbProdColorSizeList.add(new StoreProductColorSize().setSize(updateColorSize.getSize()).setStoreProdId(storeProdId)
                         .setStandard(updateColorSize.getStandard()).setStoreColorId(storeColorMap.get(updateColorSize.getColorName()))
-                        .setPrice(updateColorSize.getPrice()).setNextSn(0));
+                        .setPrice(updateColorSize.getPrice()).setNextSn(1));
             }
         });
         this.storeProdColorSizeMapper.insertOrUpdate(dbProdColorSizeList);
@@ -502,7 +502,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
         this.storeProdColorMapper.insert(prodColorList);
         // 新增档口颜色尺码对应价格
         List<StoreProductColorSize> prodColorSizeList = createDTO.getSizeList().stream().map(x -> new StoreProductColorSize().setSize(x.getSize()).setStoreProdId(storeProdId)
-                        .setStandard(x.getStandard()).setStoreColorId(storeColorMap.get(x.getColorName())).setPrice(x.getPrice()).setNextSn(0))
+                        .setStandard(x.getStandard()).setStoreColorId(storeColorMap.get(x.getColorName())).setPrice(x.getPrice()).setNextSn(1))
                 .collect(Collectors.toList());
         this.storeProdColorSizeMapper.insert(prodColorSizeList);
         // 设置档口商品价格尺码的barcode_prefix

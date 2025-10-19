@@ -420,7 +420,7 @@ public class GtAndFhbBizController extends BaseController {
                                 .setStoreProdId(storeProd.getId()).setStandard(gtStandardSizeList.contains(Constants.SIZE_LIST.get(j)) ? 1 : 0)
                                 // 销售价格以FHB价格为准
                                 .setPrice(smivo.getSalePrice())
-                                .setOtherSnPrefix(otherSnPrefix).setNextSn(0));
+                                .setOtherSnPrefix(otherSnPrefix).setNextSn(1));
                     }
                 }
             });
