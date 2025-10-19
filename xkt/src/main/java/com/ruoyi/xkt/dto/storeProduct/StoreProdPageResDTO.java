@@ -39,6 +39,10 @@ public class StoreProdPageResDTO {
     private Long prodCateId;
     @ApiModelProperty(value = "分类类目")
     private String prodCateName;
+    @ApiModelProperty(value = "鞋面材质（靴筒面材质）")
+    private String shaftMaterial;
+    @ApiModelProperty(value = "鞋面内里材质")
+    private String shoeUpperLiningMaterial;
     @ApiModelProperty(value = "标准尺码")
     private String standard;
     @ApiModelProperty(value = "销售金额（元）")
