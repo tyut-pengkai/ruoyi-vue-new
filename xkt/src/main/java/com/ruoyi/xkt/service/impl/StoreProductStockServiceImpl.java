@@ -293,15 +293,11 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
                     .eq(StoreProductColor::getStoreId, exportDTO.getStoreId()).eq(StoreProductColor::getDelFlag, Constants.UNDELETED));
             downloadList = this.storeProdStockMapper.selectAllStockList(prodColorList.stream().map(StoreProductColor::getId).collect(Collectors.toList()));
         }
-        // 根据prod_art_num相同设置orderNum相同
-        int orderNum = 1;
-        String currentCode = downloadList.get(0).getProdArtNum();
+        if (CollectionUtils.isEmpty(downloadList)) {
+            return new ArrayList<>();
+        }
         for (int i = 0; i < downloadList.size(); i++) {
-            if (!currentCode.equals(downloadList.get(i).getProdArtNum())) {
-                currentCode = downloadList.get(i).getProdArtNum();
-                orderNum++;
-            }
-            downloadList.get(i).setOrderNum(orderNum);
+            downloadList.get(i).setOrderNum(i + 1);
         }
         return downloadList;
     }
