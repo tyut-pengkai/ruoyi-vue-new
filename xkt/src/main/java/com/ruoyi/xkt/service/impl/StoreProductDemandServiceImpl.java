@@ -408,10 +408,12 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
         List<StoreProductDemandDetail> demandDetailList = this.storeProdDemandDetailMapper.selectList(queryWrapper);
         List<StoreProdDemandDownloadDTO> downLoadList = demandDetailList.stream().sorted(Comparator.comparing(StoreProductDemandDetail::getProdArtNum))
                 .map(x -> new StoreProdDemandDownloadDTO()
-                        .setProdArtNum(x.getProdArtNum()).setColorName(x.getColorName()).setSize30Quantity(x.getSize30()).setSize31Quantity(x.getSize31())
-                        .setSize32Quantity(x.getSize32()).setSize33Quantity(x.getSize33()).setSize34Quantity(x.getSize34()).setSize35Quantity(x.getSize35())
-                        .setSize36Quantity(x.getSize36()).setSize37Quantity(x.getSize37()).setSize38Quantity(x.getSize38()).setSize39Quantity(x.getSize39())
-                        .setSize40Quantity(x.getSize40()).setSize41Quantity(x.getSize41()).setSize42Quantity(x.getSize42()).setSize43Quantity(x.getSize43())
+                        .setProdArtNum(x.getProdArtNum()).setColorName(x.getColorName()).setEmergency(Objects.equals(x.getEmergency(), 0) ? "正常单" : "紧急单")
+                        .setSize30Quantity(x.getSize30()).setSize31Quantity(x.getSize31()).setSize32Quantity(x.getSize32())
+                        .setSize33Quantity(x.getSize33()).setSize34Quantity(x.getSize34()).setSize35Quantity(x.getSize35())
+                        .setSize36Quantity(x.getSize36()).setSize37Quantity(x.getSize37()).setSize38Quantity(x.getSize38())
+                        .setSize39Quantity(x.getSize39()).setSize40Quantity(x.getSize40()).setSize41Quantity(x.getSize41())
+                        .setSize42Quantity(x.getSize42()).setSize43Quantity(x.getSize43())
                         .setTotalQuantity(ObjectUtils.defaultIfNull(x.getSize30(), 0) +
                                 ObjectUtils.defaultIfNull(x.getSize31(), 0) +
                                 ObjectUtils.defaultIfNull(x.getSize32(), 0) +
