@@ -281,17 +281,29 @@ public class StoreProductStockServiceImpl implements IStoreProductStockService {
         if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(exportDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
+        List<StoreProdStockDownloadDTO> downloadList;
         // 导出勾选
         if (CollectionUtils.isNotEmpty(exportDTO.getStoreProdStockIdList())) {
-            return this.storeProdStockMapper.selectExportList(exportDTO.getStoreProdStockIdList());
+            downloadList = this.storeProdStockMapper.selectExportList(exportDTO.getStoreProdStockIdList());
             // 导出所有库存明细
         } else {
             Optional.ofNullable(exportDTO.getFullExport())
                     .orElseThrow(() -> new ServiceException("全量导出，fullExport不能为空!", HttpStatus.ERROR));
             List<StoreProductColor> prodColorList = this.prodColorMapper.selectList(new LambdaQueryWrapper<StoreProductColor>()
                     .eq(StoreProductColor::getStoreId, exportDTO.getStoreId()).eq(StoreProductColor::getDelFlag, Constants.UNDELETED));
-            return this.storeProdStockMapper.selectAllStockList(prodColorList.stream().map(StoreProductColor::getId).collect(Collectors.toList()));
+            downloadList = this.storeProdStockMapper.selectAllStockList(prodColorList.stream().map(StoreProductColor::getId).collect(Collectors.toList()));
         }
+        // 根据prod_art_num相同设置orderNum相同
+        int orderNum = 1;
+        String currentCode = downloadList.get(0).getProdArtNum();
+        for (int i = 0; i < downloadList.size(); i++) {
+            if (!currentCode.equals(downloadList.get(i).getProdArtNum())) {
+                currentCode = downloadList.get(i).getProdArtNum();
+                orderNum++;
+            }
+            downloadList.get(i).setOrderNum(orderNum);
+        }
+        return downloadList;
     }
 
 

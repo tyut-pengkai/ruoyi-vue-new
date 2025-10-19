@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,8 +50,9 @@ public class StoreProductStorageDetailServiceImpl implements IStoreProductStorag
         if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(exportDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
+        List<StoreStorageDetailDownloadDTO> downloadList;
         if (CollectionUtils.isNotEmpty(exportDTO.getStoreProdStorageIdList())) {
-            return this.storageDetailMapper.selectExportList(exportDTO);
+            downloadList = this.storageDetailMapper.selectExportList(exportDTO);
         } else {
             // 没有传时间，则设置当前时间往前推半年
             if (ObjectUtils.isEmpty(exportDTO.getVoucherDateStart()) && ObjectUtils.isEmpty(exportDTO.getVoucherDateEnd())) {
@@ -73,7 +75,22 @@ public class StoreProductStorageDetailServiceImpl implements IStoreProductStorag
             List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
                     .eq(StoreProduct::getStoreId, exportDTO.getStoreId()).eq(StoreProduct::getDelFlag, Constants.UNDELETED));
             exportDTO.setStoreProdIdList(storeProdList.stream().map(StoreProduct::getId).collect(Collectors.toList()));
-            return this.storageDetailMapper.selectExportListVoucherDateBetween(exportDTO);
+            downloadList = this.storageDetailMapper.selectExportListVoucherDateBetween(exportDTO);
         }
+        if (CollectionUtils.isEmpty(downloadList)) {
+            return new ArrayList<>();
+        }
+        // 根据code相同设置orderNum相同
+        int orderNum = 1;
+        String currentCode = downloadList.get(0).getCode();
+        for (int i = 0; i < downloadList.size(); i++) {
+            if (!currentCode.equals(downloadList.get(i).getCode())) {
+                currentCode = downloadList.get(i).getCode();
+                orderNum++;
+            }
+            downloadList.get(i).setOrderNum(orderNum);
+        }
+        return downloadList;
     }
+
 }
