@@ -29,7 +29,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         ORDER BY
             scpd.update_time DESC,
             scpd.store_prod_id,
-            scpd.store_prod_color_id
+            scpd.store_prod_color_id,
+            scpd.store_cus_id
     </select>
 
 
