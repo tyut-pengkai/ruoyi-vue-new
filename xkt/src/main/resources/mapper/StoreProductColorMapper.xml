@@ -65,9 +65,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             sp.prod_art_num AS prodArtNum,
             spc.color_name AS colorName,
             sp.produce_price AS producePrice,
-            spc.order_num AS orderNum
+            spc.order_num AS orderNum,
+            spca.shaft_material,
+            spca.shoe_upper_lining_material
         FROM
-            store_product_color spc JOIN store_product sp ON spc.store_prod_id = sp.id
+            store_product_color spc
+            JOIN store_product sp ON spc.store_prod_id = sp.id
+            JOIN store_product_category_attribute spca ON spc.store_prod_id = spca.store_prod_id
         WHERE
             spc.del_flag = 0
             AND spc.store_id = #{storeId}
