@@ -2020,54 +2020,6 @@ INSERT INTO `sys_dict_data`
 VALUES (1055, 5, '不想要了', '不想要了', 'refund_reason', '0', 'admin', '2025-07-18 22:57:09', '', '2025-07-18 22:57:11', NULL,
         0, '0');
 INSERT INTO `sys_dict_data`
-VALUES (1056, 1, '2017年春季', '2017年春季', 'release_year_season', '0', 'admin', '2025-08-03 20:52:38', '',
-        '2025-08-03 20:52:38', '', 0, '0');
-INSERT INTO `sys_dict_data`
-VALUES (1057, 2, '2017年夏季', '2017年夏季', 'release_year_season', '0', 'admin', '2025-08-03 20:52:46', '',
-        '2025-08-03 20:52:46', '', 0, '0');
-INSERT INTO `sys_dict_data`
-VALUES (1058, 3, '2017年秋季', '2017年秋季', 'release_year_season', '0', 'admin', '2025-08-03 20:52:56', '',
-        '2025-08-03 20:52:56', '', 0, '0');
-INSERT INTO `sys_dict_data`
-VALUES (1059, 4, '2017年冬季', '2017年冬季', 'release_year_season', '0', 'admin', '2025-08-03 20:53:03', '',
-        '2025-08-03 20:53:03', '', 0, '0');
-INSERT INTO `sys_dict_data`
-VALUES (1060, 5, '2018年春季', '2018年春季', 'release_year_season', '0', 'admin', '2025-08-03 20:53:12', '',
-        '2025-08-03 20:53:12', '', 0, '0');
-INSERT INTO `sys_dict_data`
-VALUES (1061, 6, '2018年夏季', '2018年夏季', 'release_year_season', '0', 'admin', '2025-08-03 20:53:21', '',
-        '2025-08-03 20:53:21', '', 0, '0');
-INSERT INTO `sys_dict_data`
-VALUES (1062, 7, '2018年秋季', '2018年秋季', 'release_year_season', '0', 'admin', '2025-08-03 20:53:27', '',
-        '2025-08-03 20:53:27', '', 0, '0');
-INSERT INTO `sys_dict_data`
-VALUES (1063, 8, '2018年冬季', '2018年冬季', 'release_year_season', '0', 'admin', '2025-08-03 20:53:35', '',
-        '2025-08-03 20:53:35', '', 0, '0');
-INSERT INTO `sys_dict_data`
-VALUES (1064, 9, '2019年春季', '2019年春季', 'release_year_season', '0', 'admin', '2025-08-03 20:53:42', '',
-        '2025-08-03 20:53:42', '', 0, '0');
-INSERT INTO `sys_dict_data`
-VALUES (1065, 10, '2019年夏季', '2019年夏季', 'release_year_season', '0', 'admin', '2025-08-03 20:53:49', '',
-        '2025-08-03 20:53:49', '', 0, '0');
-INSERT INTO `sys_dict_data`
-VALUES (1066, 11, '2019年秋季', '2019年秋季', 'release_year_season', '0', 'admin', '2025-08-03 20:53:56', '',
-        '2025-08-03 20:53:56', '', 0, '0');
-INSERT INTO `sys_dict_data`
-VALUES (1067, 12, '2019年冬季', '2019年冬季', 'release_year_season', '0', 'admin', '2025-08-03 20:54:03', '',
-        '2025-08-03 20:54:03', '', 0, '0');
-INSERT INTO `sys_dict_data`
-VALUES (1068, 13, '2020年春季', '2020年春季', 'release_year_season', '0', 'admin', '2025-08-03 20:54:11', '',
-        '2025-08-03 20:54:11', '', 0, '0');
-INSERT INTO `sys_dict_data`
-VALUES (1069, 14, '2020年夏季', '2020年夏季', 'release_year_season', '0', 'admin', '2025-08-03 20:54:26', '',
-        '2025-08-03 20:54:26', '', 0, '0');
-INSERT INTO `sys_dict_data`
-VALUES (1070, 15, '2020年秋季', '2020年秋季', 'release_year_season', '0', 'admin', '2025-08-03 20:54:34', '',
-        '2025-08-03 20:54:34', '', 0, '0');
-INSERT INTO `sys_dict_data`
-VALUES (1071, 16, '2020年冬季', '2020年冬季', 'release_year_season', '0', 'admin', '2025-08-03 20:54:42', '',
-        '2025-08-03 20:54:42', '', 0, '0');
-INSERT INTO `sys_dict_data`
 VALUES (1072, 17, '2021年春季', '2021年春季', 'release_year_season', '0', 'admin', '2025-08-03 20:54:51', '',
         '2025-08-03 20:54:51', '', 0, '0');
 INSERT INTO `sys_dict_data`
