@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * @author liujiang
@@ -24,6 +25,7 @@ public class UserAuthAuditVO {
     @ApiModelProperty(value = "审核状态", required = true)
     private Boolean approve;
     @ApiModelProperty(value = "拒绝理由")
+    @Size(min = 0, max = 200, message = "拒绝理由不能超过200个字符")
     private String rejectReason;
 
 }

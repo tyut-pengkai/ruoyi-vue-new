@@ -171,7 +171,7 @@ public class UserAuthenticationServiceImpl implements IUserAuthenticationService
                 .orElseThrow(() -> new ServiceException("代发不存在!", HttpStatus.ERROR));
         if (auditDTO.getApprove()) {
             // 如果代发状态不为 待审核 或 审核驳回 则报错
-            if (!Objects.equals(userAuth.getAuthStatus(), UserAuthStatus.UN_AUDITED.getValue()) ||
+            if (!Objects.equals(userAuth.getAuthStatus(), UserAuthStatus.UN_AUDITED.getValue()) &&
                     !Objects.equals(userAuth.getAuthStatus(), UserAuthStatus.AUDIT_REJECTED.getValue())) {
                 throw new ServiceException("当前状态不为待审核 或 审核驳回，不可审核!", HttpStatus.ERROR);
             }
