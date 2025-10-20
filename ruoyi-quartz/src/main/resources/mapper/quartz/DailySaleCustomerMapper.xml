@@ -15,7 +15,7 @@
         FROM
             store_sale_detail ssd
         WHERE
-            ssd.del_flag = 0 AND ss.voucher_date = #{voucherDate}
+            ssd.del_flag = 0 AND ssd.voucher_date = #{voucherDate}
         GROUP BY
             ssd.store_id,
             ssd.store_cus_id

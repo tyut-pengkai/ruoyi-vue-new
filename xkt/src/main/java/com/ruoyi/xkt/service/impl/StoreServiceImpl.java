@@ -331,7 +331,7 @@ public class StoreServiceImpl implements IStoreService {
         return new StoreIndexOverviewResDTO().setSaleAmount(saleAmount).setRefundAmount(refundAmount).setSaleNum(saleNum).setRefundNum(refundNum)
                 .setStorageNum(storageNum).setCustomerNum(customerNum).setStoreId(overviewDTO.getStoreId())
                 .setTopSaleCusName(ObjectUtils.isNotEmpty(maxSaleCus) ? maxSaleCus.getTopSaleCusName() : "")
-                .setTopSaleCusAmount(ObjectUtils.isNotEmpty(maxSaleCus) ? maxSaleCus.getTopSaleCusAmount() : null);
+                .setTopSaleCusAmount(ObjectUtils.isNotEmpty(maxSaleCus) ? maxSaleCus.getTopSaleCusAmount() : BigDecimal.ZERO);
     }
 
     /**
