@@ -285,8 +285,10 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
                 .toMap(x -> x.getStoreProdId().toString() + x.getStoreColorId().toString() + x.getSize(), x -> x));
         return shoppingCartList.stream().map(x -> {
             ShoppingCartDTO shopCartDTO = BeanUtil.toBean(x, ShoppingCartDTO.class).setMainPicUrl(mainPicMap.get(x.getStoreProdId()))
-                    .setProdTitle(ObjectUtils.isNotEmpty(storeProdMap.get(x.getStoreProdId())) ? storeProdMap.get(x.getStoreProdId()).getProdTitle() : "")
-                    .setStoreName(ObjectUtils.isNotEmpty(storeMap.get(x.getStoreId())) ? storeMap.get(x.getStoreId()).getStoreName() : "");
+                    .setProdTitle(storeProdMap.containsKey(x.getStoreProdId()) ? storeProdMap.get(x.getStoreProdId()).getProdTitle() : "")
+                    // 默认发货时效为3天
+                    .setDeliveryTime(storeProdMap.containsKey(x.getStoreProdId()) ? storeProdMap.get(x.getStoreProdId()).getDeliveryTime() : 3)
+                    .setStoreName(storeMap.containsKey(x.getStoreId()) ? storeMap.get(x.getStoreId()).getStoreName() : "");
             List<ShoppingCartDTO.SCDetailDTO> shopCartDetailList = detailMap.get(x.getId()).stream().map(detail -> {
                 final StoreProductColorSize prodColorSize = priceSizeMap.get(x.getStoreProdId().toString() + detail.getStoreColorId().toString() + detail.getSize());
                 return ObjectUtils.isEmpty(prodColorSize) ? null : BeanUtil.toBean(detail, ShoppingCartDTO.SCDetailDTO.class)
