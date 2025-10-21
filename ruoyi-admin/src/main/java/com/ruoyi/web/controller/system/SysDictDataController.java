@@ -66,7 +66,6 @@ public class SysDictDataController extends BaseController {
         return R.ok(BeanUtil.toBean(dictDataService.selectById(dictDataId), DictDataResVO.class));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store,seller,agent')||@ss.hasSupplierSubRole()")
     @GetMapping(value = "/type/{dictType}")
     @ApiOperation(value = "根据字典类型查询字典数据信息", httpMethod = "GET", response = R.class)
     public R<List<DictDataResVO>> dictType(@PathVariable String dictType) {

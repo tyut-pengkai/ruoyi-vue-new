@@ -142,6 +142,9 @@ public class SecurityConfig
                         .antMatchers("/rest/v1/prods/status/cate/num/**").permitAll()
                         // PC 商品详情
                         .antMatchers("/rest/v1/prods/pc/detail/**").permitAll()
+                        // 获取字段类型
+                        .antMatchers("/rest/v1/sys/dict/data/type/**").permitAll()
+
 
 
 
