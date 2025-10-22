@@ -50,6 +50,7 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
     final StoreProductMapper storeProdMapper;
     final IVoucherSequenceService sequenceService;
     final StoreProductStorageDemandDeductMapper storageDemandDeductMapper;
+    final StoreFactoryMapper storeFacMapper;
 
 
     /**
@@ -406,9 +407,23 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
             queryWrapper.in(StoreProductDemandDetail::getId, exportDTO.getStoreProdDemandDetailIdList());
         }
         List<StoreProductDemandDetail> demandDetailList = this.storeProdDemandDetailMapper.selectList(queryWrapper);
+        if (CollectionUtils.isEmpty(demandDetailList)) {
+            return new ArrayList<>();
+        }
+        List<StoreProductDemand> demandList = this.storeProdDemandMapper.selectList(new LambdaQueryWrapper<StoreProductDemand>()
+                .eq(StoreProductDemand::getDelFlag, UNDELETED).in(StoreProductDemand::getId, demandDetailList.stream()
+                        .map(StoreProductDemandDetail::getStoreProdDemandId).collect(Collectors.toList())));
+        Map<Long, String> demandCodeMap = CollectionUtils.isEmpty(demandList) ? new HashMap<>()
+                : demandList.stream().collect(Collectors.toMap(StoreProductDemand::getId, StoreProductDemand::getCode));
+        List<StoreFactory> storeFacList = this.storeFacMapper.selectList(new LambdaQueryWrapper<StoreFactory>()
+                .eq(StoreFactory::getDelFlag, UNDELETED).eq(StoreFactory::getStoreId, exportDTO.getStoreId()));
+        Map<Long, String> storeFacMap = CollectionUtils.isEmpty(storeFacList) ? new HashMap<>()
+                : storeFacList.stream().collect(Collectors.toMap(StoreFactory::getId, StoreFactory::getFacName));
         List<StoreProdDemandDownloadDTO> downLoadList = demandDetailList.stream().sorted(Comparator.comparing(StoreProductDemandDetail::getProdArtNum))
-                .map(x -> new StoreProdDemandDownloadDTO()
-                        .setProdArtNum(x.getProdArtNum()).setColorName(x.getColorName()).setEmergency(Objects.equals(x.getEmergency(), 0) ? "正常单" : "紧急单")
+                .map(x -> new StoreProdDemandDownloadDTO().setProdArtNum(x.getProdArtNum()).setColorName(x.getColorName())
+                        .setFacName(storeFacMap.getOrDefault(x.getStoreFactoryId(), ""))
+                        .setCode(demandCodeMap.getOrDefault(x.getStoreProdDemandId(), ""))
+                        .setEmergency(Objects.equals(x.getEmergency(), 0) ? "正常单" : "紧急单")
                         .setSize30Quantity(x.getSize30()).setSize31Quantity(x.getSize31()).setSize32Quantity(x.getSize32())
                         .setSize33Quantity(x.getSize33()).setSize34Quantity(x.getSize34()).setSize35Quantity(x.getSize35())
                         .setSize36Quantity(x.getSize36()).setSize37Quantity(x.getSize37()).setSize38Quantity(x.getSize38())

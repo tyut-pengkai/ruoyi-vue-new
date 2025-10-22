@@ -18,7 +18,11 @@ public class StoreProdDemandDownloadDTO {
     private Integer orderNum;
     @Excel(name = "货号", needMerge = true)
     private String prodArtNum;
-    @Excel(name = "是否紧急单", needMerge = true)
+    @Excel(name = "需求单号", needMerge = true)
+    private String code;
+    @Excel(name = "工厂名称", needMerge = true)
+    private String facName;
+    @Excel(name = "是否紧急单")
     private String emergency;
     @Excel(name = "颜色", needMerge = true)
     private String colorName;
