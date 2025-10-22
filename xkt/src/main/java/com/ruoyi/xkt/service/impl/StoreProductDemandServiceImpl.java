@@ -406,6 +406,9 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
         if (CollectionUtils.isNotEmpty(exportDTO.getStoreProdDemandDetailIdList())) {
             queryWrapper.in(StoreProductDemandDetail::getId, exportDTO.getStoreProdDemandDetailIdList());
         }
+        if (ObjectUtils.isNotEmpty(exportDTO.getDetailStatus())) {
+            queryWrapper.eq(StoreProductDemandDetail::getDetailStatus, exportDTO.getDetailStatus());
+        }
         List<StoreProductDemandDetail> demandDetailList = this.storeProdDemandDetailMapper.selectList(queryWrapper);
         if (CollectionUtils.isEmpty(demandDetailList)) {
             return new ArrayList<>();
