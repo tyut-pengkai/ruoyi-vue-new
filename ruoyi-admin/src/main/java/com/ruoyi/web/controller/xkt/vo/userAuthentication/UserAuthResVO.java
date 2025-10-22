@@ -16,6 +16,8 @@ public class UserAuthResVO {
 
     @ApiModelProperty(value = "代发ID")
     private Long userAuthId;
+    @ApiModelProperty(value = "用户ID")
+    private Long userId;
     @ApiModelProperty(value = "真实名称")
     private String realName;
     @ApiModelProperty(value = "联系电话")
