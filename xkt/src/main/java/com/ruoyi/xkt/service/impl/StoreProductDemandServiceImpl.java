@@ -197,7 +197,7 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
         List<Long> demandDetailIdList = demandList.stream().map(StoreProdDemandPageResDTO::getStoreProdDemandDetailId).distinct().collect(Collectors.toList());
         // 找到需求单抵扣的数据
         List<StoreProductStorageDemandDeduct> deductList = this.storageDemandDeductMapper.selectList(new LambdaQueryWrapper<StoreProductStorageDemandDeduct>()
-                .in(StoreProductStorageDemandDeduct::getStoreProdStorageDetailId, demandDetailIdList).eq(StoreProductStorageDemandDeduct::getDelFlag, Constants.UNDELETED));
+                .in(StoreProductStorageDemandDeduct::getStoreProdDemandDetailId, demandDetailIdList).eq(StoreProductStorageDemandDeduct::getDelFlag, Constants.UNDELETED));
         // 明细抵扣的数量
         Map<Long, Integer> deductQuantityMap = CollectionUtils.isEmpty(deductList) ? new HashMap<>()
                 : deductList.stream().collect(Collectors.groupingBy(StoreProductStorageDemandDeduct::getStoreProdStorageDetailId, Collectors.summingInt(StoreProductStorageDemandDeduct::getQuantity)));
