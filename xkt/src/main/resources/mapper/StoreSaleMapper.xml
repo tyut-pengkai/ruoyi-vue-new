@@ -29,7 +29,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             ROW_NUMBER() OVER ( ORDER BY ss.voucher_date DESC ) AS orderNum,
             ss.`code`,
             sc.cus_name AS storeCusName,
-            ss.voucher_date,
+            ss.create_time,
             ss.amount,
             CONCAT(IFNULL( ss.sale_quantity, 0 ),'/', CASE WHEN IFNULL( ss.refund_quantity, 0 ) > 0 THEN '-' ELSE '' END, IFNULL( ss.refund_quantity, 0 )) AS quantity,
             IFNULL( ss.round_off, 0 ) AS round_off,
