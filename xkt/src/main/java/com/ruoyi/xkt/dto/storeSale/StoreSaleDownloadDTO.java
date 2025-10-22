@@ -23,7 +23,7 @@ public class StoreSaleDownloadDTO {
     private String code;
     @Excel(name = "客户")
     private String storeCusName;
-    @Excel(name = "出库日期", width = 30, dateFormat = "yyyy-MM-dd")
+    @Excel(name = "出库日期", width = 30, dateFormat = "yyyy-MM-dd HH:mm")
     private Date voucherDate;
     @Excel(name = "销售总额")
     private BigDecimal amount;

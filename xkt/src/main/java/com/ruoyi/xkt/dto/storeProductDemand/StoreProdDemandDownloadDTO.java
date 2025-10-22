@@ -24,7 +24,7 @@ public class StoreProdDemandDownloadDTO {
     private String facName;
     @Excel(name = "是否紧急单")
     private String emergency;
-    @Excel(name = "颜色", needMerge = true)
+    @Excel(name = "颜色")
     private String colorName;
     @Excel(name = "30")
     private Integer size30Quantity;

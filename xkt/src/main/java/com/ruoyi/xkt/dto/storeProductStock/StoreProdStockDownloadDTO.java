@@ -18,7 +18,7 @@ public class StoreProdStockDownloadDTO {
     private Integer orderNum;
     @Excel(name = "货号", needMerge = true)
     private String prodArtNum;
-    @Excel(name = "颜色", needMerge = true)
+    @Excel(name = "颜色")
     private String colorName;
     @Excel(name = "30")
     private Integer size30Quantity;

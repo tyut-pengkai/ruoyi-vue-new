@@ -25,13 +25,13 @@ public class StoreStorageDetailDownloadDTO {
     private String facName;
     @Excel(name = "入库类型", readConverterExp = "1=生产入库,2=其它入库,3=维修入库", needMerge = true)
     private Integer storageType;
-    @Excel(name = "出库日期", width = 30, dateFormat = "yyyy-MM-dd", needMerge = true)
+    @Excel(name = "入库日期", width = 30, dateFormat = "yyyy-MM-dd HH:mm", needMerge = true)
     private Date createTime;
-    @Excel(name = "总生产成本", needMerge = true)
+    @Excel(name = "总生产成本")
     private BigDecimal produceAmount;
-    @Excel(name = "货号", needMerge = true)
+    @Excel(name = "货号")
     private String prodArtNum;
-    @Excel(name = "颜色", needMerge = true)
+    @Excel(name = "颜色")
     private String colorName;
     @Excel(name = "30")
     private Integer size30Quantity;
