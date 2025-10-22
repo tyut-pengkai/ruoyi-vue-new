@@ -92,6 +92,24 @@ public class UserAuthenticationServiceImpl implements IUserAuthenticationService
     }
 
     /**
+     * 根据userId查询代发详情
+     *
+     * @param userId 用户ID
+     * @return
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public UserAuthResDTO getInfoByUserId(Long userId) {
+        UserAuthentication userAuth = Optional.ofNullable(this.userAuthMapper.selectOne(new LambdaQueryWrapper<UserAuthentication>()
+                        .eq(UserAuthentication::getUserId, userId)))
+                .orElseThrow(() -> new ServiceException("代发不存在!", HttpStatus.ERROR));
+        SysFile faceFile = this.fileMapper.selectById(userAuth.getIdCardFaceFileId());
+        SysFile emblemFile = this.fileMapper.selectById(userAuth.getIdCardEmblemFileId());
+        return BeanUtil.toBean(userAuth, UserAuthResDTO.class).setUserAuthId(userAuth.getId())
+                .setFaceUrl(faceFile.getFileUrl()).setEmblemUrl(emblemFile.getFileUrl());
+    }
+
+    /**
      * APP代发分页
      *
      * @param pageDTO 分页入参
@@ -104,8 +122,6 @@ public class UserAuthenticationServiceImpl implements IUserAuthenticationService
         List<UserAuthAppPageResDTO> list = this.userAuthMapper.selectUserAuthAppPage(pageDTO);
         return Page.convert(new PageInfo<>(list));
     }
-
-
 
 
     /**

@@ -66,4 +66,12 @@ public interface IUserAuthenticationService {
      * @return Integer
      */
     Integer update(UserAuthUpdateDTO updateDTO);
+
+    /**
+     * 根据userId查询代发详情
+     *
+     * @param userId 用户ID
+     * @return
+     */
+    UserAuthResDTO getInfoByUserId(Long userId);
 }

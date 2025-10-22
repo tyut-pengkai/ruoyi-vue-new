@@ -67,6 +67,14 @@ public class UserAuthenticationController extends XktBaseController {
         return R.ok(BeanUtil.toBean(userAuthService.getInfo(userAuthId), UserAuthResVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,agent')")
+    @ApiOperation(value = "根据userId查询代发详情", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/userid/{userId}")
+    public R<UserAuthResVO> getInfoByUserId(@PathVariable("userId") Long userId) {
+        return R.ok(BeanUtil.toBean(userAuthService.getInfoByUserId(userId), UserAuthResVO.class));
+    }
+
+
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "代发启用/停用", httpMethod = "PUT", response = R.class)
     @Log(title = "代发启用/停用", businessType = BusinessType.UPDATE)
