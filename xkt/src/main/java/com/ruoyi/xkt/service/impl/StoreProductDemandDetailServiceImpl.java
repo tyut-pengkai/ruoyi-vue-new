@@ -55,6 +55,21 @@ public class StoreProductDemandDetailServiceImpl implements IStoreProductDemandD
         demandDetail.setSize41(this.convertZeroToNull(updateDTO.getSize41()));
         demandDetail.setSize42(this.convertZeroToNull(updateDTO.getSize42()));
         demandDetail.setSize43(this.convertZeroToNull(updateDTO.getSize43()));
+        // 更新需求明细总数量
+        demandDetail.setQuantity(ObjectUtils.defaultIfNull(demandDetail.getSize30(), 0)
+                + ObjectUtils.defaultIfNull(demandDetail.getSize31(), 0)
+                + ObjectUtils.defaultIfNull(demandDetail.getSize32(), 0)
+                + ObjectUtils.defaultIfNull(demandDetail.getSize33(), 0)
+                + ObjectUtils.defaultIfNull(demandDetail.getSize34(), 0)
+                + ObjectUtils.defaultIfNull(demandDetail.getSize35(), 0)
+                + ObjectUtils.defaultIfNull(demandDetail.getSize36(), 0)
+                + ObjectUtils.defaultIfNull(demandDetail.getSize37(), 0)
+                + ObjectUtils.defaultIfNull(demandDetail.getSize38(), 0)
+                + ObjectUtils.defaultIfNull(demandDetail.getSize39(), 0)
+                + ObjectUtils.defaultIfNull(demandDetail.getSize40(), 0)
+                + ObjectUtils.defaultIfNull(demandDetail.getSize41(), 0)
+                + ObjectUtils.defaultIfNull(demandDetail.getSize42(), 0)
+                + ObjectUtils.defaultIfNull(demandDetail.getSize43(), 0));
         return this.demandDetailMapper.updateById(demandDetail);
     }
 
