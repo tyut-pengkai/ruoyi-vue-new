@@ -4,7 +4,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.xkt.mapper.StoreSaleDetailMapper">
 
-    <select id="selectBySn" resultType="com.ruoyi.xkt.dto.storeProdColorSize.StoreSaleSnResDTO">
+    <select id="selectRefundByBuJuSnSale" resultType="com.ruoyi.xkt.dto.storeProdColorSize.StoreSaleSnResDTO">
         SELECT
             ssd.store_prod_id,
             ssd.store_prod_color_id,
@@ -13,13 +13,45 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             ssd.prod_art_num,
             ssd.price,
             ssd.discounted_price,
-            ssd.quantity,
-            ssd.amount,
+            spcs.standard,
+            -(ssd.quantity) AS quantity,
+            -(ssd.amount) AS amount,
             DATE_FORMAT(ssd.create_time, '(%m.%e出)') AS soldTime
         FROM
             store_sale_detail ssd
+                JOIN store_product_color_size spcs ON spcs.del_flag = 0 AND spcs.store_prod_id = ssd.store_prod_id
+                AND spcs.size = ssd.size AND spcs.sn_prefix = #{snPrefix}
         WHERE
             ssd.del_flag = 0
+          AND ssd.sale_type = 1
+          AND ssd.sn = #{sn}
+          AND ssd.store_id = #{storeId}
+          AND ssd.store_cus_id = #{storeCusId}
+        ORDER BY
+            ssd.update_time DESC
+            LIMIT 1
+    </select>
+
+    <select id="selectRefundByOtherSnSale" resultType="com.ruoyi.xkt.dto.storeProdColorSize.StoreSaleSnResDTO">
+        SELECT
+            ssd.store_prod_id,
+            ssd.store_prod_color_id,
+            ssd.color_name,
+            ssd.size,
+            ssd.prod_art_num,
+            ssd.price,
+            ssd.discounted_price,
+            spcs.standard,
+            -(ssd.quantity) AS quantity,
+            -(ssd.amount) AS amount,
+            DATE_FORMAT(ssd.create_time, '(%m.%e出)') AS soldTime
+        FROM
+            store_sale_detail ssd
+                JOIN store_product_color_size spcs ON spcs.del_flag = 0 AND spcs.store_prod_id = ssd.store_prod_id
+                AND spcs.size = ssd.size AND spcs.other_sn_prefix = #{snPrefix}
+        WHERE
+            ssd.del_flag = 0
+          AND ssd.sale_type = 1
           AND ssd.sn = #{sn}
           AND ssd.store_id = #{storeId}
           AND ssd.store_cus_id = #{storeCusId}

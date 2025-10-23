@@ -14,9 +14,19 @@ import com.ruoyi.xkt.dto.storeProdColorSize.StoreSaleSnResDTO;
 public interface StoreSaleDetailMapper extends BaseMapper<StoreSaleDetail> {
 
     /**
-     * 根据条码查询档口销售明细销售记录
-     * @param barcodeDTO 条码信息
-     * @return
+     * 根据 步橘条码 客户ID 查询最近的一条 普通销售的数据
+     *
+     * @param barcodeDTO 查询入参
+     * @return StoreSaleSnResDTO
      */
-    StoreSaleSnResDTO selectBySn(StoreSaleSnDTO barcodeDTO);
+    StoreSaleSnResDTO selectRefundByBuJuSnSale(StoreSaleSnDTO barcodeDTO);
+
+    /**
+     * 根据 其它系统条码 客户ID 查询最近的一条 普通销售的数据
+     *
+     * @param barcodeDTO 查询入参
+     * @return StoreSaleSnResDTO
+     */
+    StoreSaleSnResDTO selectRefundByOtherSnSale(StoreSaleSnDTO barcodeDTO);
+
 }

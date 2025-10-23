@@ -20,5 +20,7 @@ public class StoreSaleSnDTO {
     private Boolean refund;
     @ApiModelProperty(value = "条码")
     private String sn;
+    @ApiModelProperty(value = "条码前缀")
+    private String snPrefix;
 
 }

@@ -90,14 +90,19 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
         }
         // 销售出库[退货]
         if (snDTO.getRefund()) {
-            // 先查storeSaleDetail中的sns条码是否存在[可能同一个条码，被一个客户多次销售、退货，则取最近的一条]
-            StoreSaleSnResDTO barcodeResDTO = this.saleDetailMapper.selectBySn(snDTO);
-            if (ObjectUtils.isNotEmpty(barcodeResDTO)) {
-                return barcodeResDTO.setSuccess(Boolean.TRUE).setSn(snDTO.getSn());
-            } else {
-                // 若是没查询到数据，则走正常条码查询流程
-                return this.getSnInfo(snDTO, stockSys);
-            }
+            // 先查storeSaleDetail中的sns条码是否存在[可能同一个条码，被一个客户多次销售、退货，则取最近销售的那条]
+            final boolean isBuJu = snDTO.getSn().startsWith(snDTO.getStoreId().toString());
+            // 获取条码前缀
+            final String snPrefix = isBuJu ? snDTO.getSn().substring(0, STOCK_PREFIX_LENGTH_MAP.get(StockSysType.BU_JU.getValue()))
+                    // 从系统设置中获取，根据系统迁移时的配置
+                    : snDTO.getSn().substring(0, STOCK_PREFIX_LENGTH_MAP.get(stockSys));
+            // 设置查询的条码前缀
+            snDTO.setSnPrefix(snPrefix);
+            StoreSaleSnResDTO barcodeResDTO = isBuJu ? this.saleDetailMapper.selectRefundByBuJuSnSale(snDTO)
+                    : this.saleDetailMapper.selectRefundByOtherSnSale(snDTO);
+            return ObjectUtils.isNotEmpty(barcodeResDTO) ? barcodeResDTO.setSuccess(Boolean.TRUE).setSn(snDTO.getSn())
+                    // 若是没查询到数据，则走正常条码查询流程
+                    : this.getSnInfo(snDTO, stockSys);
             // 销售出库[销售] 正常条码查询流程
         } else {
             return this.getSnInfo(snDTO, stockSys);
