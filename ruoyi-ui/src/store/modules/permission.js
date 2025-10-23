@@ -42,7 +42,17 @@ const permission = {
           rewriteRoutes.push({ path: '*', redirect: '/404', hidden: true })
           router.addRoutes(asyncRoutes)
           commit('SET_ROUTES', rewriteRoutes)
-          commit('SET_SIDEBAR_ROUTERS', constantRoutes.concat(sidebarRoutes))
+          // 确保首页固定在顶部
+          const homeRouteIndex = constantRoutes.findIndex(route => route.children && route.children.some(child => child.name === 'Index'));
+          if (homeRouteIndex > 0) {
+            // 将首页路由移到最前面
+            const routes = [...constantRoutes];
+            const homeRoute = routes.splice(homeRouteIndex, 1)[0];
+            routes.unshift(homeRoute);
+            commit('SET_SIDEBAR_ROUTERS', routes.concat(sidebarRoutes));
+          } else {
+            commit('SET_SIDEBAR_ROUTERS', constantRoutes.concat(sidebarRoutes));
+          }
           commit('SET_DEFAULT_ROUTES', sidebarRoutes)
           commit('SET_TOPBAR_ROUTES', sidebarRoutes)
           resolve(rewriteRoutes)
