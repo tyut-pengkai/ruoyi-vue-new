@@ -137,6 +137,10 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
         StoreCustomer storeCus = Optional.ofNullable(this.storeCusMapper.selectOne(new LambdaQueryWrapper<StoreCustomer>()
                         .eq(StoreCustomer::getId, storeCusDTO.getStoreCusId()).eq(StoreCustomer::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口客户不存在!"));
+        // 不允许删现金客户
+        if (Objects.equals(storeCus.getCusName(), Constants.STORE_CUS_CASH)) {
+            throw new ServiceException("请勿编辑现金客户!", HttpStatus.ERROR);
+        }
         if (StringUtils.isNotBlank(storeCusDTO.getPhone())) {
             final String regex = "^1[3-9]\\d{9}$";
             if (!Pattern.matches(regex, storeCusDTO.getPhone().trim())) {
