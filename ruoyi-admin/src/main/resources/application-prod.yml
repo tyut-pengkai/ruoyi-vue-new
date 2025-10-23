@@ -273,9 +273,9 @@ alipay:
   appCertPath: /alipay/prod/appCertPublicKey_2021005194684036.crt
   rootCertPath: /alipay/prod/alipayRootCert.crt
   alipayPublicCertPath: /alipay/prod/alipayCertPublicKey_RSA2.crt
-  notifyUrl: http://121.40.117.244:9310/rest/v1/alipay-callback/notify
-  defaultReturnUrl: http://121.40.214.172/index.html
-  orderReturnUrl: http://121.40.214.172/index.html
+  notifyUrl: https://api.cdbuju.cn/rest/v1/alipay-callback/notify
+  defaultReturnUrl: https://cdbuju.cn/index.html
+  orderReturnUrl: https://cdbuju.cn/index.html
   signType: RSA2
   charset: UTF-8
   gatewayUrl: https://openapi.alipay.com/gateway.do
