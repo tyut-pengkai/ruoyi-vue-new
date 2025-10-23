@@ -89,6 +89,7 @@ public class StoreProductStockController extends XktBaseController {
         return R.ok(BeanUtil.toBean(storeProdStockService.selectByStoreProdStockId(storeId, storeProdStockId), StoreProdStockResVO.class));
     }
 
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "根据货号查询档口商品库存", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{storeId}/store-prod-id/{storeProdId}")
     public R<StoreProdStockTakeResVO> getByStoreIdAndStoreProdId(@PathVariable("storeId") Long storeId, @PathVariable("storeProdId") Long storeProdId) {

@@ -150,10 +150,11 @@ public interface IStoreProductService {
     /**
      * 模糊查询系统所有商品
      *
+     * @param storeId 档口ID
      * @param prodArtNum 货号
      * @return StoreProdFuzzyResDTO
      */
-    List<StoreProdFuzzyResDTO> fuzzyQuery(String prodArtNum);
+    List<StoreProdFuzzyResDTO> fuzzyQuery(Long storeId, String prodArtNum);
 
     /**
      * 获取商城 档口首页商品状态数量
