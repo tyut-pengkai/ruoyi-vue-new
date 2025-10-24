@@ -355,9 +355,9 @@ public class XktTask {
             throw new ServiceException("商品分类不存在!", HttpStatus.ERROR);
         }
         // 根据LocalDate 获取当前日期前一天
-        final Date yesterday = java.sql.Date.valueOf(LocalDate.now().minusDays(1));
+        final Date yesterday = java.sql.Date.valueOf(LocalDate.now());
         // 及当前日期前一天的前一周，并转为 Date 格式
-        final Date pastDate = java.sql.Date.valueOf(LocalDate.now().minusDays(8));
+        final Date pastDate = java.sql.Date.valueOf(LocalDate.now().minusWeeks(1));
         // 获取各项子分类最近一周的销售数量
         List<WeekCateSaleDTO> weekCateSaleList = this.weekCateSaleMapper.selectWeekCateSale(yesterday, pastDate);
         if (CollectionUtils.isEmpty(weekCateSaleList)) {
@@ -405,7 +405,7 @@ public class XktTask {
         }
         List<DailyStoreTag> tagList = new ArrayList<>();
         // 根据LocalDate 获取当前日期前一天
-        final Date yesterday = java.sql.Date.valueOf(LocalDate.now().minusDays(1));
+        final Date yesterday = java.sql.Date.valueOf(LocalDate.now());
         // 使用LocalDate 获取当前日期前一天的前一周，并转为 Date 格式
         final Date oneWeekAgo = java.sql.Date.valueOf(LocalDate.now().minusWeeks(1));
         // 使用LocalDate 获取当前日期前一天的前一个月
@@ -441,10 +441,10 @@ public class XktTask {
         if (CollectionUtils.isNotEmpty(existList)) {
             this.dailyProdTagMapper.deleteByIds(existList.stream().map(DailyProdTag::getId).collect(Collectors.toList()));
         }
-        // 根据LocalDate 获取当前日期前一天
-        final Date yesterday = java.sql.Date.valueOf(LocalDate.now().minusDays(1));
-        // 使用LocalDate 获取当前日期4天前，并转为 Date 格式
-        final Date fourDaysAgo = java.sql.Date.valueOf(LocalDate.now().minusDays(4));
+        // 根据LocalDate 获取当前日期前一天 yyyy-MM-dd 00:00:00
+        final Date yesterday = java.sql.Date.valueOf(LocalDate.now());
+        // 使用LocalDate 获取当前日期3天前，并转为 Date 格式
+        final Date fourDaysAgo = java.sql.Date.valueOf(LocalDate.now().minusDays(3));
         // 使用LocalDate 获取当前日期前一天的前一周，并转为 Date 格式
         final Date oneWeekAgo = java.sql.Date.valueOf(LocalDate.now().minusWeeks(1));
         // 使用LocalDate 获取当前日期前一天的前一个月

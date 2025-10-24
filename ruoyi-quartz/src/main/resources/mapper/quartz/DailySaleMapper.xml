@@ -29,7 +29,7 @@
         FROM
             daily_sale
         WHERE
-            voucher_date BETWEEN #{yesterday} AND #{oneMonthAgo}
+            voucher_date BETWEEN #{oneMonthAgo} AND #{yesterday}
         GROUP BY
             store_id
         HAVING
@@ -42,7 +42,7 @@
         FROM
             daily_sale
         WHERE
-            voucher_date BETWEEN #{yesterday} AND #{oneMonthAgo}
+            voucher_date BETWEEN #{oneMonthAgo} AND #{yesterday}
         GROUP BY
             store_id
         ORDER BY
