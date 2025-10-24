@@ -111,7 +111,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             NULLIF(sps.size_40, 0) AS size40Quantity,
             NULLIF(sps.size_41, 0) AS size41Quantity,
             NULLIF(sps.size_42, 0) AS size42Quantity,
-            NULLIF(sps.size_43, 0) AS size43Quantity
+            NULLIF(sps.size_43, 0) AS size43Quantity,
             COALESCE ( sps.size_30, 0 ) + COALESCE ( sps.size_31, 0 ) + COALESCE ( sps.size_32, 0 ) + COALESCE ( sps.size_33, 0 ) + COALESCE ( sps.size_34, 0 ) +
             COALESCE ( sps.size_35, 0 ) + COALESCE ( sps.size_36, 0 ) + COALESCE ( sps.size_37, 0 ) + COALESCE ( sps.size_38, 0 ) + COALESCE ( sps.size_39, 0 ) +
             COALESCE ( sps.size_40, 0 ) + COALESCE ( sps.size_41, 0 ) + COALESCE ( sps.size_42, 0 ) + COALESCE ( sps.size_43, 0 ) AS totalQuantity
@@ -145,7 +145,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             NULLIF(sps.size_40, 0) AS size40Quantity,
             NULLIF(sps.size_41, 0) AS size41Quantity,
             NULLIF(sps.size_42, 0) AS size42Quantity,
-            NULLIF(sps.size_43, 0) AS size43Quantity
+            NULLIF(sps.size_43, 0) AS size43Quantity,
             COALESCE ( sps.size_30, 0 ) + COALESCE ( sps.size_31, 0 ) + COALESCE ( sps.size_32, 0 ) + COALESCE ( sps.size_33, 0 ) + COALESCE ( sps.size_34, 0 ) +
             COALESCE ( sps.size_35, 0 ) + COALESCE ( sps.size_36, 0 ) + COALESCE ( sps.size_37, 0 ) + COALESCE ( sps.size_38, 0 ) + COALESCE ( sps.size_39, 0 ) +
             COALESCE ( sps.size_40, 0 ) + COALESCE ( sps.size_41, 0 ) + COALESCE ( sps.size_42, 0 ) + COALESCE ( sps.size_43, 0 ) AS totalQuantity
