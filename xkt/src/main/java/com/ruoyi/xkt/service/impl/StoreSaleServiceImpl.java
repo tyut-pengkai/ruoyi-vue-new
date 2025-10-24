@@ -213,10 +213,10 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
         if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(exportDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
-        List<StoreSaleDownloadDTO> downloadList = new ArrayList<>();
+        List<StoreSaleDownloadDTO> downloadList;
         // 导出指定销售出库单
         if (CollectionUtils.isNotEmpty(exportDTO.getStoreSaleIdList())) {
-            downloadList = this.storeSaleMapper.selectExportList(exportDTO.getStoreSaleIdList());
+            downloadList = this.storeSaleMapper.selectExportList(exportDTO);
         } else {
             // 没有传时间，则设置当前时间往前推半年
             if (ObjectUtils.isEmpty(exportDTO.getVoucherDateStart()) && ObjectUtils.isEmpty(exportDTO.getVoucherDateEnd())) {

@@ -6,9 +6,7 @@ import com.ruoyi.xkt.dto.storeSale.StoreSaleDownloadDTO;
 import com.ruoyi.xkt.dto.storeSale.StoreSaleExportDTO;
 import com.ruoyi.xkt.dto.storeSale.StoreSalePageDTO;
 import com.ruoyi.xkt.dto.storeSale.StoreSalePageResDTO;
-import org.apache.ibatis.annotations.Param;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -21,24 +19,25 @@ public interface StoreSaleMapper extends BaseMapper<StoreSale> {
 
     /**
      * 分页
+     *
      * @param pageDTO 入参
-     * @return
+     * @return List<StoreSalePageResDTO>
      */
     List<StoreSalePageResDTO> selectPage(StoreSalePageDTO pageDTO);
 
     /**
      * 导出指定id列表
      *
-     * @param storeSaleIdList 导出入参
+     * @param exportDTO 导出入参
      * @return List<StoreSaleDownloadDTO>
      */
-    List<StoreSaleDownloadDTO> selectExportList(@Param("storeSaleIdList") List<Long> storeSaleIdList);
+    List<StoreSaleDownloadDTO> selectExportList(StoreSaleExportDTO exportDTO);
 
     /**
      * 导出指定时间段内的数据
      *
      * @param exportDTO 导出入参
-     * @return
+     * @return List<StoreSaleDownloadDTO>
      */
     List<StoreSaleDownloadDTO> selectExportListVoucherDateBetween(StoreSaleExportDTO exportDTO);
 

@@ -41,10 +41,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         WHERE
             ss.del_flag = 0
             AND ss.store_id = #{storeId}
-            AND ss.id IN
-            <foreach collection="storeSaleIdList" item="storeSaleId" open="(" separator="," close=")">
-                #{storeSaleId}
-            </foreach>
+            <if test="storeSaleIdList != null and storeSaleIdList.size() > 0">
+                AND ss.id IN
+                <foreach collection="storeSaleIdList" item="storeSaleId" open="(" separator="," close=")">
+                    #{storeSaleId}
+                </foreach>
+            </if>
         ORDER BY
             ss.create_time DESC
     </select>
