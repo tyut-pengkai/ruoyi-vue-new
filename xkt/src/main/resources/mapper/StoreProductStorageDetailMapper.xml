@@ -8,7 +8,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         SELECT
             sps.`code`,
             sf.fac_name,
-            sps.create_time,
+            DATE_FORMAT(spsd.create_time, '%Y-%m-%d %H:%i') AS create_time,
             sps.quantity,
             sps.produce_amount,
             sps.storage_type,
@@ -63,7 +63,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         SELECT
             sps.`code`,
             sf.fac_name,
-            sps.create_time,
+            DATE_FORMAT(spsd.create_time, '%Y-%m-%d %H:%i') AS create_time,
             sps.quantity,
             sps.produce_amount,
             sps.storage_type,

@@ -426,6 +426,7 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
                 .map(x -> new StoreProdDemandDownloadDTO().setProdArtNum(x.getProdArtNum()).setColorName(x.getColorName())
                         .setFacName(storeFacMap.getOrDefault(x.getStoreFactoryId(), ""))
                         .setCode(demandCodeMap.getOrDefault(x.getStoreProdDemandId(), ""))
+                        .setCreateTime(DateUtils.parseDateToStr("yyyy-MM-dd HH:mm", x.getCreateTime()))
                         .setEmergency(Objects.equals(x.getEmergency(), 0) ? "正常单" : "紧急单")
                         .setSize30Quantity(x.getSize30()).setSize31Quantity(x.getSize31()).setSize32Quantity(x.getSize32())
                         .setSize33Quantity(x.getSize33()).setSize34Quantity(x.getSize34()).setSize35Quantity(x.getSize35())

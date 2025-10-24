@@ -213,14 +213,15 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
         if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(exportDTO.getStoreId())) {
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
+        List<StoreSaleDownloadDTO> downloadList = new ArrayList<>();
         // 导出指定销售出库单
         if (CollectionUtils.isNotEmpty(exportDTO.getStoreSaleIdList())) {
-            return this.storeSaleMapper.selectExportList(exportDTO.getStoreSaleIdList());
+            downloadList = this.storeSaleMapper.selectExportList(exportDTO.getStoreSaleIdList());
         } else {
             // 没有传时间，则设置当前时间往前推半年
             if (ObjectUtils.isEmpty(exportDTO.getVoucherDateStart()) && ObjectUtils.isEmpty(exportDTO.getVoucherDateEnd())) {
                 exportDTO.setVoucherDateEnd(java.sql.Date.valueOf(LocalDate.now()));
-                exportDTO.setVoucherDateEnd(java.sql.Date.valueOf(LocalDate.now().minusMonths(6)));
+                exportDTO.setVoucherDateStart(java.sql.Date.valueOf(LocalDate.now().minusMonths(6)));
             } else {
                 LocalDate start = exportDTO.getVoucherDateStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
                 LocalDate end = exportDTO.getVoucherDateEnd().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
@@ -235,8 +236,15 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
                     throw new ServiceException("导出时间间隔不能超过6个月!", HttpStatus.ERROR);
                 }
             }
-            return this.storeSaleMapper.selectExportListVoucherDateBetween(exportDTO);
+            downloadList = this.storeSaleMapper.selectExportListVoucherDateBetween(exportDTO);
         }
+        if (CollectionUtils.isEmpty(downloadList)) {
+            return downloadList;
+        }
+        for (int i = 0; i < downloadList.size(); i++) {
+            downloadList.get(i).setOrderNum(i + 1);
+        }
+        return downloadList;
     }
 
     /**
