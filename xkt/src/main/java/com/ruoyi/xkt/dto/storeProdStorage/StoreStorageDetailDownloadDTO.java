@@ -22,9 +22,9 @@ public class StoreStorageDetailDownloadDTO {
     private Integer orderNum;
     @Excel(name = "单据编号", needMerge = true, width = 26, height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private String code;
-    @Excel(name = "工厂名称", needMerge = true, width = 20,  height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
+    @Excel(name = "工厂名称", width = 20,  height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private String facName;
-    @Excel(name = "入库类型", readConverterExp = "1=生产入库,2=其它入库,3=维修入库", needMerge = true, height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
+    @Excel(name = "入库类型", readConverterExp = "1=生产入库,2=其它入库,3=维修入库", height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private Integer storageType;
     @Excel(name = "入库日期", width = 20, needMerge = true, height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private String createTime;
