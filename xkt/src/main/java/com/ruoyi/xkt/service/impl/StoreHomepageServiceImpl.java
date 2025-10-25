@@ -116,6 +116,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                         .setFileType(x.getFileType()).setFileUrl(finalMainPicMap.get(x.getBizId())))
                 .collect(Collectors.toList());
         return new StoreHomeDecorationResDTO() {{
+            setStoreId(storeId);
             setTemplateNum(store.getTemplateNum());
             setBigBannerList(bigBannerList);
             setDecorationList(decorList);
@@ -431,8 +432,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
         List<StoreHomepage> homePageList = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(homepageDTO.getBigBannerList())) {
             // 新增的首页轮播大图部分
-            List<SysFile> bigBannerFileList = homepageDTO.getBigBannerList().stream().filter(x -> StringUtils.isNotBlank(x.getFileUrl())
-                            && StringUtils.isNotBlank(x.getFileName()) && ObjectUtils.isNotEmpty(x.getFileSize()) && ObjectUtils.isNotEmpty(x.getOrderNum()))
+            List<SysFile> bigBannerFileList = homepageDTO.getBigBannerList().stream().filter(x -> StringUtils.isNotBlank(x.getFileUrl()))
                     .map(x -> BeanUtil.toBean(x, SysFile.class)).collect(Collectors.toList());
             this.fileMapper.insert(bigBannerFileList);
             Map<String, SysFile> bigBannerMap = bigBannerFileList.stream().collect(Collectors.toMap(SysFile::getFileName, Function.identity()));
@@ -440,7 +440,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                             .setFileId(bigBannerMap.containsKey(x.getFileName()) ? bigBannerMap.get(x.getFileName()).getId() : null))
                     .collect(Collectors.toList()));
         }
-        if (CollectionUtils.isNotEmpty(homepageDTO.getDecorationList())) {
+         if (CollectionUtils.isNotEmpty(homepageDTO.getDecorationList())) {
             homePageList.addAll(homepageDTO.getDecorationList().stream().map(x -> BeanUtil.toBean(x, StoreHomepage.class).setStoreId(homepageDTO.getStoreId()))
                     .collect(Collectors.toList()));
         }
@@ -531,7 +531,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
             }).collect(Collectors.toList());
         } else {
             topRightRecommendList = topRightList.stream().map(x -> {
-                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getId());
+                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getBizId());
                 return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
                         .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
                         .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
@@ -565,7 +565,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
             }).collect(Collectors.toList());
         } else {
             recommendList = storeRecommendList.stream().map(x -> {
-                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getId());
+                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getBizId());
                 return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
                         .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
                         .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
@@ -600,7 +600,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
             }).collect(Collectors.toList());
         } else {
             popularRecommendList = popularSaleList.stream().map(x -> {
-                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getId());
+                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getBizId());
                 return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
                         .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
                         .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
@@ -634,7 +634,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
             }).collect(Collectors.toList());
         } else {
             seasonNewRecommendList = seasonNewProductsList.stream().map(x -> {
-                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getId());
+                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getBizId());
                 return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
                         .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
                         .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
@@ -668,7 +668,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
             }).collect(Collectors.toList());
         } else {
             saleRankRecommendList = salesRankingList.stream().map(x -> {
-                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getId());
+                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getBizId());
                 return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
                         .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
                         .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);

@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -36,8 +37,12 @@ public class StoreHomeDecorationVO {
         private String bizName;
         @ApiModelProperty(value = "跳转类型 1. 不跳转 2. 跳转店铺 3. 跳转商品")
         private Integer jumpType;
+        @ApiModelProperty(value = "文件名称")
+        private String fileName;
         @ApiModelProperty(value = "文件路径")
         private String fileUrl;
+        @ApiModelProperty(value = "文件大小")
+        private BigDecimal fileSize;
         @ApiModelProperty(value = "文件类型 1轮播大图")
         private Integer fileType;
         @ApiModelProperty(value = "排序")

@@ -17,6 +17,8 @@ import java.util.List;
 
 public class StoreHomeDecorationResDTO {
 
+    @ApiModelProperty(value = "档口ID")
+    private Long storeId;
     @ApiModelProperty(value = "档口首页装修模板Num")
     private Integer templateNum;
     @ApiModelProperty(value = "档口首页装修大轮播图")
