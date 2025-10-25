@@ -23,10 +23,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -142,6 +139,8 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
         if (CollectionUtils.isEmpty(updateList)) {
             return 0;
         }
+        // 如果是discount为0，则将该优惠置为无效
+        updateList.stream().filter(x -> Objects.equals(ObjectUtils.defaultIfNull(x.getDiscount(), 0), 0)).forEach(x -> x.setDelFlag(Constants.DELETED));
         return this.cusProdDiscMapper.insertOrUpdate(updateList).size();
     }
 

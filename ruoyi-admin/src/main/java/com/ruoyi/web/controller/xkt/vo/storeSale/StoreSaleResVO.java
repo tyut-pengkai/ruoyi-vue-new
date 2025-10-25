@@ -30,7 +30,7 @@ public class StoreSaleResVO {
     private Long storeCusId;
     @ApiModelProperty(value = "档口客户名称")
     private String storeCusName;
-    @ApiModelProperty(value = "销售类型（销售 1、退货 2、销售/退货 3）")
+    @ApiModelProperty(value = "销售类型（1、销售 2、退货 3、销售/退货）")
     private Integer saleType;
     @ApiModelProperty(value = "支付方式（1支付宝、2微信、3现金、4欠款）")
     private Integer payWay;
