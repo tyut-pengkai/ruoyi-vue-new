@@ -75,32 +75,28 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                         .in(SysFile::getId, fileIdList).eq(SysFile::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("文件不存在", HttpStatus.ERROR));
         Map<Long, SysFile> fileMap = fileList.stream().collect(Collectors.toMap(SysFile::getId, Function.identity()));
-        Map<Long, StoreProduct> storeProdMap = new HashMap<>();
-        Map<Long, String> mainPicMap = new HashMap<>();
         // 档口商品ID列表
         List<Long> storeProdIdList = homeList.stream()
                 .filter(x -> Objects.equals(x.getJumpType(), HomepageJumpType.JUMP_PRODUCT.getValue())).map(StoreHomepage::getBizId).collect(Collectors.toList());
-        if (CollectionUtils.isNotEmpty(storeProdIdList)) {
-            // 所有的档口商品ID
-            List<StoreProduct> storeProdList = Optional.ofNullable(this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
-                            .eq(StoreProduct::getStoreId, storeId).in(StoreProduct::getId, storeProdIdList)
-                            .eq(StoreProduct::getDelFlag, Constants.UNDELETED)))
-                    .orElseThrow(() -> new ServiceException("档口商品不存在", HttpStatus.ERROR));
-            storeProdMap = storeProdList.stream().collect(Collectors.toMap(StoreProduct::getId, Function.identity()));
-            // 查找排名第一个商品主图列表
-            List<StoreProdMainPicDTO> mainPicList = this.prodFileMapper.selectMainPicByStoreProdIdList(storeProdIdList, FileType.MAIN_PIC.getValue(), ORDER_NUM_1);
-            mainPicMap = CollectionUtils.isEmpty(mainPicList) ? new HashMap<>() : mainPicList.stream()
-                    .collect(Collectors.toMap(StoreProdMainPicDTO::getStoreProdId, StoreProdMainPicDTO::getFileUrl));
-        }
-        Map<Long, StoreProduct> finalStoreProdMap = storeProdMap;
+        // 所有的档口商品ID
+        List<StoreProduct> storeProdList = Optional.ofNullable(this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+                        .eq(StoreProduct::getStoreId, storeId).in(StoreProduct::getId, storeProdIdList).eq(StoreProduct::getDelFlag, Constants.UNDELETED)))
+                .orElseThrow(() -> new ServiceException("档口商品不存在", HttpStatus.ERROR));
+        Map<Long, StoreProduct> storeProdMap = CollectionUtils.isEmpty(storeProdList) ? new HashMap<>()
+                : storeProdList.stream().collect(Collectors.toMap(StoreProduct::getId, Function.identity()));
+        // 查找排名第一个商品主图列表
+        List<StoreProdMainPicDTO> mainPicList = this.prodFileMapper.selectMainPicByStoreProdIdList(storeProdIdList, FileType.MAIN_PIC.getValue(), ORDER_NUM_1);
+        Map<Long, String> mainPicMap = CollectionUtils.isEmpty(mainPicList) ? new HashMap<>() : mainPicList.stream()
+                .collect(Collectors.toMap(StoreProdMainPicDTO::getStoreProdId, StoreProdMainPicDTO::getFileUrl));
         // 轮播图
-        List<StoreHomeDecorationResDTO.DecorationDTO> bigBannerList = homeList.stream().filter(x -> Objects.equals(x.getFileType(), HomepageType.SLIDING_PICTURE.getValue()))
+        List<StoreHomeDecorationResDTO.DecorationDTO> bigBannerList = homeList.stream()
+                .filter(x -> Objects.equals(x.getFileType(), HomepageType.SLIDING_PICTURE.getValue()))
                 .map(x -> {
                     StoreHomeDecorationResDTO.DecorationDTO decorationDTO = BeanUtil.toBean(x, StoreHomeDecorationResDTO.DecorationDTO.class)
-                            .setFileUrl(fileMap.containsKey(x.getFileId()) ? fileMap.get(x.getFileId()).getFileUrl() : "");
+                            .setFileType(x.getFileType()).setFileUrl(fileMap.containsKey(x.getFileId()) ? fileMap.get(x.getFileId()).getFileUrl() : "");
                     // 跳转到商品
                     if (Objects.equals(x.getJumpType(), HomepageJumpType.JUMP_PRODUCT.getValue())) {
-                        decorationDTO.setBizName(finalStoreProdMap.containsKey(x.getBizId()) ? finalStoreProdMap.get(x.getBizId()).getProdArtNum() : "");
+                        decorationDTO.setBizName(storeProdMap.containsKey(x.getBizId()) ? storeProdMap.get(x.getBizId()).getProdArtNum() : "");
                         // 跳转到档口首页
                     } else if (Objects.equals(x.getJumpType(), HomepageJumpType.JUMP_STORE.getValue())) {
                         decorationDTO.setBizName(ObjectUtils.isEmpty(x.getBizId()) ? "" : store.getStoreName());
@@ -108,11 +104,10 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                     return decorationDTO;
                 }).collect(Collectors.toList());
         // 其它图部分
-        Map<Long, String> finalMainPicMap = mainPicMap;
         List<StoreHomeDecorationResDTO.DecorationDTO> decorList = homeList.stream().filter(x -> !Objects.equals(x.getFileType(), HomepageType.SLIDING_PICTURE.getValue()))
                 .map(x -> BeanUtil.toBean(x, StoreHomeDecorationResDTO.DecorationDTO.class)
-                        .setBizName(finalStoreProdMap.containsKey(x.getBizId()) ? finalStoreProdMap.get(x.getBizId()).getProdArtNum() : null)
-                        .setFileType(x.getFileType()).setFileUrl(finalMainPicMap.get(x.getBizId())))
+                        .setBizName(storeProdMap.containsKey(x.getBizId()) ? storeProdMap.get(x.getBizId()).getProdArtNum() : null)
+                        .setFileType(x.getFileType()).setFileUrl(mainPicMap.get(x.getBizId())))
                 .collect(Collectors.toList());
         return new StoreHomeDecorationResDTO() {{
             setStoreId(storeId);
