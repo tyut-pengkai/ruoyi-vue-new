@@ -47,6 +47,8 @@ public class StoreSaleResDTO {
     private Integer refundQuantity;
     @ApiModelProperty(value = "销售金额")
     private BigDecimal amount;
+    @ApiModelProperty(value = "备注")
+    private String remark;
     @ApiModelProperty(value = "销售详情列表")
     private List<SSDetailDTO> detailList;
 
