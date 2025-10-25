@@ -98,6 +98,7 @@
 
     <select id="prodSale1000List" resultType="com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO">
         SELECT
+            store_id,
             store_prod_id,
             SUM(IFNULL( sale_num, 0 )) AS count
         FROM
@@ -105,6 +106,7 @@
         WHERE
             voucher_date BETWEEN #{oneMonthAgo} AND #{yesterday}
         GROUP BY
+            store_id,
             store_prod_id
         HAVING
             count >= 1000
