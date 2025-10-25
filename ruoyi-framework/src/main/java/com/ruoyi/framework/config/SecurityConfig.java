@@ -144,6 +144,8 @@ public class SecurityConfig
                         .antMatchers("/rest/v1/prods/pc/detail/**").permitAll()
                         // 获取字段类型
                         .antMatchers("/rest/v1/sys/dict/data/type/**").permitAll()
+                        // 健康检查
+                        .antMatchers("/rest/v1/health-check/**").permitAll()
 
 
 
