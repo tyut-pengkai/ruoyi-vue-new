@@ -28,6 +28,7 @@ import com.ruoyi.xkt.dto.store.*;
 import com.ruoyi.xkt.dto.storeCertificate.StoreCertDTO;
 import com.ruoyi.xkt.dto.storeCertificate.StoreCertResDTO;
 import com.ruoyi.xkt.enums.FileType;
+import com.ruoyi.xkt.enums.SaleType;
 import com.ruoyi.xkt.enums.StockSysType;
 import com.ruoyi.xkt.enums.StoreStatus;
 import com.ruoyi.xkt.mapper.*;
@@ -364,8 +365,10 @@ public class StoreServiceImpl implements IStoreService {
     @Override
     @Transactional(readOnly = true)
     public StoreIndexTodaySaleTop5ResDTO indexTodayProdSaleRevenueTop(Long storeId, Integer topCount) {
+        // 只统计销售，不统计退货
         List<StoreSaleDetail> detailList = this.saleDetailMapper.selectList(new LambdaQueryWrapper<StoreSaleDetail>()
                 .eq(StoreSaleDetail::getStoreId, storeId).eq(StoreSaleDetail::getDelFlag, Constants.UNDELETED)
+                .eq(StoreSaleDetail::getSaleType, SaleType.GENERAL_SALE.getValue())
                 .eq(StoreSaleDetail::getVoucherDate, java.sql.Date.valueOf(LocalDate.now())));
         if (CollectionUtils.isEmpty(detailList)) {
             return new StoreIndexTodaySaleTop5ResDTO();

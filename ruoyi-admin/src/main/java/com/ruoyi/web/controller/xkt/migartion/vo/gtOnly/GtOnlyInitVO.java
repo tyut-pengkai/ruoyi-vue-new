@@ -1,11 +1,10 @@
-package com.ruoyi.web.controller.xkt.migartion.vo;
+package com.ruoyi.web.controller.xkt.migartion.vo.gtOnly;
 
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 /**
  * @author liujiang
@@ -15,14 +14,11 @@ import java.util.List;
 @ApiModel
 @Data
 @Accessors(chain = true)
-public class GtAndFHBInitVO {
+public class GtOnlyInitVO {
 
     private Integer userId;
-    private Integer supplierId;
     private Long storeId;
     // 大小码加价金额 0 or other
     private BigDecimal addOverPrice;
-    // GT 和 发货宝 能匹配但因 两边颜色冲突，需要手动处理的货号
-    private List<String> excludeArtNoList;
 
 }

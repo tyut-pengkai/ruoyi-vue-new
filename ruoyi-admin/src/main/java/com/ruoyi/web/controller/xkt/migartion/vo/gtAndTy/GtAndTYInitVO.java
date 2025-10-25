@@ -1,4 +1,4 @@
-package com.ruoyi.web.controller.xkt.migartion.vo;
+package com.ruoyi.web.controller.xkt.migartion.vo.gtAndTy;
 
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
@@ -21,7 +21,7 @@ public class GtAndTYInitVO {
     private Long storeId;
     // 大小码加价金额 0 or other
     private BigDecimal addOverPrice;
-    // GT 和 发货宝 能匹配但因 两边颜色冲突，需要手动处理的货号
+    // GT 和 TY 能匹配但因 两边颜色冲突，需要手动处理的货号
     private List<String> excludeArtNoList;
 
 }

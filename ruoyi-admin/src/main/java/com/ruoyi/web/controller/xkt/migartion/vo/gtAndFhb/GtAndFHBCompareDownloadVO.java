@@ -1,4 +1,4 @@
-package com.ruoyi.web.controller.xkt.migartion.vo;
+package com.ruoyi.web.controller.xkt.migartion.vo.gtAndFhb;
 
 import com.ruoyi.common.annotation.Excel;
 import io.swagger.annotations.ApiModel;
