@@ -141,10 +141,10 @@ public class StoreController extends XktBaseController {
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')")
-    @ApiOperation(value = "获取档口首页 今日商品销售额前5 ", httpMethod = "GET", response = R.class)
-    @GetMapping(value = "/index/today/prod/sale/top5/{storeId}")
-    public R<StoreIndexTodaySaleTop5ResVO> indexTodayProdSaleRevenueTop5(@PathVariable Long storeId) {
-        return R.ok(BeanUtil.toBean(storeService.indexTodayProdSaleRevenueTop5(storeId), StoreIndexTodaySaleTop5ResVO.class));
+    @ApiOperation(value = "获取档口首页 今日商品销售额top ", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/index/today/prod/sale/top/{storeId}")
+    public R<StoreIndexTodaySaleTop5ResVO> indexTodayProdSaleRevenueTop(@PathVariable Long storeId) {
+        return R.ok(BeanUtil.toBean(storeService.indexTodayProdSaleRevenueTop(storeId, 8), StoreIndexTodaySaleTop5ResVO.class));
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')")

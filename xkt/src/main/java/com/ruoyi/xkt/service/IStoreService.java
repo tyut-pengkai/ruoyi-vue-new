@@ -170,18 +170,11 @@ public interface IStoreService {
     /**
      * 获取今日商品销售额前5
      *
-     * @param storeId 档口ID
+     * @param storeId  档口ID
+     * @param topCount 返回的数量
      * @return StoreIndexTodaySaleResDTO
      */
-    StoreIndexTodaySaleTop5ResDTO indexTodayProdSaleRevenueTop5(Long storeId);
-
-    /**
-     * 档口状态
-     *
-     * @param storeId
-     * @return
-     */
-    Integer getStoreStatus(Long storeId);
+    StoreIndexTodaySaleTop5ResDTO indexTodayProdSaleRevenueTop(Long storeId, Integer topCount);
 
     /**
      * 更新档口库存系统
@@ -201,8 +194,8 @@ public interface IStoreService {
     /**
      * 获取档口库存系统
      *
-     * @return
-     * @param storeId
+     * @param storeId 档口ID
+     * @return Integer
      */
     Integer getStockSys(Long storeId);
 }

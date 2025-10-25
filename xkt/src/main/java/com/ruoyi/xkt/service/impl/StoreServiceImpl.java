@@ -363,7 +363,7 @@ public class StoreServiceImpl implements IStoreService {
      */
     @Override
     @Transactional(readOnly = true)
-    public StoreIndexTodaySaleTop5ResDTO indexTodayProdSaleRevenueTop5(Long storeId) {
+    public StoreIndexTodaySaleTop5ResDTO indexTodayProdSaleRevenueTop(Long storeId, Integer topCount) {
         List<StoreSaleDetail> detailList = this.saleDetailMapper.selectList(new LambdaQueryWrapper<StoreSaleDetail>()
                 .eq(StoreSaleDetail::getStoreId, storeId).eq(StoreSaleDetail::getDelFlag, Constants.UNDELETED)
                 .eq(StoreSaleDetail::getVoucherDate, java.sql.Date.valueOf(LocalDate.now())));
@@ -386,16 +386,11 @@ public class StoreServiceImpl implements IStoreService {
         // 总的金额
         final BigDecimal totalAmount = detailList.stream().map(StoreSaleDetail::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
         // 销售额排名前5的列表
-        List<StoreIndexTodaySaleTop5ResDTO.SITSProdSaleDTO> top5List = saleList.stream().sorted(Comparator.comparing(StoreIndexTodaySaleTop5ResDTO.SITSProdSaleDTO::getSaleAmount).reversed()).limit(5).collect(Collectors.toList());
+        List<StoreIndexTodaySaleTop5ResDTO.SITSProdSaleDTO> top5List = saleList.stream()
+                .sorted(Comparator.comparing(StoreIndexTodaySaleTop5ResDTO.SITSProdSaleDTO::getSaleAmount).reversed()).limit(topCount).collect(Collectors.toList());
         // 其它款式的销售额
         final BigDecimal otherAmount = totalAmount.subtract(top5List.stream().map(StoreIndexTodaySaleTop5ResDTO.SITSProdSaleDTO::getSaleAmount).reduce(BigDecimal.ZERO, BigDecimal::add));
         return new StoreIndexTodaySaleTop5ResDTO().setStoreId(storeId).setOtherAmount(otherAmount).setSaleList(top5List);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public Integer getStoreStatus(Long storeId) {
-        return Optional.ofNullable(storeMapper.selectById(storeId)).map(Store::getStoreStatus).orElse(null);
     }
 
     @Override
