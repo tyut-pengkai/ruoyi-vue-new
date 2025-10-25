@@ -70,10 +70,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
         if (CollectionUtils.isEmpty(homeList)) {
             return new StoreHomeDecorationResDTO();
         }
-        final List<Long> fileIdList = homeList.stream().map(StoreHomepage::getFileId).collect(Collectors.toList());
-        if (CollectionUtils.isEmpty(fileIdList)) {
-            return new StoreHomeDecorationResDTO();
-        }
+        final List<Long> fileIdList = homeList.stream().map(StoreHomepage::getFileId).filter(ObjectUtils::isNotEmpty).collect(Collectors.toList());
         List<SysFile> fileList = Optional.ofNullable(this.fileMapper.selectList(new LambdaQueryWrapper<SysFile>()
                         .in(SysFile::getId, fileIdList).eq(SysFile::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("文件不存在", HttpStatus.ERROR));
@@ -100,11 +97,13 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
         List<StoreHomeDecorationResDTO.DecorationDTO> bigBannerList = homeList.stream().filter(x -> Objects.equals(x.getFileType(), HomepageType.SLIDING_PICTURE.getValue()))
                 .map(x -> {
                     StoreHomeDecorationResDTO.DecorationDTO decorationDTO = BeanUtil.toBean(x, StoreHomeDecorationResDTO.DecorationDTO.class)
-                            .setBizName((Objects.equals(x.getJumpType(), HomepageJumpType.JUMP_PRODUCT.getValue()))
-                                    ? (finalStoreProdMap.containsKey(x.getBizId()) ? finalStoreProdMap.get(x.getBizId()).getProdArtNum() : null)
-                                    : (ObjectUtils.isEmpty(x.getBizId()) ? null : store.getStoreName()));
-                    if (fileMap.containsKey(x.getFileId())) {
-                        decorationDTO.setFileType(x.getFileType()).setFileUrl(fileMap.get(x.getFileId()).getFileUrl());
+                            .setFileUrl(fileMap.containsKey(x.getFileId()) ? fileMap.get(x.getFileId()).getFileUrl() : "");
+                    // 跳转到商品
+                    if (Objects.equals(x.getJumpType(), HomepageJumpType.JUMP_PRODUCT.getValue())) {
+                        decorationDTO.setBizName(finalStoreProdMap.containsKey(x.getBizId()) ? finalStoreProdMap.get(x.getBizId()).getProdArtNum() : "");
+                        // 跳转到档口首页
+                    } else if (Objects.equals(x.getJumpType(), HomepageJumpType.JUMP_STORE.getValue())) {
+                        decorationDTO.setBizName(ObjectUtils.isEmpty(x.getBizId()) ? "" : store.getStoreName());
                     }
                     return decorationDTO;
                 }).collect(Collectors.toList());
