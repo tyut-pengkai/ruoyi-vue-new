@@ -82,12 +82,6 @@ public class GtAndFhbBizController extends BaseController {
     final IPictureService pictureService;
     final FsNotice fsNotice;
 
-
-    // TODO 提供导出测试环境数据的接口，不然迁移到生产还要重新来一遍
-    // TODO 提供导出测试环境数据的接口，不然迁移到生产还要重新来一遍
-    // TODO 提供导出测试环境数据的接口，不然迁移到生产还要重新来一遍
-
-
     /**
      * step1
      */

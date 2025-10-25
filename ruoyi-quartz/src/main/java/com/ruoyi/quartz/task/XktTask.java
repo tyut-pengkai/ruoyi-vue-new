@@ -10,6 +10,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
+import co.elastic.clients.elasticsearch.core.bulk.BulkResponseItem;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruoyi.common.constant.CacheConstants;
@@ -438,6 +439,9 @@ public class XktTask {
         // 先删除所有的商品标签，保证数据唯一性
         List<DailyProdTag> existList = this.dailyProdTagMapper.selectList(new LambdaQueryWrapper<DailyProdTag>()
                 .eq(DailyProdTag::getDelFlag, Constants.UNDELETED));
+        // 已存在于ES中的标签
+        Map<Long, List<String>> existProdTagMap = CollectionUtils.isEmpty(existList) ? new HashMap<>()
+                :existList.stream().collect(Collectors.toMap(DailyProdTag::getStoreProdId, x -> new ArrayList<>(), (s1, s2) -> s2));
         if (CollectionUtils.isNotEmpty(existList)) {
             this.dailyProdTagMapper.deleteByIds(existList.stream().map(DailyProdTag::getId).collect(Collectors.toList()));
         }
@@ -474,8 +478,16 @@ public class XktTask {
             return;
         }
         this.dailyProdTagMapper.insert(tagList);
+        // 最新的待更新的商品标签列表
+        Map<Long, List<String>> tagMap = tagList.stream().collect(Collectors
+                .groupingBy(DailyProdTag::getStoreProdId, Collectors.mapping(DailyProdTag::getTag, Collectors.toList())));
+        existProdTagMap.forEach((storeProdId, tags) -> {
+            if (!tagMap.containsKey(storeProdId)) {
+                tagMap.put(storeProdId, tags);
+            }
+        });
         // 更新商品的标签到ES
-        this.updateESProdTags(tagList);
+        this.updateESProdTags(tagMap);
     }
 
     /**
@@ -794,11 +806,17 @@ public class XktTask {
         try {
             // 调用bulk方法执行批量更新操作
             BulkResponse bulkResponse = esClientWrapper.getEsClient().bulk(e -> e.index(Constants.ES_IDX_PRODUCT_INFO).operations(list));
-            log.info("bulkResponse.result() = {}", bulkResponse.items());
-        } catch (IOException | RuntimeException e) {
-            // 记录日志并抛出或处理异常
-            log.error("向ES更新档口权重失败，商品ID: {}, 错误信息: {}", storeProdList.stream().map(StoreProduct::getId).collect(Collectors.toList()), e.getMessage());
-            throw e; // 或者做其他补偿处理，比如异步重试
+            log.info("定时任务，批量更新档口权重到 ES 成功的 id列表: {}", bulkResponse.items().stream().map(BulkResponseItem::id).collect(Collectors.toList()));
+            // 有哪些没执行成功的，需要发飞书通知
+            List<String> successIdList = bulkResponse.items().stream().map(BulkResponseItem::id).collect(Collectors.toList());
+            List<String> unExeIdList = storeProdList.stream().map(String::valueOf).filter(x -> !successIdList.contains(x)).collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(unExeIdList)) {
+                fsNotice.sendMsg2DefaultChat("定时任务，批量更新档口权重到 ES 失败", "以下storeProdId未执行成功: " + unExeIdList);
+            }
+        } catch (Exception e) {
+            log.error("定时任务，批量更新档口权重到 ES 失败", e);
+            fsNotice.sendMsg2DefaultChat("全部失败，定时任务批量更新档口权重到 ES 失败",
+                    storeProdList.stream().map(StoreProduct::getId).map(String::valueOf).collect(Collectors.joining(",")));
         }
     }
 
@@ -922,17 +940,25 @@ public class XktTask {
         }
         // 执行批量插入
         try {
-            BulkResponse response = esClientWrapper.getEsClient().bulk(b -> b.index(Constants.ES_IDX_PRODUCT_INFO).operations(bulkOperations));
-            log.info("批量插入到 ES 成功，共处理 {} 条记录", response.items().size());
+            BulkResponse bulkResponse = esClientWrapper.getEsClient().bulk(b -> b.index(Constants.ES_IDX_PRODUCT_INFO).operations(bulkOperations));
+            log.info("定时发布商品，批量新增商品到 ES 成功的 id列表: {}", bulkResponse.items().stream().map(BulkResponseItem::id).collect(Collectors.toList()));
+            // 有哪些没执行成功的，需要发飞书通知
+            List<String> successIdList = bulkResponse.items().stream().map(BulkResponseItem::id).collect(Collectors.toList());
+            List<String> unExeIdList = unPublicList.stream().map(String::valueOf).filter(x -> !successIdList.contains(x)).collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(unExeIdList)) {
+                fsNotice.sendMsg2DefaultChat("定时发布商品，批量新增商品到 ES 失败", "以下storeProdId未执行成功: " + unExeIdList);
+            }
         } catch (Exception e) {
-            log.error("批量插入到 ES 失败", e);
+            log.error("定时发布商品，批量新增商品到 ES 失败", e);
+            fsNotice.sendMsg2DefaultChat("定时发布商品，批量新增商品到 ES 失败",
+                    unPublicList.stream().map(StoreProduct::getId).map(String::valueOf).collect(Collectors.joining(",")));
         }
         for (StoreProduct product : unPublicList) {
             List<String> mainPicUrlList = mainPicMap.get(product.getId());
             if (CollUtil.isEmpty(mainPicUrlList)) {
                 return;
             }
-            this.sync2ImgSearchServer(product.getId(), mainPicUrlList, true);
+            this.sync2ImgSearchServer(product.getId(), mainPicUrlList);
         }
     }
 
@@ -1534,26 +1560,35 @@ public class XktTask {
     /**
      * 更新商品的标签到ES
      *
-     * @param tagList 标签集合
-     * @throws IOException
+     * @param prodTagMap 标签map
      */
-    private void updateESProdTags(List<DailyProdTag> tagList) throws IOException {
+    private void updateESProdTags(Map<Long, List<String>> prodTagMap) {
         // 构建一个批量数据集合
         List<BulkOperation> list = new ArrayList<>();
-        tagList.stream().collect(Collectors.groupingBy(DailyProdTag::getStoreProdId))
-                .forEach((storeProdId, tags) -> {
-                    // 构建部分文档更新请求
-                    list.add(new BulkOperation.Builder().update(u -> u
-                                    .action(a -> a.doc(new HashMap<String, Object>() {{
-                                        put("tags", tags.stream().sorted(Comparator.comparing(x -> x.getType())).map(DailyProdTag::getTag).collect(Collectors.toList()));
-                                    }}))
-                                    .id(String.valueOf(storeProdId))
-                                    .index(Constants.ES_IDX_PRODUCT_INFO))
-                            .build());
-                });
-        // 调用bulk方法执行批量更新操作
-        BulkResponse bulkResponse = esClientWrapper.getEsClient().bulk(e -> e.index(Constants.ES_IDX_PRODUCT_INFO).operations(list));
-        System.out.println("bulkResponse.items() = " + bulkResponse.items());
+        prodTagMap.forEach((storeProdId, updateTags) -> {
+            // 构建部分文档更新请求
+            list.add(new BulkOperation.Builder().update(u -> u
+                            .action(a -> a.doc(new HashMap<String, Object>() {{
+                                put("tags", updateTags);
+                            }}))
+                            .id(String.valueOf(storeProdId))
+                            .index(Constants.ES_IDX_PRODUCT_INFO))
+                    .build());
+        });
+        try {
+            // 调用bulk方法执行批量更新操作
+            BulkResponse bulkResponse = esClientWrapper.getEsClient().bulk(e -> e.index(Constants.ES_IDX_PRODUCT_INFO).operations(list));
+            log.info("批量更新商品标签到 ES 成功的 id列表: {}", bulkResponse.items().stream().map(BulkResponseItem::id).collect(Collectors.toList()));
+            // 有哪些没执行成功的，需要发飞书通知
+            List<String> successIdList = bulkResponse.items().stream().map(BulkResponseItem::id).collect(Collectors.toList());
+            List<String> unExeIdList = prodTagMap.keySet().stream().map(String::valueOf).filter(x -> !successIdList.contains(x)).collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(unExeIdList)) {
+                fsNotice.sendMsg2DefaultChat("定时任务批量更新商品标签到 ES 失败", "以下storeProdId未执行成功: " + unExeIdList);
+            }
+        } catch (Exception e) {
+            log.error("定时任务批量更新标签到 ES 失败", e);
+            fsNotice.sendMsg2DefaultChat("全部失败，定时任务批量更新商品标签到 ES 失败", prodTagMap.keySet().toString());
+        }
     }
 
     /**
@@ -1577,21 +1612,14 @@ public class XktTask {
      *
      * @param storeProductId
      * @param picKeys
-     * @param async
      */
-    private void sync2ImgSearchServer(Long storeProductId, List<String> picKeys, boolean async) {
-        if (async) {
-            ThreadUtil.execAsync(() -> {
-                        ProductPicSyncResultDTO r =
-                                pictureService.sync2ImgSearchServer(new ProductPicSyncDTO(storeProductId, picKeys));
-                        log.info("商品图片同步至搜图服务器: id: {}, result: {}", storeProductId, JSONUtil.toJsonStr(r));
-                    }
-            );
-        } else {
-            ProductPicSyncResultDTO r =
-                    pictureService.sync2ImgSearchServer(new ProductPicSyncDTO(storeProductId, picKeys));
-            log.info("商品图片同步至搜图服务器: id: {}, result: {}", storeProductId, JSONUtil.toJsonStr(r));
-        }
+    private void sync2ImgSearchServer(Long storeProductId, List<String> picKeys) {
+        ThreadUtil.execAsync(() -> {
+                    ProductPicSyncResultDTO r =
+                            pictureService.sync2ImgSearchServer(new ProductPicSyncDTO(storeProductId, picKeys));
+                    log.info("商品图片同步至搜图服务器: id: {}, result: {}", storeProductId, JSONUtil.toJsonStr(r));
+                }
+        );
     }
 
     /**

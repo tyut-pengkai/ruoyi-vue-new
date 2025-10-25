@@ -22,13 +22,12 @@ import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.exception.user.CaptchaException;
-import com.ruoyi.common.exception.user.CaptchaExpireException;
 import com.ruoyi.common.utils.AdValidator;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.HtmlValidator;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.es.EsClientWrapper;
+import com.ruoyi.framework.notice.fs.FsNotice;
 import com.ruoyi.framework.oss.OSSClientWrapper;
 import com.ruoyi.system.domain.dto.productCategory.ProdCateDTO;
 import com.ruoyi.xkt.domain.*;
@@ -109,6 +108,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
     final UserSubscriptionsMapper userSubMapper;
     final OSSClientWrapper ossClient;
     final TencentAuthManager tencentAuthManager;
+    final FsNotice fsNotice;
 
 
     /**
@@ -232,7 +232,6 @@ public class StoreProductServiceImpl implements IStoreProductService {
         }
         return count;
     }
-
 
     /**
      * 修改档口商品
@@ -691,7 +690,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
     /**
      * 模糊查询系统所有商品
      *
-     * @param storeId 档口ID
+     * @param storeId    档口ID
      * @param prodArtNum 货号
      * @return StoreProdFuzzyResDTO
      */
@@ -1098,19 +1097,17 @@ public class StoreProductServiceImpl implements IStoreProductService {
      * @param storeProd    档口产品
      * @param storeProdDTO 档口产品新增入参
      * @param storeName    档口名称
-     * @throws IOException
      */
-    private void createESDoc(StoreProduct storeProd, StoreProdDTO storeProdDTO, String storeName) throws IOException {
+    private void createESDoc(StoreProduct storeProd, StoreProdDTO storeProdDTO, String storeName) {
         ESProductDTO esProductDTO = this.getESDTO(storeProd, storeProdDTO, storeName);
         try {
             // 向索引中添加数据
             CreateResponse createResponse = esClientWrapper.getEsClient().create(e -> e.index(Constants.ES_IDX_PRODUCT_INFO)
                     .id(storeProd.getId().toString()).document(esProductDTO));
             log.info("createResponse.result() = {}", createResponse.result());
-        } catch (IOException | RuntimeException e) {
-            // 记录日志并抛出或处理异常
-            log.error("向ES写入文档失败，商品ID: {}, 错误信息: {}", storeProd.getId(), e.getMessage(), e);
-            throw e; // 或者做其他补偿处理，比如异步重试
+        } catch (Exception e) {
+            fsNotice.sendMsg2DefaultChat("新增商品，同步到ES 失败", "storeId:" + storeProd.getStoreId() + " prodArtNum: " + storeProd.getProdArtNum());
+            throw new ServiceException("新增商品，同步到ES 失败，storeId:" + storeProd.getStoreId() + " prodArtNum: " + storeProd.getProdArtNum(), HttpStatus.ERROR);
         }
     }
 
@@ -1120,17 +1117,16 @@ public class StoreProductServiceImpl implements IStoreProductService {
      * @param storeProd 档口商品
      * @param updateDTO 档口商品更新入参
      * @param storeName 档口名称
-     * @throws IOException
      */
-    private void updateESDoc(StoreProduct storeProd, StoreProdDTO updateDTO, String storeName) throws IOException {
+    private void updateESDoc(StoreProduct storeProd, StoreProdDTO updateDTO, String storeName) {
         ESProductDTO esProductDTO = this.getESDTO(storeProd, updateDTO, storeName);
         try {
             UpdateResponse<ESProductDTO> updateResponse = esClientWrapper.getEsClient().update(u -> u
                     .index(Constants.ES_IDX_PRODUCT_INFO).doc(esProductDTO).id(storeProd.getId().toString()), ESProductDTO.class);
             log.info("updateResponse.result() = {}", updateResponse.result());
-        } catch (IOException | RuntimeException e) {
-            log.error("更新商品[{}]到ES失败: {}", storeProd.getId(), e.getMessage(), e);
-            throw e; // 或者根据业务需求进行重试、异步补偿等处理
+        } catch (Exception e) {
+            fsNotice.sendMsg2DefaultChat("更新商品，同步到ES 失败", "storeProdId: " + storeProd.getId());
+            throw new ServiceException("更新商品，同步到ES 失败，storeProdId:" + storeProd.getId(), HttpStatus.ERROR);
         }
     }
 
@@ -1523,25 +1519,6 @@ public class StoreProductServiceImpl implements IStoreProductService {
             cateAttrMap.put(Constants.CATE_RELATE_MAP.get(SUITABLE_PERSON), cateAttr.getSuitablePerson());
         }
         return cateAttrMap;
-    }
-
-    /**
-     * 校验验证码
-     *
-     * @param code 验证码
-     * @param uuid 唯一标识
-     * @return 结果
-     */
-    private void validateCaptcha(String code, String uuid) {
-        String verifyKey = CacheConstants.CAPTCHA_CODE_KEY + uuid;
-        String captcha = redisCache.getCacheObject(verifyKey);
-        redisCache.deleteObject(verifyKey);
-        if (captcha == null) {
-            throw new CaptchaExpireException();
-        }
-        if (!StrUtil.emptyIfNull(code).equalsIgnoreCase(captcha)) {
-            throw new CaptchaException();
-        }
     }
 
 
