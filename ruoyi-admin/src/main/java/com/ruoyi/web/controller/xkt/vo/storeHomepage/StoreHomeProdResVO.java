@@ -39,8 +39,8 @@ public class StoreHomeProdResVO {
         private Long bizId;
         @ApiModelProperty(value = "业务名称")
         private String bizName;
-        @ApiModelProperty(value = "跳转类型 1. 不跳转 2. 跳转店铺 3. 跳转商品")
-        private Integer jumpType;
+        @ApiModelProperty(value = "1.档口（推广图） 2.商品  10.不跳转")
+        private Integer displayType;
         @ApiModelProperty(value = "文件名称")
         private String fileName;
         @ApiModelProperty(value = "文件路径")

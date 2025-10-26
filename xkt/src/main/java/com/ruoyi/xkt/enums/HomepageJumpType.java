@@ -11,12 +11,12 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum HomepageJumpType {
 
-    // 不跳转
-    NO_JUMP(1, "不跳转"),
-    // 跳转店铺
-    JUMP_STORE(2, "跳转店铺"),
+    // 跳转档口
+    JUMP_STORE(1, "跳转档口"),
     // 跳转商品
-    JUMP_PRODUCT(3, "跳转商品"),
+    JUMP_PRODUCT(2, "跳转商品"),
+    // 不跳转
+    NO_JUMP(10, "不跳转"),
 
     ;
 

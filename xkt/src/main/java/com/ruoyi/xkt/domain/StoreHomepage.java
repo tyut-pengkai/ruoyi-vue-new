@@ -35,14 +35,14 @@ public class StoreHomepage extends XktBaseEntity {
     private Long storeId;
 
     /**
-     * 业务ID 1.不跳转 为null 2.跳转店铺 为storeId 3.跳转商品 为storeProdId
+     * 业务ID  不跳转 为null ；跳转店铺 为storeId ；跳转商品 为storeProdId
      */
     private Long bizId;
 
     /**
-     * 跳转类型 1.不跳转 2.跳转店铺 3.跳转商品
+     * 跳转类型 1. 推广图（档口） 2.商品  10.不跳转
      */
-    private Integer jumpType;
+    private Integer displayType;
 
     /**
      * 档口各位置类型

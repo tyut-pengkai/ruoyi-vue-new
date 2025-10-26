@@ -154,12 +154,6 @@ public class GtOnlyBizController extends BaseController {
                 .eq(StoreColor::getStoreId, initVO.getStoreId()).eq(StoreColor::getDelFlag, Constants.UNDELETED));
         Map<String, StoreColor> storeColorMap = storeColorList.stream().collect(Collectors.toMap(StoreColor::getColorName, x -> x, (v1, v2) -> v2));
 
-
-        // TODO 临时处理，10-11之后的数据
-        // TODO 临时处理，10-11之后的数据
-        // TODO 临时处理，10-11之后的数据
-        storeProdList = storeProdList.stream().filter(x -> x.getCreateTime().after(DateUtils.parseDate("2025-10-11 00:00:00"))).collect(Collectors.toList());
-
         // 获取GT所有的货品
         List<GtProdSkuVO> gtOnSaleCacheList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_GT_SALE_BASIC_KEY + initVO.getUserId()), new ArrayList<>());
@@ -219,12 +213,6 @@ public class GtOnlyBizController extends BaseController {
         List<StoreProductColor> prodColorList = this.prodColorMapper.selectList(new LambdaQueryWrapper<StoreProductColor>()
                 .eq(StoreProductColor::getStoreId, initVO.getStoreId()).eq(StoreProductColor::getDelFlag, Constants.UNDELETED));
 
-        // TODO 临时处理，10-11之后的数据
-        // TODO 临时处理，10-11之后的数据
-        // TODO 临时处理，10-11之后的数据
-        storeProdList = storeProdList.stream().filter(x -> x.getCreateTime().after(DateUtils.parseDate("2025-10-11 00:00:00"))).collect(Collectors.toList());
-        prodColorList = prodColorList.stream().filter(x -> x.getCreateTime().after(DateUtils.parseDate("2025-10-11 00:00:00"))).collect(Collectors.toList());
-
         // 只需要初始化档口商品颜色库存即可，没有客户优惠
         Map<Long, StoreProduct> storeProdMap = storeProdList.stream().collect(Collectors.toMap(StoreProduct::getId, x -> x));
         List<StoreProductStock> prodStockList = prodColorList.stream().map(x -> {
@@ -248,13 +236,6 @@ public class GtOnlyBizController extends BaseController {
         // 将公共的商品同步到ES
         List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getDelFlag, Constants.UNDELETED).eq(StoreProduct::getStoreId, storeId));
-
-        // TODO 临时处理，10-11之后的数据
-        // TODO 临时处理，10-11之后的数据
-        // TODO 临时处理，10-11之后的数据
-        storeProdList = storeProdList.stream().filter(x -> x.getCreateTime().after(DateUtils.parseDate("2025-10-11 00:00:00"))).collect(Collectors.toList());
-
-
         if (CollectionUtils.isEmpty(storeProdList)) {
             return R.fail();
         }

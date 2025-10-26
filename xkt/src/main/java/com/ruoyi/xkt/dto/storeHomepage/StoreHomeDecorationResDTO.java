@@ -34,8 +34,8 @@ public class StoreHomeDecorationResDTO {
         private Long bizId;
         @ApiModelProperty(value = "业务名称")
         private String bizName;
-        @ApiModelProperty(value = "文件大小")
-        private Integer jumpType;
+        @ApiModelProperty(value = "1.档口（推广图） 2.商品  10.不跳转")
+        private Integer displayType;
         @ApiModelProperty(value = "文件路径")
         private String fileUrl;
         @ApiModelProperty(value = "文件类型 1轮播大图")

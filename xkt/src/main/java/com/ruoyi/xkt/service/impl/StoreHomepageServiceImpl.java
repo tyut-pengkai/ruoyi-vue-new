@@ -77,7 +77,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
         Map<Long, SysFile> fileMap = fileList.stream().collect(Collectors.toMap(SysFile::getId, Function.identity()));
         // 档口商品ID列表
         List<Long> storeProdIdList = homeList.stream()
-                .filter(x -> Objects.equals(x.getJumpType(), HomepageJumpType.JUMP_PRODUCT.getValue())).map(StoreHomepage::getBizId).collect(Collectors.toList());
+                .filter(x -> Objects.equals(x.getDisplayType(), HomepageJumpType.JUMP_PRODUCT.getValue())).map(StoreHomepage::getBizId).collect(Collectors.toList());
         // 所有的档口商品ID
         List<StoreProduct> storeProdList = Optional.ofNullable(this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
                         .eq(StoreProduct::getStoreId, storeId).in(StoreProduct::getId, storeProdIdList).eq(StoreProduct::getDelFlag, Constants.UNDELETED)))
@@ -95,10 +95,10 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                     StoreHomeDecorationResDTO.DecorationDTO decorationDTO = BeanUtil.toBean(x, StoreHomeDecorationResDTO.DecorationDTO.class)
                             .setFileType(x.getFileType()).setFileUrl(fileMap.containsKey(x.getFileId()) ? fileMap.get(x.getFileId()).getFileUrl() : "");
                     // 跳转到商品
-                    if (Objects.equals(x.getJumpType(), HomepageJumpType.JUMP_PRODUCT.getValue())) {
+                    if (Objects.equals(x.getDisplayType(), HomepageJumpType.JUMP_PRODUCT.getValue())) {
                         decorationDTO.setBizName(storeProdMap.containsKey(x.getBizId()) ? storeProdMap.get(x.getBizId()).getProdArtNum() : "");
                         // 跳转到档口首页
-                    } else if (Objects.equals(x.getJumpType(), HomepageJumpType.JUMP_STORE.getValue())) {
+                    } else if (Objects.equals(x.getDisplayType(), HomepageJumpType.JUMP_STORE.getValue())) {
                         decorationDTO.setBizName(ObjectUtils.isEmpty(x.getBizId()) ? "" : store.getStoreName());
                     }
                     return decorationDTO;
