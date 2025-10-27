@@ -7,9 +7,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectTopLeftList">
         SELECT
             sh.biz_id,
-            sh.jump_type,
+            sh.display_type,
             sh.order_num,
-            CASE WHEN sh.jump_type = 3 AND sh.file_id IS NULL THEN
+            CASE WHEN sh.display_type = 2 AND sh.file_id IS NULL THEN
                     (SELECT sf1.file_url FROM store_product_file spf JOIN sys_file sf1 ON spf.file_id = sf1.id AND spf.file_type = 1 AND spf.order_num = 1
                         WHERE spf.del_flag = 0 AND spf.store_prod_id = sh.biz_id)
                 ELSE sf.file_url
