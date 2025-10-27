@@ -302,7 +302,7 @@ public class SysLoginController {
         UserInfo infoDTO = userService.getUserById(loginUser.getUserId());
         for (RoleInfo roleInfo : CollUtil.emptyIfNull(infoDTO.getRoles())) {
             if (roleInfo.getRoleId().equals(vo.getRoleId())
-                    && roleInfo.getRelStoreId().equals(vo.getRelStoreId())) {
+                    && Objects.equals(roleInfo.getRelStoreId(), vo.getRelStoreId())) {
                 //切换
                 loginUser.setCurrentRoleId(roleInfo.getRoleId());
                 loginUser.setCurrentStoreId(roleInfo.getRelStoreId());
