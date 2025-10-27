@@ -1,6 +1,8 @@
 package com.ruoyi.common.core.redis;
 
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Component;
 
@@ -193,6 +195,26 @@ public class RedisCache
             redisTemplate.opsForHash().putAll(key, dataMap);
         }
     }
+
+    /**
+     * 批量缓存多个 Map 到 Redis（使用管道）
+     *
+     * @param keyValueMap 键值对，key 为 Redis 键，value 为对应的 Map 数据
+     */
+    public <T> void setCacheMapBatch(final Map<String, Map<String, T>> keyValueMap) {
+        redisTemplate.executePipelined(new SessionCallback<Object>() {
+            @Override
+            public <K, V> Object execute(RedisOperations<K, V> operations) throws DataAccessException {
+                keyValueMap.forEach((redisKey, dataMap) -> {
+                    if (MapUtils.isNotEmpty(dataMap)) {
+                        redisTemplate.opsForHash().putAll(redisKey, dataMap);
+                    }
+                });
+                return null;
+            }
+        });
+    }
+
 
     /**
      * 获得缓存的Map

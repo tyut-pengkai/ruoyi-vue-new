@@ -1,21 +1,23 @@
 package com.ruoyi.web.controller.xkt.migartion;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.web.controller.xkt.migartion.vo.gt.GtAttrVO;
-import com.ruoyi.web.controller.xkt.migartion.vo.gt.GtCateVO;
-import com.ruoyi.web.controller.xkt.migartion.vo.gt.GtProdSkuVO;
-import com.ruoyi.web.controller.xkt.migartion.vo.gt.GtProdVO;
+import com.ruoyi.web.controller.xkt.migartion.vo.gt.*;
 import com.ruoyi.xkt.mapper.SysProductCategoryMapper;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +38,7 @@ public class GtController extends BaseController {
 
     final RedisCache redisCache;
     final SysProductCategoryMapper prodCateMapper;
+    final ObjectMapper objectMapper;
 
     /**
      * step1
@@ -122,11 +125,54 @@ public class GtController extends BaseController {
         return R.ok();
     }
 
+
     /**
      * step4
      */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @PostMapping("/attr/cache/{user_id}/{product_id}")
+    @PostMapping("/attr/cache/{userId}")
+    public R createAttrCache(@PathVariable Integer userId, @Validated @RequestBody GtAttrQueryVO attrQueryVO) {
+        // 获取GT所有在售商品
+        List<GtProdSkuVO> gtOnSaleList = ObjectUtils.defaultIfNull(redisCache
+                .getCacheObject(CacheConstants.MIGRATION_GT_SALE_BASIC_KEY + userId), new ArrayList<>());
+        if (CollectionUtils.isEmpty(gtOnSaleList)) {
+            throw new ServiceException("商品列表为空", HttpStatus.ERROR);
+        }
+        if (attrQueryVO.getUrlPrefix().trim().contains("?")) {
+            throw new ServiceException("urlPrefix不能包含?");
+        }
+        if (attrQueryVO.getRefererPrefix().trim().contains("?")) {
+            throw new ServiceException("refererPrefix不能包含?");
+        }
+        List<Integer> gtProdIdList = gtOnSaleList.stream().map(GtProdSkuVO::getProduct_id).distinct().collect(Collectors.toList());
+        Map<Integer, String> gtRelateMap = gtOnSaleList.stream().collect(Collectors.toMap(GtProdSkuVO::getProduct_id, GtProdSkuVO::getArticle_number, (v1, v2) -> v2));
+        Random random = new Random();
+        List<Integer> errArtNoList = new ArrayList<>();
+        final Integer total = gtProdIdList.size();
+        Map<String, Map<String, String>> multiKeyMap = new HashMap<>();
+        for (int i = 0; i < gtProdIdList.size(); i++) {
+            Map<String, String> attrMap = new HashMap<>();
+            try {
+                // 添加随机延迟（6-20秒）
+                if (i > 0) {
+                    Thread.sleep((random.nextInt(15) + 6) * 1000L);
+                }
+                sendRequest(attrQueryVO, gtProdIdList.get(i), attrMap, errArtNoList, i);
+            } catch (Exception e) {
+                System.out.println("请求失败: " + e.getMessage());
+            }
+            System.out.println("总共: " +  total + " ,目前正在执行: ==> " + gtProdIdList.get(i) + " : " + (i + 1));
+            multiKeyMap.put(CacheConstants.MIGRATION_GT_SALE_ATTR_KEY + userId + "_" + gtProdIdList.get(i), attrMap);
+        }
+        redisCache.setCacheMapBatch(multiKeyMap);
+        return CollectionUtils.isNotEmpty(errArtNoList) ? R.fail(errArtNoList.stream().map(gtRelateMap::get).collect(Collectors.toList())) : R.ok();
+    }
+
+    /**
+     * step4.5 补偿
+     */
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @PostMapping("/compensation/attr/cache/{user_id}/{product_id}")
     public R<Integer> createAttrCache(@PathVariable(value = "user_id") Integer user_id, @PathVariable("product_id") Integer product_id,
                                       @Validated @RequestBody GtAttrVO attrVO) {
         // 判断缓存中是否有该product_id
@@ -150,6 +196,8 @@ public class GtController extends BaseController {
         return R.ok();
     }
 
+
+
     /**
      * step5
      */
@@ -166,7 +214,6 @@ public class GtController extends BaseController {
 
         return R.ok();
     }
-
 
     /**
      * Unicode解码方法
@@ -205,6 +252,47 @@ public class GtController extends BaseController {
             }
         }
         return result.toString();
+    }
+
+    private void sendRequest(GtAttrQueryVO attrQueryVO, Integer gtProdId, Map<String, String> attrMap, List<Integer> errArtNoList, int index) {
+        // 创建HttpClient（自动管理连接池）
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
+            HttpGet request = new HttpGet(attrQueryVO.getUrlPrefix() + "?product_id=" + gtProdId);
+            request.setHeader("Accept-Encoding", attrQueryVO.getAccept().trim());
+            request.setHeader("Accept", attrQueryVO.getAccept().trim());
+            request.setHeader("Accept-Language", attrQueryVO.getAcceptLanguage().trim());
+            request.setHeader("Connection", attrQueryVO.getConnection().trim());
+            request.setHeader("Cookie", attrQueryVO.getCookie().trim());
+            request.setHeader("Host", attrQueryVO.getHost().trim());
+            request.setHeader("Referer", attrQueryVO.getRefererPrefix().trim() + "?product_id=" + gtProdId);
+            request.setHeader("X-Requested-With", attrQueryVO.getRequestedWith().trim());
+            request.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36");
+            // 执行请求
+            String response = client.execute(request, httpResponse -> EntityUtils.toString(httpResponse.getEntity()));
+            try {
+                // 将响应内容转换为GtAttrVO对象
+                GtAttrVO gtAttrVO = objectMapper.readValue(response, GtAttrVO.class);
+                gtAttrVO.getData().forEach((itemId, attr) -> {
+                    // 不处理 multi=1 的属性
+                    if (attr.getMulti() == 1) {
+                        return;
+                    }
+                    // 有值
+                    if (attr.getHas_value() == 1) {
+                        attr.getAttr().stream().filter(x -> x.getChoosed() == 1).forEach(x -> attrMap.put(x.getProps_name(), x.getPropsvalue_name()));
+                    }
+                });
+            } catch (Exception e) {
+                System.err.println("当前执行: ==> " + gtProdId + " : " +  index +" 未获取到!");
+                errArtNoList.add(gtProdId);
+                System.err.println("JSON转换失败: " + e.getMessage());
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            System.err.println("当前执行: ==> " + gtProdId + " : " + "失败!");
+            errArtNoList.add(gtProdId);
+            System.out.println("请求异常: " + e.getMessage());
+        }
     }
 
 
