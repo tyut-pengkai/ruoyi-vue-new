@@ -23,7 +23,9 @@ public class TyProdImportVO {
     private String colorName;
     @Excel(name = "jg")
     private BigDecimal price;
+    @Excel(name = "HPBM")
+    private String hpbm;
     @Excel(name = "SN")
-    private String tySnPrefix;
+    private String sn;
 
 }

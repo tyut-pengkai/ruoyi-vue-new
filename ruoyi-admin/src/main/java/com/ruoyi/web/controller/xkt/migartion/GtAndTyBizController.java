@@ -372,7 +372,7 @@ public class GtAndTyBizController extends BaseController {
                     // 该颜色所有的尺码
                     for (int j = 0; j < Constants.SIZE_LIST.size(); j++) {
                         // TY系统条码前缀
-                        final String otherSnPrefix = tyProdImportVO.getTySnPrefix() + Constants.SIZE_LIST.get(j);
+                        final String otherSnPrefix = tyProdImportVO.getSn() + Constants.SIZE_LIST.get(j);
                         prodColorSizeList.add(new StoreProductColorSize().setSize(Constants.SIZE_LIST.get(j)).setStoreColorId(storeColor.getId())
                                 .setStoreProdId(storeProd.getId()).setPrice(tyProdImportVO.getPrice()).setOtherSnPrefix(otherSnPrefix).setNextSn(0)
                                 .setStandard(gtStandardSizeList.contains(Constants.SIZE_LIST.get(j)) ? 1 : 0));

@@ -6,9 +6,11 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.web.controller.xkt.migartion.vo.CusDiscErrorVO;
+import com.ruoyi.web.controller.xkt.migartion.vo.gt.GtProdSkuVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.ty.TyCusDiscImportVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.ty.TyCusImportVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.ty.TyProdImportVO;
@@ -20,7 +22,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -38,6 +42,47 @@ public class TyController extends BaseController {
     final RedisCache redisCache;
 
     /**
+     * step0
+     */
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @PostMapping("/filter/{userId}/{compareStr}")
+    public void filterUnValidProd(HttpServletResponse response, @PathVariable("userId") Integer userId,
+                                  @PathVariable("compareStr") String compareStr, MultipartFile file) throws IOException {
+        ExcelUtil<TyProdImportVO> util = new ExcelUtil<>(TyProdImportVO.class);
+        List<TyProdImportVO> tyProdVOList = util.importExcel(file.getInputStream());
+        // 获取GT无效的存货并过滤
+        List<GtProdSkuVO> gtOffSaleList = ObjectUtils.defaultIfNull(redisCache
+                .getCacheObject(CacheConstants.MIGRATION_GT_OFF_SALE_BASIC_KEY + userId), new ArrayList<>());
+        List<String> gtOffSaleArtNumList = gtOffSaleList.stream().map(GtProdSkuVO::getArticle_number).distinct().collect(Collectors.toList());
+        List<String> tyProdArtNumList = tyProdVOList.stream().map(TyProdImportVO::getProdArtNum).distinct().collect(Collectors.toList());
+
+        // 找出两个列表的交集
+        List<String> commonArtNumList = tyProdArtNumList.stream().filter(gtOffSaleArtNumList::contains).collect(Collectors.toList());
+        List<String> allMatchArtNumList = new ArrayList<>(commonArtNumList);
+        tyProdArtNumList.stream().filter(x -> x.contains("R")).forEach(x -> {
+            for (String comArtNum : commonArtNumList) {
+                if ( Objects.equals(x, comArtNum + compareStr)) {
+                    System.err.println(x + " : " + comArtNum);
+                    allMatchArtNumList.add(x);
+                    break;
+                }
+            }
+        });
+
+        List<TyProdImportVO> downloadList = tyProdVOList.stream()
+                .filter(x -> ObjectUtils.isNotEmpty(x.getPrice()))
+                .filter(x -> CollectionUtils.isEmpty(allMatchArtNumList) || !allMatchArtNumList.contains(x.getProdArtNum()))
+                .collect(Collectors.toList());
+        ExcelUtil<TyProdImportVO> downloadUtil = new ExcelUtil<>(TyProdImportVO.class);
+        // 设置下载excel名
+        String encodedFileName = URLEncoder.encode("TY过滤GT" + DateUtils.getDate(), "UTF-8").replaceAll("\\+", "%20");
+        response.setHeader("Content-disposition", "attachment;filename=" + encodedFileName + ".xlsx");
+        downloadUtil.exportExcel(response, downloadList, "TY过滤GT");
+    }
+
+
+
+    /**
      * step1
      */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
@@ -49,17 +94,16 @@ public class TyController extends BaseController {
         tyProdVOList = tyProdVOList.stream()
                 // 只导入价格不能为空的存货
                 .filter(x -> ObjectUtils.isNotEmpty(x.getPrice()))
-                // 过滤掉货号为空的存货
-                .filter(x -> StringUtils.isNotBlank(x.getTySnPrefix()))
                 .map(x -> {
                     String prodArtNum = x.getProdArtNum().trim();
                     String colorName = x.getColorName().trim();
-                    String tySnPrefix = x.getTySnPrefix().trim();
+                    // 如果有sn则取sn 否则取hpbm
+                    String tySnPrefix = StringUtils.isNotBlank(x.getSn()) ? x.getSn().trim() : x.getHpbm().trim();
                     // 如果货号包括-R 则表明是 货号为绒里，手动给颜色添加后缀“绒里”
                     if (prodArtNum.contains("R")) {
                         colorName = colorName.contains("绒") ? colorName : (colorName + "绒里");
                     }
-                    return x.setProdArtNum(prodArtNum).setColorName(colorName).setTySnPrefix(tySnPrefix);
+                    return x.setProdArtNum(prodArtNum).setColorName(colorName).setSn(tySnPrefix);
                 })
                 .collect(Collectors.toList());
         Map<String, List<TyProdImportVO>> prodMap = tyProdVOList.stream().collect(Collectors.groupingBy(TyProdImportVO::getProdArtNum));

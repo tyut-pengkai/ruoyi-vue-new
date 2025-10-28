@@ -82,8 +82,8 @@ public class GtAndTyBiz2Controller extends BaseController {
      * step1
      */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @GetMapping("/compare/{userId}")
-    public void compare(HttpServletResponse response, @PathVariable("userId") Integer userId) throws UnsupportedEncodingException {
+    @GetMapping("/compare/{userId}/{diffStr}")
+    public void compare(HttpServletResponse response, @PathVariable("userId") Integer userId, @PathVariable("diffStr") String diffStr) throws UnsupportedEncodingException {
         // 处理的思路，以GT为主，根据GT的货号 去匹配TY的货号，有些档口写的比较规范，这种就比较好处理
         List<GtProdSkuVO> gtOnSaleList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_GT_SALE_BASIC_KEY + userId), new ArrayList<>());
@@ -108,7 +108,7 @@ public class GtAndTyBiz2Controller extends BaseController {
         Map<String, List<String>> gtMatchTyArtNoMap = new HashMap<>();
         // 以GT为准在，找TY匹配的货号
         gtArtNoList.forEach(gtOnSaleArtNo -> tyArtNoColorMap.forEach((tyArtNo, tyArtNoColorStr) -> {
-            if (tyArtNo.contains(gtOnSaleArtNo)) {
+            if (Objects.equals(tyArtNo, gtOnSaleArtNo) || Objects.equals(tyArtNo, gtOnSaleArtNo + diffStr)) {
                 List<String> existMatchArtNoList = gtMatchTyArtNoMap.getOrDefault(gtOnSaleArtNo, new ArrayList<>());
                 existMatchArtNoList.add(tyArtNo);
                 gtMatchTyArtNoMap.put(gtOnSaleArtNo, existMatchArtNoList);
@@ -118,7 +118,6 @@ public class GtAndTyBiz2Controller extends BaseController {
         // 清洗后，相同货号映射
         List<String> matchArtNoList = new ArrayList<>();
         List<String> multiMatchGtArtNoList = new ArrayList<>();
-        matchArtNoList.add("============ GT和TY匹配的货号 ============");
         // 清洗数据之后，GO平台和TY平台 货号一致的，按照这种来展示: GT => [Z1110(黑色,黑色绒里,棕色,棕色绒里)] <= 清洗后的货号 => [Z1110(黑色,黑色绒里,棕色,棕色绒里)] <= TY
         gtMatchTyArtNoMap.forEach((gtArtNo, tyArtNoList) -> {
             List<String> tyArtNoColorList = tyArtNoList.stream().map(tyArtNo -> tyArtNo + tyArtNoColorMap.get(tyArtNo)).collect(Collectors.toList());
@@ -196,7 +195,7 @@ public class GtAndTyBiz2Controller extends BaseController {
         Map<String, List<String>> gtMatchTyArtNoMap = new HashMap<>();
         // 以GT为准在，找TY匹配的货号
         gtArtNoList.forEach(gtOnSaleArtNo -> tyArtNoColorMap.forEach((tyArtNo, tyArtNoColorStr) -> {
-            if (tyArtNo.contains(gtOnSaleArtNo)) {
+            if (Objects.equals(tyArtNo, gtOnSaleArtNo) || Objects.equals(tyArtNo, gtOnSaleArtNo + initVO.getDiffStr())) {
                 List<String> existMatchArtNoList = gtMatchTyArtNoMap.getOrDefault(gtOnSaleArtNo, new ArrayList<>());
                 existMatchArtNoList.add(tyArtNo);
                 gtMatchTyArtNoMap.put(gtOnSaleArtNo, existMatchArtNoList);
@@ -324,7 +323,7 @@ public class GtAndTyBiz2Controller extends BaseController {
                     // 该颜色所有的尺码
                     for (int j = 0; j < Constants.SIZE_LIST.size(); j++) {
                         // TY系统条码前缀
-                        final String otherSnPrefix = tyProdImportVO.getTySnPrefix() + Constants.SIZE_LIST.get(j);
+                        final String otherSnPrefix = tyProdImportVO.getSn() + Constants.SIZE_LIST.get(j);
                         prodColorSizeList.add(new StoreProductColorSize().setSize(Constants.SIZE_LIST.get(j)).setStoreColorId(storeColor.getId())
                                 .setStoreProdId(storeProd.getId()).setPrice(tyProdImportVO.getPrice()).setOtherSnPrefix(otherSnPrefix).setNextSn(0)
                                 .setStandard(gtStandardSizeList.contains(Constants.SIZE_LIST.get(j)) ? 1 : 0));

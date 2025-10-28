@@ -153,9 +153,9 @@ public class GtController extends BaseController {
         for (int i = 0; i < gtProdIdList.size(); i++) {
             Map<String, String> attrMap = new HashMap<>();
             try {
-                // 添加随机延迟（6-20秒）
+                // 添加随机延迟（6-15秒）
                 if (i > 0) {
-                    Thread.sleep((random.nextInt(15) + 6) * 1000L);
+                    Thread.sleep((random.nextInt(10) + 6) * 1000L);
                 }
                 sendRequest(attrQueryVO, gtProdIdList.get(i), attrMap, errArtNoList, i);
             } catch (Exception e) {
