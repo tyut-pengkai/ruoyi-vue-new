@@ -15,5 +15,13 @@ public enum DataSourceType
     /**
      * 从库
      */
-    SLAVE
+    SLAVE,
+
+    // 202.10.28 新增多个从库，避免后期修改代码
+    SLAVE2,
+
+    SLAVE3,
+
+    SLAVE4,
+    // 202.10.28 新增多个从库，避免后期修改代码（end）
 }
