@@ -660,71 +660,40 @@ create table sys_dict_type
     unique (dict_type)
 ) engine=innodb auto_increment=200 comment = '字典类型表';
 
-INSERT INTO `sys_dict_type`
-VALUES (1, '用户性别', 'sys_user_sex', '0', '用户性别列表', '0', '0', 'admin', '2025-03-26 21:35:36', 'admin',
-        '2025-06-28 11:05:55');
-INSERT INTO `sys_dict_type`
-VALUES (2, '菜单状态', 'sys_show_hide', '0', '菜单状态列表', '0', '0', 'admin', '2025-03-26 21:35:36', '', NULL);
-INSERT INTO `sys_dict_type`
-VALUES (3, '系统开关', 'sys_normal_disable', '0', '系统开关列表', '0', '0', 'admin', '2025-03-26 21:35:36', '', NULL);
-INSERT INTO `sys_dict_type`
-VALUES (4, '任务状态', 'sys_job_status', '0', '任务状态列表', '0', '0', 'admin', '2025-03-26 21:35:36', '', NULL);
-INSERT INTO `sys_dict_type`
-VALUES (5, '任务分组', 'sys_job_group', '0', '任务分组列表', '0', '0', 'admin', '2025-03-26 21:35:36', '', NULL);
-INSERT INTO `sys_dict_type`
-VALUES (6, '系统是否', 'sys_yes_no', '0', '系统是否列表', '0', '0', 'admin', '2025-03-26 21:35:36', '', NULL);
-INSERT INTO `sys_dict_type`
-VALUES (7, '通知类型', 'sys_notice_type', '0', '通知类型列表', '0', '0', 'admin', '2025-03-26 21:35:36', '', NULL);
-INSERT INTO `sys_dict_type`
-VALUES (8, '通知状态', 'sys_notice_status', '0', '通知状态列表', '0', '0', 'admin', '2025-03-26 21:35:36', '', NULL);
-INSERT INTO `sys_dict_type`
-VALUES (9, '操作类型', 'sys_oper_type', '0', '操作类型列表', '0', '0', 'admin', '2025-03-26 21:35:36', '', NULL);
-INSERT INTO `sys_dict_type`
-VALUES (10, '系统状态', 'sys_common_status', '0', '登录状态列表', '0', '0', 'admin', '2025-03-26 21:35:36', '', NULL);
-INSERT INTO `sys_dict_type`
-VALUES (203, '帮面材质', 'upper_material', '0', '', '0', '0', 'admin', '2025-07-03 19:42:28', '', '2025-07-03 19:42:28');
-INSERT INTO `sys_dict_type`
-VALUES (204, '内里材质', 'lining_material', '0', '', '0', '0', 'admin', '2025-07-03 19:45:31', '', '2025-07-03 19:45:31');
-INSERT INTO `sys_dict_type`
-VALUES (205, '鞋垫材质', 'insole_material', '0', '', '0', '0', 'admin', '2025-07-03 19:45:41', '', '2025-07-03 19:45:41');
-INSERT INTO `sys_dict_type`
-VALUES (206, '后跟高', 'heel_height', '0', '', '0', '0', 'admin', '2025-07-03 19:45:52', '', '2025-07-03 19:45:52');
-INSERT INTO `sys_dict_type`
-VALUES (207, '跟底款式', 'heel_type', '0', '', '0', '0', 'admin', '2025-07-03 19:46:03', '', '2025-07-03 19:46:03');
-INSERT INTO `sys_dict_type`
-VALUES (208, '鞋头款式', 'toe_style', '0', '', '0', '0', 'admin', '2025-07-03 19:46:20', '', '2025-07-03 19:46:20');
-INSERT INTO `sys_dict_type`
-VALUES (209, '适合季节', 'suitable_season', '0', '', '0', '0', 'admin', '2025-07-03 19:46:29', '', '2025-07-03 19:46:29');
-INSERT INTO `sys_dict_type`
-VALUES (210, '开口深度', 'collar_depth', '0', '', '0', '0', 'admin', '2025-07-03 19:46:39', '', '2025-07-03 19:46:39');
-INSERT INTO `sys_dict_type`
-VALUES (211, '鞋底材质', 'outsole_material', '0', '', '0', '0', 'admin', '2025-07-03 19:46:48', '', '2025-07-03 19:46:48');
-INSERT INTO `sys_dict_type`
-VALUES (212, '风格', 'style', '0', '', '0', '0', 'admin', '2025-07-03 19:46:58', '', '2025-07-03 19:46:58');
-INSERT INTO `sys_dict_type`
-VALUES (213, '款式', 'design', '0', '', '0', '0', 'admin', '2025-07-03 19:47:11', '', '2025-07-03 19:47:11');
-INSERT INTO `sys_dict_type`
-VALUES (214, '皮质特征', 'leather_features', '0', '', '0', '0', 'admin', '2025-07-03 19:47:30', '', '2025-07-03 19:47:30');
-INSERT INTO `sys_dict_type`
-VALUES (215, '制作工艺', 'manufacturing_process', '0', '', '0', '0', 'admin', '2025-07-03 19:47:38', '',
-        '2025-07-03 19:47:38');
-INSERT INTO `sys_dict_type`
-VALUES (216, '图案', 'pattern', '0', '', '0', '0', 'admin', '2025-07-03 19:47:45', '', '2025-07-03 19:47:45');
-INSERT INTO `sys_dict_type`
-VALUES (217, '闭合方式', 'closure_type', '0', '', '0', '0', 'admin', '2025-07-03 19:47:53', '', '2025-07-03 19:47:53');
-INSERT INTO `sys_dict_type`
-VALUES (218, '适用场景', 'occasion', '0', '', '0', '0', 'admin', '2025-07-03 19:48:04', '', '2025-07-03 19:48:04');
-INSERT INTO `sys_dict_type`
-VALUES (219, '适用年龄', 'suitable_age', '0', '', '0', '0', 'admin', '2025-07-03 19:48:11', '', '2025-07-03 19:48:11');
-INSERT INTO `sys_dict_type`
-VALUES (220, '厚薄', 'thickness', '0', '', '0', '0', 'admin', '2025-07-03 19:48:20', '', '2025-07-03 19:48:20');
-INSERT INTO `sys_dict_type`
-VALUES (221, '流行元素', 'fashion_elements', '0', '', '0', '0', 'admin', '2025-07-03 19:48:29', '', '2025-07-03 19:48:29');
-INSERT INTO `sys_dict_type`
-VALUES (222, '退货原因', 'refund_reason', '0', NULL, '0', '0', 'admin', '2025-07-18 22:56:58', '', '2025-07-18 22:57:00');
-INSERT INTO `sys_dict_type`
-VALUES (223, '季节年份', 'release_year_season', '0', '', '0', '0', 'admin', '2025-08-03 20:51:28', 'admin',
-        '2025-08-03 20:51:28');
+INSERT INTO `sys_dict_type` VALUES (1, '用户性别', 'sys_user_sex', '0', '用户性别列表', 0, '0', 'admin', '2025-03-26 21:35:36', 'admin', '2025-06-28 11:05:55');
+INSERT INTO `sys_dict_type` VALUES (2, '菜单状态', 'sys_show_hide', '0', '菜单状态列表', 0, '0', 'admin', '2025-03-26 21:35:36', '', NULL);
+INSERT INTO `sys_dict_type` VALUES (3, '系统开关', 'sys_normal_disable', '0', '系统开关列表', 0, '0', 'admin', '2025-03-26 21:35:36', '', NULL);
+INSERT INTO `sys_dict_type` VALUES (4, '任务状态', 'sys_job_status', '0', '任务状态列表', 0, '0', 'admin', '2025-03-26 21:35:36', '', NULL);
+INSERT INTO `sys_dict_type` VALUES (5, '任务分组', 'sys_job_group', '0', '任务分组列表', 0, '0', 'admin', '2025-03-26 21:35:36', '', NULL);
+INSERT INTO `sys_dict_type` VALUES (6, '系统是否', 'sys_yes_no', '0', '系统是否列表', 0, '0', 'admin', '2025-03-26 21:35:36', '', NULL);
+INSERT INTO `sys_dict_type` VALUES (7, '通知类型', 'sys_notice_type', '0', '通知类型列表', 0, '0', 'admin', '2025-03-26 21:35:36', '', NULL);
+INSERT INTO `sys_dict_type` VALUES (8, '通知状态', 'sys_notice_status', '0', '通知状态列表', 0, '0', 'admin', '2025-03-26 21:35:36', '', NULL);
+INSERT INTO `sys_dict_type` VALUES (9, '操作类型', 'sys_oper_type', '0', '操作类型列表', 0, '0', 'admin', '2025-03-26 21:35:36', '', NULL);
+INSERT INTO `sys_dict_type` VALUES (10, '系统状态', 'sys_common_status', '0', '登录状态列表', 0, '0', 'admin', '2025-03-26 21:35:36', '', NULL);
+INSERT INTO `sys_dict_type` VALUES (203, '帮面材质', 'upper_material', '0', '', 0, '0', 'admin', '2025-07-03 19:42:28', '', '2025-07-03 19:42:28');
+INSERT INTO `sys_dict_type` VALUES (204, '内里材质', 'lining_material', '0', '', 0, '0', 'admin', '2025-07-03 19:45:31', '', '2025-07-03 19:45:31');
+INSERT INTO `sys_dict_type` VALUES (205, '鞋垫材质', 'insole_material', '0', '', 0, '0', 'admin', '2025-07-03 19:45:41', '', '2025-07-03 19:45:41');
+INSERT INTO `sys_dict_type` VALUES (206, '后跟高', 'heel_height', '0', '', 0, '0', 'admin', '2025-07-03 19:45:52', '', '2025-07-03 19:45:52');
+INSERT INTO `sys_dict_type` VALUES (207, '跟底款式', 'heel_type', '0', '', 0, '0', 'admin', '2025-07-03 19:46:03', '', '2025-07-03 19:46:03');
+INSERT INTO `sys_dict_type` VALUES (208, '鞋头款式', 'toe_style', '0', '', 0, '0', 'admin', '2025-07-03 19:46:20', '', '2025-07-03 19:46:20');
+INSERT INTO `sys_dict_type` VALUES (209, '适合季节', 'suitable_season', '0', '', 0, '0', 'admin', '2025-07-03 19:46:29', '', '2025-07-03 19:46:29');
+INSERT INTO `sys_dict_type` VALUES (210, '开口深度', 'collar_depth', '0', '', 0, '0', 'admin', '2025-07-03 19:46:39', '', '2025-07-03 19:46:39');
+INSERT INTO `sys_dict_type` VALUES (211, '鞋底材质', 'outsole_material', '0', '', 0, '0', 'admin', '2025-07-03 19:46:48', '', '2025-07-03 19:46:48');
+INSERT INTO `sys_dict_type` VALUES (212, '风格', 'style', '0', '', 0, '0', 'admin', '2025-07-03 19:46:58', '', '2025-07-03 19:46:58');
+INSERT INTO `sys_dict_type` VALUES (213, '款式', 'design', '0', '', 0, '0', 'admin', '2025-07-03 19:47:11', '', '2025-07-03 19:47:11');
+INSERT INTO `sys_dict_type` VALUES (214, '皮质特征', 'leather_features', '0', '', 0, '0', 'admin', '2025-07-03 19:47:30', '', '2025-07-03 19:47:30');
+INSERT INTO `sys_dict_type` VALUES (215, '制作工艺', 'manufacturing_process', '0', '', 0, '0', 'admin', '2025-07-03 19:47:38', '', '2025-07-03 19:47:38');
+INSERT INTO `sys_dict_type` VALUES (216, '图案', 'pattern', '0', '', 0, '0', 'admin', '2025-07-03 19:47:45', '', '2025-07-03 19:47:45');
+INSERT INTO `sys_dict_type` VALUES (217, '闭合方式', 'closure_type', '0', '', 0, '0', 'admin', '2025-07-03 19:47:53', '', '2025-07-03 19:47:53');
+INSERT INTO `sys_dict_type` VALUES (218, '适用场景', 'occasion', '0', '', 0, '0', 'admin', '2025-07-03 19:48:04', '', '2025-07-03 19:48:04');
+INSERT INTO `sys_dict_type` VALUES (219, '适用年龄', 'suitable_age', '0', '', 0, '0', 'admin', '2025-07-03 19:48:11', '', '2025-07-03 19:48:11');
+INSERT INTO `sys_dict_type` VALUES (220, '厚薄', 'thickness', '0', '', 0, '0', 'admin', '2025-07-03 19:48:20', '', '2025-07-03 19:48:20');
+INSERT INTO `sys_dict_type` VALUES (221, '流行元素', 'fashion_elements', '0', '', 0, '0', 'admin', '2025-07-03 19:48:29', '', '2025-07-03 19:48:29');
+INSERT INTO `sys_dict_type` VALUES (222, '退货原因', 'refund_reason', '0', NULL, 0, '0', 'admin', '2025-07-18 22:56:58', '', '2025-07-18 22:57:00');
+INSERT INTO `sys_dict_type` VALUES (223, '季节年份', 'release_year_season', '0', '', 0, '0', 'admin', '2025-08-03 20:51:28', 'admin', '2025-08-03 20:51:28');
+INSERT INTO `sys_dict_type` VALUES (224, '鞋面材质', 'shaft_material', '0', '', 0, '0', 'admin', '2025-10-30 20:09:55', '', '2025-10-30 20:09:55');
+INSERT INTO `sys_dict_type` VALUES (225, '鞋面内里材质', 'shoe_upper_lining_material', '0', '', 0, '0', 'admin', '2025-10-30 21:55:41', '', '2025-10-30 21:55:41');
+
 
 
 -- ----------------------------
@@ -2085,6 +2054,113 @@ INSERT INTO `sys_dict_data` VALUES (1096, 4, '商品破损，已拒收', '商品
 INSERT INTO `sys_dict_data` VALUES (1097, 6, '物流状态异常', '物流状态异常', 'refund_reason', '0', 'admin', '2025-09-21 13:28:12', '', '2025-09-21 13:28:12', '', 0, '0');
 INSERT INTO `sys_dict_data` VALUES (1098, 7, '商品质量问题', '商品质量问题', 'refund_reason', '0', 'admin', '2025-09-21 13:28:28', '', '2025-09-21 13:28:28', '', 0, '0');
 INSERT INTO `sys_dict_data` VALUES (1099, 8, '其他', '其他', 'refund_reason', '0', 'admin', '2025-09-21 13:28:34', '', '2025-09-21 13:28:34', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1100, 1, '头层牛皮', '头层牛皮', 'shaft_material', '0', 'admin', '2025-10-30 21:41:37', '', '2025-10-30 21:41:37', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1101, 2, '牛二层皮覆膜', '牛二层皮覆膜', 'shaft_material', '0', 'admin', '2025-10-30 21:41:44', '', '2025-10-30 21:41:44', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1102, 3, '羊皮（除羊反绒/羊猄）', '羊皮（除羊反绒/羊猄）', 'shaft_material', '0', 'admin', '2025-10-30 21:41:50', '', '2025-10-30 21:41:50', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1103, 4, '超细纤维', '超细纤维', 'shaft_material', '0', 'admin', '2025-10-30 21:41:56', '', '2025-10-30 21:41:56', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1104, 5, '牛反绒（磨砂皮）', '牛反绒（磨砂皮）', 'shaft_material', '0', 'admin', '2025-10-30 21:42:03', '', '2025-10-30 21:42:03', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1105, 6, '绒面', '绒面', 'shaft_material', '0', 'admin', '2025-10-30 21:42:15', '', '2025-10-30 21:42:15', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1106, 7, '羊反绒（羊猄）', '羊反绒（羊猄）', 'shaft_material', '0', 'admin', '2025-10-30 21:42:23', '', '2025-10-30 21:42:23', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1107, 8, 'PU', 'PU', 'shaft_material', '0', 'admin', '2025-10-30 21:42:29', '', '2025-10-30 21:42:29', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1108, 9, '弹力布', '弹力布', 'shaft_material', '0', 'admin', '2025-10-30 21:42:36', '', '2025-10-30 21:42:36', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1109, 10, '牛皮革', '牛皮革', 'shaft_material', '0', 'admin', '2025-10-30 21:42:43', '', '2025-10-30 21:42:43', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1110, 11, '裘皮', '裘皮', 'shaft_material', '0', 'admin', '2025-10-30 21:42:49', '', '2025-10-30 21:42:49', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1111, 12, '混合材质', '混合材质', 'shaft_material', '0', 'admin', '2025-10-30 21:42:57', '', '2025-10-30 21:42:57', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1112, 13, '羊毛皮革', '羊毛皮革', 'shaft_material', '0', 'admin', '2025-10-30 21:43:05', '', '2025-10-30 21:43:05', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1113, 14, '珍珠鱼皮', '珍珠鱼皮', 'shaft_material', '0', 'admin', '2025-10-30 21:43:13', '', '2025-10-30 21:43:13', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1114, 15, '羊剖层革', '羊剖层革', 'shaft_material', '0', 'admin', '2025-10-30 21:43:20', '', '2025-10-30 21:43:20', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1115, 16, '织物', '织物', 'shaft_material', '0', 'admin', '2025-10-30 21:43:28', '', '2025-10-30 21:43:28', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1116, 17, '塑胶', '塑胶', 'shaft_material', '0', 'admin', '2025-10-30 21:43:39', '', '2025-10-30 21:43:39', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1117, 18, '乙纶', '乙纶', 'shaft_material', '0', 'admin', '2025-10-30 21:43:46', '', '2025-10-30 21:43:46', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1118, 19, '马皮', '马皮', 'shaft_material', '0', 'admin', '2025-10-30 21:43:54', '', '2025-10-30 21:43:54', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1119, 20, '毛线', '毛线', 'shaft_material', '0', 'admin', '2025-10-30 21:44:01', '', '2025-10-30 21:44:01', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1120, 21, '山羊绒', '山羊绒', 'shaft_material', '0', 'admin', '2025-10-30 21:44:08', '', '2025-10-30 21:44:08', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1121, 22, '漆皮', '漆皮', 'shaft_material', '0', 'admin', '2025-10-30 21:44:26', '', '2025-10-30 21:44:26', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1122, 23, '羊皮革', '羊皮革', 'shaft_material', '0', 'admin', '2025-10-30 21:44:33', '', '2025-10-30 21:44:33', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1123, 24, '布', '布', 'shaft_material', '0', 'admin', '2025-10-30 21:44:49', '', '2025-10-30 21:44:49', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1124, 25, '马毛', '马毛', 'shaft_material', '0', 'admin', '2025-10-30 21:44:56', '', '2025-10-30 21:44:56', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1125, 26, '牛仔布', '牛仔布', 'shaft_material', '0', 'admin', '2025-10-30 21:45:03', '', '2025-10-30 21:45:03', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1126, 27, '人造革', '人造革', 'shaft_material', '0', 'admin', '2025-10-30 21:45:11', '', '2025-10-30 21:45:11', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1127, 28, '聚酯纤维', '聚酯纤维', 'shaft_material', '0', 'admin', '2025-10-30 21:45:20', '', '2025-10-30 21:45:20', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1128, 29, '绸缎', '绸缎', 'shaft_material', '0', 'admin', '2025-10-30 21:45:27', '', '2025-10-30 21:45:27', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1129, 30, '猪皮', '猪皮', 'shaft_material', '0', 'admin', '2025-10-30 21:45:37', '', '2025-10-30 21:45:37', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1130, 31, '皮布拼接', '皮布拼接', 'shaft_material', '0', 'admin', '2025-10-30 21:45:47', '', '2025-10-30 21:45:47', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1131, 32, '羊皮革/羊剖层革', '羊皮革/羊剖层革', 'shaft_material', '0', 'admin', '2025-10-30 21:45:57', '', '2025-10-30 21:45:57', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1132, 33, '牛绒面革', '牛绒面革', 'shaft_material', '0', 'admin', '2025-10-30 21:46:05', '', '2025-10-30 21:46:05', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1133, 34, '牛剖层革', '牛剖层革', 'shaft_material', '0', 'admin', '2025-10-30 21:46:14', '', '2025-10-30 21:46:14', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1134, 35, '牛皮剖层反绒面革', '牛皮剖层反绒面革', 'shaft_material', '0', 'admin', '2025-10-30 21:46:21', '', '2025-10-30 21:46:21', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1135, 36, '格利特皮革', '格利特皮革', 'shaft_material', '0', 'admin', '2025-10-30 21:46:32', '', '2025-10-30 21:46:32', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1136, 37, '羊驼皮', '羊驼皮', 'shaft_material', '0', 'admin', '2025-10-30 21:46:43', '', '2025-10-30 21:46:43', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1137, 38, '鳄鱼皮', '鳄鱼皮', 'shaft_material', '0', 'admin', '2025-10-30 21:47:00', '', '2025-10-30 21:47:00', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1138, 39, '亮片布', '亮片布', 'shaft_material', '0', 'admin', '2025-10-30 21:47:09', '', '2025-10-30 21:47:09', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1139, 40, '氯纶', '氯纶', 'shaft_material', '0', 'admin', '2025-10-30 21:47:17', '', '2025-10-30 21:47:17', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1140, 41, '西施绒', '西施绒', 'shaft_material', '0', 'admin', '2025-10-30 21:47:26', '', '2025-10-30 21:47:26', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1141, 42, '牛毛皮', '牛毛皮', 'shaft_material', '0', 'admin', '2025-10-30 21:47:35', '', '2025-10-30 21:47:35', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1142, 43, '合成材料', '合成材料', 'shaft_material', '0', 'admin', '2025-10-30 21:47:43', '', '2025-10-30 21:47:43', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1143, 44, '袋鼠皮', '袋鼠皮', 'shaft_material', '0', 'admin', '2025-10-30 21:47:54', '', '2025-10-30 21:47:54', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1144, 45, '灯芯绒', '灯芯绒', 'shaft_material', '0', 'admin', '2025-10-30 21:48:03', '', '2025-10-30 21:48:03', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1145, 46, '蛇皮', '蛇皮', 'shaft_material', '0', 'admin', '2025-10-30 21:48:11', '', '2025-10-30 21:48:11', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1147, 48, '牛剖层移膜革', '牛剖层移膜革', 'shaft_material', '0', 'admin', '2025-10-30 21:48:25', '', '2025-10-30 21:48:25', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1148, 49, '树脂', '树脂', 'shaft_material', '0', 'admin', '2025-10-30 21:48:32', '', '2025-10-30 21:48:32', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1149, 50, '羊皮毛一体', '羊皮毛一体', 'shaft_material', '0', 'admin', '2025-10-30 21:48:39', '', '2025-10-30 21:48:39', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1150, 51, '鹿皮', '鹿皮', 'shaft_material', '0', 'admin', '2025-10-30 21:48:48', '', '2025-10-30 21:48:48', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1151, 52, '羊绒面革', '羊绒面革', 'shaft_material', '0', 'admin', '2025-10-30 21:48:55', '', '2025-10-30 21:48:55', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1152, 53, '网布', '网布', 'shaft_material', '0', 'admin', '2025-10-30 21:49:03', '', '2025-10-30 21:49:03', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1153, 54, '牛皮革/织物', '牛皮革/织物', 'shaft_material', '0', 'admin', '2025-10-30 21:49:11', '', '2025-10-30 21:49:11', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1154, 55, '橡胶', '橡胶', 'shaft_material', '0', 'admin', '2025-10-30 21:49:18', '', '2025-10-30 21:49:18', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1155, 56, '鳗鱼皮', '鳗鱼皮', 'shaft_material', '0', 'admin', '2025-10-30 21:49:26', '', '2025-10-30 21:49:26', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1156, 57, '牛皮剖层绒面革', '牛皮剖层绒面革', 'shaft_material', '0', 'admin', '2025-10-30 21:49:39', '', '2025-10-30 21:49:39', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1157, 58, '织物＋PU', '织物＋PU', 'shaft_material', '0', 'admin', '2025-10-30 21:49:46', '', '2025-10-30 21:49:46', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1158, 59, '呢子', '呢子', 'shaft_material', '0', 'admin', '2025-10-30 21:49:54', '', '2025-10-30 21:49:54', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1159, 60, '二层猪皮', '二层猪皮', 'shaft_material', '0', 'admin', '2025-10-30 21:50:01', '', '2025-10-30 21:50:01', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1160, 61, '棉', '棉', 'shaft_material', '0', 'admin', '2025-10-30 21:50:09', '', '2025-10-30 21:50:09', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1161, 62, '粒纹皮', '粒纹皮', 'shaft_material', '0', 'admin', '2025-10-30 21:50:17', '', '2025-10-30 21:50:17', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1162, 63, '羊皮剖层绒面革', '羊皮剖层绒面革', 'shaft_material', '0', 'admin', '2025-10-30 21:50:23', '', '2025-10-30 21:50:23', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1163, 64, 'EVA', 'EVA', 'shaft_material', '0', 'admin', '2025-10-30 21:50:32', '', '2025-10-30 21:50:32', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1164, 65, '蜥蜴皮', '蜥蜴皮', 'shaft_material', '0', 'admin', '2025-10-30 21:50:38', '', '2025-10-30 21:50:38', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1166, 67, '橡塑', '橡塑', 'shaft_material', '0', 'admin', '2025-10-30 21:50:52', '', '2025-10-30 21:50:52', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1167, 68, '藤草', '藤草', 'shaft_material', '0', 'admin', '2025-10-30 21:50:59', '', '2025-10-30 21:50:59', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1168, 69, '皮革', '皮革', 'shaft_material', '0', 'admin', '2025-10-30 21:51:06', '', '2025-10-30 21:51:06', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1169, 70, '麂皮', '麂皮', 'shaft_material', '0', 'admin', '2025-10-30 21:51:14', '', '2025-10-30 21:51:14', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1170, 71, '羊毛皮', '羊毛皮', 'shaft_material', '0', 'admin', '2025-10-30 21:51:23', '', '2025-10-30 21:51:23', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1171, 72, '鸵鸟皮', '鸵鸟皮', 'shaft_material', '0', 'admin', '2025-10-30 21:51:32', '', '2025-10-30 21:51:32', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1172, 73, '牛皮革/牛剖层革', '牛皮革/牛剖层革', 'shaft_material', '0', 'admin', '2025-10-30 21:51:42', '', '2025-10-30 21:51:42', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1173, 74, '孔雀皮', '孔雀皮', 'shaft_material', '0', 'admin', '2025-10-30 21:51:49', '', '2025-10-30 21:51:49', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1174, 1, '头层猪皮', '头层猪皮', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 21:55:54', 'admin', '2025-10-30 21:58:06', '', 1, '0');
+INSERT INTO `sys_dict_data` VALUES (1175, 2, '超细纤维', '超细纤维', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 21:56:00', 'admin', '2025-10-30 21:58:10', '', 1, '0');
+INSERT INTO `sys_dict_data` VALUES (1176, 3, '布', '布', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 21:56:05', 'admin', '2025-10-30 21:58:14', '', 1, '0');
+INSERT INTO `sys_dict_data` VALUES (1177, 4, '人造短毛绒', '人造短毛绒', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 21:56:11', 'admin', '2025-10-30 21:58:17', '', 1, '0');
+INSERT INTO `sys_dict_data` VALUES (1178, 5, '二层猪皮', '二层猪皮', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 21:56:16', 'admin', '2025-10-30 21:58:20', '', 1, '0');
+INSERT INTO `sys_dict_data` VALUES (1179, 6, '羊皮', '羊皮', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 21:56:21', 'admin', '2025-10-30 21:58:25', '', 1, '0');
+INSERT INTO `sys_dict_data` VALUES (1180, 7, '混合材质', '混合材质', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 21:56:26', 'admin', '2025-10-30 21:58:28', '', 1, '0');
+INSERT INTO `sys_dict_data` VALUES (1181, 8, '头层牛皮', '头层牛皮', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 21:56:34', 'admin', '2025-10-30 21:58:31', '', 1, '0');
+INSERT INTO `sys_dict_data` VALUES (1182, 9, '织物', '织物', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 21:56:41', 'admin', '2025-10-30 21:58:34', '', 1, '0');
+INSERT INTO `sys_dict_data` VALUES (1183, 10, '羊皮革', '羊皮革', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 21:56:47', 'admin', '2025-10-30 21:58:37', '', 1, '0');
+INSERT INTO `sys_dict_data` VALUES (1184, 11, '织物+PU合成革', '织物+PU合成革', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 21:56:55', 'admin', '2025-10-30 21:58:40', '', 1, '0');
+INSERT INTO `sys_dict_data` VALUES (1185, 12, 'PU', 'PU', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 21:57:02', 'admin', '2025-10-30 21:58:44', '', 1, '0');
+INSERT INTO `sys_dict_data` VALUES (1186, 13, '网纱', '网纱', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 21:57:09', 'admin', '2025-10-30 21:58:47', '', 1, '0');
+INSERT INTO `sys_dict_data` VALUES (1187, 14, '人造长毛绒', '人造长毛绒', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 21:57:16', 'admin', '2025-10-30 21:59:23', '', 1, '0');
+INSERT INTO `sys_dict_data` VALUES (1188, 15, '无内里', '无内里', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 21:57:24', 'admin', '2025-10-30 21:59:27', '', 1, '0');
+INSERT INTO `sys_dict_data` VALUES (1189, 16, '绒面', '绒面', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 21:57:31', 'admin', '2025-10-30 21:59:30', '', 1, '0');
+INSERT INTO `sys_dict_data` VALUES (1190, 17, '反毛皮', '反毛皮', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 21:57:41', 'admin', '2025-10-30 21:59:32', '', 1, '0');
+INSERT INTO `sys_dict_data` VALUES (1191, 18, '皮革', '皮革', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 21:57:48', 'admin', '2025-10-30 21:59:35', '', 1, '0');
+INSERT INTO `sys_dict_data` VALUES (1192, 19, '纯羊毛', '纯羊毛', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 21:57:54', 'admin', '2025-10-30 21:59:37', '', 2, '0');
+INSERT INTO `sys_dict_data` VALUES (1193, 20, '二层牛皮', '二层牛皮', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 21:59:48', '', '2025-10-30 21:59:48', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1194, 21, '牛皮革', '牛皮革', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 21:59:54', '', '2025-10-30 21:59:54', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1195, 22, '羊皮毛一体', '羊皮毛一体', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 22:00:01', '', '2025-10-30 22:00:01', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1196, 23, '棉', '棉', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 22:00:08', '', '2025-10-30 22:00:08', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1197, 24, '羊毛羊绒混纺', '羊毛羊绒混纺', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 22:01:09', '', '2025-10-30 22:01:09', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1198, 25, '马皮', '马皮', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 22:01:17', '', '2025-10-30 22:01:17', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1199, 26, '弹力绒布', '弹力绒布', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 22:01:24', '', '2025-10-30 22:01:24', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1200, 27, '羊毛混纺', '羊毛混纺', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 22:01:32', '', '2025-10-30 22:01:32', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1201, 28, '乙纶', '乙纶', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 22:01:38', '', '2025-10-30 22:01:38', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1202, 29, '胎牛皮', '胎牛皮', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 22:01:47', '', '2025-10-30 22:01:47', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1203, 30, '鹿纤绒', '鹿纤绒', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 22:01:53', '', '2025-10-30 22:01:53', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1204, 31, '涤沦', '涤沦', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 22:02:05', '', '2025-10-30 22:02:05', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1205, 32, '山羊绒', '山羊绒', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 22:02:12', '', '2025-10-30 22:02:12', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1206, 33, '聚酯纤维', '聚酯纤维', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 22:02:19', '', '2025-10-30 22:02:19', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1207, 34, '兔毛', '兔毛', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 22:02:26', '', '2025-10-30 22:02:26', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1208, 35, '狐狸毛', '狐狸毛', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 22:02:34', '', '2025-10-30 22:02:34', '', 0, '0');
 
 
 -- ----------------------------
@@ -3457,9 +3533,9 @@ DROP TABLE IF EXISTS `store_product_color`;
 CREATE TABLE `store_product_color`
 (
     `id`             bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '档口商品颜色ID',
-    `store_color_id` bigint UNSIGNED NOT NULL COMMENT '档口颜色ID',
-    `store_prod_id`  bigint UNSIGNED NOT NULL COMMENT '档口商品ID',
     `store_id`       bigint UNSIGNED NOT NULL COMMENT '档口ID',
+    `store_prod_id`  bigint UNSIGNED NOT NULL COMMENT '档口商品ID',
+    `store_color_id` bigint UNSIGNED NOT NULL COMMENT '档口颜色ID',
     `color_name`     varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '颜色名称',
     `order_num`      int UNSIGNED NOT NULL COMMENT '排序',
     `prod_status`    tinyint UNSIGNED NULL DEFAULT NULL COMMENT '档口商品状态',
@@ -3483,8 +3559,8 @@ DROP TABLE IF EXISTS `store_product_color_size`;
 CREATE TABLE `store_product_color_size`
 (
     `id`              bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '档口商品颜色尺码ID',
-    `store_color_id`  bigint UNSIGNED NOT NULL COMMENT '档口商品颜色ID',
     `store_prod_id`   bigint UNSIGNED NOT NULL COMMENT '档口商品ID',
+    `store_color_id`  bigint UNSIGNED NOT NULL COMMENT '档口商品颜色ID',
     `size`            int UNSIGNED NOT NULL COMMENT '商品尺码',
     `price`           decimal(10, 2) UNSIGNED NOT NULL COMMENT '档口商品定价',
     `sn_prefix`       varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '档口商品颜色尺码的前缀',

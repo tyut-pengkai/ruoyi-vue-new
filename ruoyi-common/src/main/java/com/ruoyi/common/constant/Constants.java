@@ -196,6 +196,8 @@ public class Constants
     // 系统所有的尺码
     public static final List<Integer> SIZE_LIST = new ArrayList<>(Arrays
             .asList(SIZE_30, SIZE_31, SIZE_32, SIZE_33, SIZE_34, SIZE_35, SIZE_36, SIZE_37, SIZE_38, SIZE_39, SIZE_40, SIZE_41, SIZE_42, SIZE_43));
+    // 系统标准尺码 34-40
+    public static final List<Integer> STANDARD_SIZE_LIST = new ArrayList<>(Arrays.asList(SIZE_34, SIZE_35, SIZE_36, SIZE_37, SIZE_38, SIZE_39, SIZE_40));
 
     /**
      * 平台内部账户ID
@@ -331,7 +333,7 @@ public class Constants
     public static final String SHAFT_LINING_MATERIAL = "shaftLiningMaterial";
     public static final String SHAFT_LINING_MATERIAL_NAME = "靴筒内里材质";
     public static final String SHAFT_MATERIAL = "shaftMaterial";
-    public static final String SHAFT_MATERIAL_NAME = "靴筒面材质";
+    public static final String SHAFT_MATERIAL_NAME = "鞋面材质";
     public static final String SHOE_UPPER_LINING_MATERIAL = "shoeUpperLiningMaterial";
     public static final String SHOE_UPPER_LINING_MATERIAL_NAME = "鞋面内里材质";
     public static final String SHOE_STYLE_NAME = "shoeStyleName";

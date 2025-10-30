@@ -412,8 +412,9 @@ public class GtAndFhbBizController extends BaseController {
                                 + String.format("%05d", smivo.getSupplierSkuId()) + Constants.SIZE_LIST.get(j);
                         prodColorSizeList.add(new StoreProductColorSize().setSize(Constants.SIZE_LIST.get(j)).setStoreColorId(storeColor.getId())
                                 .setStoreProdId(storeProd.getId()).setStandard(gtStandardSizeList.contains(Constants.SIZE_LIST.get(j)) ? 1 : 0)
-                                // 销售价格以FHB价格为准
-                                .setPrice(smivo.getSalePrice())
+                                // 销售价格以FHB价格为准 非标尺码价格需要加价
+                                .setPrice(gtStandardSizeList.contains(Constants.SIZE_LIST.get(j)) ? smivo.getSalePrice()
+                                        : smivo.getSalePrice().add(ObjectUtils.defaultIfNull(initVO.getAddOverPrice(), BigDecimal.ZERO)))
                                 .setOtherSnPrefix(otherSnPrefix).setNextSn(0));
                     }
                 }

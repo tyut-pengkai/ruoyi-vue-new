@@ -171,7 +171,9 @@ public class GtOtherBizAfterController extends BaseController {
                 .collect(Collectors.toList());
         // 从数据库查询最新数据
         List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
-                .eq(StoreProduct::getStoreId, storeId).eq(StoreProduct::getDelFlag, Constants.UNDELETED));
+                .eq(StoreProduct::getStoreId, storeId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)
+                // TODO 特殊处理，只保留GT单独处理的部分  important important important
+                .in(StoreProduct::getProdArtNum, gtAfterArtNumList));
         List<StoreColor> storeColorList = this.storeColorMapper.selectList(new LambdaQueryWrapper<StoreColor>()
                 .eq(StoreColor::getStoreId, storeId).eq(StoreColor::getDelFlag, Constants.UNDELETED));
         Map<String, StoreColor> storeColorMap = storeColorList.stream().collect(Collectors.toMap(StoreColor::getColorName, x -> x, (v1, v2) -> v2));
@@ -183,40 +185,37 @@ public class GtOtherBizAfterController extends BaseController {
         // 商品所有颜色 尺码 颜色库存初始化
         List<StoreProductColor> prodColorList = new ArrayList<>();
         List<StoreProductColorSize> prodColorSizeList = new ArrayList<>();
-        storeProdList.stream()
-                // TODO 特殊处理，只保留GT单独处理的部分  important important important
-                .filter(storeProd -> gtAfterArtNumList.contains(storeProd.getProdArtNum()))
-                .forEach(storeProd -> {
-                    // 获取GT匹配的商品sku列表
-                    List<GtProdSkuVO> gtMatchSkuList = gtProdSkuMap.get(storeProd.getProdArtNum());
-                    // 当前货号在GT的所有尺码，作为标准尺码
-                    List<Integer> gtStandardSizeList = gtMatchSkuList.stream().map(sku -> (int) Math.floor(Double.parseDouble(sku.getSize()))).collect(Collectors.toList());
-                    Map<String, String> prodColorMap = gtMatchSkuList.stream().collect(Collectors.toMap(GtProdSkuVO::getColor, GtProdSkuVO::getColor, (s1, s2) -> s2));
-                    // GT颜色下尺码价格map
-                    Map<String, Map<Integer, BigDecimal>> colorSizePriceMap = gtMatchSkuList.stream().collect(Collectors
-                            .groupingBy(GtProdSkuVO::getColor, Collectors.toMap(x -> (int) Math.floor(Double.parseDouble(x.getSize())), GtProdSkuVO::getPrice, (v1, v2) -> v2)));
-                    AtomicInteger orderNum = new AtomicInteger();
-                    prodColorMap.forEach((color, gtColor) -> {
-                        StoreColor storeColor = Optional.ofNullable(storeColorMap.get(gtColor))
-                                .orElseThrow(() -> new ServiceException("没有GT商品颜色!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
-                        // 该商品的颜色
-                        prodColorList.add(new StoreProductColor().setStoreId(storeProd.getStoreId()).setStoreProdId(storeProd.getId()).setOrderNum(orderNum.addAndGet(1))
-                                .setColorName(storeColor.getColorName()).setStoreColorId(storeColor.getId()).setProdStatus(EProductStatus.ON_SALE.getValue()));
-                        Map<Integer, BigDecimal> sizePriceMap = Optional.ofNullable(colorSizePriceMap.get(gtColor))
-                                .orElseThrow(() -> new ServiceException("没有GT商品颜色尺码价格!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
-                        // 该颜色最低价格
-                        BigDecimal minPrice = sizePriceMap.values().stream().min(BigDecimal::compareTo).orElse(BigDecimal.ZERO);
-                        // 该颜色所有的尺码
-                        for (int j = 0; j < Constants.SIZE_LIST.size(); j++) {
-                            final boolean isStandard = gtStandardSizeList.contains(Constants.SIZE_LIST.get(j));
-                            prodColorSizeList.add(new StoreProductColorSize().setSize(Constants.SIZE_LIST.get(j)).setStoreColorId(storeColor.getId())
-                                    .setStoreProdId(storeProd.getId()).setStandard(isStandard ? 1 : 0).setNextSn(0)
-                                    // 销售价格以FHB价格为准
-                                    .setPrice(sizePriceMap.getOrDefault(Constants.SIZE_LIST.get(j), minPrice)
-                                            .add(ObjectUtils.defaultIfNull(addOverPrice, BigDecimal.ZERO))));
-                        }
-                    });
-                });
+        storeProdList.forEach(storeProd -> {
+            // 获取GT匹配的商品sku列表
+            List<GtProdSkuVO> gtMatchSkuList = gtProdSkuMap.get(storeProd.getProdArtNum());
+            // 当前货号在GT的所有尺码，作为标准尺码
+            List<Integer> gtStandardSizeList = gtMatchSkuList.stream().map(sku -> (int) Math.floor(Double.parseDouble(sku.getSize()))).collect(Collectors.toList());
+            Map<String, String> prodColorMap = gtMatchSkuList.stream().collect(Collectors.toMap(GtProdSkuVO::getColor, GtProdSkuVO::getColor, (s1, s2) -> s2));
+            // GT颜色下尺码价格map
+            Map<String, Map<Integer, BigDecimal>> colorSizePriceMap = gtMatchSkuList.stream().collect(Collectors
+                    .groupingBy(GtProdSkuVO::getColor, Collectors.toMap(x -> (int) Math.floor(Double.parseDouble(x.getSize())), GtProdSkuVO::getPrice, (v1, v2) -> v2)));
+            AtomicInteger orderNum = new AtomicInteger();
+            prodColorMap.forEach((color, gtColor) -> {
+                StoreColor storeColor = Optional.ofNullable(storeColorMap.get(gtColor))
+                        .orElseThrow(() -> new ServiceException("没有GT商品颜色!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
+                // 该商品的颜色
+                prodColorList.add(new StoreProductColor().setStoreId(storeProd.getStoreId()).setStoreProdId(storeProd.getId()).setOrderNum(orderNum.addAndGet(1))
+                        .setColorName(storeColor.getColorName()).setStoreColorId(storeColor.getId()).setProdStatus(EProductStatus.ON_SALE.getValue()));
+                Map<Integer, BigDecimal> sizePriceMap = Optional.ofNullable(colorSizePriceMap.get(gtColor))
+                        .orElseThrow(() -> new ServiceException("没有GT商品颜色尺码价格!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
+                // 该颜色最低价格
+                BigDecimal minPrice = sizePriceMap.values().stream().min(BigDecimal::compareTo).orElse(BigDecimal.ZERO);
+                // 该颜色所有的尺码
+                for (int j = 0; j < Constants.SIZE_LIST.size(); j++) {
+                    final boolean isStandard = gtStandardSizeList.contains(Constants.SIZE_LIST.get(j));
+                    prodColorSizeList.add(new StoreProductColorSize().setSize(Constants.SIZE_LIST.get(j)).setStoreColorId(storeColor.getId())
+                            .setStoreProdId(storeProd.getId()).setStandard(isStandard ? 1 : 0).setNextSn(0)
+                            // 销售价格以GT价格为准 能取到的价格，则取，否则视为非标尺码 需要加价
+                            .setPrice(sizePriceMap.containsKey(Constants.SIZE_LIST.get(j)) ? sizePriceMap.get(Constants.SIZE_LIST.get(j))
+                                    : minPrice.add(ObjectUtils.defaultIfNull(addOverPrice, BigDecimal.ZERO))));
+                }
+            });
+        });
         // 插入商品颜色及颜色对应的尺码，档口服务承诺
         this.prodColorMapper.insert(prodColorList);
         prodColorSizeList.sort(Comparator.comparing(StoreProductColorSize::getStoreProdId).thenComparing(StoreProductColorSize::getSize));

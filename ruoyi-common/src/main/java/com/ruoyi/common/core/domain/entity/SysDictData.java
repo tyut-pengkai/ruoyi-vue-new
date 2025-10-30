@@ -8,6 +8,7 @@ import com.ruoyi.common.core.domain.BaseEntity;
 import com.ruoyi.common.core.domain.XktBaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -21,6 +22,7 @@ import javax.validation.constraints.Size;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
+@Accessors(chain = true)
 public class SysDictData extends XktBaseEntity {
     private static final long serialVersionUID = 1L;
 
