@@ -13,7 +13,9 @@ import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.framework.es.EsClientWrapper;
 import com.ruoyi.framework.notice.fs.FsNotice;
 import com.ruoyi.system.mapper.SysDictDataMapper;
+import com.ruoyi.web.controller.xkt.migartion.vo.ty.TyCusDiscImportVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.ty.TyProdImportVO;
+import com.ruoyi.web.controller.xkt.migartion.vo.ty.TyProdStockVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.tyBizAfter.TyBizAfterImportVO;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.enums.EProductStatus;
@@ -67,6 +69,7 @@ public class TYOtherBizAfterController extends BaseController {
     final FsNotice fsNotice;
     final StoreCustomerMapper storeCusMapper;
     final SysDictDataMapper dictDataMapper;
+    final StoreCustomerProductDiscountMapper storeCusProdDiscMapper;
 
     // 系统枚举 鞋面材质
     private static final String DICT_TYPE_SHAFT_MATERIAL = "shaft_material";
@@ -260,23 +263,37 @@ public class TYOtherBizAfterController extends BaseController {
     }
 
     /**
-     * step4
+     * step3
      */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @PostMapping("/init-cus-disc")
     @Transactional
     public R<Integer> initCusDisc(@RequestParam(value = "storeId") Long storeId, @RequestParam(value = "userId") Integer userId, MultipartFile file) throws IOException {
-       /* ExcelUtil<TyBizAfterImportVO> util = new ExcelUtil<>(TyBizAfterImportVO.class);
+        ExcelUtil<TyBizAfterImportVO> util = new ExcelUtil<>(TyBizAfterImportVO.class);
         List<TyBizAfterImportVO> tyAfterImportVOList = util.importExcel(file.getInputStream());
         // 待处理的TY独有的货号
         List<String> tyAfterArtNumList = tyAfterImportVOList.stream().map(TyBizAfterImportVO::getTyAfterArtNum).map(String::trim)
                 .filter(StringUtils::isNotBlank).map(item -> item.contains("(") ? item.substring(0, item.indexOf("(")) : item)
                 .collect(Collectors.toList());
+        // 绒里货号map
+        Map<String, String> waitMatchMap = tyAfterArtNumList.stream().filter(x -> x.contains("R")).collect(Collectors.toMap(x -> x, x -> x));
+        // 按照货号 和 单里绒里匹配关系进行分组
+        Map<String, List<String>> tyAfterArtNumGroupMap = new HashMap<>();
+        tyAfterArtNumList.stream().filter(x -> !x.contains("R")).distinct().forEach(x -> {
+            List<String> matchList = new ArrayList<>(Collections.singletonList(x));
+            if (waitMatchMap.containsKey(x + "R")) {
+                matchList.add(waitMatchMap.get(x + "R"));
+            } else if (waitMatchMap.containsKey(x + "-R")) {
+                matchList.add(waitMatchMap.get(x + "-R"));
+            }
+            tyAfterArtNumGroupMap.put(x, matchList);
+        });
 
+        // 之前导入的仅仅存在于TY的商品列表
         List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getStoreId, storeId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)
                 // TODO 特殊处理，只保留GT单独处理的部分  important important important
-                .in(StoreProduct::getProdArtNum, tyAfterArtNumList));
+                .in(StoreProduct::getProdArtNum, tyAfterArtNumGroupMap.keySet()));
         List<StoreProductColor> prodColorList = this.prodColorMapper.selectList(new LambdaQueryWrapper<StoreProductColor>()
                 .eq(StoreProductColor::getStoreId, storeId).eq(StoreProductColor::getDelFlag, Constants.UNDELETED));
         List<StoreCustomer> storeCusList = this.storeCusMapper.selectList(new LambdaQueryWrapper<StoreCustomer>()
@@ -287,6 +304,9 @@ public class TYOtherBizAfterController extends BaseController {
         if (CollectionUtils.isEmpty(tyProdList)) {
             throw new ServiceException("TY商品列表为空", HttpStatus.ERROR);
         }
+        // ty货号正在生效的颜色map，因为客户优惠有些是删除的颜色，需要通过这里去过滤
+        Map<String, Set<String>> tyExistArtNoColorMap = tyProdList.stream().collect(Collectors
+                .groupingBy(TyProdImportVO::getProdArtNum, Collectors.mapping(TyProdImportVO::getColorName, Collectors.toSet())));
 
         // 从redis中获取已存在的客户优惠数据
         List<TyCusDiscImportVO> tyCusDiscCacheList = redisCache.getCacheObject(CacheConstants.MIGRATION_TY_CUS_DISCOUNT_KEY + userId);
@@ -314,94 +334,11 @@ public class TYOtherBizAfterController extends BaseController {
         Map<String, StoreCustomer> buJuStoreCusMap = storeCusList.stream().collect(Collectors.toMap(StoreCustomer::getCusName, x -> x));
         List<StoreCustomerProductDiscount> prodCusDiscList = new ArrayList<>();
         List<StoreProductStock> prodStockList = new ArrayList<>();
-        // 依次遍历商品列表，找到货号和FHB货号对应关系，然后用颜色进行匹配，建立客户优惠关系
         storeProdList.forEach(storeProd -> {
             // 当前商品颜色列表 key 颜色中文名称
             Map<String, StoreProductColor> buJuProdColorMap = Optional.ofNullable(prodColorGroupMap.get(storeProd.getId())).orElseThrow(() -> new ServiceException("没有商品颜色!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
             // 根据步橘货号 找到TY对应的货号，可能是列表
-            List<String> tyAtrNoList = Optional.ofNullable(gtMatchTyArtNoMap.get(storeProd.getProdArtNum())).orElseThrow(() -> new ServiceException("没有TY货号!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
-            // 处理档口商品库存
-            this.handleProdStock(tyAtrNoList, tyProdStockMap, buJuProdColorMap, storeProd.getStoreId(), storeProd.getId(), storeProd.getProdArtNum(), prodStockList);
-
-
-            tyAtrNoList.forEach(tyAtrNo -> {
-                // 处理客户优惠
-                this.handleCusDisc(tyAtrNo, tyExistArtNoColorMap, tyCusDiscGroupMap, buJuProdColorMap, buJuStoreCusMap, prodCusDiscList, storeProd.getStoreId(), storeProd.getId());
-            });
-
-
-        });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        // 处理的思路，以GT为主，根据GT的货号 去匹配TY的货号，有些档口写的比较规范，这种就比较好处理
-        List<GtProdSkuVO> gtOnSaleList = ObjectUtils.defaultIfNull(redisCache.getCacheObject(CacheConstants.MIGRATION_GT_SALE_BASIC_KEY + initVO.getUserId()), new ArrayList<>());
-        // gt所有在售的货号列表
-        List<String> gtArtNoList = gtOnSaleList.stream().map(GtProdSkuVO::getArticle_number).map(String::trim).distinct().collect(Collectors.toList());
-
-
-        // ty货号正在生效的颜色map，因为客户优惠有些是删除的颜色，需要通过这里去过滤
-        Map<String, Set<String>> tyExistArtNoColorMap = tyProdList.stream().collect(Collectors
-                .groupingBy(TyProdImportVO::getProdArtNum, Collectors.mapping(TyProdImportVO::getColorName, Collectors.toSet())));
-        // TY货号下颜色的map
-        Map<String, String> tyArtNoColorMap = tyProdList.stream().collect(Collectors.groupingBy(TyProdImportVO::getProdArtNum,
-                Collectors.collectingAndThen(Collectors.mapping(TyProdImportVO::getColorName, Collectors.toList()),
-                        list -> "(" + list.stream().distinct().collect(Collectors.joining(",")) + ")")));
-        // GT和TY匹配的货号map
-        Map<String, List<String>> gtMatchTyArtNoMap = new HashMap<>();
-        // 以GT为准在，找TY匹配的货号
-        gtArtNoList.forEach(gtOnSaleArtNo -> tyArtNoColorMap.forEach((tyArtNo, tyArtNoColorStr) -> {
-            // 3种情况 1:1 货号 2:货号R 3:货号-R
-            if (Objects.equals(tyArtNo, gtOnSaleArtNo) || Objects.equals(tyArtNo, gtOnSaleArtNo + "R") || Objects.equals(tyArtNo, gtOnSaleArtNo + "-R")) {
-                List<String> existMatchArtNoList = gtMatchTyArtNoMap.getOrDefault(gtOnSaleArtNo, new ArrayList<>());
-                existMatchArtNoList.add(tyArtNo);
-                gtMatchTyArtNoMap.put(gtOnSaleArtNo, existMatchArtNoList);
-            }
-        }));
-
-        // 从redis中获取已存在的客户优惠数据
-        List<TyCusDiscImportVO> tyCusDiscCacheList = redisCache.getCacheObject(CacheConstants.MIGRATION_TY_CUS_DISCOUNT_KEY + initVO.getUserId());
-        if (CollectionUtils.isEmpty(tyCusDiscCacheList)) {
-            throw new ServiceException("ty供应商客户优惠列表为空!" + initVO.getUserId(), HttpStatus.ERROR);
-        }
-        // 增加一重保险，客户优惠必须大于0
-        tyCusDiscCacheList = tyCusDiscCacheList.stream().filter(x -> x.getDiscount() > 0).collect(Collectors.toList());
-
-        // 从redis中获取已存在的商品库存数据
-        List<TyProdStockVO> tyStockList = redisCache.getCacheObject(CacheConstants.MIGRATION_TY_PROD_STOCK_KEY + initVO.getUserId());
-        if (CollectionUtils.isEmpty(tyStockList)) {
-            throw new ServiceException("ty供应商商品库存列表为空!" + initVO.getUserId(), HttpStatus.ERROR);
-        }
-        // TY 货号颜色的库存对应关系
-        Map<String, Map<String, TyProdStockVO>> tyProdStockMap = tyStockList.stream().collect(Collectors
-                .groupingBy(TyProdStockVO::getProdArtNum, Collectors.toMap(TyProdStockVO::getColorName, x -> x)));
-        // TY 货号颜色优惠对应关系
-        Map<String, Map<String, List<TyCusDiscImportVO>>> tyCusDiscGroupMap = tyCusDiscCacheList.stream().collect(Collectors
-                .groupingBy(TyCusDiscImportVO::getProdArtNum, Collectors.groupingBy(TyCusDiscImportVO::getColorName)));
-        // 步橘系统商品所有颜色maps
-        Map<Long, Map<String, StoreProductColor>> prodColorGroupMap = prodColorList.stream().collect(Collectors
-                .groupingBy(StoreProductColor::getStoreProdId, Collectors.toMap(StoreProductColor::getColorName, x -> x)));
-        // 步橘系统客户名称map
-        Map<String, StoreCustomer> buJuStoreCusMap = storeCusList.stream().collect(Collectors.toMap(StoreCustomer::getCusName, x -> x));
-        List<StoreCustomerProductDiscount> prodCusDiscList = new ArrayList<>();
-        List<StoreProductStock> prodStockList = new ArrayList<>();
-        // 依次遍历商品列表，找到货号和FHB货号对应关系，然后用颜色进行匹配，建立客户优惠关系
-        storeProdList.forEach(storeProd -> {
-            // 当前商品颜色列表 key 颜色中文名称
-            Map<String, StoreProductColor> buJuProdColorMap = Optional.ofNullable(prodColorGroupMap.get(storeProd.getId())).orElseThrow(() -> new ServiceException("没有商品颜色!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
-            // 根据步橘货号 找到TY对应的货号，可能是列表
-            List<String> tyAtrNoList = Optional.ofNullable(gtMatchTyArtNoMap.get(storeProd.getProdArtNum())).orElseThrow(() -> new ServiceException("没有TY货号!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
+            List<String> tyAtrNoList = Optional.ofNullable(tyAfterArtNumGroupMap.get(storeProd.getProdArtNum())).orElseThrow(() -> new ServiceException("没有TY货号!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
             // 处理档口商品库存
             this.handleProdStock(tyAtrNoList, tyProdStockMap, buJuProdColorMap, storeProd.getStoreId(), storeProd.getId(), storeProd.getProdArtNum(), prodStockList);
 
@@ -416,16 +353,9 @@ public class TYOtherBizAfterController extends BaseController {
         // 档口客户优惠
         this.storeCusProdDiscMapper.insert(prodCusDiscList);
         // 档口客户库存
-        this.prodStockMapper.insert(prodStockList);*/
+        this.prodStockMapper.insert(prodStockList);
         return R.ok();
     }
-
-
-
-
-
-
-
 
 
     /**
@@ -452,6 +382,71 @@ public class TYOtherBizAfterController extends BaseController {
             storeColorList.add(new StoreColor().setStoreId(storeId).setColorName(gtAfterColorList.get(i)).setOrderNum(maxOrderNum + i + 1));
         }
         this.storeColorMapper.insert(storeColorList);
+    }
+
+    /**
+     * 处理商品库存
+     */
+    private void handleProdStock(List<String> tyAtrNoList, Map<String, Map<String, TyProdStockVO>> tyProdStockMap, Map<String, StoreProductColor> buJuProdColorMap,
+                                 Long storeId, Long storeProdId, String prodArtNum, List<StoreProductStock> prodStockList) {
+        // 获取ty货号所有颜色的库存
+        Map<String, TyProdStockVO> tyColorStockMap = new HashMap<>();
+        tyAtrNoList.forEach(tyArtNo -> tyColorStockMap.putAll(tyProdStockMap.getOrDefault(tyArtNo, new HashMap<>())));
+        buJuProdColorMap.forEach((buJuColor, buJuProdColor) -> {
+            StoreProductStock stock = new StoreProductStock().setStoreId(storeId).setStoreProdId(storeProdId).setProdArtNum(prodArtNum)
+                    .setColorName(buJuProdColorMap.get(buJuColor).getColorName()).setStoreProdColorId(buJuProdColorMap.get(buJuColor).getId())
+                    .setStoreColorId(buJuProdColorMap.get(buJuColor).getStoreColorId());
+            if (tyColorStockMap.containsKey(buJuColor)) {
+                TyProdStockVO tySizeStock = tyColorStockMap.getOrDefault(buJuColor, null);
+                stock.setSize30(ObjectUtils.isNotEmpty(tySizeStock) ? tySizeStock.getSize30() : null)
+                        .setSize31(ObjectUtils.isNotEmpty(tySizeStock) ? tySizeStock.getSize31() : null)
+                        .setSize32(ObjectUtils.isNotEmpty(tySizeStock) ? tySizeStock.getSize32() : null)
+                        .setSize33(ObjectUtils.isNotEmpty(tySizeStock) ? tySizeStock.getSize33() : null)
+                        .setSize34(ObjectUtils.isNotEmpty(tySizeStock) ? tySizeStock.getSize34() : null)
+                        .setSize35(ObjectUtils.isNotEmpty(tySizeStock) ? tySizeStock.getSize35() : null)
+                        .setSize36(ObjectUtils.isNotEmpty(tySizeStock) ? tySizeStock.getSize36() : null)
+                        .setSize37(ObjectUtils.isNotEmpty(tySizeStock) ? tySizeStock.getSize37() : null)
+                        .setSize38(ObjectUtils.isNotEmpty(tySizeStock) ? tySizeStock.getSize38() : null)
+                        .setSize39(ObjectUtils.isNotEmpty(tySizeStock) ? tySizeStock.getSize39() : null)
+                        .setSize40(ObjectUtils.isNotEmpty(tySizeStock) ? tySizeStock.getSize40() : null)
+                        .setSize41(ObjectUtils.isNotEmpty(tySizeStock) ? tySizeStock.getSize41() : null)
+                        .setSize42(ObjectUtils.isNotEmpty(tySizeStock) ? tySizeStock.getSize42() : null)
+                        .setSize43(ObjectUtils.isNotEmpty(tySizeStock) ? tySizeStock.getSize43() : null);
+            }
+            prodStockList.add(stock);
+        });
+    }
+
+    /**
+     * 处理档口客户优惠
+     */
+    private void handleCusDisc(String tyAtrNo, Map<String, Set<String>> tyExistArtNoColorMap, Map<String, Map<String, List<TyCusDiscImportVO>>> tyCusDiscGroupMap,
+                               Map<String, StoreProductColor> buJuProdColorMap, Map<String, StoreCustomer> buJuStoreCusMap,
+                               List<StoreCustomerProductDiscount> prodCusDiscList, Long storeId, Long storeProdId) {
+        // TY货号下有哪些颜色存在客户优惠
+        Map<String, List<TyCusDiscImportVO>> tyColorCusDiscMap = tyCusDiscGroupMap.get(tyAtrNo);
+        if (MapUtils.isEmpty(tyColorCusDiscMap)) {
+            return;
+        }
+        // ty当前货号正在生效的颜色列表
+        Set<String> existColorSet = tyExistArtNoColorMap.getOrDefault(tyAtrNo, Collections.emptySet());
+        // 依次遍历存在优惠的颜色，设置步橘系统客户优惠关系
+        tyColorCusDiscMap.forEach((tyColor, tyCusDiscList) -> {
+            // 必须是现在正在生效的颜色，才会被添加到系统中
+            if (!existColorSet.contains(tyColor)) {
+                return;
+            }
+            // TODO 该处TY 与 FHB处理不同
+            // TODO 该处TY 与 FHB处理不同
+            // TODO 该处TY 与 FHB处理不同
+            tyCusDiscList.stream().filter(x -> x.getDiscount() > 0).forEach(tyCusDisc -> {
+                StoreProductColor buJuProdColor = Optional.ofNullable(buJuProdColorMap.get(tyColor)).orElseThrow(() -> new ServiceException("没有步橘系统对应的颜色!" + tyColor, HttpStatus.ERROR));
+                StoreCustomer storeCus = Optional.ofNullable(buJuStoreCusMap.get(tyCusDisc.getCusName())).orElseThrow(() -> new ServiceException("没有步橘系统对应的客户!" + tyCusDisc.getCusName(), HttpStatus.ERROR));
+                // 将FHB客户优惠 转为步橘系统优惠
+                prodCusDiscList.add(new StoreCustomerProductDiscount().setStoreId(storeId).setStoreProdId(storeProdId).setStoreCusId(storeCus.getId())
+                        .setStoreCusName(storeCus.getCusName()).setStoreProdColorId(buJuProdColor.getId()).setDiscount(tyCusDisc.getDiscount()));
+            });
+        });
     }
 
 }

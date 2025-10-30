@@ -9,7 +9,7 @@ import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
-import com.ruoyi.xkt.domain.*;
+import com.ruoyi.xkt.domain.StoreCustomer;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusDTO;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusFuzzyResDTO;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusPageDTO;
@@ -147,18 +147,7 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
                 throw new ServiceException("请输入正确的手机号!", HttpStatus.ERROR);
             }
         }
-        // 如果名称变更了，则需要调整关联表中的客户名称
-        if (!Objects.equals(storeCusDTO.getCusName(), storeCus.getCusName())) {
-            // 判断客户名称是否已存在
-            List<StoreCustomer> storeCusList = this.storeCusMapper.selectList(new LambdaQueryWrapper<StoreCustomer>()
-                    .eq(StoreCustomer::getStoreId, storeCus.getStoreId()).eq(StoreCustomer::getDelFlag, Constants.UNDELETED)
-                    .eq(StoreCustomer::getCusName, storeCusDTO.getCusName()).ne(StoreCustomer::getId, storeCus.getId()));
-            if (CollectionUtils.isNotEmpty(storeCusList)) {
-                throw new ServiceException("客户名称已存在，请修改后重新提交!", HttpStatus.ERROR);
-            }
-            this.updateRelatedCusName(storeCusDTO.getCusName(), storeCus.getId(), storeCus.getStoreId());
-        }
-        BeanUtil.copyProperties(storeCusDTO, storeCus);
+        storeCus.setPhone(storeCusDTO.getPhone()).setRemark(storeCusDTO.getRemark());
         return storeCusMapper.updateById(storeCus);
     }
 
@@ -176,48 +165,6 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
                         .eq(StoreCustomer::getId, storeCusId).eq(StoreCustomer::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口客户不存在!", HttpStatus.ERROR));
         return BeanUtil.toBean(storeCus, StoreCusDTO.class);
-    }
-
-    /**
-     * 更新关联表的客户名称
-     *
-     * @param cusName    最新的客户名臣
-     * @param storeCusId 档口客户ID
-     * @param storeId    档口ID
-     */
-    private void updateRelatedCusName(String cusName, Long storeCusId, Long storeId) {
-        // 档口销售表
-        List<StoreSale> saleList = storeSaleMapper.selectList(new LambdaQueryWrapper<StoreSale>()
-                .eq(StoreSale::getStoreId, storeId).eq(StoreSale::getDelFlag, Constants.UNDELETED)
-                .eq(StoreSale::getStoreCusId, storeCusId));
-        if (CollectionUtils.isNotEmpty(saleList)) {
-            saleList.forEach(x -> x.setStoreCusName(cusName));
-            storeSaleMapper.updateById(saleList);
-        }
-        // 档口销售明细表
-        List<StoreSaleDetail> saleDetailList = this.saleDetailMapper.selectList(new LambdaQueryWrapper<StoreSaleDetail>()
-                .eq(StoreSaleDetail::getStoreId, storeId).eq(StoreSaleDetail::getDelFlag, Constants.UNDELETED)
-                .eq(StoreSaleDetail::getStoreCusId, storeCusId));
-        if (CollectionUtils.isNotEmpty(saleDetailList)) {
-            saleDetailList.forEach(x -> x.setStoreCusName(cusName));
-            this.saleDetailMapper.updateById(saleDetailList);
-        }
-        // 档口销售返单表
-        List<StoreSaleRefundRecord> refundList = this.saleRefundRecordMapper.selectList(new LambdaQueryWrapper<StoreSaleRefundRecord>()
-                .eq(StoreSaleRefundRecord::getStoreId, storeId).eq(StoreSaleRefundRecord::getDelFlag, Constants.UNDELETED)
-                .eq(StoreSaleRefundRecord::getStoreCusId, storeCusId));
-        if (CollectionUtils.isNotEmpty(refundList)) {
-            refundList.forEach(x -> x.setStoreCusName(cusName));
-            this.saleRefundRecordMapper.updateById(refundList);
-        }
-        // 档口销售返单明细表
-        List<StoreSaleRefundRecordDetail> refundDetailList = this.saleRefundRecordDetailMapper.selectList(new LambdaQueryWrapper<StoreSaleRefundRecordDetail>()
-                .eq(StoreSaleRefundRecordDetail::getStoreId, storeId).eq(StoreSaleRefundRecordDetail::getDelFlag, Constants.UNDELETED)
-                .eq(StoreSaleRefundRecordDetail::getStoreCusId, storeCusId));
-        if (CollectionUtils.isNotEmpty(refundDetailList)) {
-            refundDetailList.forEach(x -> x.setStoreCusName(cusName));
-            this.saleRefundRecordDetailMapper.updateById(refundDetailList);
-        }
     }
 
 }

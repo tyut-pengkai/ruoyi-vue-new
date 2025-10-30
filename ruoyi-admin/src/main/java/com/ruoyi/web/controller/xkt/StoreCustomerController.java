@@ -8,6 +8,7 @@ import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.web.controller.xkt.vo.storeCustomer.StoreCusFuzzyResVO;
 import com.ruoyi.web.controller.xkt.vo.storeCustomer.StoreCusPageVO;
+import com.ruoyi.web.controller.xkt.vo.storeCustomer.StoreCusUpdateVO;
 import com.ruoyi.web.controller.xkt.vo.storeCustomer.StoreCusVO;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusDTO;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusPageDTO;
@@ -62,7 +63,7 @@ public class StoreCustomerController extends XktBaseController {
     @ApiOperation(value = "修改档口客户", httpMethod = "PUT", response = R.class)
     @Log(title = "修改档口客户", businessType = BusinessType.UPDATE)
     @PutMapping
-    public R<Integer> edit(@Validated @RequestBody StoreCusVO storeCusVO) {
+    public R<Integer> edit(@Validated @RequestBody StoreCusUpdateVO storeCusVO) {
         return R.ok(storeCusService.updateStoreCus(BeanUtil.toBean(storeCusVO, StoreCusDTO.class)));
     }
 
