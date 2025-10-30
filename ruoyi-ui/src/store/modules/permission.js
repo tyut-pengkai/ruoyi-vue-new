@@ -65,6 +65,11 @@ const permission = {
 // 遍历后台传来的路由字符串，转换为组件对象
 function filterAsyncRouter(asyncRouterMap, lastRouter = false, type = false) {
   return asyncRouterMap.filter(route => {
+    // 只排除特定的学生信息模块路由，保留我们的学生管理模块
+    if (route.path === '/student-info') {
+      return false;
+    }
+    
     if (type && route.children) {
       route.children = filterChildren(route.children)
     }
@@ -81,7 +86,12 @@ function filterAsyncRouter(asyncRouterMap, lastRouter = false, type = false) {
       }
     }
     if (route.children != null && route.children && route.children.length) {
+      // 递归过滤子路由
       route.children = filterAsyncRouter(route.children, route, type)
+      // 如果子路由都被过滤掉了，这个父路由也应该被过滤
+      if (route.children.length === 0) {
+        return false;
+      }
     } else {
       delete route['children']
       delete route['redirect']

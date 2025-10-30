@@ -70,7 +70,7 @@ export const constantRoutes = [
         path: 'index',
         component: () => import('@/views/dashboard/index'),
         name: 'Index',
-        meta: { title: '论文首页（郑）', icon: 'dashboard', affix: true }
+        meta: { title: '论文首页（郑瑜甜）', icon: 'dashboard', affix: true }
       }
     ]
   },
@@ -92,6 +92,21 @@ export const constantRoutes = [
 
 // 动态路由，基于用户权限动态去加载
 export const dynamicRoutes = [
+  {    
+    path: '/student',
+    component: Layout,
+    alwaysShow: true,
+    permissions: ['student:info:list'],
+    meta: { title: '学生管理', icon: 'student' },
+    children: [
+      {        
+        path: 'info',
+        component: () => import('@/views/student/info/index'),
+        name: 'StudentInfo',
+        meta: { title: '学生信息管理', permissions: ['student:info:list'] }
+      }
+    ]
+  },
   {
     path: '/system/user-auth',
     component: Layout,
