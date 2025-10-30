@@ -25,6 +25,10 @@ public class TyProdImportVO {
     private BigDecimal price;
     @Excel(name = "HPBM")
     private String hpbm;
+    @Excel(name = "ML")
+    private String shaftMaterial;
+    @Excel(name = "ll")
+    private String shoeUpperLiningMaterial;
     @Excel(name = "SN")
     private String sn;
 

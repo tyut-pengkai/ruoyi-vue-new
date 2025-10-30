@@ -6,6 +6,8 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.web.controller.xkt.migartion.vo.CusDiscErrorVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.fhb.FhbCusDiscountVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.fhb.FhbCusVO;
@@ -18,6 +20,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -132,24 +137,22 @@ public class FhbController extends BaseController {
      * @return
      */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @GetMapping("/error/cus/disc/{supplierId}")
-    public R<CusDiscErrorVO> getErrorCusDisc(@PathVariable Integer supplierId) {
+    @GetMapping("/error/cus/price/{supplierId}")
+    public void getErrorCusDisc(HttpServletResponse response,  @PathVariable Integer supplierId) throws UnsupportedEncodingException {
         // 先从redis中获取列表数据
         List<FhbCusDiscountVO.SMCDRecordVO> cacheList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_CUS_DISCOUNT_KEY + supplierId), new ArrayList<>());
-        if (CollectionUtils.isEmpty(cacheList)) {
-            return R.ok();
-        }
-        List<String> errDiscList = new ArrayList<>();
+        List<CusDiscErrorVO> errList = new ArrayList<>();
         // 1. 有哪些是优惠价大于销售价的
         cacheList.forEach(record -> {
             final Integer supplyPrice = ObjectUtils.defaultIfNull(record.getSupplyPrice(), 0);
             final Integer customerPrice = ObjectUtils.defaultIfNull(record.getCustomerPrice(), 0);
-            if (supplyPrice - customerPrice <= 0) {
-                errDiscList.add(record.getArtNo() + ":" + record.getCustomerName() + ":" + record.getColor() + "，优惠价大于原售价");
+            if (supplyPrice - customerPrice < 0) {
+                errList.add(new CusDiscErrorVO().setCusName(record.getCustomerName()).setProdArtNum(record.getArtNo())
+                        .setColorName(record.getColor()).setErrMsg("优惠价大于原售价").setDetail("销售价:" + supplyPrice + " 优惠价:" + customerPrice));
             }
         });
-        // 2. 有哪些优惠是同一货号不同颜色优惠金额不一致
+        /*// 2. 有哪些优惠是同一货号不同颜色优惠金额不一致
         List<String> errCusDiscUnSameList = new ArrayList<>();
         Map<String, Map<String, List<FhbCusDiscountVO.SMCDRecordVO>>> artNoCusDiscMap = cacheList.stream().collect(Collectors
                 .groupingBy(FhbCusDiscountVO.SMCDRecordVO::getArtNo, Collectors.groupingBy(FhbCusDiscountVO.SMCDRecordVO::getCustomerName)));
@@ -162,8 +165,14 @@ public class FhbController extends BaseController {
             if (discValueSet.size() > 1) {
                 errCusDiscUnSameList.add(artNo + ":" + cusName + ":" + colorDiscMap.keySet() + "，优惠金额不一致");
             }
-        }));
-        return R.ok(new CusDiscErrorVO().setErrDiscList(errDiscList).setErrCusDiscUnSameList(errCusDiscUnSameList));
+        }));*/
+        for (int i = 0; i < errList.size(); i++) {
+            errList.get(i).setOrderNum(i + 1);
+        }
+        ExcelUtil<CusDiscErrorVO> util = new ExcelUtil<>(CusDiscErrorVO.class);
+        String encodedFileName = URLEncoder.encode("FHB客户优惠问题" + DateUtils.getDate(), "UTF-8").replaceAll("\\+", "%20");
+        response.setHeader("Content-disposition", "attachment;filename=" + encodedFileName + ".xlsx");
+        util.exportExcel(response, errList, "FHB客户优惠问题");
     }
 
 

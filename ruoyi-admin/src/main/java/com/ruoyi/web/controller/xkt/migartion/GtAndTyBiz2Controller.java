@@ -16,10 +16,10 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.framework.es.EsClientWrapper;
 import com.ruoyi.framework.notice.fs.FsNotice;
-import com.ruoyi.web.controller.xkt.migartion.vo.gtAndTy.GtAndTYCompareDownloadVO;
-import com.ruoyi.web.controller.xkt.migartion.vo.gtAndTy.GtAndTYInitVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.gt.GtCateVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.gt.GtProdSkuVO;
+import com.ruoyi.web.controller.xkt.migartion.vo.gtAndTy.GtAndTYCompareDownloadVO;
+import com.ruoyi.web.controller.xkt.migartion.vo.gtAndTy.GtAndTYInitVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.ty.TyCusDiscImportVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.ty.TyCusImportVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.ty.TyProdImportVO;
@@ -82,8 +82,8 @@ public class GtAndTyBiz2Controller extends BaseController {
      * step1
      */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
-    @GetMapping("/compare/{userId}/{diffStr}")
-    public void compare(HttpServletResponse response, @PathVariable("userId") Integer userId, @PathVariable("diffStr") String diffStr) throws UnsupportedEncodingException {
+    @GetMapping("/compare/{userId}")
+    public void compare(HttpServletResponse response, @PathVariable("userId") Integer userId) throws UnsupportedEncodingException {
         // 处理的思路，以GT为主，根据GT的货号 去匹配TY的货号，有些档口写的比较规范，这种就比较好处理
         List<GtProdSkuVO> gtOnSaleList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_GT_SALE_BASIC_KEY + userId), new ArrayList<>());
@@ -108,7 +108,8 @@ public class GtAndTyBiz2Controller extends BaseController {
         Map<String, List<String>> gtMatchTyArtNoMap = new HashMap<>();
         // 以GT为准在，找TY匹配的货号
         gtArtNoList.forEach(gtOnSaleArtNo -> tyArtNoColorMap.forEach((tyArtNo, tyArtNoColorStr) -> {
-            if (Objects.equals(tyArtNo, gtOnSaleArtNo) || Objects.equals(tyArtNo, gtOnSaleArtNo + diffStr)) {
+            // 3种情况 1:1 货号 2:货号R 3:货号-R
+            if (Objects.equals(tyArtNo, gtOnSaleArtNo) || Objects.equals(tyArtNo, gtOnSaleArtNo + "R") || Objects.equals(tyArtNo, gtOnSaleArtNo + "-R")) {
                 List<String> existMatchArtNoList = gtMatchTyArtNoMap.getOrDefault(gtOnSaleArtNo, new ArrayList<>());
                 existMatchArtNoList.add(tyArtNo);
                 gtMatchTyArtNoMap.put(gtOnSaleArtNo, existMatchArtNoList);
@@ -142,7 +143,7 @@ public class GtAndTyBiz2Controller extends BaseController {
         gtMatchTyArtNoMap.forEach((gtArtNo, tyArtNoList) -> matchTyArtNoList.addAll(tyArtNoList));
         // 已下架的GT货号，如果能在TY找到匹配的，也要剔除
         gtOffSaleArtNoList.forEach(gtOffSaleArtNo -> tyArtNoColorMap.forEach((tyArtNo, colorNameStr) -> {
-            if (tyArtNo.contains(gtOffSaleArtNo)) {
+            if (Objects.equals(tyArtNo, gtOffSaleArtNo) || Objects.equals(tyArtNo, gtOffSaleArtNo + "R") || Objects.equals(tyArtNo, gtOffSaleArtNo + "-R")) {
                 matchTyArtNoList.add(tyArtNo);
             }
         }));
@@ -190,12 +191,12 @@ public class GtAndTyBiz2Controller extends BaseController {
         Map<String, String> tyArtNoColorMap = tyProdList.stream().collect(Collectors.groupingBy(TyProdImportVO::getProdArtNum,
                 Collectors.collectingAndThen(Collectors.mapping(TyProdImportVO::getColorName, Collectors.toList()),
                         list -> "(" + list.stream().distinct().collect(Collectors.joining(",")) + ")")));
-
         // GT和TY匹配的货号map
         Map<String, List<String>> gtMatchTyArtNoMap = new HashMap<>();
         // 以GT为准在，找TY匹配的货号
         gtArtNoList.forEach(gtOnSaleArtNo -> tyArtNoColorMap.forEach((tyArtNo, tyArtNoColorStr) -> {
-            if (Objects.equals(tyArtNo, gtOnSaleArtNo) || Objects.equals(tyArtNo, gtOnSaleArtNo + initVO.getDiffStr())) {
+            // 3种情况 1:1 货号 2:货号R 3:货号-R
+            if (Objects.equals(tyArtNo, gtOnSaleArtNo) || Objects.equals(tyArtNo, gtOnSaleArtNo + "R") || Objects.equals(tyArtNo, gtOnSaleArtNo + "-R")) {
                 List<String> existMatchArtNoList = gtMatchTyArtNoMap.getOrDefault(gtOnSaleArtNo, new ArrayList<>());
                 existMatchArtNoList.add(tyArtNo);
                 gtMatchTyArtNoMap.put(gtOnSaleArtNo, existMatchArtNoList);
@@ -289,12 +290,12 @@ public class GtAndTyBiz2Controller extends BaseController {
         Map<String, String> tyArtNoColorMap = tyProdList.stream().collect(Collectors.groupingBy(TyProdImportVO::getProdArtNum,
                 Collectors.collectingAndThen(Collectors.mapping(TyProdImportVO::getColorName, Collectors.toList()),
                         list -> "(" + list.stream().distinct().collect(Collectors.joining(",")) + ")")));
-
         // GT和TY匹配的货号map
         Map<String, List<String>> gtMatchTyArtNoMap = new HashMap<>();
         // 以GT为准在，找TY匹配的货号
         gtArtNoList.forEach(gtOnSaleArtNo -> tyArtNoColorMap.forEach((tyArtNo, tyArtNoColorStr) -> {
-            if (tyArtNo.contains(gtOnSaleArtNo)) {
+            // 3种情况 1:1 货号 2:货号R 3:货号-R
+            if (Objects.equals(tyArtNo, gtOnSaleArtNo) || Objects.equals(tyArtNo, gtOnSaleArtNo + "R") || Objects.equals(tyArtNo, gtOnSaleArtNo + "-R")) {
                 List<String> existMatchArtNoList = gtMatchTyArtNoMap.getOrDefault(gtOnSaleArtNo, new ArrayList<>());
                 existMatchArtNoList.add(tyArtNo);
                 gtMatchTyArtNoMap.put(gtOnSaleArtNo, existMatchArtNoList);
@@ -373,12 +374,12 @@ public class GtAndTyBiz2Controller extends BaseController {
         Map<String, String> tyArtNoColorMap = tyProdList.stream().collect(Collectors.groupingBy(TyProdImportVO::getProdArtNum,
                 Collectors.collectingAndThen(Collectors.mapping(TyProdImportVO::getColorName, Collectors.toList()),
                         list -> "(" + list.stream().distinct().collect(Collectors.joining(",")) + ")")));
-
         // GT和TY匹配的货号map
         Map<String, List<String>> gtMatchTyArtNoMap = new HashMap<>();
         // 以GT为准在，找TY匹配的货号
         gtArtNoList.forEach(gtOnSaleArtNo -> tyArtNoColorMap.forEach((tyArtNo, tyArtNoColorStr) -> {
-            if (tyArtNo.contains(gtOnSaleArtNo)) {
+            // 3种情况 1:1 货号 2:货号R 3:货号-R
+            if (Objects.equals(tyArtNo, gtOnSaleArtNo) || Objects.equals(tyArtNo, gtOnSaleArtNo + "R") || Objects.equals(tyArtNo, gtOnSaleArtNo + "-R")) {
                 List<String> existMatchArtNoList = gtMatchTyArtNoMap.getOrDefault(gtOnSaleArtNo, new ArrayList<>());
                 existMatchArtNoList.add(tyArtNo);
                 gtMatchTyArtNoMap.put(gtOnSaleArtNo, existMatchArtNoList);
