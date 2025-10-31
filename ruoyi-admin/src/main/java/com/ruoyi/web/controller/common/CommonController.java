@@ -233,8 +233,8 @@ public class CommonController {
 
     @ApiOperation("获取html内容")
     @GetMapping("/html/content/{title}")
-    public R getHtmlContent(@PathVariable("title") String title) {
-        return R.ok(htmlService.getHtmlContent(title));
+    public String getHtmlContent(@PathVariable("title") String title) {
+        return htmlService.getHtmlContent(title);
     }
 
     /**
