@@ -3,6 +3,7 @@ package com.ruoyi.xkt.dto.storeCusProdDiscount;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -13,7 +14,7 @@ import java.util.Date;
  * @date 2025/3/27 15:12
  */
 @Data
-
+@Accessors(chain = true)
 public class StoreCusProdDiscPageResDTO {
 
     @ApiModelProperty(value = "档口客户商品优惠ID")

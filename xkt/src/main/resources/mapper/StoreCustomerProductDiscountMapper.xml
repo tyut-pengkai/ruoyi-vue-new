@@ -13,15 +13,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             scpd.store_cus_id AS storeCusId,
             scpd.store_cus_name AS storeCusName,
             scpd.store_prod_color_id AS storeProdColorId,
-            spc.color_name,
-            spcs.price,
             scpd.discount,
             scpd.update_time
         FROM
             store_customer_product_discount scpd
-                JOIN store_product sp ON scpd.store_prod_id = sp.id AND sp.del_flag = 0
-                JOIN store_product_color spc ON scpd.store_prod_color_id = spc.id AND spc.del_flag = 0
-                JOIN store_product_color_size spcs ON spc.store_prod_id = spcs.store_prod_id AND spcs.del_flag = 0 AND spc.store_color_id = spcs.store_color_id
+            JOIN store_product sp ON scpd.store_prod_id = sp.id AND sp.del_flag = 0
         WHERE
             scpd.del_flag = 0 AND scpd.store_id = #{storeId}
             <if test="cusName != null  and cusName != ''"> AND scpd.store_cus_name like concat('%', #{cusName}, '%')</if>
@@ -31,6 +27,27 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             scpd.store_prod_id,
             scpd.store_prod_color_id,
             scpd.store_cus_id
+    </select>
+
+
+    <select id="selectDiscPageRelate" resultType="com.ruoyi.xkt.dto.storeCusProdDiscount.StoreCusProdDiscPageResDTO">
+        SELECT
+            spc.id AS storeProdColorId,
+            spc.color_name,
+            MIN(spcs.price) AS price
+        FROM
+            store_product_color spc
+        JOIN
+            store_product_color_size spcs ON spc.store_prod_id = spcs.store_prod_id AND spcs.store_color_id = spcs.store_color_id AND spcs.del_flag = 0
+        WHERE
+            spc.del_flag = 0
+            AND spc.id IN
+            <foreach item="item" collection="storeProdColorIdList" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        GROUP BY
+            spc.store_prod_id,
+            spc.store_color_id
     </select>
 
 

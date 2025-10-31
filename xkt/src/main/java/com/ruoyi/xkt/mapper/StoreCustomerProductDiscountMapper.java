@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreCustomerProductDiscount;
 import com.ruoyi.xkt.dto.storeCusProdDiscount.StoreCusProdDiscPageDTO;
 import com.ruoyi.xkt.dto.storeCusProdDiscount.StoreCusProdDiscPageResDTO;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -22,5 +23,14 @@ public interface StoreCustomerProductDiscountMapper extends BaseMapper<StoreCust
      * @return List<StoreCusProdDiscPageResDTO>
      */
     List<StoreCusProdDiscPageResDTO> selectDiscPage(StoreCusProdDiscPageDTO pageDTO);
+
+    /**
+     * 档口客户优惠分页关联
+     *
+     * @param storeProdColorIdList 商品颜色ID列表
+     * @return List<StoreCusProdDiscPageResDTO>
+     */
+    List<StoreCusProdDiscPageResDTO> selectDiscPageRelate(@Param("storeProdColorIdList") List<Long> storeProdColorIdList);
+
 
 }

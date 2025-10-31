@@ -158,7 +158,22 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
             throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
         }
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
+        // 查询分页数据
         List<StoreCusProdDiscPageResDTO> list = this.cusProdDiscMapper.selectDiscPage(pageDTO);
+        if (CollectionUtils.isEmpty(list)) {
+            return Page.empty(pageDTO.getPageSize(), pageDTO.getPageNum());
+        }
+        // 处理分页的价格及颜色等
+        List<StoreCusProdDiscPageResDTO> relateList = this.cusProdDiscMapper.selectDiscPageRelate(list.stream()
+                .map(StoreCusProdDiscPageResDTO::getStoreProdColorId).distinct().collect(Collectors.toList()));
+        Map<Long, StoreCusProdDiscPageResDTO> relateMap = relateList.stream().collect(Collectors
+                .toMap(StoreCusProdDiscPageResDTO::getStoreProdColorId, Function.identity()));
+        list.forEach(x -> {
+            StoreCusProdDiscPageResDTO relate = relateMap.get(x.getStoreProdColorId());
+            if (ObjectUtils.isNotEmpty(relate)) {
+                x.setPrice(relate.getPrice()).setColorName(relate.getColorName());
+            }
+        });
         return Page.convert(new PageInfo<>(list));
     }
 
