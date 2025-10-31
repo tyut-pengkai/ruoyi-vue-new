@@ -46,6 +46,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 #{item}
             </foreach>
         GROUP BY
+            spc.id,
             spc.store_prod_id,
             spc.store_color_id
     </select>
