@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
 import static com.ruoyi.common.constant.Constants.WEIGHT_DEFAULT_ZERO;
 
 /**
- * Compare 相关
+ * Compare 相关 适用于处理不太的数据
  *
  * @author ruoyi
  */

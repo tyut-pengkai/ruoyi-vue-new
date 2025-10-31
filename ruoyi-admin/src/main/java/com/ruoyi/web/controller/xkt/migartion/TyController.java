@@ -60,7 +60,7 @@ public class TyController extends BaseController {
         // 找出两个列表的交集
         List<String> commonArtNumList = tyProdArtNumList.stream().filter(gtOffSaleArtNumList::contains).collect(Collectors.toList());
         List<String> allMatchArtNumList = new ArrayList<>(commonArtNumList);
-        tyProdArtNumList.stream().filter(x -> x.contains("R")).forEach(x -> {
+        tyProdArtNumList.stream().filter(x -> x.endsWith("R")).forEach(x -> {
             for (String comArtNum : commonArtNumList) {
                 if (Objects.equals(x, comArtNum + "R") || Objects.equals(x, comArtNum + "-R")) {
                     System.err.println(x + " : " + comArtNum);
@@ -100,8 +100,8 @@ public class TyController extends BaseController {
                     String colorName = x.getColorName().trim();
                     // 如果有sn则取sn 否则取hpbm
                     String tySnPrefix = StringUtils.isNotBlank(x.getSn()) ? x.getSn().trim() : x.getHpbm().trim();
-                    // 如果货号包括-R 则表明是 货号为绒里，手动给颜色添加后缀“绒里”
-                    if (prodArtNum.contains("R")) {
+                    // 如果货号结尾包括R 则表明是 货号为绒里，手动给颜色添加后缀“绒里”
+                    if (prodArtNum.endsWith("R")) {
                         colorName = colorName.contains("绒") ? colorName : (colorName + "绒里");
                     }
                     return x.setProdArtNum(prodArtNum).setColorName(colorName).setSn(tySnPrefix);
@@ -172,8 +172,8 @@ public class TyController extends BaseController {
                         final int discount = ObjectUtils.defaultIfNull(x.getBasicPrice(), 0) - ObjectUtils.defaultIfNull(x.getCustomerPrice(), 0);
                         String prodArtNum = x.getProdArtNum().trim();
                         String colorName = x.getColorName().trim();
-                        // 如果货号包括-R 则表明是 货号为绒里，手动给颜色添加后缀“绒里”
-                        if (prodArtNum.contains("R")) {
+                        // 如果货号结尾包括-R 则表明是 货号为绒里，手动给颜色添加后缀“绒里”
+                        if (prodArtNum.endsWith("R")) {
                             colorName = colorName.contains("绒") ? colorName : (colorName + "绒里");
                         }
                         x.setProdArtNum(prodArtNum).setColorName(colorName).setCusName(cusName).setDiscount(discount);
@@ -204,8 +204,8 @@ public class TyController extends BaseController {
         tyStockList.forEach(x -> {
             String prodArtNum = x.getProdArtNum().trim();
             String colorName = x.getColorName().trim();
-            // 如果货号包括R 则表明是 货号为绒里，手动给颜色添加后缀“绒里”
-            if (prodArtNum.contains("R")) {
+            // 如果货号结尾包括R 则表明是 货号为绒里，手动给颜色添加后缀“绒里”
+            if (prodArtNum.endsWith("R")) {
                 colorName = colorName.contains("绒") ? colorName : (colorName + "绒里");
             }
             if (importStockMap.containsKey(prodArtNum + ":" + colorName)) {

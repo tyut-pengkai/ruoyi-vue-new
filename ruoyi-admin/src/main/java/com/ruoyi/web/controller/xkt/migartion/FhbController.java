@@ -61,7 +61,13 @@ public class FhbController extends BaseController {
         // 先从redis中获取列表数据
         List<FhbProdVO.SMIVO> cacheList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_PROD_KEY + supplierId), new ArrayList<>());
-        CollectionUtils.addAll(cacheList, prodVO.getData().getRecords());
+        // 如果货号包括R 则表明是 货号为绒里，手动给颜色添加后缀“绒里”
+        List<FhbProdVO.SMIVO> importList = prodVO.getData().getRecords().stream().peek(x -> {
+            if (x.getArtNo().endsWith("R")) {
+                x.setColor(x.getColor().contains("绒") ? x.getColor() : (x.getColor() + "绒里"));
+            }
+        }).collect(Collectors.toList());
+        CollectionUtils.addAll(cacheList, importList);
         // 存到redis中
         redisCache.setCacheObject(CacheConstants.MIGRATION_SUPPLIER_PROD_KEY + supplierId, cacheList, 5, TimeUnit.DAYS);
         return R.ok();

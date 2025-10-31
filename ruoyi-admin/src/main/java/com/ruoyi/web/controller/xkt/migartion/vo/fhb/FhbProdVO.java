@@ -28,6 +28,8 @@ public class FhbProdVO {
         private String artNo;
         private String color;
         private String size;
+        private String outStuff;
+        private String innerStuff;
         private BigDecimal addPrice;
         private String addPriceSize;
         private BigDecimal salePrice;

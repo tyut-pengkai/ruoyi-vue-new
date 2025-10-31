@@ -92,11 +92,11 @@ public class TYOtherBizAfterController extends BaseController {
         List<String> tyAfterArtNumList = tyAfterImportVOList.stream().map(TyBizAfterImportVO::getTyAfterArtNum).map(String::trim)
                 .filter(StringUtils::isNotBlank).map(item -> item.contains("(") ? item.substring(0, item.indexOf("(")) : item)
                 .collect(Collectors.toList());
-        // 绒里货号map
-        Map<String, String> waitMatchMap = tyAfterArtNumList.stream().filter(x -> x.contains("R")).collect(Collectors.toMap(x -> x, x -> x));
+        // 绒里货号map 必须是末尾带R的
+        Map<String, String> waitMatchMap = tyAfterArtNumList.stream().filter(x -> x.endsWith("R")).collect(Collectors.toMap(x -> x, x -> x));
         // 按照货号 和 单里绒里匹配关系进行分组
         Map<String, List<String>> tyAfterArtNumGroupMap = new HashMap<>();
-        tyAfterArtNumList.stream().filter(x -> !x.contains("R")).distinct().forEach(x -> {
+        tyAfterArtNumList.stream().filter(x -> !x.endsWith("R")).distinct().forEach(x -> {
             List<String> matchList = new ArrayList<>(Collections.singletonList(x));
             if (waitMatchMap.containsKey(x + "R")) {
                 matchList.add(waitMatchMap.get(x + "R"));
@@ -118,7 +118,6 @@ public class TYOtherBizAfterController extends BaseController {
         final Date voucherDate = java.sql.Date.valueOf(LocalDate.now());
         // 默认为 单鞋下 弹力靴/袜靴 分类
         final Long prodCateId = 13L;
-        Map<String, TyProdImportVO> tyProdMap = tyProdList.stream().collect(Collectors.toMap(TyProdImportVO::getProdArtNum, x -> x, (v1, v2) -> v2));
         tyAfterArtNumGroupMap.forEach((tyArtNum, matchList) -> {
             // 初始化档口商品 默认为私款，只能打印条码出库等，不可在平台展示
             StoreProduct storeProd = new StoreProduct().setStoreId(storeId).setProdCateId(prodCateId).setPrivateItem(1)
@@ -128,6 +127,7 @@ public class TYOtherBizAfterController extends BaseController {
         });
         this.storeProdMapper.insert(storeProdList);
 
+        Map<String, TyProdImportVO> tyProdMap = tyProdList.stream().collect(Collectors.toMap(TyProdImportVO::getProdArtNum, x -> x, (v1, v2) -> v2));
         // 找到枚举的 鞋面材质 和 鞋面内里材质
         List<SysDictData> attrList = Optional.ofNullable(this.dictDataMapper.selectList(new LambdaQueryWrapper<SysDictData>()
                         .in(SysDictData::getDictType, Arrays.asList(DICT_TYPE_SHAFT_MATERIAL, DICT_TYPE_SHOE_UPPER_LINING_MATERIAL))
@@ -192,11 +192,11 @@ public class TYOtherBizAfterController extends BaseController {
         List<String> tyAfterArtNumList = tyAfterImportVOList.stream().map(TyBizAfterImportVO::getTyAfterArtNum).map(String::trim)
                 .filter(StringUtils::isNotBlank).map(item -> item.contains("(") ? item.substring(0, item.indexOf("(")) : item)
                 .collect(Collectors.toList());
-        // 绒里货号map
-        Map<String, String> waitMatchMap = tyAfterArtNumList.stream().filter(x -> x.contains("R")).collect(Collectors.toMap(x -> x, x -> x));
+        // 绒里货号map 必须是末尾带R的
+        Map<String, String> waitMatchMap = tyAfterArtNumList.stream().filter(x -> x.endsWith("R")).collect(Collectors.toMap(x -> x, x -> x));
         // 按照货号 和 单里绒里匹配关系进行分组
         Map<String, List<String>> tyAfterArtNumGroupMap = new HashMap<>();
-        tyAfterArtNumList.stream().filter(x -> !x.contains("R")).distinct().forEach(x -> {
+        tyAfterArtNumList.stream().filter(x -> !x.endsWith("R")).distinct().forEach(x -> {
             List<String> matchList = new ArrayList<>(Collections.singletonList(x));
             if (waitMatchMap.containsKey(x + "R")) {
                 matchList.add(waitMatchMap.get(x + "R"));
@@ -275,11 +275,11 @@ public class TYOtherBizAfterController extends BaseController {
         List<String> tyAfterArtNumList = tyAfterImportVOList.stream().map(TyBizAfterImportVO::getTyAfterArtNum).map(String::trim)
                 .filter(StringUtils::isNotBlank).map(item -> item.contains("(") ? item.substring(0, item.indexOf("(")) : item)
                 .collect(Collectors.toList());
-        // 绒里货号map
-        Map<String, String> waitMatchMap = tyAfterArtNumList.stream().filter(x -> x.contains("R")).collect(Collectors.toMap(x -> x, x -> x));
+        // 绒里货号map 必须是末尾带R的
+        Map<String, String> waitMatchMap = tyAfterArtNumList.stream().filter(x -> x.endsWith("R")).collect(Collectors.toMap(x -> x, x -> x));
         // 按照货号 和 单里绒里匹配关系进行分组
         Map<String, List<String>> tyAfterArtNumGroupMap = new HashMap<>();
-        tyAfterArtNumList.stream().filter(x -> !x.contains("R")).distinct().forEach(x -> {
+        tyAfterArtNumList.stream().filter(x -> !x.endsWith("R")).distinct().forEach(x -> {
             List<String> matchList = new ArrayList<>(Collections.singletonList(x));
             if (waitMatchMap.containsKey(x + "R")) {
                 matchList.add(waitMatchMap.get(x + "R"));
@@ -372,14 +372,14 @@ public class TYOtherBizAfterController extends BaseController {
         // 当前最大的排序
         int maxOrderNum = existColorList.stream().mapToInt(StoreColor::getOrderNum).max().orElse(0) + 1;
         // TY单独处理的货品颜色
-        List<String> gtAfterColorList = tyProdList.stream().filter(tyProd -> tyAfterArtNumList.contains(tyProd.getProdArtNum()))
+        List<String> tyAfterColorList = tyProdList.stream().filter(tyProd -> tyAfterArtNumList.contains(tyProd.getProdArtNum()))
                 .map(TyProdImportVO::getColorName).filter(color -> !existColorNameList.contains(color)).distinct().collect(Collectors.toList());
-        if (CollectionUtils.isEmpty(gtAfterColorList)) {
+        if (CollectionUtils.isEmpty(tyAfterColorList)) {
             return;
         }
         List<StoreColor> storeColorList = new ArrayList<>();
-        for (int i = 0; i < gtAfterColorList.size(); i++) {
-            storeColorList.add(new StoreColor().setStoreId(storeId).setColorName(gtAfterColorList.get(i)).setOrderNum(maxOrderNum + i + 1));
+        for (int i = 0; i < tyAfterColorList.size(); i++) {
+            storeColorList.add(new StoreColor().setStoreId(storeId).setColorName(tyAfterColorList.get(i)).setOrderNum(maxOrderNum + i + 1));
         }
         this.storeColorMapper.insert(storeColorList);
     }
