@@ -122,6 +122,8 @@ public class SecurityConfig
                         .antMatchers("/rest/v1/alipay-callback/**").permitAll()
                         //OSS回调
                         .antMatchers("/rest/v1/oss-callback/upload").permitAll()
+                        //html
+                        .antMatchers("/rest/v1/common/html/content/**").permitAll()
                         //物流回调
                         .antMatchers("/rest/v1/express-callback/**").permitAll()
                         // 系统广告及首页

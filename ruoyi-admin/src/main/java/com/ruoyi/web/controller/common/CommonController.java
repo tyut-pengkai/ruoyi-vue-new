@@ -16,6 +16,7 @@ import com.ruoyi.framework.ocr.BusinessLicense;
 import com.ruoyi.framework.ocr.IdCard;
 import com.ruoyi.framework.ocr.OcrClientWrapper;
 import com.ruoyi.framework.oss.OSSClientWrapper;
+import com.ruoyi.system.service.ISysHtmlService;
 import com.ruoyi.web.controller.common.vo.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -24,6 +25,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.codehaus.jettison.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,6 +62,8 @@ public class CommonController {
     private RedisCache redisCache;
     @Autowired
     private OcrClientWrapper ocrClient;
+    @Autowired
+    private ISysHtmlService htmlService;
 
     @ApiOperation("获取OSS临时访问凭证")
     @GetMapping("/oss/getCredentials")
@@ -217,6 +221,20 @@ public class CommonController {
         // 缓存
         redisCache.setCacheObject(cacheKey, JSONUtil.toJsonStr(dto), 10, TimeUnit.MINUTES);
         return R.ok(BeanUtil.toBean(dto, BusinessLicenseVO.class));
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @ApiOperation("保存html（需登录管理员用户）")
+    @PostMapping("/html/save")
+    public R saveHtmlContent(@Validated @RequestBody HtmlVO vo){
+        htmlService.saveHtml(vo.getTitle(),vo.getContent());
+        return R.ok();
+    }
+
+    @ApiOperation("获取html内容")
+    @GetMapping("/html/content/{title}")
+    public R getHtmlContent(@PathVariable("title") String title) {
+        return R.ok(htmlService.getHtmlContent(title));
     }
 
     /**
