@@ -12,7 +12,6 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
-import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.framework.es.EsClientWrapper;
 import com.ruoyi.framework.notice.fs.FsNotice;
@@ -35,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -649,13 +649,23 @@ public class GtAndTyBiz2Controller extends BaseController {
         if (attrMap.containsKey(Constants.SHAFT_LINING_MATERIAL_NAME)) {
             prodAttr.setShaftLiningMaterial(attrMap.get(Constants.SHAFT_LINING_MATERIAL_NAME));
         }
-        // 3. 靴筒面材质
+        // 3. 鞋面材质（靴筒面材质）
         if (attrMap.containsKey(Constants.SHAFT_MATERIAL_NAME)) {
-            prodAttr.setShaftMaterial(attrMap.get(Constants.SHAFT_MATERIAL_NAME));
+            // 先看靴筒面材质，为空则找帮面材质
+            String shaftMaterialAttr = attrMap.get(Constants.SHAFT_MATERIAL_NAME);
+            prodAttr.setShaftMaterial(StringUtils.isEmpty(shaftMaterialAttr) ? attrMap.get(Constants.UPPER_MATERIAL_NAME) : shaftMaterialAttr);
         }
         // 4. 鞋面内里材质
         if (attrMap.containsKey(Constants.SHOE_UPPER_LINING_MATERIAL_NAME)) {
-            prodAttr.setShoeUpperLiningMaterial(attrMap.get(Constants.SHOE_UPPER_LINING_MATERIAL_NAME));
+            // 先找鞋面内里材质，为空 则 再找 内里材质，为空则再找 里料材质
+            String shoeUpperLiningMaterialAttr = attrMap.get(Constants.SHOE_UPPER_LINING_MATERIAL_NAME);
+            if (StringUtils.isEmpty(shoeUpperLiningMaterialAttr)) {
+                shoeUpperLiningMaterialAttr = attrMap.get(Constants.INNER_MATERIAL);
+                if (StringUtils.isEmpty(shoeUpperLiningMaterialAttr)) {
+                    shoeUpperLiningMaterialAttr = attrMap.get(Constants.OUTER_MATERIAL);
+                }
+            }
+            prodAttr.setShoeUpperLiningMaterial(shoeUpperLiningMaterialAttr);
         }
         // 5. 靴款品名
         if (attrMap.containsKey(Constants.SHOE_STYLE_NAME_NAME)) {

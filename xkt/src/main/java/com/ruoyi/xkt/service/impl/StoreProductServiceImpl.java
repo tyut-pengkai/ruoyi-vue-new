@@ -1430,7 +1430,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
         if (ObjectUtils.isNotEmpty(cateAttr.getShaftLiningMaterial())) {
             cateAttrMap.put(Constants.CATE_RELATE_MAP.get(SHAFT_LINING_MATERIAL), cateAttr.getShaftLiningMaterial());
         }
-        // 靴筒面材质
+        // 鞋面材质
         if (ObjectUtils.isNotEmpty(cateAttr.getShaftMaterial())) {
             cateAttrMap.put(Constants.CATE_RELATE_MAP.get(SHAFT_MATERIAL), cateAttr.getShaftMaterial());
         }

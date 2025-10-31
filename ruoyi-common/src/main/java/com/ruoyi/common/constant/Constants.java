@@ -328,12 +328,15 @@ public class Constants
 
     public static final BigDecimal ALI_SERVICE_FEE_RATE = BigDecimal.valueOf(0.006);
 
+    public static final String  INNER_MATERIAL = "内里材质";
+    public static final String  OUTER_MATERIAL = "里料材质";
+
     public static final String UPPER_MATERIAL = "upperMaterial";
     public static final String UPPER_MATERIAL_NAME = "帮面材质";
     public static final String SHAFT_LINING_MATERIAL = "shaftLiningMaterial";
     public static final String SHAFT_LINING_MATERIAL_NAME = "靴筒内里材质";
     public static final String SHAFT_MATERIAL = "shaftMaterial";
-    public static final String SHAFT_MATERIAL_NAME = "鞋面材质";
+    public static final String SHAFT_MATERIAL_NAME = "靴筒面材质";
     public static final String SHOE_UPPER_LINING_MATERIAL = "shoeUpperLiningMaterial";
     public static final String SHOE_UPPER_LINING_MATERIAL_NAME = "鞋面内里材质";
     public static final String SHOE_STYLE_NAME = "shoeStyleName";
