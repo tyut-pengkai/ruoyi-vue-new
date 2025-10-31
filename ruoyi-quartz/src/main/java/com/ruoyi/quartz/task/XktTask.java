@@ -989,7 +989,7 @@ public class XktTask {
     public void autoCompleteStoreOrder() {
         log.info("-------------自动完成订单开始-------------");
         Integer batchCount = 20;
-        Date beforeDate = DateUtil.offset(new Date(), DateField.DAY_OF_YEAR, -14);
+        Date beforeDate = DateUtil.offset(new Date(), DateField.DAY_OF_YEAR, -15);
         List<Long> storeOrderIds = storeOrderService.listNeedAutoCompleteOrder(beforeDate, batchCount);
         for (Long storeOrderId : storeOrderIds) {
             log.info("开始处理: {}", storeOrderId);

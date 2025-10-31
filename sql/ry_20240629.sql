@@ -4262,6 +4262,20 @@ CREATE TABLE `user_subscriptions`
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '用户关注u档口' ROW_FORMAT = DYNAMIC;
 
+DROP TABLE IF EXISTS `sys_html`;
+CREATE TABLE `sys_html` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `title` varchar(256) NOT NULL COMMENT '标题',
+  `content` mediumblob DEFAULT NULL COMMENT '内容',
+  `del_flag` char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '删除标志（0代表存在 2代表删除）',
+  `create_by` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '创建者',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_by` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT '' COMMENT '更新者',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE,
+    UNIQUE KEY `uk_title` (`title`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='网页内容';
+
 -- 快递费用初始化（测试，上线前根据实际费用调整）
 INSERT INTO express_fee_config ( express_id, region_code, first_item_amount, next_item_amount )
 SELECT 1, region_code, 5, 5 FROM express_region WHERE region_level = 1;
