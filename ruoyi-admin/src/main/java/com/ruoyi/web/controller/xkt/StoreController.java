@@ -99,7 +99,6 @@ public class StoreController extends XktBaseController {
         return R.ok(BeanUtil.toBean(storeService.getInfo(storeId), StoreResVO.class));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store,seller,agent')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "PC 商城首页 获取档口基础信息", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/simple/{storeId}")
     public R<StoreSimpleResVO> getSimpleInfo(@PathVariable("storeId") Long storeId) {
