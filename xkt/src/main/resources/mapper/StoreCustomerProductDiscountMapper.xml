@@ -5,9 +5,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.xkt.mapper.StoreCustomerProductDiscountMapper">
 
     <select id="selectDiscPage" resultType="com.ruoyi.xkt.dto.storeCusProdDiscount.StoreCusProdDiscPageResDTO">
-        SELECT DISTINCT
+        SELECT
             scpd.id AS storeCusProdDiscId,
-            sp.prod_art_num AS prodArtNum,
+            scpd.prod_art_num AS prodArtNum,
             scpd.store_id AS storeId,
             scpd.store_prod_id AS storeProdId,
             scpd.store_cus_id AS storeCusId,
@@ -17,11 +17,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             scpd.update_time
         FROM
             store_customer_product_discount scpd
-            JOIN store_product sp ON scpd.store_prod_id = sp.id AND sp.del_flag = 0
         WHERE
             scpd.del_flag = 0 AND scpd.store_id = #{storeId}
             <if test="cusName != null  and cusName != ''"> AND scpd.store_cus_name like concat('%', #{cusName}, '%')</if>
-            <if test="prodArtNum != null  and prodArtNum != ''"> AND sp.prod_art_num like concat('%', #{prodArtNum}, '%')</if>
+            <if test="prodArtNum != null  and prodArtNum != ''"> AND scpd.prod_art_num like concat('%', #{prodArtNum}, '%')</if>
         ORDER BY
             scpd.update_time DESC,
             scpd.store_prod_id,

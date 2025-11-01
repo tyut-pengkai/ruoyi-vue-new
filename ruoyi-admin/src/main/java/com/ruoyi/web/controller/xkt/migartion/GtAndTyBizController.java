@@ -468,7 +468,8 @@ public class GtAndTyBizController extends BaseController {
 
             tyAtrNoList.forEach(tyAtrNo -> {
                 // 处理客户优惠
-                this.handleCusDisc(tyAtrNo, tyExistArtNoColorMap, tyCusDiscGroupMap, buJuProdColorMap, buJuStoreCusMap, prodCusDiscList, storeProd.getStoreId(), storeProd.getId());
+                this.handleCusDisc(tyAtrNo, tyExistArtNoColorMap, tyCusDiscGroupMap, buJuProdColorMap, buJuStoreCusMap, prodCusDiscList,
+                        storeProd.getStoreId(), storeProd.getId(), storeProd.getProdArtNum());
             });
 
 
@@ -623,7 +624,7 @@ public class GtAndTyBizController extends BaseController {
     private void handleCusDisc(String tyAtrNo, Map<String, Set<String>> tyExistArtNoColorMap,
                                Map<String, Map<String, List<TyCusDiscImportVO>>> tyCusDiscGroupMap,
                                Map<String, StoreProductColor> buJuProdColorMap, Map<String, StoreCustomer> buJuStoreCusMap,
-                               List<StoreCustomerProductDiscount> prodCusDiscList, Long storeId, Long storeProdId) {
+                               List<StoreCustomerProductDiscount> prodCusDiscList, Long storeId, Long storeProdId, String prodArtNum) {
         // TY货号下有哪些颜色存在客户优惠
         Map<String, List<TyCusDiscImportVO>> tyColorCusDiscMap = tyCusDiscGroupMap.get(tyAtrNo);
         if (MapUtils.isEmpty(tyColorCusDiscMap)) {
@@ -644,7 +645,7 @@ public class GtAndTyBizController extends BaseController {
                 StoreProductColor buJuProdColor = Optional.ofNullable(buJuProdColorMap.get(tyColor)).orElseThrow(() -> new ServiceException("没有步橘系统对应的颜色!" + tyColor, HttpStatus.ERROR));
                 StoreCustomer storeCus = Optional.ofNullable(buJuStoreCusMap.get(tyCusDisc.getCusName())).orElseThrow(() -> new ServiceException("没有步橘系统对应的客户!" + tyCusDisc.getCusName(), HttpStatus.ERROR));
                 // 将FHB客户优惠 转为步橘系统优惠
-                prodCusDiscList.add(new StoreCustomerProductDiscount().setStoreId(storeId).setStoreProdId(storeProdId).setStoreCusId(storeCus.getId())
+                prodCusDiscList.add(new StoreCustomerProductDiscount().setStoreId(storeId).setStoreProdId(storeProdId).setStoreCusId(storeCus.getId()).setProdArtNum(prodArtNum)
                         .setStoreCusName(storeCus.getCusName()).setStoreProdColorId(buJuProdColor.getId()).setDiscount(tyCusDisc.getDiscount()));
             });
         });

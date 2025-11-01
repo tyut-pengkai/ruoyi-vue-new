@@ -9,8 +9,6 @@ import lombok.experimental.Accessors;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import java.math.BigDecimal;
-
 /**
  * 档口客户优惠对象 store_customer_product_discount
  *
@@ -38,7 +36,10 @@ public class StoreCustomerProductDiscount extends XktBaseEntity {
      */
     @Excel(name = "档口商品ID")
     private Long storeProdId;
-
+    /**
+     * 货号 冗余
+     */
+    private String prodArtNum;
     /**
      * 档口客户ID
      */

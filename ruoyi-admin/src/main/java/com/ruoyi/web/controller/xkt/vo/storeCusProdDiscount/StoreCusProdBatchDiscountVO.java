@@ -35,6 +35,9 @@ public class StoreCusProdBatchDiscountVO {
         @NotNull(message = "档口商品ID不能为空!")
         @ApiModelProperty(value = "档口商品ID", required = true)
         private Long storeProdId;
+        @NotBlank(message = "商品货号不能为空!")
+        @ApiModelProperty(value = "商品货号", required = true)
+        private String prodArtNum;
         @NotNull(message = "档口商品颜色ID不能为空!")
         @ApiModelProperty(value = "档口商品颜色ID", required = true)
         private Long storeProdColorId;

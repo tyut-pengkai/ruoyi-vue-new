@@ -361,7 +361,8 @@ public class FhbOtherBizAfterController extends BaseController {
 
             fhbArtNoList.forEach(fhbArtNo -> {
                 // 处理档口客户商品优惠
-                this.handleCusDisc(fhbArtNo, fhbExistArtNoColorMap, fhbCusDiscGroupMap, buJuProdColorMap, buJuStoreCusMap, storeProd.getStoreId(), storeProd.getId(), prodCusDiscList);
+                this.handleCusDisc(fhbArtNo, fhbExistArtNoColorMap, fhbCusDiscGroupMap, buJuProdColorMap, buJuStoreCusMap,
+                        storeProd.getStoreId(), storeProd.getId(), prodCusDiscList);
             });
 
         });
@@ -404,7 +405,7 @@ public class FhbOtherBizAfterController extends BaseController {
                     StoreCustomer storeCus = Optional.ofNullable(buJuStoreCusMap.get(fhbCusDisc.getCustomerName()))
                             .orElseThrow(() -> new ServiceException("没有步橘系统对应的客户!" + fhbCusDisc.getCustomerName(), HttpStatus.ERROR));
                     // 将FHB客户优惠 转为步橘系统优惠
-                    prodCusDiscList.add(new StoreCustomerProductDiscount().setStoreId(storeId).setStoreProdId(storeProdId).setStoreCusId(storeCus.getId())
+                    prodCusDiscList.add(new StoreCustomerProductDiscount().setStoreId(storeId).setStoreProdId(storeProdId).setProdArtNum(fhbCusDisc.getArtNo()).setStoreCusId(storeCus.getId())
                             .setStoreCusName(storeCus.getCusName()).setStoreProdColorId(buJuProdColor.getId()).setDiscount(fhbCusDisc.getDiscount()));
                 }
             });

@@ -27,6 +27,8 @@ public class StoreCusProdBatchDiscountDTO {
     public static class DiscountItemDTO {
         @ApiModelProperty(value = "档口商品ID")
         private Long storeProdId;
+        @ApiModelProperty(value = "商品货号")
+        private String prodArtNum;
         @ApiModelProperty(value = "档口商品颜色ID")
         private Long storeProdColorId;
         @ApiModelProperty(value = "优惠金额")

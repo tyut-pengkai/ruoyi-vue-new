@@ -126,14 +126,9 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
                 // 不存在优惠则新增
             } else {
                 // 新增优惠
-                updateList.add(new StoreCustomerProductDiscount() {{
-                    setDiscount(itemDTO.getDiscount());
-                    setStoreId(batchDiscDTO.getStoreId());
-                    setStoreCusName(itemDTO.getStoreCusName());
-                    setStoreCusId(itemDTO.getStoreCusId());
-                    setStoreProdColorId(itemDTO.getStoreProdColorId());
-                    setStoreProdId(itemDTO.getStoreProdId());
-                }});
+                updateList.add(new StoreCustomerProductDiscount().setDiscount(itemDTO.getDiscount()).setStoreId(batchDiscDTO.getStoreId())
+                        .setStoreCusName(itemDTO.getStoreCusName()).setStoreCusId(itemDTO.getStoreCusId()).setStoreProdColorId(itemDTO.getStoreProdColorId())
+                        .setStoreProdId(itemDTO.getStoreProdId()).setProdArtNum(itemDTO.getProdArtNum()));
             }
         });
         if (CollectionUtils.isEmpty(updateList)) {

@@ -514,7 +514,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
                 .collect(Collectors.toList());
         this.prodStockMapper.insert(prodStockList);
         // 设置了档口商品全部优惠的客户，新增商品优惠
-        this.createStoreCusDiscount(prodColorList, storeProdId);
+        this.createStoreCusDiscount(prodColorList, storeProdId, prodArtNum);
     }
 
     /**
@@ -1008,8 +1008,9 @@ public class StoreProductServiceImpl implements IStoreProductService {
      *
      * @param colorList   档口商品颜色列表
      * @param storeProdId 档口商品ID
+     * @param prodArtNum  货号
      */
-    private void createStoreCusDiscount(List<StoreProductColor> colorList, Long storeProdId) {
+    private void createStoreCusDiscount(List<StoreProductColor> colorList, Long storeProdId, String prodArtNum) {
         // 档口给那些客户设置了所有商品优惠
         List<StoreCustomer> existCusDiscList = this.storeCusMapper.selectList(new LambdaQueryWrapper<StoreCustomer>()
                 .isNotNull(StoreCustomer::getAllProdDiscount).eq(StoreCustomer::getDelFlag, UNDELETED));
@@ -1019,7 +1020,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
         List<StoreCustomerProductDiscount> cusDiscList = new ArrayList<>();
         // 为这些客户绑定商品优惠
         colorList.forEach(color -> existCusDiscList.forEach(storeCus -> cusDiscList.add(new StoreCustomerProductDiscount()
-                .setDiscount(storeCus.getAllProdDiscount()).setStoreId(storeCus.getStoreId()).setStoreProdId(storeProdId)
+                .setDiscount(storeCus.getAllProdDiscount()).setStoreId(storeCus.getStoreId()).setStoreProdId(storeProdId).setProdArtNum(prodArtNum)
                 .setStoreCusId(storeCus.getId()).setStoreCusName(storeCus.getCusName()).setStoreProdColorId(color.getId()))));
         this.storeCusProdDiscMapper.insert(cusDiscList);
     }
