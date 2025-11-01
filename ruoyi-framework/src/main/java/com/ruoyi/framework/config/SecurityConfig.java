@@ -148,6 +148,16 @@ public class SecurityConfig
                         .antMatchers("/rest/v1/sys/dict/data/type/**").permitAll()
                         // 健康检查
                         .antMatchers("/rest/v1/health-check/**").permitAll()
+                        // 商城档口首页模板一
+                        .antMatchers("/rest/v1/store-home/template/one/**").permitAll()
+                        // 商城档口首页模板二
+                        .antMatchers("/rest/v1/store-home/template/two/**").permitAll()
+                        // 商城档口首页模板三
+                        .antMatchers("/rest/v1/store-home/template/three/**").permitAll()
+                        // 商城档口首页模板四
+                        .antMatchers("/rest/v1/store-home/template/four/**").permitAll()
+                        // 商城档口首页模板五
+                        .antMatchers("/rest/v1/store-home/template/five/**").permitAll()
 
 
 
