@@ -56,6 +56,36 @@
             <onMismatch>DENY</onMismatch>
         </filter>
     </appender>
+
+    <!--druid start-->
+    <appender name="druid_error"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${log.path}/slow-sql.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 日志文件名格式 -->
+            <fileNamePattern>${log.path}/slow-sql.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!-- 日志最大的历史 60天 -->
+            <maxHistory>60</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${log.pattern}</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!-- 过滤的级别 -->
+            <level>ERROR</level>
+            <!-- 匹配时的操作：接收（记录） -->
+            <onMatch>ACCEPT</onMatch>
+            <!-- 不匹配时的操作：拒绝（不记录） -->
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <logger name="com.alibaba.druid.filter.stat.StatFilter" additivity="false">
+        <!-- 这里可以按需配置日志级别 -->
+        <level value="error" />
+        <appender-ref ref="druid_error" />
+    </logger>
+    <!--druid end-->
 	
 	<!-- 用户访问日志输出  -->
     <appender name="sys-user" class="ch.qos.logback.core.rolling.RollingFileAppender">
