@@ -37,10 +37,7 @@ import com.ruoyi.xkt.dto.storeProduct.StoreProdPriceAndMainPicDTO;
 import com.ruoyi.xkt.dto.useSearchHistory.UserSearchHistoryDTO;
 import com.ruoyi.xkt.dto.website.AppStrengthSearchDTO;
 import com.ruoyi.xkt.dto.website.IndexSearchDTO;
-import com.ruoyi.xkt.enums.AdBiddingStatus;
-import com.ruoyi.xkt.enums.AdDisplayType;
-import com.ruoyi.xkt.enums.AdLaunchStatus;
-import com.ruoyi.xkt.enums.SearchPlatformType;
+import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IWebsiteAPPService;
 import lombok.RequiredArgsConstructor;
@@ -80,6 +77,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
     final StoreMapper storeMapper;
     final UserSubscriptionsMapper userSubMapper;
     final UserFavoritesMapper userFavMapper;
+    final StoreMemberMapper storeMemberMapper;
 
     /**
      * APP 首页热卖精选列表
@@ -443,19 +441,16 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
     @Override
     @Transactional(readOnly = true)
     public Page<APPStrengthStoreDTO> getAppStrengthStorePage(AppStrengthSearchDTO searchDTO) {
-        // 获取有哪些会员档口
-        Collection<String> keyList = this.redisCache.scanKeys(CacheConstants.STORE_MEMBER + "*");
-        if (CollectionUtils.isEmpty(keyList)) {
+        final Date now = java.sql.Date.valueOf(LocalDate.now());
+        List<StoreMember> storeMemberList = this.storeMemberMapper.selectList(new LambdaQueryWrapper<StoreMember>()
+                .eq(StoreMember::getDelFlag, Constants.UNDELETED).le(StoreMember::getStartTime,  now).gt(StoreMember::getEndTime, now));
+        if (CollectionUtils.isEmpty(storeMemberList)) {
             return Page.empty(searchDTO.getPageSize(), searchDTO.getPageNum());
         }
-        List<Long> storeIdList = keyList.stream().map(key -> {
-            StoreMember member = this.redisCache.getCacheObject(key);
-            return member.getStoreId();
-        }).collect(Collectors.toList());
+        final List<Long> storeIdList = storeMemberList.stream().map(StoreMember::getStoreId).distinct().collect(Collectors.toList());
         PageHelper.startPage(searchDTO.getPageNum(), searchDTO.getPageSize());
         List<Store> storeList = this.storeMapper.selectList(new LambdaQueryWrapper<Store>()
-                .eq(Store::getDelFlag, Constants.UNDELETED).in(Store::getId, storeIdList)
-                .orderByDesc(Store::getStoreWeight));
+                .eq(Store::getDelFlag, Constants.UNDELETED).in(Store::getId, storeIdList).orderByDesc(Store::getStoreWeight));
         if (CollectionUtils.isEmpty(storeList)) {
             return Page.empty(searchDTO.getPageSize(), searchDTO.getPageNum());
         }
@@ -469,13 +464,9 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                         .eq(UserSubscriptions::getDelFlag, Constants.UNDELETED)).stream()
                 .collect(Collectors.toMap(UserSubscriptions::getStoreId, UserSubscriptions::getStoreId));
         List<APPStrengthStoreDTO> list = storeList.stream().map(store -> BeanUtil.toBean(store, APPStrengthStoreDTO.class)
-                        .setStoreId(store.getId()).setFocus(focusStoreIdMap.containsKey(store.getId())).setMainPicUrl(storeFileMap.get(store.getId())))
+                        .setMemberLevel(StoreMemberLevel.STRENGTH_CONSTRUCT.getValue()) .setStoreId(store.getId())
+                       .setFocus(focusStoreIdMap.containsKey(store.getId())).setMainPicUrl(storeFileMap.get(store.getId())))
                 .collect(Collectors.toList());
-        // 设置档口会员等级
-        list.forEach(x -> {
-            StoreMember storeMember = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId());
-            x.setMemberLevel(ObjectUtils.isNotEmpty(storeMember) ? storeMember.getLevel() : null);
-        });
         return Page.convert(new PageInfo<>(list));
     }
 
