@@ -29,7 +29,7 @@ oss:
   expiredDuration: 3600
   tempDir: /temp/
   stsCacheDuration: 1800
-  callbackUrl: https://api.cdbuju.cn/rest/v1/oss-callback/upload
+  callbackUrl: http://112.124.31.119:9310/rest/v1/oss-callback/upload
 img-search:
   endPoint: imagesearch.cn-hangzhou.aliyuncs.com
   accessKeyId: LTAI5tBFXhTu7Di1ZumRPYZs
@@ -116,9 +116,9 @@ spring:
     druid:
       # 主库数据源
       master:
-        url: jdbc:mysql://rm-bp17756y86qdc110z5o.mysql.rds.aliyuncs.com:3306/xiekutong?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-        username: xkt
-        password: mtd@3XKSoXm671Yc7oZ5G
+        url: jdbc:mysql://127.0.0.1:3306/cdbuju?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+        username: root
+        password: xvV@1WaZbkjSJjRO
       # 从库数据源
       slave:
         # 从数据源开关/默认关闭
@@ -279,9 +279,9 @@ alipay:
   appCertPath: /alipay/test/appPublicCert.crt
   rootCertPath: /alipay/test/alipayRootCert.crt
   alipayPublicCertPath: /alipay/test/alipayPublicCert.crt
-  notifyUrl: http://120.27.136.161:9310/rest/v1/alipay-callback/notify
-  defaultReturnUrl: http://121.40.214.172/index.html
-  orderReturnUrl: http://121.40.214.172/index.html
+  notifyUrl: http://112.124.31.119:9310/rest/v1/alipay-callback/notify
+  defaultReturnUrl: http://116.62.108.187/index.html
+  orderReturnUrl: http://116.62.108.187/index.html
   signType: RSA2
   charset: UTF-8
   gatewayUrl: https://openapi-sandbox.dl.alipaydev.com/gateway.do
