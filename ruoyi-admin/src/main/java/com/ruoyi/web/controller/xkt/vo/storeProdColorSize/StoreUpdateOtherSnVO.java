@@ -47,7 +47,7 @@ public class StoreUpdateOtherSnVO {
         private String colorName;
         @NotBlank(message = "录入的条码")
         @ApiModelProperty(value = "条码", required = true)
-        @Size(min = 0, max = 50, message = "条码长度不能超过100个字符")
+        @Size(max = 17, message = "条码长度不能超过17个字符")
         private String sn;
     }
 

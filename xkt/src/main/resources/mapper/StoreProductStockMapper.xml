@@ -30,7 +30,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             IFNULL(sps.size_38, 0) + IFNULL(sps.size_39, 0) + IFNULL(sps.size_40, 0) + IFNULL(sps.size_41, 0) +
             IFNULL(sps.size_42, 0) + IFNULL(sps.size_43, 0)) AS totalStock
         FROM
-            store_product_stock sps join store_product sp on sps.store_prod_id = sp.id join sys_product_category spc on sp.prod_cate_id = spc.id
+            store_product_stock sps
         WHERE
             sps.del_flag = 0
             <if test="prodArtNum != null  and prodArtNum != ''"> and sps.prod_art_num like concat('%', #{prodArtNum}, '%')</if>
