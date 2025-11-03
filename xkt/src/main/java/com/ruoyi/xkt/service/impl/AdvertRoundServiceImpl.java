@@ -328,7 +328,10 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
             }
             // 当前档口购买的推广位置 必须为非系统拦截的广告位
             if (Objects.equals(advertRound.getStoreId(), storeId) && Objects.equals(advertRound.getSysIntercept(), AdSysInterceptType.UN_INTERCEPT.getValue())) {
-                Integer biddingStatus = tenClockAfter ? advertRound.getBiddingTempStatus() : advertRound.getBiddingStatus();
+                // 为22:00之后，且当前播放轮或明天播放轮次才显示 biddingTempStatus 字段
+                LocalDate advertRoundYesterday = advertRound.getStartTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().minusDays(1);
+                boolean isTLaunch = advertRound.getRoundId() == 1 || (LocalDate.now().equals(advertRoundYesterday));
+                Integer biddingStatus = tenClockAfter && isTLaunch ? advertRound.getBiddingTempStatus() : advertRound.getBiddingStatus();
                 boughtResDTO.setBiddingStatus(biddingStatus);
                 boughtResDTO.setBiddingStatusName(AdBiddingStatus.of(biddingStatus).getLabel());
             }
@@ -648,9 +651,6 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         }
     }
 
-    public static void main(String[] args) {
-        System.err.println(LocalDateTime.now().with(LocalTime.parse("22:00:00")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-    }
 
     /**
      * 档口购买推广营销
