@@ -156,6 +156,7 @@ public class StoreUserController extends BaseController {
             loginService.validateSmsVerificationCode(vo.getPhonenumber(), vo.getCode());
         }
         UserInfoEdit dto = BeanUtil.toBean(info, UserInfoEdit.class);
+        dto.setPassword(null);
         roleIds.addAll(CollUtil.emptyIfNull(vo.getRoleIds()));
         dto.setRoleIds(new ArrayList<>(roleIds));
         dto.setNickName(vo.getNickName());

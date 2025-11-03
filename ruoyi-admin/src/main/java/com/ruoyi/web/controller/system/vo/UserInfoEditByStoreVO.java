@@ -34,12 +34,6 @@ public class UserInfoEditByStoreVO {
     private String code;
 
     /**
-     * 密码
-     */
-    @ApiModelProperty("密码")
-    private String password;
-
-    /**
      * 角色ID集
      */
     @ApiModelProperty("角色ID集")
