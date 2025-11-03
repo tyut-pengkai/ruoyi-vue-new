@@ -751,7 +751,6 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                     .setPicSetType(this.hasPic(minPriceAdvert.getDisplayType()) ? AdPicSetType.UN_SET.getValue() : null)
                     .setPicAuditStatus(this.hasPic(minPriceAdvert.getDisplayType()) ? AdPicAuditStatus.UN_AUDIT.getValue() : null)
                     .setPicDesignType(this.hasPic(minPriceAdvert.getDisplayType()) ? createDTO.getPicDesignType() : null)
-                    .setPicAuditStatus(this.hasPic(minPriceAdvert.getDisplayType()) ? AdPicAuditStatus.UN_AUDIT.getValue() : null)
                     .setProdIdStr(createDTO.getProdIdStr()).setCreateBy(SecurityUtils.getUsernameSafe());
             this.advertRoundMapper.updateById(minPriceAdvert);
             final String successTitle = ObjectUtils.isNotEmpty(advert) ? AdType.of(advert.getTypeId()).getLabel() : "" + position + "订购成功!";
