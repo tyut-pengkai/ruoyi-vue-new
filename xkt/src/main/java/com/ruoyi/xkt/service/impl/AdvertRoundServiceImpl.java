@@ -230,7 +230,9 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         final Date date = new Date();
         advertRoundList.stream().collect(Collectors.groupingBy(AdvertRound::getRoundId))
                 .forEach((roundId, currentRoundList) -> {
-                    AdvertRound advertRound = currentRoundList.get(0);
+                    // 如果有当前当前档口购买的推广轮次，则取该条记录，因为setCanPurchased会用到。反之则取第一个
+                    AdvertRound advertRound = currentRoundList.stream().filter(x -> Objects.equals(x.getStoreId(), storeId))
+                            .findFirst().orElse(currentRoundList.get(0));
                     Integer durationDay = calculateDurationDay(advertRound.getStartTime(), advertRound.getEndTime(), Boolean.TRUE);
                     AdRoundTypeRoundResDTO typeRoundResDTO = new AdRoundTypeRoundResDTO().setAdvertId(advertRound.getAdvertId()).setRoundId(advertRound.getRoundId())
                             .setSymbol(advertRound.getSymbol()).setLaunchStatus(advertRound.getLaunchStatus()).setStartTime(advertRound.getStartTime())
