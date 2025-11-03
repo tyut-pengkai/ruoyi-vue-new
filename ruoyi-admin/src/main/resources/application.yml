@@ -3,3 +3,8 @@ spring:
     active: local
 #    active: prod
 #    active: @spring.profiles.active@
+app:
+  version: 1.0.0
+  download-url: https://cdbuju.oss-cn-hangzhou.aliyuncs.com/apk/cdbuju-1.0.0.apk
+  update-notes: 正式上线
+  forced-update: false

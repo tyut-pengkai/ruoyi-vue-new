@@ -24,6 +24,7 @@ oss:
   expiredDuration: 3600
   tempDir: /temp/
   stsCacheDuration: 1800
+  callbackUrl: https://api.cdbuju.cn/rest/v1/oss-callback/upload
 img-search:
   endPoint: imagesearch.cn-hangzhou.aliyuncs.com
   accessKeyId: LTAI5tBFXhTu7Di1ZumRPYZs

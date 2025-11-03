@@ -11,6 +11,7 @@ import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.framework.config.properties.AppProperties;
 import com.ruoyi.framework.config.properties.OSSProperties;
 import com.ruoyi.framework.ocr.BusinessLicense;
 import com.ruoyi.framework.ocr.IdCard;
@@ -52,8 +53,10 @@ public class CommonController {
 
     @Value("${oss.fileExpireTime:3600}")
     private Long fileExpireTime;//指定过期时间，单位为秒。
-    @Value("${oss.callbackUrl:http://121.40.117.244:9310/rest/v1/oss-callback/upload}")
+    @Value("${oss.callbackUrl}")
     private String callbackUrl;//上传回调URL
+    @Autowired
+    private AppProperties appProperties;
     @Autowired
     private OSSClientWrapper ossClient;
     @Autowired
@@ -64,6 +67,12 @@ public class CommonController {
     private OcrClientWrapper ocrClient;
     @Autowired
     private ISysHtmlService htmlService;
+
+    @ApiOperation("APP版本")
+    @GetMapping("/app-version")
+    public R<AppVersionVO> getAppVersion() {
+        return R.ok(BeanUtil.toBean(appProperties, AppVersionVO.class));
+    }
 
     @ApiOperation("获取OSS临时访问凭证")
     @GetMapping("/oss/getCredentials")
@@ -226,8 +235,8 @@ public class CommonController {
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation("保存html（需登录管理员用户）")
     @PostMapping("/html/save")
-    public R saveHtmlContent(@Validated @RequestBody HtmlVO vo){
-        htmlService.saveHtml(vo.getTitle(),vo.getContent());
+    public R saveHtmlContent(@Validated @RequestBody HtmlVO vo) {
+        htmlService.saveHtml(vo.getTitle(), vo.getContent());
         return R.ok();
     }
 
