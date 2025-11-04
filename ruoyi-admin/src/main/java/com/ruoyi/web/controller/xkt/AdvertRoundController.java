@@ -49,13 +49,6 @@ public class AdvertRoundController extends XktBaseController {
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
-    @ApiOperation(value = "获取推广位数据及右侧 已订购推广位 列表", httpMethod = "GET", response = R.class)
-    @GetMapping(value = "/{advertId}/{storeId}/{showType}")
-    public R<AdRoundStoreResVO> getStoreAdInfo(@PathVariable("advertId") Long advertId, @PathVariable("storeId") Long storeId, @PathVariable("showType") Integer showType) {
-        return R.ok(BeanUtil.toBean(advertRoundService.getStoreAdInfo(storeId, advertId, showType), AdRoundStoreResVO.class));
-    }
-
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "获取当前推广所有轮次", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/rounds/{storeId}/{typeId}")
     public R<List<AdRoundTypeRoundResVO>> getTypeRoundList(@PathVariable("storeId") Long storeId, @PathVariable("typeId") Long typeId) {

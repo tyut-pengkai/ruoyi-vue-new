@@ -15,16 +15,6 @@ import java.util.List;
 public interface IAdvertRoundService {
 
     /**
-     * 根据广告ID获取推广轮次列表，并返回当前档口在这些推广轮次的数据
-     *
-     * @param storeId  档口ID
-     * @param advertId 广告ID
-     * @param showType 时间范围 位置枚举
-     * @return AdRoundPlayStoreResDTO
-     */
-    AdRoundStoreResDTO getStoreAdInfo(Long storeId, Long advertId, Integer showType);
-
-    /**
      * 档口购买推广营销
      *
      * @param createDTO 购买入参
