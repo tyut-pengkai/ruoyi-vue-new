@@ -201,10 +201,10 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                         HomepageType.STORE_RECOMMENDED.getValue(), HomepageType.SALES_RANKING.getValue()))), new ArrayList<>());
         // 商品ID列表
         List<Long> prodIdList = CollectionUtils.isEmpty(otherList) ? new ArrayList<>() : otherList.stream().map(StoreHomepage::getBizId).collect(Collectors.toList());
-        // 筛选商品最新的50条数据
+        // 筛选商品最新的30条数据
         List<StoreProduct> latest50ProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getStoreId, storeId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)
-                .orderByDesc(StoreProduct::getCreateTime).last("LIMIT 50"));
+                .orderByDesc(StoreProduct::getCreateTime).last("LIMIT 30"));
         CollectionUtils.addAll(prodIdList, latest50ProdList.stream().map(StoreProduct::getId).collect(Collectors.toList()));
         if (CollectionUtils.isEmpty(latest50ProdList)) {
             return templateOne;
@@ -261,7 +261,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
         // 筛选商品最新的50条数据
         List<StoreProduct> latest50ProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getStoreId, storeId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)
-                .orderByDesc(StoreProduct::getCreateTime).last("LIMIT 50"));
+                .orderByDesc(StoreProduct::getCreateTime).last("LIMIT 30"));
         CollectionUtils.addAll(prodIdList, latest50ProdList.stream().map(StoreProduct::getId).collect(Collectors.toList()));
         if (CollectionUtils.isEmpty(latest50ProdList)) {
             return templateTwo;
@@ -302,7 +302,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
         // 筛选商品最新的50条数据
         List<StoreProduct> latest50ProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getStoreId, storeId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)
-                .orderByDesc(StoreProduct::getCreateTime).last("LIMIT 50"));
+                .orderByDesc(StoreProduct::getCreateTime).last("LIMIT 30"));
         CollectionUtils.addAll(prodIdList, latest50ProdList.stream().map(StoreProduct::getId).collect(Collectors.toList()));
         if (CollectionUtils.isEmpty(latest50ProdList)) {
             return templateThird;
@@ -342,7 +342,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
         // 筛选商品最新的50条数据
         List<StoreProduct> latest50ProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getStoreId, storeId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)
-                .orderByDesc(StoreProduct::getCreateTime).last("LIMIT 50"));
+                .orderByDesc(StoreProduct::getCreateTime).last("LIMIT 30"));
         CollectionUtils.addAll(prodIdList, latest50ProdList.stream().map(StoreProduct::getId).collect(Collectors.toList()));
         if (CollectionUtils.isEmpty(latest50ProdList)) {
             return templateFour;
@@ -397,7 +397,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
         // 筛选商品最新的50条数据
         List<StoreProduct> latest50ProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getStoreId, storeId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)
-                .orderByDesc(StoreProduct::getCreateTime).last("LIMIT 50"));
+                .orderByDesc(StoreProduct::getCreateTime).last("LIMIT 30"));
         CollectionUtils.addAll(prodIdList, latest50ProdList.stream().map(StoreProduct::getId).collect(Collectors.toList()));
         if (CollectionUtils.isEmpty(latest50ProdList)) {
             return templateFive;
