@@ -135,7 +135,6 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                                 .filter(x -> ObjectUtils.isNotEmpty(x.getBiddingStatus()) && ObjectUtils.isNotEmpty(x.getBiddingTempStatus())
                                         && !Objects.equals(x.getBiddingStatus(), x.getBiddingTempStatus()))
                                 .forEach(x -> updateList.add(x.setBiddingStatus(x.getBiddingTempStatus())));
-
                     } else if (now.equals(firstRoundEndTime)) {
                         // 广告第二轮
                         List<AdvertRound> secondRoundList = roundList.stream().filter(x -> x.getRoundId().equals(AdRoundType.SECOND_ROUND.getValue())).collect(Collectors.toList());
