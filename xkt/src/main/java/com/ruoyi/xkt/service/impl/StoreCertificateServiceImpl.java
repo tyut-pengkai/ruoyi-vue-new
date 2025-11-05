@@ -221,9 +221,9 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
         store.setStorageUsage(BigDecimal.ZERO);
         // 默认使用第一个模板
         store.setTemplateNum(1);
-        // 当前时间往后推1年为试用期时间
-        Date oneYearAfter = Date.from(LocalDate.now().plusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
-        store.setTrialEndTime(oneYearAfter);
+        // 试用期往后推3个月
+        Date threeMonthAfter = Date.from(LocalDate.now().plusMonths(3).atStartOfDay(ZoneId.systemDefault()).toInstant());
+        store.setServiceEndTime(threeMonthAfter);
         // 设置档口默认权重 0
         store.setStoreWeight(Constants.WEIGHT_DEFAULT_ZERO);
         // 设置默认的库存系统为 步橘 ，后续可在条码迁移之处修改

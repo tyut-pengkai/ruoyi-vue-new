@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * @author liujiang
@@ -43,6 +44,10 @@ public class StoreSimpleResVO {
     private SSFileVO logo;
     @ApiModelProperty(value = "档口库存系统 1 步橘网 2 天友 3 发货宝")
     private Integer stockSys;
+    @ApiModelProperty(value = "档口状态")
+    private Integer storeStatus;
+    @ApiModelProperty(value = "会员等级")
+    private Integer memberLevel;
 
     @Data
     public static class SSFileVO {

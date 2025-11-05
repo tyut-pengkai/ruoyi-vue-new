@@ -25,13 +25,6 @@ public interface IStoreService {
     int updateStore(StoreUpdateDTO storeUpdateDTO);
 
     /**
-     * 注册时新增档口信息
-     *
-     * @return int
-     */
-    int create();
-
-    /**
      * 档口分页数据
      *
      * @param pageDTO 查询入参
@@ -198,4 +191,13 @@ public interface IStoreService {
      * @return Integer
      */
     Integer getStockSys(Long storeId);
+
+    /**
+     * 获取档口到期信息
+     *
+     * @param storeId 档口ID
+     * @param target  目标 1[正式版] 2[实力质造会员]
+     * @return StoreExpireResDTO
+     */
+    StoreExpireResDTO getExpireInfo(Long storeId, Integer target);
 }

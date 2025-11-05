@@ -79,35 +79,7 @@ public class StoreServiceImpl implements IStoreService {
     final SysFileMapper fileMapper;
     final IStoreCertificateService storeCertService;
     final EsClientWrapper esClientWrapper;
-
-
-    /**
-     * 注册时新增档口数据
-     *
-     * @return 结果
-     */
-    @Override
-    @Transactional
-    public int create() {
-        Store store = new Store();
-        // 初始化注册时只需绑定用户ID即可
-        store.setUserId(SecurityUtils.getUserId());
-        // 默认档口状态为：待审核
-        store.setStoreStatus(StoreStatus.UN_AUDITED.getValue());
-        // 当前时间往后推1年为试用期时间
-        Date oneYearAfter = Date.from(LocalDate.now().plusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
-        store.setTrialEndTime(oneYearAfter);
-        // 设置档口默认权重 0
-        store.setStoreWeight(Constants.WEIGHT_DEFAULT_ZERO);
-        int count = this.storeMapper.insert(store);
-        // 创建档口账户
-        assetService.createInternalAccountIfNotExists(store.getId());
-        // 档口用户绑定
-        userService.refreshRelStore(store.getUserId(), ESystemRole.SUPPLIER.getId());
-        // 放到redis中
-        redisCache.setCacheObject(CacheConstants.STORE_KEY + store.getId(), store);
-        return count;
-    }
+    final StoreMemberMapper storeMemberMapper;
 
     /**
      * 档口分页数据
@@ -459,6 +431,34 @@ public class StoreServiceImpl implements IStoreService {
     }
 
     /**
+     * 获取档口到期信息
+     *
+     * @param storeId 档口ID
+     * @param target  目标 1[正式版] 2[实力质造会员]
+     * @return StoreExpireResDTO
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public StoreExpireResDTO getExpireInfo(Long storeId, Integer target) {
+        Store store = Optional.ofNullable(storeMapper.selectById(storeId)).orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
+        StoreExpireResDTO expireDTO = new StoreExpireResDTO().setStoreId(storeId).setTarget(target);
+        // 购买正式版
+        if (Objects.equals(target, 1)) {
+            expireDTO.setServiceEndTime(store.getServiceEndTime());
+            // 购买档口会员
+        } else if (Objects.equals(target, 2)) {
+            // 获取档口会员
+            Date todayStart = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
+            StoreMember storeMember = this.storeMemberMapper.selectOne(new LambdaQueryWrapper<StoreMember>()
+                    .eq(StoreMember::getStoreId, storeId).eq(StoreMember::getDelFlag, Constants.UNDELETED)
+                    .le(StoreMember::getStartTime, todayStart));
+            expireDTO.setServiceEndTime(ObjectUtils.isNotEmpty(storeMember) ? storeMember.getEndTime() : null);
+        }
+        return expireDTO;
+    }
+
+
+    /**
      * 档口首页今日销售额
      *
      * @param storeId 档口ID
@@ -556,6 +556,9 @@ public class StoreServiceImpl implements IStoreService {
             SysFile logo = this.fileMapper.selectById(simpleDTO.getStoreLogoId());
             simpleDTO.setLogo(BeanUtil.toBean(logo, StoreSimpleResDTO.SSFileDTO.class));
         }
+        StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + storeId);
+        // 会员等级
+        simpleDTO.setMemberLevel(ObjectUtils.isNotEmpty(member) ? member.getLevel() : null);
         Long userId = SecurityUtils.getUserIdSafe();
         if (ObjectUtils.isEmpty(userId)) {
             return simpleDTO;

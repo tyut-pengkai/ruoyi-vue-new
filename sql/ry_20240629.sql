@@ -3210,7 +3210,7 @@ CREATE TABLE `store`
     `prod_scale`         tinyint UNSIGNED NULL DEFAULT NULL COMMENT '生产规模',
     `integrity_gold`     decimal(10, 2) NULL DEFAULT NULL COMMENT '保证金',
     `remark`             varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注',
-    `trial_end_time`     date NULL DEFAULT NULL COMMENT '试用截止时间',
+    `service_end_time`     date NULL DEFAULT NULL COMMENT '服务截止时间',
     `storage_usage`      decimal(10, 3) NULL DEFAULT NULL COMMENT '已使用文件大小',
     `template_num`       int UNSIGNED NULL DEFAULT NULL COMMENT '档口模板ID',
     `store_status`       tinyint UNSIGNED NULL DEFAULT NULL COMMENT '档口状态',

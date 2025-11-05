@@ -106,11 +106,11 @@ public class Store extends XktBaseEntity {
     private BigDecimal integrityGold;
 
     /**
-     * 试用截止时间
+     * 服务截止时间（storeStatus=3 试用截止时间  storeStatus=4 年费到期时间）
      */
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @Excel(name = "试用截止时间", width = 30, dateFormat = "yyyy-MM-dd")
-    private Date trialEndTime;
+    @Excel(name = "服务截止时间", width = 30, dateFormat = "yyyy-MM-dd")
+    private Date serviceEndTime;
 
     /**
      * 已使用文件大小
