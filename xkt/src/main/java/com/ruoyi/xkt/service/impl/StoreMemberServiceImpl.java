@@ -135,25 +135,5 @@ public class StoreMemberServiceImpl implements IStoreMemberService {
                 : Page.convert(new PageInfo<>(list));
     }
 
-    /**
-     * 获取档口会员过期时间
-     *
-     * @param storeId 档口ID
-     * @return StoreMemberExpireResDTO
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public StoreMemberExpireResDTO expire(Long storeId) {
-        // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(storeId)) {
-            throw new ServiceException("当前用户非管理员账号，无权限操作!", HttpStatus.ERROR);
-        }
-        Date todayStart = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
-        StoreMember storeMember = this.storeMemberMapper.selectOne(new LambdaQueryWrapper<StoreMember>()
-                .eq(StoreMember::getStoreId, storeId).eq(StoreMember::getDelFlag, Constants.UNDELETED)
-                .le(StoreMember::getStartTime, todayStart));
-        return BeanUtil.toBean(storeMember, StoreMemberExpireResDTO.class);
-    }
-
 
 }

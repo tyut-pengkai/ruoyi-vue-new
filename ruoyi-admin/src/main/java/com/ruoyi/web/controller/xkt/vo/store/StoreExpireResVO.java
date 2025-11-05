@@ -18,9 +18,13 @@ public class StoreExpireResVO {
 
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
-    @ApiModelProperty(value = "目标 1[正式版] 2[实力质造会员]")
-    private Integer target;
-    @ApiModelProperty(value = "试用过期时间  正式版过期时间  会员过期时间")
+    @ApiModelProperty(value = "试用过期时间  正式版过期时间")
     private Date serviceEndTime;
+    @ApiModelProperty(value = "试用金额  正式版金额")
+    private BigDecimal serviceAmount;
+    @ApiModelProperty(value = "会员过期时间")
+    private Date memberEndTime;
+    @ApiModelProperty(value = "会员金额")
+    private BigDecimal memberAmount;
 
 }

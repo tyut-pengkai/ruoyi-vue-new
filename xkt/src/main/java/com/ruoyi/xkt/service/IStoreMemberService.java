@@ -30,11 +30,4 @@ public interface IStoreMemberService {
      */
     Page<StoreMemberPageResDTO> page(StoreMemberPageDTO pageDTO);
 
-    /**
-     * 获取档口会员过期时间
-     *
-     * @param storeId 档口ID
-     * @return StoreMemberExpireResDTO
-     */
-    StoreMemberExpireResDTO expire(Long storeId);
 }

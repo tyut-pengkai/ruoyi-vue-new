@@ -53,13 +53,6 @@ public class StoreMemberController extends XktBaseController {
     }
 
 
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
-    @ApiOperation(value = "获取档口会员过期时间", httpMethod = "GET", response = R.class)
-    @GetMapping("/expire/{storeId}")
-    public R<StoreMemberExpireResVO> expire(@PathVariable Long storeId) {
-        return R.ok(BeanUtil.toBean(storeMemberService.expire(storeId), StoreMemberExpireResVO.class));
-    }
-
     // TODO 每天获取档口会员过期提醒
     // TODO 每天获取档口会员过期提醒
 

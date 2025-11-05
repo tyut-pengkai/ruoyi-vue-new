@@ -100,9 +100,9 @@ public class StoreController extends XktBaseController {
     }
 
     @ApiOperation(value = "档口过期时间", httpMethod = "GET", response = R.class)
-    @GetMapping(value = "/expire/{storeId}/{target}")
-    public R<StoreExpireResVO> getExpireInfo(@PathVariable("storeId") Long storeId, @PathVariable("target") Integer target) {
-        return R.ok(BeanUtil.toBean(storeService.getExpireInfo(storeId, target), StoreExpireResVO.class));
+    @GetMapping(value = "/expire/{storeId}")
+    public R<StoreExpireResVO> getExpireInfo(@PathVariable("storeId") Long storeId) {
+        return R.ok(BeanUtil.toBean(storeService.getExpireInfo(storeId), StoreExpireResVO.class));
     }
 
 

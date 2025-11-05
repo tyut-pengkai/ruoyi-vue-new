@@ -434,26 +434,24 @@ public class StoreServiceImpl implements IStoreService {
      * 获取档口到期信息
      *
      * @param storeId 档口ID
-     * @param target  目标 1[正式版] 2[实力质造会员]
      * @return StoreExpireResDTO
      */
     @Override
     @Transactional(readOnly = true)
-    public StoreExpireResDTO getExpireInfo(Long storeId, Integer target) {
+    public StoreExpireResDTO getExpireInfo(Long storeId) {
         Store store = Optional.ofNullable(storeMapper.selectById(storeId)).orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
-        StoreExpireResDTO expireDTO = new StoreExpireResDTO().setStoreId(storeId).setTarget(target);
-        // 购买正式版
-        if (Objects.equals(target, 1)) {
-            expireDTO.setServiceEndTime(store.getServiceEndTime());
-            // 购买档口会员
-        } else if (Objects.equals(target, 2)) {
-            // 获取档口会员
-            Date todayStart = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
-            StoreMember storeMember = this.storeMemberMapper.selectOne(new LambdaQueryWrapper<StoreMember>()
-                    .eq(StoreMember::getStoreId, storeId).eq(StoreMember::getDelFlag, Constants.UNDELETED)
-                    .le(StoreMember::getStartTime, todayStart));
-            expireDTO.setServiceEndTime(ObjectUtils.isNotEmpty(storeMember) ? storeMember.getEndTime() : null);
-        }
+        StoreExpireResDTO expireDTO = new StoreExpireResDTO().setStoreId(storeId).setServiceEndTime(store.getServiceEndTime());
+        // 获取档口会员
+        Date todayStart = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
+        StoreMember storeMember = this.storeMemberMapper.selectOne(new LambdaQueryWrapper<StoreMember>()
+                .eq(StoreMember::getStoreId, storeId).eq(StoreMember::getDelFlag, Constants.UNDELETED)
+                .le(StoreMember::getStartTime, todayStart));
+        expireDTO.setServiceEndTime(ObjectUtils.isNotEmpty(storeMember) ? storeMember.getEndTime() : null);
+
+        // TODO 获取购买正式版金额
+
+        // TODO 获取购买会员金额
+
         return expireDTO;
     }
 

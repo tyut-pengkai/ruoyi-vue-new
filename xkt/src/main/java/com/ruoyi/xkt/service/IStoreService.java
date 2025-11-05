@@ -196,8 +196,7 @@ public interface IStoreService {
      * 获取档口到期信息
      *
      * @param storeId 档口ID
-     * @param target  目标 1[正式版] 2[实力质造会员]
      * @return StoreExpireResDTO
      */
-    StoreExpireResDTO getExpireInfo(Long storeId, Integer target);
+    StoreExpireResDTO getExpireInfo(Long storeId);
 }
