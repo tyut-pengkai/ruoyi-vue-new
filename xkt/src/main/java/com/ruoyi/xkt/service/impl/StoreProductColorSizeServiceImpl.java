@@ -526,7 +526,7 @@ public class StoreProductColorSizeServiceImpl implements IStoreProductColorSizeS
                 .subtract(ObjectUtils.defaultIfNull(barcodeResDTO.getDiscount(), BigDecimal.ZERO));
         // 销售则数量为1 退货则数量为-1
         final BigDecimal quantity = snDTO.getRefund() ? BigDecimal.ONE.negate() : BigDecimal.ONE;
-        return barcodeResDTO.setSuccess(Boolean.TRUE).setSn(snDTO.getSn()).setDiscountedPrice(discountedPrice)
+        return barcodeResDTO.setSuccess(Boolean.TRUE).setSn(snDTO.getSn()).setStoreCusName(snDTO.getStoreCusName()).setDiscountedPrice(discountedPrice)
                 .setQuantity(quantity).setAmount(discountedPrice.multiply(barcodeResDTO.getQuantity()));
     }
 

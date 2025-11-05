@@ -8,6 +8,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         SELECT
             ssd.store_prod_id,
             ssd.store_prod_color_id,
+            ssd.store_cus_name,
             ssd.color_name,
             ssd.size,
             ssd.prod_art_num,
@@ -27,7 +28,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
           AND ssd.sale_type = 1
           AND ssd.sn = #{sn}
           AND ssd.store_id = #{storeId}
-          AND ssd.store_cus_id = #{storeCusId}
         ORDER BY
             ssd.update_time DESC
             LIMIT 1
@@ -37,6 +37,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         SELECT
             ssd.store_prod_id,
             ssd.store_prod_color_id,
+            ssd.store_cus_name,
             ssd.color_name,
             ssd.size,
             ssd.prod_art_num,
@@ -56,7 +57,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
           AND ssd.sale_type = 1
           AND ssd.sn = #{sn}
           AND ssd.store_id = #{storeId}
-          AND ssd.store_cus_id = #{storeCusId}
         ORDER BY
             ssd.update_time DESC
             LIMIT 1

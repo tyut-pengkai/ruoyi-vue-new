@@ -21,6 +21,8 @@ public class StoreSaleSnResDTO {
     private Long storeProdId;
     @ApiModelProperty(value = "档口商品颜色尺码ID")
     private Long storeProdColorId;
+    @ApiModelProperty(value = "销售：当前选择的客户名；退货：上一次销售的客户名")
+    private String storeCusName;
     @ApiModelProperty(value = "颜色")
     private String colorName;
     @ApiModelProperty(value = "尺码")

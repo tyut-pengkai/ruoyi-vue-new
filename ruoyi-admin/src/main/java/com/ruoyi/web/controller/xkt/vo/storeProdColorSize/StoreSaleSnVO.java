@@ -13,8 +13,7 @@ import javax.validation.constraints.NotNull;
  * @date 2025/3/27 15:12
  */
 @Data
-@ApiModel(value = "档口销售条码查询model")
-
+@ApiModel
 public class StoreSaleSnVO {
 
     @NotNull(message = "档口ID不能为空!")
@@ -23,6 +22,8 @@ public class StoreSaleSnVO {
     @NotNull(message = "档口客户ID不能为空!")
     @ApiModelProperty(value = "档口客户ID", required = true)
     private Long storeCusId;
+    @ApiModelProperty(value = "档口客户名称", required = true)
+    private String storeCusName;
     @NotNull(message = "是否退货不能为空!")
     @ApiModelProperty(value = "是否退货", required = true)
     private Boolean refund;

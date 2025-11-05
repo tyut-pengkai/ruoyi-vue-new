@@ -18,6 +18,8 @@ public class StoreSaleSnResVO {
 
     @ApiModelProperty(value = "是否成功")
     private Boolean success;
+    @ApiModelProperty(value = "销售：当前选择的客户名；退货：上一次销售的客户名")
+    private String storeCusName;
     @ApiModelProperty(value = "档口商品ID")
     private Long storeProdId;
     @ApiModelProperty(value = "档口商品颜色尺码ID")
@@ -38,11 +40,11 @@ public class StoreSaleSnResVO {
     private Integer standard;
     @ApiModelProperty(value = "[退货扫码时才有]销售时间")
     private String soldTime;
-    @ApiModelProperty(value = "[退货扫码时才有]优惠后销售单价")
+    @ApiModelProperty(value = "优惠后销售单价")
     private BigDecimal discountedPrice;
-    @ApiModelProperty(value = "[退货扫码时才有]销售金额")
+    @ApiModelProperty(value = "销售金额")
     private BigDecimal amount;
-    @ApiModelProperty(value = "[退货扫码时才有]销售数量")
+    @ApiModelProperty(value = "销售数量")
     private BigDecimal quantity;
 
 }
