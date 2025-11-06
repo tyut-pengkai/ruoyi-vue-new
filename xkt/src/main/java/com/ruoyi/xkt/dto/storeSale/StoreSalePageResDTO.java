@@ -36,6 +36,10 @@ public class StoreSalePageResDTO {
     private Integer refundQuantity;
     @ApiModelProperty(value = "总金额")
     private BigDecimal amount;
+    @ApiModelProperty(value = "销售金额")
+    private BigDecimal saleAmount;
+    @ApiModelProperty(value = "退货金额")
+    private BigDecimal refundAmount;
     @ApiModelProperty(value = "结款状态")
     private Integer paymentStatus;
     @ApiModelProperty(value = "支付方式")

@@ -268,8 +268,14 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
         Integer quantity = storeSaleDTO.getDetailList().stream().map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
         // 销售数量
         Integer saleQuantity = storeSaleDTO.getDetailList().stream().filter(x -> x.getQuantity() > 0).mapToInt(StoreSaleDTO.SaleDetailVO::getQuantity).sum();
+        // 销售金额
+        BigDecimal saleAmount = storeSaleDTO.getDetailList().stream().filter(x -> Objects.equals(x.getSaleType(), SaleType.GENERAL_SALE.getValue()))
+                .map(x -> ObjectUtils.defaultIfNull(x.getAmount(), BigDecimal.ZERO)).reduce(BigDecimal.ZERO, BigDecimal::add);
         // 退货数量
         Integer refundQuantity = storeSaleDTO.getDetailList().stream().filter(x -> x.getQuantity() < 0).mapToInt(StoreSaleDTO.SaleDetailVO::getQuantity).sum();
+        // 退货金额
+        BigDecimal refundAmount = storeSaleDTO.getDetailList().stream().filter(x -> Objects.equals(x.getSaleType(), SaleType.SALE_REFUND.getValue()))
+                .map(x -> ObjectUtils.defaultIfNull(x.getAmount(), BigDecimal.ZERO)).reduce(BigDecimal.ZERO, BigDecimal::add);
         // 总的金额
         BigDecimal amount = storeSaleDTO.getDetailList().stream().map(x -> ObjectUtils.defaultIfNull(x.getAmount(), BigDecimal.ZERO)).reduce(BigDecimal.ZERO, BigDecimal::add);
         // 扣除掉抹零金额
@@ -277,8 +283,10 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
         // 当前登录用户
         LoginUser loginUser = SecurityUtils.getLoginUser();
         // 属性赋值
-        storeSale.setCode(code).setVoucherDate(voucherDate).setQuantity(quantity).setAmount(amount).setRoundOff(ObjectUtils.defaultIfNull(storeSaleDTO.getRoundOff(), BigDecimal.ZERO))
-                .setSaleQuantity(saleQuantity).setRefundQuantity(refundQuantity).setOperatorId(loginUser.getUserId()).setOperatorName(loginUser.getUsername()).setCreateBy(loginUser.getUsername());
+        storeSale.setCode(code).setVoucherDate(voucherDate).setQuantity(quantity).setAmount(amount).setSaleAmount(saleAmount)
+                .setRefundAmount(refundAmount).setRoundOff(ObjectUtils.defaultIfNull(storeSaleDTO.getRoundOff(), BigDecimal.ZERO))
+                .setSaleQuantity(saleQuantity).setRefundQuantity(refundQuantity).setOperatorId(loginUser.getUserId())
+                .setOperatorName(loginUser.getUsername()).setCreateBy(loginUser.getUsername());
         storeSaleMapper.insert(storeSale);
         // 处理订单明细
         List<StoreSaleDetail> saleDetailList = storeSaleDTO.getDetailList().stream().map(x -> {
@@ -346,14 +354,20 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
         Integer quantity = storeSaleDTO.getDetailList().stream().map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
         // 销售数量
         Integer saleQuantity = storeSaleDTO.getDetailList().stream().filter(x -> x.getQuantity() > 0).mapToInt(StoreSaleDTO.SaleDetailVO::getQuantity).sum();
+        // 销售金额
+        BigDecimal saleAmount = storeSaleDTO.getDetailList().stream().filter(x -> Objects.equals(x.getSaleType(), SaleType.GENERAL_SALE.getValue()))
+                .map(x -> ObjectUtils.defaultIfNull(x.getAmount(), BigDecimal.ZERO)).reduce(BigDecimal.ZERO, BigDecimal::add);
         // 退货数量
         Integer refundQuantity = storeSaleDTO.getDetailList().stream().filter(x -> x.getQuantity() < 0).mapToInt(StoreSaleDTO.SaleDetailVO::getQuantity).sum();
-        // 总的金额
+        // 退货金额
+        BigDecimal refundAmount = storeSaleDTO.getDetailList().stream().filter(x -> Objects.equals(x.getSaleType(), SaleType.SALE_REFUND.getValue()))
+                .map(x -> ObjectUtils.defaultIfNull(x.getAmount(), BigDecimal.ZERO)).reduce(BigDecimal.ZERO, BigDecimal::add); // 总的金额
         BigDecimal amount = storeSaleDTO.getDetailList().stream().map(x -> ObjectUtils.defaultIfNull(x.getAmount(), BigDecimal.ZERO)).reduce(BigDecimal.ZERO, BigDecimal::add);
         // 扣除掉抹零金额
         amount = amount.subtract(ObjectUtils.defaultIfNull(storeSaleDTO.getRoundOff(), BigDecimal.ZERO));
-        this.storeSaleMapper.updateById(storeSale.setQuantity(quantity).setAmount(amount).setSaleQuantity(saleQuantity).setRefundQuantity(refundQuantity).setVoucherDate(voucherDate)
-                .setOperatorId(loginUser.getUserId()).setOperatorName(loginUser.getUsername()).setRoundOff(ObjectUtils.defaultIfNull(storeSaleDTO.getRoundOff(), BigDecimal.ZERO)));
+        this.storeSaleMapper.updateById(storeSale.setQuantity(quantity).setAmount(amount).setSaleQuantity(saleQuantity).setRefundQuantity(refundQuantity)
+                .setVoucherDate(voucherDate).setSaleAmount(saleAmount).setRefundAmount(refundAmount).setOperatorId(loginUser.getUserId())
+                .setOperatorName(loginUser.getUsername()).setRoundOff(ObjectUtils.defaultIfNull(storeSaleDTO.getRoundOff(), BigDecimal.ZERO)));
         // 先将所有明细置为无效，再新增
         this.storeSaleDetailMapper.updateById(saleDetailList.stream().peek(x -> x.setDelFlag(Constants.DELETED)).collect(Collectors.toList()));
         // 再新增档口销售出库明细数据

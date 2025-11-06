@@ -79,6 +79,14 @@ public class StoreSale extends XktBaseEntity {
     @Excel(name = "总金额")
     private BigDecimal amount;
     /**
+     * 销售金额
+     */
+    private BigDecimal saleAmount;
+    /**
+     * 退货金额
+     */
+    private BigDecimal refundAmount;
+    /**
      * 抹零金额
      */
     private BigDecimal roundOff;
