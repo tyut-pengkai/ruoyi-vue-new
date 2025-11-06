@@ -35,7 +35,16 @@
           <img :src="scope.row.icon" alt="图标" style="width: 24px; height: 24px;" />
         </template>
       </el-table-column>
-      <el-table-column label="关系类型" prop="relationType" align="center" />
+      <el-table-column label="类型" align="center">
+        <template slot-scope="scope">
+          <el-tag v-for="type in formatTypeList(scope.row.type)" :key="type" size="small" style="margin-right: 5px;">{{ type }}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column label="数据库描述" prop="description" align="center" min-width="200">
+        <template slot-scope="scope">
+          <div v-html="scope.row.description" style="max-height: 80px; overflow: hidden; text-overflow: ellipsis;"></div>
+        </template>
+      </el-table-column>
       <el-table-column label="创建时间" prop="createTime" align="center" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
@@ -59,10 +68,28 @@
           <el-input v-model="form.databaseName" placeholder="请输入数据库名称" />
         </el-form-item>
         <el-form-item label="图标" prop="icon">
-          <el-input v-model="form.icon" placeholder="请输入图标URL" />
+          <el-upload
+            class="avatar-uploader"
+            :action="uploadUrl"
+            :show-file-list="false"
+            :on-success="handleIconUpload"
+            :before-upload="beforeIconUpload"
+          >
+            <img v-if="form.icon" :src="form.icon" class="avatar" />
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
+          <div class="el-upload__tip">请上传大小不超过5MB，格式为png/jpg/jpeg的文件</div>
         </el-form-item>
-        <el-form-item label="关系类型" prop="relationType">
-          <el-input v-model="form.relationType" placeholder="请输入关系类型" />
+        <el-form-item label="类型" prop="typeList">
+          <el-checkbox-group v-model="form.typeList">
+            <el-checkbox label="关系型" />
+            <el-checkbox label="非关系型" />
+            <el-checkbox label="单机" />
+            <el-checkbox label="分布式" />
+          </el-checkbox-group>
+        </el-form-item>
+        <el-form-item label="数据库描述" prop="description">
+          <editor v-model="form.description" :min-height="150" :toolbar="true" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -75,9 +102,13 @@
 
 <script>
 import { listZhengyutian, getZhengyutian, addZhengyutian, updateZhengyutian, delZhengyutian, exportZhengyutian } from '@/api/database/zhengyutian'
+import Editor from '@/components/Editor'
 
 export default {
   name: 'Zhengyutian',
+  components: {
+    Editor
+  },
   data() {
     return {
       // 遮罩层
@@ -96,6 +127,8 @@ export default {
       title: '',
       // 是否显示弹出层
       open: false,
+      // 上传地址
+      uploadUrl: process.env.VUE_APP_BASE_API + '/common/upload',
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -107,7 +140,9 @@ export default {
         productId: undefined,
         databaseName: undefined,
         icon: undefined,
-        relationType: undefined
+        type: '',
+        typeList: [],
+        description: ''
       },
       // 表单校验
       rules: {
@@ -117,8 +152,8 @@ export default {
         icon: [
           { required: true, message: '图标不能为空', trigger: 'blur' }
         ],
-        relationType: [
-          { required: true, message: '关系类型不能为空', trigger: 'blur' }
+        typeList: [
+          { required: true, message: '请至少选择一个类型', trigger: 'change' }
         ]
       }
     }
@@ -168,14 +203,40 @@ export default {
       this.reset()
       getZhengyutian(productId).then(response => {
         this.form = response.data
+        // 将类型字符串转换为数组
+        if (this.form.type) {
+          this.form.typeList = this.form.type.split(',')
+        }
         this.open = true
         this.title = '修改郑瑜甜'
       })
+    },
+    /** 图标上传成功处理 */
+    handleIconUpload(res, file) {
+      if (res.code === 200) {
+        this.form.icon = res.fileName
+      } else {
+        this.$message.error(res.msg)
+      }
+    },
+    /** 图标上传前处理 */
+    beforeIconUpload(file) {
+      const isLt5M = file.size / 1024 / 1024 < 5
+      if (!isLt5M) {
+        this.$message.error('上传头像图片大小不能超过 5MB!')
+      }
+      return isLt5M
+    },
+    /** 格式化类型列表 */
+    formatTypeList(typeStr) {
+      return typeStr ? typeStr.split(',') : []
     },
     /** 提交按钮 */
     submitForm() {
       this.$refs['form'].validate(valid => {
         if (valid) {
+          // 将类型数组转换为字符串
+          this.form.type = this.form.typeList.join(',')
           if (this.form.productId != undefined) {
             updateZhengyutian(this.form).then(response => {
               this.$modal.msgSuccess('修改成功')
@@ -203,7 +264,9 @@ export default {
         productId: undefined,
         databaseName: undefined,
         icon: undefined,
-        relationType: undefined
+        type: '',
+        typeList: [],
+        description: ''
       }
       this.resetForm('form')
     },
@@ -228,3 +291,34 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.avatar-uploader {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  width: 100px;
+  height: 100px;
+}
+
+.avatar-uploader:hover {
+  border-color: #409EFF;
+}
+
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 100px;
+  height: 100px;
+  line-height: 100px;
+  text-align: center;
+}
+
+.avatar {
+  width: 100px;
+  height: 100px;
+  display: block;
+}
+</style>

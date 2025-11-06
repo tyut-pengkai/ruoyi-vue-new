@@ -1,0 +1,49 @@
+# 数据库表结构更新说明
+
+## 手动执行步骤
+
+1. 打开MySQL命令行或MySQL客户端工具
+2. 使用root用户登录MySQL（需要输入密码）
+   ```
+   mysql -u root -p
+   ```
+3. 执行以下SQL脚本更新数据库表结构：
+   ```
+   source c:/Users/Administrator/RuoYi-Vue/sql/update_database_product_table.sql
+   ```
+
+## 或者直接执行SQL命令
+
+登录MySQL后，依次执行以下SQL命令：
+
+```sql
+-- 添加类型字段
+ALTER TABLE database_product ADD COLUMN type VARCHAR(255) DEFAULT NULL COMMENT '数据库类型（关系型,非关系型,单机,分布式）';
+
+-- 添加描述字段
+ALTER TABLE database_product ADD COLUMN description TEXT DEFAULT NULL COMMENT '数据库描述';
+
+-- 删除不需要的关系类型字段
+ALTER TABLE database_product DROP COLUMN relation_type;
+
+-- 更新表注释
+ALTER TABLE database_product COMMENT = '数据库产品表';
+
+-- 确保表存在
+CREATE TABLE IF NOT EXISTS database_product (
+  product_id INT(11) NOT NULL AUTO_INCREMENT COMMENT '产品ID',
+  database_name VARCHAR(100) DEFAULT NULL COMMENT '数据库名称',
+  icon VARCHAR(255) DEFAULT NULL COMMENT '图标',
+  type VARCHAR(255) DEFAULT NULL COMMENT '数据库类型（关系型,非关系型,单机,分布式）',
+  description TEXT DEFAULT NULL COMMENT '数据库描述',
+  create_by VARCHAR(64) DEFAULT '' COMMENT '创建者',
+  create_time DATETIME DEFAULT NULL COMMENT '创建时间',
+  update_by VARCHAR(64) DEFAULT '' COMMENT '更新者',
+  update_time DATETIME DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (product_id)
+) ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='数据库产品表';
+```
+
+## 完成后
+
+执行完SQL脚本后，请重启后端服务，然后刷新前端页面，即可看到更新后的数据库产品管理页面。
