@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="com.ruoyi.xkt.mapper.StoreSaleDetailMapper">
 
     <select id="selectRefundByBuJuSnSale" resultType="com.ruoyi.xkt.dto.storeProdColorSize.StoreSaleSnResDTO">
-        SELECT DISTINCT
+        SELECT
             ssd.store_prod_id,
             ssd.store_prod_color_id,
             ssd.store_cus_name,
@@ -34,7 +34,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
     <select id="selectRefundByOtherSnSale" resultType="com.ruoyi.xkt.dto.storeProdColorSize.StoreSaleSnResDTO">
-        SELECT DISTINCT
+        SELECT
             ssd.store_prod_id,
             ssd.store_prod_color_id,
             ssd.store_cus_name,
