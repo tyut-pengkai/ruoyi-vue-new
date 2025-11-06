@@ -485,7 +485,8 @@ public class StoreServiceImpl implements IStoreService {
             store.setStoreStatus(StoreStatus.FORMAL_USE.getValue());
         }
         // 更新服务到期时间 在原服务时间基础上 往后推 1年
-        store.setServiceEndTime(Date.from(store.getServiceEndTime().toInstant().plus(1, ChronoUnit.YEARS)));
+        Date serviceEndTime = ObjectUtils.isNotEmpty(store.getServiceEndTime()) ? store.getServiceEndTime() : new Date();
+        store.setServiceEndTime(Date.from(serviceEndTime.toInstant().plus(12, ChronoUnit.MONTHS)));
         int count = this.storeMapper.updateById(store);
         // 更新redis 中的 store信息
         this.redisCache.setCacheObject(CacheConstants.STORE_KEY + store.getId(), store);
@@ -518,7 +519,8 @@ public class StoreServiceImpl implements IStoreService {
             store.setStoreStatus(StoreStatus.FORMAL_USE.getValue());
         }
         // 更新服务到期时间 在原服务时间基础上 往后推 1年
-        store.setServiceEndTime(Date.from(store.getServiceEndTime().toInstant().plus(1, ChronoUnit.YEARS)));
+        Date serviceEndTime = ObjectUtils.isNotEmpty(store.getServiceEndTime()) ? store.getServiceEndTime() : new Date();
+        store.setServiceEndTime(Date.from(serviceEndTime.toInstant().plus(12, ChronoUnit.MONTHS)));
         // 更新redis 中的 store信息
         this.redisCache.setCacheObject(CacheConstants.STORE_KEY + store.getId(), store);
         return this.storeMapper.updateById(store);
