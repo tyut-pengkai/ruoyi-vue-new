@@ -1,7 +1,10 @@
 package com.ruoyi.xkt.service;
 
 import com.ruoyi.common.core.page.Page;
-import com.ruoyi.xkt.dto.storeCustomer.*;
+import com.ruoyi.xkt.dto.storeCustomer.StoreCusDTO;
+import com.ruoyi.xkt.dto.storeCustomer.StoreCusFuzzyResDTO;
+import com.ruoyi.xkt.dto.storeCustomer.StoreCusPageDTO;
+import com.ruoyi.xkt.dto.storeCustomer.StoreCusPageResDTO;
 
 import java.util.List;
 
@@ -59,5 +62,13 @@ public interface IStoreCustomerService {
      * @return List<StoreCusFuzzyResDTO>
      */
     List<StoreCusFuzzyResDTO> fuzzyQueryList(Long storeId, String cusName);
+
+    /**
+     * 获取所有客户名称列表
+     *
+     * @param storeId 档口ID
+     * @return List<StoreCusFuzzyResDTO>
+     */
+    List<StoreCusFuzzyResDTO> selectAll(Long storeId);
 
 }

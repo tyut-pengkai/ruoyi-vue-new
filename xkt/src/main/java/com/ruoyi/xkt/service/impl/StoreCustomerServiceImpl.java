@@ -65,6 +65,21 @@ public class StoreCustomerServiceImpl implements IStoreCustomerService {
                 .map(x -> BeanUtil.toBean(x, StoreCusFuzzyResDTO.class).setStoreCusId(x.getId())).collect(Collectors.toList());
     }
 
+    /**
+     * 获取所有客户名称列表
+     *
+     * @param storeId 档口ID
+     * @return List<StoreCusFuzzyResDTO>
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<StoreCusFuzzyResDTO> selectAll(Long storeId) {
+        List<StoreCustomer> storeCusList = this.storeCusMapper.selectList(new LambdaQueryWrapper<StoreCustomer>()
+                .eq(StoreCustomer::getStoreId, storeId).eq(StoreCustomer::getDelFlag, Constants.UNDELETED));
+        return storeCusList.stream().map(x -> BeanUtil.toBean(x, StoreCusFuzzyResDTO.class).setStoreCusId(x.getId()))
+                .collect(Collectors.toList());
+    }
+
     @Override
     @Transactional
     public int create(StoreCusDTO storeCusDTO) {

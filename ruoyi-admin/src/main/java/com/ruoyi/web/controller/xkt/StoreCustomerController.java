@@ -44,6 +44,13 @@ public class StoreCustomerController extends XktBaseController {
         return R.ok(BeanUtil.copyToList(storeCusService.fuzzyQueryList(storeId, cusName), StoreCusFuzzyResVO.class));
     }
 
+    @ApiOperation(value = "获取所有客户", httpMethod = "GET", response = R.class)
+    @GetMapping(value = "/all/{storeId}")
+    public R<List<StoreCusFuzzyResVO>> selectAll(@PathVariable Long storeId) {
+        return R.ok(BeanUtil.copyToList(storeCusService.selectAll(storeId), StoreCusFuzzyResVO.class));
+    }
+
+
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "查询档口客户列表", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
