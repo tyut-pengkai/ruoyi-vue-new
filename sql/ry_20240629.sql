@@ -2278,6 +2278,7 @@ INSERT INTO `sys_job` VALUES (128, '继续处理档口提现（异常中断补�
 INSERT INTO `sys_job` VALUES (129, '继续处理支付宝支付回调信息（异常中断补偿，非正常流程）', 'DEFAULT', 'xktTask.continueProcessAliCallback', '0 0/10 * * * ? ', '3', '1', '0', 0, '0', 'admin', '2025-09-02 16:14:30', '', '2025-09-02 16:14:30', '');
 INSERT INTO `sys_job` VALUES (130, '商品当日浏览量、下载量、图搜次数统计', 'DEFAULT', 'xktTask.dailyProductStatistics', '0 0 23 * * ? ', '3', '1', '0', 0, '0', 'admin', '2025-09-02 16:15:54', 'admin', '2025-09-02 16:15:54', '');
 INSERT INTO `sys_job` VALUES (131, '从中通同步行政区划', 'DEFAULT', 'xktTask.syncRegionFromZto', '0 0 0 1 * ? ', '3', '1', '0', 0, '0', 'admin', '2025-09-02 16:17:37', 'admin', '2025-09-02 16:17:37', '');
+INSERT INTO `sys_job` VALUES (132, '每月第一天凌晨5:00重置单据编号初始值', 'DEFAULT', 'xktTask.resetVoucherSequence', '0 0 5 1 * ?', '1', '1', '0', 0, '0', 'admin', '2025-11-06 22:26:37', '', '2025-11-06 22:26:37', '');
 
 
 -- ----------------------------

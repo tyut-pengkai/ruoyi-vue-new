@@ -124,6 +124,7 @@ public class XktTask {
     final ZtoExpressManagerImpl ztoExpressManager;
     final SysDictDataMapper dictDataMapper;
     final StoreProductColorSizeMapper prodColorSizeMapper;
+    final VoucherSequenceMapper voucherSequenceMapper;
 
     /**
      * 每天执行定时任务
@@ -442,7 +443,7 @@ public class XktTask {
                 .eq(DailyProdTag::getDelFlag, Constants.UNDELETED));
         // 已存在于ES中的标签
         Map<Long, List<String>> existProdTagMap = CollectionUtils.isEmpty(existList) ? new HashMap<>()
-                :existList.stream().collect(Collectors.toMap(DailyProdTag::getStoreProdId, x -> new ArrayList<>(), (s1, s2) -> s2));
+                : existList.stream().collect(Collectors.toMap(DailyProdTag::getStoreProdId, x -> new ArrayList<>(), (s1, s2) -> s2));
         if (CollectionUtils.isNotEmpty(existList)) {
             this.dailyProdTagMapper.deleteByIds(existList.stream().map(DailyProdTag::getId).collect(Collectors.toList()));
         }
@@ -845,6 +846,18 @@ public class XktTask {
         });
         // 更新档口访问量
         this.storeMapper.updateById(storeList);
+    }
+
+    /**
+     * 每月第一天凌晨5:00更新voucher_sequence
+     */
+    @Transactional
+    public void resetVoucherSequence() {
+        List<VoucherSequence> voucherSequenceList = this.voucherSequenceMapper.selectList(new LambdaQueryWrapper<VoucherSequence>()
+                .eq(VoucherSequence::getDelFlag, Constants.UNDELETED));
+        // 全部更新为1
+        voucherSequenceList.forEach(x -> x.setNextSequence(1));
+        this.voucherSequenceMapper.updateById(voucherSequenceList);
     }
 
 

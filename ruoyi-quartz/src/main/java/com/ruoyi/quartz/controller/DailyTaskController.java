@@ -145,6 +145,12 @@ public class DailyTaskController extends BaseController {
         return R.ok();
     }
 
+    @PostMapping("/reset-voucher-sequence")
+    public R resetVoucherSequence(SysJob sysJob) {
+        task.resetVoucherSequence();
+        return R.ok();
+    }
+
 
 
 }
