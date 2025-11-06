@@ -1025,7 +1025,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         if (StringUtils.isNotBlank(searchDTO.getSearch())) {
             MultiMatchQuery multiMatchQuery = MultiMatchQuery.of(m -> m
                     .query(searchDTO.getSearch())
-                    .fields("storeName", "prodCateName", "parCateName", "prodArtNum")
+                    .fields("storeName", "prodTitle","prodCateName", "parCateName", "prodArtNum")
             );
             boolQuery.must(multiMatchQuery._toQuery());
         }
