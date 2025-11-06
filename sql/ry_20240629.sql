@@ -3332,9 +3332,9 @@ CREATE TABLE `store_customer_product_discount`
     `create_time`         datetime NULL DEFAULT NULL COMMENT '创建时间',
     `update_by`           varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '更新者',
     `update_time`         datetime NULL DEFAULT NULL COMMENT '更新时间',
-    PRIMARY KEY (`id`) USING BTREE
+    PRIMARY KEY (`id`) USING BTREE,
+    INDEX `idx_cus_id_prod_color_id` (`store_cus_id`, `store_prod_color_id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '档口客户优惠' ROW_FORMAT = DYNAMIC;
-CREATE INDEX idx_scpd_store_del_cus_color ON store_customer_product_discount(store_id, del_flag, store_cus_id, store_prod_color_id);
 
 
 -- ----------------------------
