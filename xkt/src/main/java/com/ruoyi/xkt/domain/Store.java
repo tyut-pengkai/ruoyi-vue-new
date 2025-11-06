@@ -104,7 +104,14 @@ public class Store extends XktBaseEntity {
      */
     @Excel(name = "保证金")
     private BigDecimal integrityGold;
-
+    /**
+     * 年费金额 可以通过后台管理系统调整
+     */
+    private BigDecimal serviceAmount;
+    /**
+     * 会员金额 可以通过后台管理系统调整
+     */
+    private BigDecimal memberAmount;
     /**
      * 服务截止时间（storeStatus=3 试用截止时间  storeStatus=4 年费到期时间）
      */

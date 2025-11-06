@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.model.ESystemRole;
-import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
@@ -44,7 +43,6 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
     final StoreCertificateMapper storeCertMapper;
     final SysFileMapper fileMapper;
     final StoreMapper storeMapper;
-    final RedisCache redisCache;
     final IAssetService assetService;
     final StoreSaleDetailMapper saleDetailMapper;
     final StoreProductMapper storeProdMapper;

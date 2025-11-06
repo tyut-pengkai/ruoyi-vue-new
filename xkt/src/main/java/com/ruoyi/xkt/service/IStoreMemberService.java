@@ -2,7 +2,6 @@ package com.ruoyi.xkt.service;
 
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.xkt.dto.storeMember.StoreMemberCreateDTO;
-import com.ruoyi.xkt.dto.storeMember.StoreMemberExpireResDTO;
 import com.ruoyi.xkt.dto.storeMember.StoreMemberPageDTO;
 import com.ruoyi.xkt.dto.storeMember.StoreMemberPageResDTO;
 
@@ -29,5 +28,13 @@ public interface IStoreMemberService {
      * @return Page<StoreMemberPageResDTO>
      */
     Page<StoreMemberPageResDTO> page(StoreMemberPageDTO pageDTO);
+
+    /**
+     * 购买档口会员 免费版
+     *
+     * @param storeId 档口ID
+     * @return Integer
+     */
+    Integer createNoMoney(Long storeId);
 
 }

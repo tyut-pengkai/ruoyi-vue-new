@@ -6,9 +6,7 @@ import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.web.controller.xkt.vo.storeFactory.StoreFactoryResVO;
 import com.ruoyi.web.controller.xkt.vo.storeMember.StoreMemberCreateVO;
-import com.ruoyi.web.controller.xkt.vo.storeMember.StoreMemberExpireResVO;
 import com.ruoyi.web.controller.xkt.vo.storeMember.StoreMemberPageVO;
 import com.ruoyi.xkt.dto.storeMember.StoreMemberCreateDTO;
 import com.ruoyi.xkt.dto.storeMember.StoreMemberPageDTO;
@@ -20,8 +18,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * 档口购买会员controller
@@ -43,6 +39,13 @@ public class StoreMemberController extends XktBaseController {
     @PostMapping
     public R<Integer> create(@Validated @RequestBody StoreMemberCreateVO createVO) {
         return R.ok(storeMemberService.create(BeanUtil.toBean(createVO, StoreMemberCreateDTO.class)));
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin')")
+    @Log(title = "新增档口会员（no money）", businessType = BusinessType.INSERT)
+    @PostMapping("/no-money/{storeId}")
+    public R<Integer> createNoMoney(@PathVariable Long storeId) {
+        return R.ok(storeMemberService.createNoMoney(storeId));
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")

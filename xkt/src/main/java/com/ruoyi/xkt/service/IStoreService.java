@@ -199,4 +199,29 @@ public interface IStoreService {
      * @return StoreExpireResDTO
      */
     StoreExpireResDTO getExpireInfo(Long storeId);
+
+    /**
+     * 购买年费
+     *
+     * @param buyAnnualDTO 购买年费入参
+     * @return Integer
+     */
+    Integer buyAnnual(StoreBuyAnnualDTO buyAnnualDTO);
+
+    /**
+     * 购买年费 免金额
+     *
+     * @param storeId 档口ID
+     * @return Integer
+     */
+    Integer buyAnnualWithOutMoney(Long storeId);
+
+    /**
+     * 更新档口特殊属性
+     *
+     * @param specialDTO 更新入参
+     * @return Integer
+     */
+    Integer UpdateSpecialAttr(StoreUpdateSpecialDTO specialDTO);
+
 }

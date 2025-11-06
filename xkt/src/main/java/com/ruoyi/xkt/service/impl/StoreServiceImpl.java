@@ -13,7 +13,6 @@ import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.entity.SysUser;
-import com.ruoyi.common.core.domain.model.ESystemRole;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
@@ -27,12 +26,10 @@ import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.store.*;
 import com.ruoyi.xkt.dto.storeCertificate.StoreCertDTO;
 import com.ruoyi.xkt.dto.storeCertificate.StoreCertResDTO;
-import com.ruoyi.xkt.enums.FileType;
-import com.ruoyi.xkt.enums.SaleType;
-import com.ruoyi.xkt.enums.StockSysType;
-import com.ruoyi.xkt.enums.StoreStatus;
+import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IAssetService;
+import com.ruoyi.xkt.service.INoticeService;
 import com.ruoyi.xkt.service.IStoreCertificateService;
 import com.ruoyi.xkt.service.IStoreService;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +43,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -80,6 +78,7 @@ public class StoreServiceImpl implements IStoreService {
     final IStoreCertificateService storeCertService;
     final EsClientWrapper esClientWrapper;
     final StoreMemberMapper storeMemberMapper;
+    final INoticeService noticeService;
 
     /**
      * 档口分页数据
@@ -440,19 +439,115 @@ public class StoreServiceImpl implements IStoreService {
     @Transactional(readOnly = true)
     public StoreExpireResDTO getExpireInfo(Long storeId) {
         Store store = Optional.ofNullable(storeMapper.selectById(storeId)).orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
-        StoreExpireResDTO expireDTO = new StoreExpireResDTO().setStoreId(storeId).setServiceEndTime(store.getServiceEndTime());
+        StoreExpireResDTO expireDTO = new StoreExpireResDTO().setStoreId(storeId).setServiceEndTime(store.getServiceEndTime())
+                .setServiceAmount(ObjectUtils.defaultIfNull(store.getServiceAmount(), Constants.STORE_ANNUAL_AMOUNT))
+                .setMemberAmount(ObjectUtils.defaultIfNull(store.getMemberAmount(), Constants.STORE_MEMBER_AMOUNT));
         // 获取档口会员
         Date todayStart = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
         StoreMember storeMember = this.storeMemberMapper.selectOne(new LambdaQueryWrapper<StoreMember>()
                 .eq(StoreMember::getStoreId, storeId).eq(StoreMember::getDelFlag, Constants.UNDELETED)
                 .le(StoreMember::getStartTime, todayStart));
-        expireDTO.setServiceEndTime(ObjectUtils.isNotEmpty(storeMember) ? storeMember.getEndTime() : null);
+        return expireDTO.setMemberEndTime(ObjectUtils.isNotEmpty(storeMember) ? storeMember.getEndTime() : null);
+    }
 
-        // TODO 获取购买正式版金额
+    /**
+     * 购买年费
+     *
+     * @param buyAnnualDTO 购买年费入参
+     * @return Integer
+     */
+    @Override
+    @Transactional
+    public Integer buyAnnual(StoreBuyAnnualDTO buyAnnualDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(buyAnnualDTO.getStoreId())) {
+            throw new ServiceException("当前用户非管理员账号，无权限操作!", HttpStatus.ERROR);
+        }
+        //校验推广支付方式是否存在
+        AdPayWay.of(buyAnnualDTO.getPayWay());
+        // 校验使用余额情况下，密码是否正确
+        if (Objects.equals(buyAnnualDTO.getPayWay(), AdPayWay.BALANCE.getValue())
+                && !assetService.checkTransactionPassword(buyAnnualDTO.getStoreId(), buyAnnualDTO.getTransactionPassword())) {
+            throw new ServiceException("支付密码错误!请重新输入", HttpStatus.ERROR);
+        }
+        Optional.ofNullable(buyAnnualDTO.getStoreId()).orElseThrow(() -> new RuntimeException("档口ID不能为空!"));
+        Optional.ofNullable(buyAnnualDTO.getPayPrice()).orElseThrow(() -> new RuntimeException("购买金额不能为空!"));
+        Store store = Optional.ofNullable(storeMapper.selectById(buyAnnualDTO.getStoreId())).orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
+        // 判断扣费金额和折扣金额是否一致（设置了折扣，就用折扣，反之取默认金额）
+        final BigDecimal serviceAmount = ObjectUtils.defaultIfNull(store.getServiceAmount(), Constants.STORE_ANNUAL_AMOUNT);
+        if (!Objects.equals(serviceAmount, buyAnnualDTO.getPayPrice())) {
+            throw new ServiceException("付费金额与核定金额不一致!请联系平台客服", HttpStatus.ERROR);
+        }
+        // 年费续费成功之后，就将优惠金额清空，下一年再有优惠就需重新设置
+        store.setServiceAmount(null);
+        // 如果是使用版 storeStatus 为3，更新为正式版 storeStatus 为4
+        if (Objects.equals(store.getStoreStatus(), StoreStatus.TRIAL_PERIOD.getValue())) {
+            store.setStoreStatus(StoreStatus.FORMAL_USE.getValue());
+        }
+        // 更新服务到期时间 在原服务时间基础上 往后推 1年
+        store.setServiceEndTime(Date.from(store.getServiceEndTime().toInstant().plus(1, ChronoUnit.YEARS)));
+        int count = this.storeMapper.updateById(store);
+        // 更新redis 中的 store信息
+        this.redisCache.setCacheObject(CacheConstants.STORE_KEY + store.getId(), store);
+        // 新增续缴年费成功的消息通知
+        this.noticeService.createSingleNotice(SecurityUtils.getUserId(), "年费续缴成功!", NoticeType.NOTICE.getValue(), NoticeOwnerType.SYSTEM.getValue(),
+                buyAnnualDTO.getStoreId(), UserNoticeType.SYSTEM_MSG.getValue(), "恭喜您！年费续缴成功!");
+        // 扣除会员费
+        assetService.payVipFee(buyAnnualDTO.getStoreId(), buyAnnualDTO.getPayPrice());
+        return count;
+    }
 
-        // TODO 获取购买会员金额
+    /**
+     * 购买年费 免金额
+     *
+     * @param storeId 档口ID
+     * @return Integer
+     */
+    @Override
+    @Transactional
+    public Integer buyAnnualWithOutMoney(Long storeId) {
+        // 用户是否为超级管理员
+        if (!SecurityUtils.isSuperAdmin()) {
+            throw new ServiceException("当前用户非超级管理员，无权限操作!", HttpStatus.ERROR);
+        }
+        Store store = Optional.ofNullable(storeMapper.selectById(storeId)).orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
+        // 年费续费成功之后，就将优惠金额清空，下一年再有优惠就需重新设置
+        store.setServiceAmount(null);
+        // 如果是使用版 storeStatus 为3，更新为正式版 storeStatus 为4
+        if (Objects.equals(store.getStoreStatus(), StoreStatus.TRIAL_PERIOD.getValue())) {
+            store.setStoreStatus(StoreStatus.FORMAL_USE.getValue());
+        }
+        // 更新服务到期时间 在原服务时间基础上 往后推 1年
+        store.setServiceEndTime(Date.from(store.getServiceEndTime().toInstant().plus(1, ChronoUnit.YEARS)));
+        // 更新redis 中的 store信息
+        this.redisCache.setCacheObject(CacheConstants.STORE_KEY + store.getId(), store);
+        return this.storeMapper.updateById(store);
+    }
 
-        return expireDTO;
+    /**
+     * 更新档口特殊属性
+     *
+     * @param specialDTO 更新入参
+     * @return Integer
+     */
+    @Override
+    @Transactional
+    public Integer UpdateSpecialAttr(StoreUpdateSpecialDTO specialDTO) {
+        // 用户是否为超级管理员
+        if (!SecurityUtils.isSuperAdmin()) {
+            throw new ServiceException("当前用户非超级管理员，无权限操作!", HttpStatus.ERROR);
+        }
+        Store store = Optional.ofNullable(storeMapper.selectById(specialDTO.getStoreId())).orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
+        if (ObjectUtils.isNotEmpty(specialDTO.getServiceEndTime())) {
+            store.setServiceEndTime(specialDTO.getServiceEndTime());
+        }
+        if (ObjectUtils.isNotEmpty(specialDTO.getServiceAmount())) {
+            store.setServiceAmount(specialDTO.getServiceAmount());
+        }
+        if (ObjectUtils.isNotEmpty(specialDTO.getMemberAmount())) {
+            store.setMemberAmount(specialDTO.getMemberAmount());
+        }
+        return this.storeMapper.updateById(store);
     }
 
 

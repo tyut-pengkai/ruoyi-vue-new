@@ -37,14 +37,6 @@ public class StoreController extends XktBaseController {
     final ISysUserService userService;
     final TokenService tokenService;
 
-
-    // TODO 获取试用期即将到期的档口
-    // TODO 获取试用期即将到期的档口
-
-    // TODO 获取获取正式使用即将到期的档口
-    // TODO 获取获取正式使用即将到期的档口
-
-
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @ApiOperation(value = "模糊查询档口", httpMethod = "GET", response = R.class)
     @Log(title = "模糊查询档口", businessType = BusinessType.UPDATE)
@@ -104,7 +96,6 @@ public class StoreController extends XktBaseController {
     public R<StoreExpireResVO> getExpireInfo(@PathVariable("storeId") Long storeId) {
         return R.ok(BeanUtil.toBean(storeService.getExpireInfo(storeId), StoreExpireResVO.class));
     }
-
 
     @ApiOperation(value = "PC 商城首页 获取档口基础信息", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/simple/{storeId}")
@@ -201,5 +192,27 @@ public class StoreController extends XktBaseController {
     public R<Integer> getStockSys(@PathVariable Long storeId) {
         return R.ok(storeService.getStockSys(storeId));
     }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
+    @Log(title = "档口购买正式版", businessType = BusinessType.INSERT)
+    @PostMapping(value = "/annual")
+    public R<Integer> buyAnnual(@Validated @RequestBody StoreBuyAnnualVO buyAnnualVO) {
+        return R.ok(storeService.buyAnnual(BeanUtil.toBean(buyAnnualVO, StoreBuyAnnualDTO.class)));
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin')")
+    @Log(title = "档口购买正式版（no money）", businessType = BusinessType.INSERT)
+    @PostMapping(value = "/annual/no-money/{storeId}")
+    public R<Integer> buyAnnualWithOutMoney(@PathVariable Long storeId) {
+        return R.ok(storeService.buyAnnualWithOutMoney(storeId));
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin')")
+    @Log(title = "更新试用期、年费优惠价、会员优惠价", businessType = BusinessType.INSERT)
+    @PutMapping(value = "/special")
+    public R<Integer> UpdateSpecialAttr(@Validated @RequestBody StoreUpdateSpecialVO specialVO) {
+        return R.ok(storeService.UpdateSpecialAttr(BeanUtil.toBean(specialVO, StoreUpdateSpecialDTO.class)));
+    }
+
 
 }
