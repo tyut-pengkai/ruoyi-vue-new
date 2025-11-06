@@ -3925,6 +3925,8 @@ CREATE TABLE `store_sale`
     `sale_quantity`   int UNSIGNED NULL DEFAULT NULL COMMENT '销售数量',
     `refund_quantity` int NULL DEFAULT NULL COMMENT '退货数量',
     `amount`          decimal(10, 2) NOT NULL COMMENT '总金额',
+    `sale_amount`     decimal(10, 2) NULL DEFAULT NULL COMMENT '销售金额',
+    `refund_amount`   decimal(10, 2) NULL DEFAULT NULL COMMENT '退货金额',
     `pay_way`         tinyint UNSIGNED NOT NULL COMMENT '支付方式（1支付宝、2微信、3现金、4欠款）',
     `payment_status`  varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '结款状态（已结清、欠款）',
     `operator_id`     bigint UNSIGNED NOT NULL COMMENT '当前操作人ID sys_user.id',
