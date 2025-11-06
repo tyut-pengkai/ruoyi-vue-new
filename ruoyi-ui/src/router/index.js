@@ -107,6 +107,22 @@ export const dynamicRoutes = [
       }
     ]
   },
+  {    
+    path: '/database',
+    component: Layout,
+    alwaysShow: true,
+    permissions: ['database:zhengyutian:list'],
+    meta: { title: '数据库产品管理', icon: 'database' },
+    redirect: 'zhengyutian',
+    children: [
+        {
+          path: 'zhengyutian',
+          component: () => import('@/views/database/product/index'),
+          name: 'Zhengyutian',
+          meta: { title: '郑瑜甜', icon: 'user' }
+        }
+      ]
+  },
   {
     path: '/system/user-auth',
     component: Layout,

@@ -1,0 +1,10 @@
+@echo off
+echo Please execute the following SQL commands manually in MySQL:
+echo.
+echo 1. Connect to MySQL: mysql -u root -p
+echo 2. Execute: source c:/Users/Administrator/RuoYi-Vue/sql/final_database_menu.sql
+echo.
+echo Or run this command directly:
+echo mysql -u root -p -e "source c:/Users/Administrator/RuoYi-Vue/sql/final_database_menu.sql"
+echo.
+pause

@@ -1,0 +1,1 @@
+SELECT menu_id, menu_name, parent_id, path FROM sys_menu WHERE menu_name LIKE '%数据库%';
