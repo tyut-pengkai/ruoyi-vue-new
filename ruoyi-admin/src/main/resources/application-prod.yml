@@ -1,7 +1,7 @@
 # 项目相关配置
 app:
   version: 1.0.0
-  download-url: https://cdbuju.oss-cn-hangzhou.aliyuncs.com/apk/cdbuju-1.0.0.apk
+  download-url: http://oss.cdbuju.cn/apk/cdbuju-1.0.0.apk
   update-notes: 正式上线
   forced-update: false
 ruoyi:
