@@ -43,7 +43,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -486,7 +485,8 @@ public class StoreServiceImpl implements IStoreService {
         }
         // 更新服务到期时间 在原服务时间基础上 往后推 1年
         Date serviceEndTime = ObjectUtils.isNotEmpty(store.getServiceEndTime()) ? store.getServiceEndTime() : new Date();
-        store.setServiceEndTime(Date.from(serviceEndTime.toInstant().plus(12, ChronoUnit.MONTHS)));
+        store.setServiceEndTime(Date.from(serviceEndTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                .plusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant()));
         int count = this.storeMapper.updateById(store);
         // 更新redis 中的 store信息
         this.redisCache.setCacheObject(CacheConstants.STORE_KEY + store.getId(), store);
@@ -520,7 +520,8 @@ public class StoreServiceImpl implements IStoreService {
         }
         // 更新服务到期时间 在原服务时间基础上 往后推 1年
         Date serviceEndTime = ObjectUtils.isNotEmpty(store.getServiceEndTime()) ? store.getServiceEndTime() : new Date();
-        store.setServiceEndTime(Date.from(serviceEndTime.toInstant().plus(12, ChronoUnit.MONTHS)));
+        store.setServiceEndTime(Date.from(serviceEndTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                .plusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant()));
         // 更新redis 中的 store信息
         this.redisCache.setCacheObject(CacheConstants.STORE_KEY + store.getId(), store);
         return this.storeMapper.updateById(store);
