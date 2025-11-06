@@ -138,6 +138,7 @@ public class TyController extends BaseController {
     @PostMapping("/cus/disc/cache")
     public R<Integer> createCusDiscCache(@RequestParam(value = "userId") Long userId, @RequestParam("compareStr") String compareStr,
                                          MultipartFile file) throws IOException {
+        // 导入的excel名，只取客户名称
         final String cusName = file.getOriginalFilename().replaceAll("\\..*$", "").replaceAll("[^\\u4e00-\\u9fa50-9]", "").trim();
         ExcelUtil<TyCusDiscImportVO> util = new ExcelUtil<>(TyCusDiscImportVO.class);
         List<TyCusDiscImportVO> tyProdVOList = util.importExcel(file.getInputStream());
@@ -183,6 +184,10 @@ public class TyController extends BaseController {
                 });
         // 加到总的客户优惠上
         CollectionUtils.addAll(cacheList, importList);
+        // 如果客户优惠不为空，则滤重
+        if (CollectionUtils.isNotEmpty(cacheList)) {
+            cacheList = cacheList.stream().distinct().collect(Collectors.toList());
+        }
         // TODO 过滤优惠大于0 是在比较插入数据的时候做的
         // 存到redis中
         redisCache.setCacheObject(CacheConstants.MIGRATION_TY_CUS_DISCOUNT_KEY + userId, cacheList);

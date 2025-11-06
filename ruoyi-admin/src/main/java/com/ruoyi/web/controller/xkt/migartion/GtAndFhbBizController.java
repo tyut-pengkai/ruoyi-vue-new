@@ -483,8 +483,9 @@ public class GtAndFhbBizController extends BaseController {
         if (CollectionUtils.isEmpty(fhbCusDiscCacheList)) {
             throw new ServiceException("fhb供应商客户优惠列表为空!" + initVO.getSupplierId(), HttpStatus.ERROR);
         }
-        // 2025.10.16 增加一重保险，客户优惠必须是大于0的
-        fhbCusDiscCacheList = fhbCusDiscCacheList.stream().filter(x -> x.getDiscount() > 0).collect(Collectors.toList());
+        // 2025.10.16 增加一重保险，客户优惠必须是大于0的；且必须滤重
+        fhbCusDiscCacheList = fhbCusDiscCacheList.stream().filter(x -> x.getDiscount() > 0).distinct().collect(Collectors.toList());
+        
         List<FhbProdStockVO.SMPSRecordVO> fhbStockCacheList = redisCache
                 .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_PROD_STOCK_KEY + initVO.getSupplierId());
         if (CollectionUtils.isEmpty(fhbStockCacheList)) {

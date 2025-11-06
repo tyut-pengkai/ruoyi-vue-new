@@ -113,6 +113,10 @@ public class FhbController extends BaseController {
         List<FhbCusDiscountVO.SMCDRecordVO> cacheList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_CUS_DISCOUNT_KEY + supplierId), new ArrayList<>());
         CollectionUtils.addAll(cacheList, cusDiscountVO.getData().getRecords());
+        // 如果cacheList不为空，则滤重
+        if (CollectionUtils.isNotEmpty(cacheList)) {
+            cacheList = cacheList.stream().distinct().collect(Collectors.toList());
+        }
         // 存到redis中
         redisCache.setCacheObject(CacheConstants.MIGRATION_SUPPLIER_CUS_DISCOUNT_KEY + supplierId, cacheList, 5, TimeUnit.DAYS);
         return R.ok();
@@ -144,7 +148,7 @@ public class FhbController extends BaseController {
      */
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @GetMapping("/error/cus/price/{supplierId}")
-    public void getErrorCusDisc(HttpServletResponse response,  @PathVariable Integer supplierId) throws UnsupportedEncodingException {
+    public void getErrorCusDisc(HttpServletResponse response, @PathVariable Integer supplierId) throws UnsupportedEncodingException {
         // 先从redis中获取列表数据
         List<FhbCusDiscountVO.SMCDRecordVO> cacheList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_CUS_DISCOUNT_KEY + supplierId), new ArrayList<>());

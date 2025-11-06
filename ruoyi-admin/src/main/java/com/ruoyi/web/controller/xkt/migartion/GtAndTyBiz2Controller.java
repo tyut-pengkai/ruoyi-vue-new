@@ -393,8 +393,8 @@ public class GtAndTyBiz2Controller extends BaseController {
         if (CollectionUtils.isEmpty(tyCusDiscCacheList)) {
             throw new ServiceException("ty供应商客户优惠列表为空!" + initVO.getUserId(), HttpStatus.ERROR);
         }
-        // 增加一重保险，客户优惠必须大于0
-        tyCusDiscCacheList = tyCusDiscCacheList.stream().filter(x -> x.getDiscount() > 0).collect(Collectors.toList());
+        // 增加一重保险，客户优惠必须大于0；且必须滤重
+        tyCusDiscCacheList = tyCusDiscCacheList.stream().filter(x -> x.getDiscount() > 0).distinct().collect(Collectors.toList());
 
         // 从redis中获取已存在的商品库存数据
         List<TyProdStockVO> tyStockList = redisCache.getCacheObject(CacheConstants.MIGRATION_TY_PROD_STOCK_KEY + initVO.getUserId());
