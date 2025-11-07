@@ -69,6 +69,7 @@ public class ${ClassName}ServiceImpl implements I${ClassName}Service
     {
 #foreach ($column in $columns)
 #if($column.javaField == 'createTime')
+        ${className}.setCreateBy(SecurityUtils.getUsername());
         ${className}.setCreateTime(DateUtils.getNowDate());
 #end
 #end
@@ -95,6 +96,7 @@ public class ${ClassName}ServiceImpl implements I${ClassName}Service
     {
 #foreach ($column in $columns)
 #if($column.javaField == 'updateTime')
+        ${className}.setUpdateBy(SecurityUtils.getUsername());
         ${className}.setUpdateTime(DateUtils.getNowDate());
 #end
 #end
