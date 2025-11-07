@@ -54,10 +54,9 @@ public class FeedbackServiceImpl implements IFeedbackService {
     @Transactional(readOnly = true)
     public Page<FeedbackResDTO> page(FeedbackPageDTO pageDTO) {
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
-        List<Feedback> feedbackList = this.feedbackMapper.selectList(new LambdaQueryWrapper<Feedback>()
-                .eq(Feedback::getDelFlag, Constants.UNDELETED));
+        List<FeedbackResDTO> feedbackList = this.feedbackMapper.selectPageList(pageDTO);
         return CollectionUtils.isEmpty(feedbackList) ? Page.empty(pageDTO.getPageSize(), pageDTO.getPageNum())
-                : Page.convert(new PageInfo<>(feedbackList), BeanUtil.copyToList(feedbackList, FeedbackResDTO.class));
+                : Page.convert(new PageInfo<>(feedbackList));
     }
 
     /**
