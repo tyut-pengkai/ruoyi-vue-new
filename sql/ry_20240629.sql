@@ -4351,10 +4351,71 @@ CREATE TABLE `sys_html` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='网页内容';
 
 -- 快递费用初始化（测试，上线前根据实际费用调整）
-INSERT INTO express_fee_config ( express_id, region_code, first_item_amount, next_item_amount )
-SELECT 1, region_code, 5, 5 FROM express_region WHERE region_level = 1;
-INSERT INTO express_fee_config ( express_id, region_code, first_item_amount, next_item_amount )
-SELECT 2, region_code, 5, 5 FROM express_region WHERE region_level = 1;
+INSERT INTO `express_fee_config` VALUES (2, 1, '460000', '', 15.00, 15.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (3, 1, '330000', NULL, 5.00, 5.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (4, 1, '530000', NULL, 5.00, 5.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (6, 1, '140000', NULL, 5.00, 5.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (7, 1, '340000', NULL, 5.00, 5.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (8, 1, '210000', '', 7.00, 7.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (9, 1, '540000', '', 28.00, 28.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (10, 1, '410000', NULL, 5.00, 5.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (11, 1, '150000', '', 15.00, 15.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (12, 1, '610000', NULL, 5.00, 5.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (13, 1, '350000', NULL, 5.00, 5.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (14, 1, '220000', '', 7.00, 7.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (16, 1, '420000', NULL, 5.00, 5.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (17, 1, '620000', '', 7.00, 7.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (18, 1, '360000', NULL, 5.00, 5.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (19, 1, '230000', '', 7.00, 7.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (21, 1, '430000', NULL, 5.00, 5.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (22, 1, '630000', '', 7.00, 7.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (23, 1, '500000', NULL, 5.00, 5.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (24, 1, '370000', NULL, 5.00, 5.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (25, 1, '110000', '', 8.00, 8.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (26, 1, '440000', NULL, 5.00, 5.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (27, 1, '310000', '', 8.00, 8.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (28, 1, '640000', '', 7.00, 7.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (29, 1, '510000', '', 5.00, 5.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (30, 1, '120000', NULL, 5.00, 5.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (32, 1, '450000', NULL, 5.00, 5.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (33, 1, '320000', NULL, 5.00, 5.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (34, 1, '650000', '', 28.00, 28.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (35, 1, '520000', NULL, 5.00, 5.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (36, 1, '130000', NULL, 5.00, 5.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (65, 2, '460000', '', 10.00, 10.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (66, 2, '330000', NULL, 3.20, 3.20, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (67, 2, '530000', NULL, 3.20, 3.20, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (69, 2, '140000', NULL, 3.20, 3.20, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (70, 2, '340000', NULL, 3.20, 3.20, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (71, 2, '210000', '', 4.00, 4.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (72, 2, '540000', '', 16.00, 16.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (73, 2, '410000', NULL, 3.20, 3.20, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (74, 2, '150000', '', 10.00, 10.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (75, 2, '610000', NULL, 3.20, 3.20, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (76, 2, '350000', NULL, 3.20, 3.20, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (77, 2, '220000', '', 4.00, 4.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (79, 2, '420000', NULL, 3.20, 3.20, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (80, 2, '620000', NULL, 3.20, 3.20, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (81, 2, '360000', NULL, 3.20, 3.20, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (82, 2, '230000', '', 4.00, 4.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (84, 2, '430000', NULL, 3.20, 3.20, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (85, 2, '630000', NULL, 3.20, 3.20, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (86, 2, '500000', NULL, 3.20, 3.20, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (87, 2, '370000', NULL, 3.20, 3.20, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (88, 2, '110000', '', 4.20, 4.20, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (89, 2, '440000', NULL, 3.20, 3.20, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (90, 2, '310000', '', 4.20, 4.20, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (91, 2, '640000', NULL, 3.20, 3.20, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (92, 2, '510000', '', 3.20, 3.20, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (93, 2, '120000', NULL, 3.20, 3.20, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (95, 2, '450000', NULL, 3.20, 3.20, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (96, 2, '320000', NULL, 3.20, 3.20, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (97, 2, '650000', '', 16.00, 16.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (98, 2, '520000', NULL, 3.20, 3.20, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (99, 2, '130000', NULL, 3.20, 3.20, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (128, 1, '513300', NULL, 8.00, 8.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (129, 1, '513200', NULL, 8.00, 8.00, '0', '', NULL, '', NULL, 0);
+INSERT INTO `express_fee_config` VALUES (130, 2, '440300', NULL, 4.20, 4.20, '0', '', NULL, '', NULL, 0);
 
 
 
