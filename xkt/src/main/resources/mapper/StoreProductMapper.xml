@@ -266,11 +266,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         SELECT
             sp.prod_status,
             sp.prod_cate_id,
-            spc.`name` AS prodCateName,
+            sp.prod_cate_name,
             COUNT( sp.id ) AS cateCount
         FROM
             store_product sp
-                JOIN sys_product_category spc ON sp.prod_cate_id = spc.id
         WHERE
             sp.del_flag = 0
             AND sp.private_item = 0

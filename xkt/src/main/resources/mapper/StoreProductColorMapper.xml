@@ -30,7 +30,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             sp.prod_art_num,
             spc.color_name,
             sp.prod_cate_id,
-            pc.`name` AS prodCateName,
+            sp.prod_cate_name,
             spc.prod_status,
             spc.create_time,
             sf.file_url AS mainPicUrl,
@@ -40,7 +40,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         FROM
             store_product_color spc
                 JOIN store_product sp ON spc.store_prod_id = sp.id
-                JOIN sys_product_category pc ON sp.prod_cate_id = pc.id
                 JOIN store_product_category_attribute spca ON spc.store_prod_id = spca.store_prod_id AND spca.del_flag = 0
                 LEFT JOIN store_product_file spf ON sp.id = spf.store_prod_id AND spf.file_type = 1 AND spf.order_num = 1 AND spf.del_flag = 0
                 LEFT JOIN sys_file sf ON spf.file_id = sf.id

@@ -3483,6 +3483,7 @@ CREATE TABLE `store_product`
     `id`                   bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '档口商品ID',
     `store_id`             bigint UNSIGNED NOT NULL COMMENT '档口ID',
     `prod_cate_id`         bigint UNSIGNED NULL DEFAULT NULL COMMENT '商品分类ID',
+    `prod_cate_name`       varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '分类名称',
     `factory_art_num`      varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '工厂货号',
     `prod_art_num`         varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '商品货号',
     `prod_title`           varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '商品标题',
