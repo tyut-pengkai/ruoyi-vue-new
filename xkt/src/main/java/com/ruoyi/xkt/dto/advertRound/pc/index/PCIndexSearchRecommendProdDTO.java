@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.math.BigDecimal;
+
 /**
  * @author liujiang
  * @version v1.0
@@ -23,6 +25,8 @@ public class PCIndexSearchRecommendProdDTO {
     private String storeName;
     @ApiModelProperty(value = "商品货号")
     private String prodArtNum;
+    @ApiModelProperty(value = "支付价格")
+    private BigDecimal payPrice;
     @ApiModelProperty(value = "排序")
     private Integer orderNum;
     @ApiModelProperty(value = "商品第一张主图路径")

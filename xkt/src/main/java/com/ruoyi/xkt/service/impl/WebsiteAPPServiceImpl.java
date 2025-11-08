@@ -129,9 +129,8 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         } else {
             // 从数据库查首页精选热卖推广（精准搜索是否存在推广，不存在从已过期的数据中拉数据来凑数）
             List<AdvertRound> advertRoundList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
-                    .isNotNull(AdvertRound::getStoreId).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
-                    .eq(AdvertRound::getTypeId, AdType.APP_HOME_HOT_RECOMMEND_PROD.getValue())
-                    .eq(AdvertRound::getLaunchStatus, AdLaunchStatus.LAUNCHING.getValue())
+                    .isNotNull(AdvertRound::getStoreId).isNotNull(AdvertRound::getProdIdStr).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
+                    .eq(AdvertRound::getTypeId, AdType.APP_HOME_HOT_RECOMMEND_PROD.getValue()).eq(AdvertRound::getLaunchStatus, AdLaunchStatus.LAUNCHING.getValue())
                     .eq(AdvertRound::getBiddingStatus, AdBiddingStatus.BIDDING_SUCCESS.getValue()));
             if (CollectionUtils.isNotEmpty(advertRoundList)) {
                 final List<Long> storeProdIdList = advertRoundList.stream()
@@ -201,9 +200,8 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         } else {
             // 从数据库查首页 人气爆品 推广（精准搜索是否存在推广，不存在从已过期的数据中拉数据来凑数）
             List<AdvertRound> advertRoundList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
-                    .isNotNull(AdvertRound::getStoreId).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
-                    .eq(AdvertRound::getTypeId, AdType.APP_HOME_POP_RECOMMEND_PROD.getValue())
-                    .eq(AdvertRound::getLaunchStatus, AdLaunchStatus.LAUNCHING.getValue())
+                    .isNotNull(AdvertRound::getStoreId).isNotNull(AdvertRound::getProdIdStr).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
+                    .eq(AdvertRound::getTypeId, AdType.APP_HOME_POP_RECOMMEND_PROD.getValue()).eq(AdvertRound::getLaunchStatus, AdLaunchStatus.LAUNCHING.getValue())
                     .eq(AdvertRound::getBiddingStatus, AdBiddingStatus.BIDDING_SUCCESS.getValue()));
             if (CollectionUtils.isNotEmpty(advertRoundList)) {
                 final List<Long> storeProdIdList = advertRoundList.stream()
@@ -273,9 +271,8 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         } else {
             // 从数据库查首页 新品榜 推广（精准搜索是否存在推广，不存在从已过期的数据中拉数据来凑数）
             List<AdvertRound> advertRoundList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
-                    .isNotNull(AdvertRound::getStoreId).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
-                    .eq(AdvertRound::getTypeId, AdType.APP_HOME_NEW_PROD_RECOMMEND_PROD.getValue())
-                    .eq(AdvertRound::getLaunchStatus, AdLaunchStatus.LAUNCHING.getValue())
+                    .isNotNull(AdvertRound::getStoreId).isNotNull(AdvertRound::getProdIdStr).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
+                    .eq(AdvertRound::getTypeId, AdType.APP_HOME_NEW_PROD_RECOMMEND_PROD.getValue()).eq(AdvertRound::getLaunchStatus, AdLaunchStatus.LAUNCHING.getValue())
                     .eq(AdvertRound::getBiddingStatus, AdBiddingStatus.BIDDING_SUCCESS.getValue()));
             if (CollectionUtils.isNotEmpty(advertRoundList)) {
                 final List<Long> storeProdIdList = advertRoundList.stream()
@@ -367,9 +364,8 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         } else {
             // 从数据库查首页 新品榜 推广（精准搜索是否存在推广，不存在从已过期的数据中拉数据来凑数）
             List<AdvertRound> advertRoundList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
-                    .isNotNull(AdvertRound::getStoreId).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
-                    .eq(AdvertRound::getTypeId, AdType.APP_SEARCH_RESULT_PRODUCT.getValue())
-                    .eq(AdvertRound::getLaunchStatus, AdLaunchStatus.LAUNCHING.getValue())
+                    .isNotNull(AdvertRound::getStoreId).isNotNull(AdvertRound::getProdIdStr).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
+                    .eq(AdvertRound::getTypeId, AdType.APP_SEARCH_RESULT_PRODUCT.getValue()).eq(AdvertRound::getLaunchStatus, AdLaunchStatus.LAUNCHING.getValue())
                     .eq(AdvertRound::getBiddingStatus, AdBiddingStatus.BIDDING_SUCCESS.getValue()));
             if (CollectionUtils.isNotEmpty(advertRoundList)) {
                 final List<Long> storeProdIdList = advertRoundList.stream()
@@ -443,7 +439,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
     public Page<APPStrengthStoreDTO> getAppStrengthStorePage(AppStrengthSearchDTO searchDTO) {
         final Date now = java.sql.Date.valueOf(LocalDate.now());
         List<StoreMember> storeMemberList = this.storeMemberMapper.selectList(new LambdaQueryWrapper<StoreMember>()
-                .eq(StoreMember::getDelFlag, Constants.UNDELETED).le(StoreMember::getStartTime,  now).gt(StoreMember::getEndTime, now));
+                .eq(StoreMember::getDelFlag, Constants.UNDELETED).le(StoreMember::getStartTime, now).gt(StoreMember::getEndTime, now));
         if (CollectionUtils.isEmpty(storeMemberList)) {
             return Page.empty(searchDTO.getPageSize(), searchDTO.getPageNum());
         }
@@ -464,8 +460,8 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
                         .eq(UserSubscriptions::getDelFlag, Constants.UNDELETED)).stream()
                 .collect(Collectors.toMap(UserSubscriptions::getStoreId, UserSubscriptions::getStoreId));
         List<APPStrengthStoreDTO> list = storeList.stream().map(store -> BeanUtil.toBean(store, APPStrengthStoreDTO.class)
-                        .setMemberLevel(StoreMemberLevel.STRENGTH_CONSTRUCT.getValue()) .setStoreId(store.getId())
-                       .setFocus(focusStoreIdMap.containsKey(store.getId())).setMainPicUrl(storeFileMap.get(store.getId())))
+                        .setMemberLevel(StoreMemberLevel.STRENGTH_CONSTRUCT.getValue()).setStoreId(store.getId())
+                        .setFocus(focusStoreIdMap.containsKey(store.getId())).setMainPicUrl(storeFileMap.get(store.getId())))
                 .collect(Collectors.toList());
         return Page.convert(new PageInfo<>(list));
     }
@@ -650,6 +646,11 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         if (CollectionUtils.isEmpty(oneMonthList)) {
             return new ArrayList<>();
         }
+        // 必须是已经设置了推广图的，防止有的档口购买了但没有设置图
+        oneMonthList = oneMonthList.stream().filter(x -> ObjectUtils.isNotEmpty(x.getPicId())).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(oneMonthList)) {
+            return new ArrayList<>();
+        }
         Map<Long, SysFile> fileMap = fileMapper.selectList(new LambdaQueryWrapper<SysFile>().eq(SysFile::getDelFlag, Constants.UNDELETED)
                         .in(SysFile::getId, oneMonthList.stream().map(AdvertRound::getPicId).filter(ObjectUtils::isNotEmpty).collect(Collectors.toList())))
                 .stream().collect(Collectors.toMap(SysFile::getId, Function.identity()));
@@ -697,6 +698,11 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
             return redisList;
         }
         List<AdvertRound> oneMonthList = this.getOneMonthAdvertList(Collections.singletonList(AdType.APP_HOME_RECOMMEND_PRODUCT.getValue()));
+        if (CollectionUtils.isEmpty(oneMonthList)) {
+            return new ArrayList<>();
+        }
+        // 必须是已经设置了推广商品的，防止有的档口购买了推广位但未上传推广商品的情况
+        oneMonthList = oneMonthList.stream().filter(x -> ObjectUtils.isNotEmpty(x.getProdIdStr())).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(oneMonthList)) {
             return new ArrayList<>();
         }
@@ -750,8 +756,12 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         if (CollectionUtils.isEmpty(oneMonthList)) {
             return new ArrayList<>();
         }
-        final List<Long> storeProdIdList = oneMonthList.stream()
-                .filter(x -> StringUtils.isNotBlank(x.getProdIdStr())).map(x -> Long.parseLong(x.getProdIdStr())).distinct().collect(Collectors.toList());
+        // 必须是已经上传了推广商品的，防止有的档口购买了推广位但未上传推广商品
+        oneMonthList = oneMonthList.stream().filter(x -> StringUtils.isNotBlank(x.getProdIdStr())).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(oneMonthList)) {
+            return new ArrayList<>();
+        }
+        final List<Long> storeProdIdList = oneMonthList.stream().map(x -> Long.parseLong(x.getProdIdStr())).distinct().collect(Collectors.toList());
         // 档口商品的价格及商品主图map
         Map<Long, StoreProdPriceAndMainPicDTO> prodPriceAndMainPicMap = CollectionUtils.isEmpty(storeProdIdList) ? new ConcurrentHashMap<>()
                 : this.storeProdMapper.selectPriceAndMainPicList(storeProdIdList).stream().collect(Collectors
@@ -802,6 +812,11 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         if (CollectionUtils.isEmpty(oneMonthList)) {
             return new ArrayList<>();
         }
+        // 必须是已经设置了推广图的，防止有的档口购买了但没有设置图
+        oneMonthList = oneMonthList.stream().filter(x -> ObjectUtils.isNotEmpty(x.getPicId())).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(oneMonthList)) {
+            return new ArrayList<>();
+        }
         Map<Long, SysFile> fileMap = fileMapper.selectList(new LambdaQueryWrapper<SysFile>().eq(SysFile::getDelFlag, Constants.UNDELETED)
                         .in(SysFile::getId, oneMonthList.stream().map(AdvertRound::getPicId).filter(ObjectUtils::isNotEmpty).collect(Collectors.toList())))
                 .stream().collect(Collectors.toMap(SysFile::getId, Function.identity()));
@@ -849,6 +864,11 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
             return redisList;
         }
         List<AdvertRound> oneMonthList = this.getOneMonthAdvertList(Collections.singletonList(AdType.APP_USER_CENTER_GUESS_YOU_LIKE.getValue()));
+        if (CollectionUtils.isEmpty(oneMonthList)) {
+            return new ArrayList<>();
+        }
+        // 必须是已经设置了推广商品的，防止有的档口购买了推广但未设置推广商品
+        oneMonthList = oneMonthList.stream().filter(x -> StringUtils.isNotBlank(x.getProdIdStr())).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(oneMonthList)) {
             return new ArrayList<>();
         }
@@ -1025,7 +1045,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         if (StringUtils.isNotBlank(searchDTO.getSearch())) {
             MultiMatchQuery multiMatchQuery = MultiMatchQuery.of(m -> m
                     .query(searchDTO.getSearch())
-                    .fields("storeName", "prodTitle","prodCateName", "parCateName", "prodArtNum")
+                    .fields("storeName", "prodTitle", "prodCateName", "parCateName", "prodArtNum")
             );
             boolQuery.must(multiMatchQuery._toQuery());
         }
