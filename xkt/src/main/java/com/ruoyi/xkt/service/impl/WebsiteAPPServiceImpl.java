@@ -129,7 +129,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         } else {
             // 从数据库查首页精选热卖推广（精准搜索是否存在推广，不存在从已过期的数据中拉数据来凑数）
             List<AdvertRound> advertRoundList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
-                    .isNotNull(AdvertRound::getStoreId).isNotNull(AdvertRound::getProdIdStr).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
+                    .isNotNull(AdvertRound::getStoreId).isNotNull(AdvertRound::getProdIdStr).ne(AdvertRound::getProdIdStr, "").eq(AdvertRound::getDelFlag, Constants.UNDELETED)
                     .eq(AdvertRound::getTypeId, AdType.APP_HOME_HOT_RECOMMEND_PROD.getValue()).eq(AdvertRound::getLaunchStatus, AdLaunchStatus.LAUNCHING.getValue())
                     .eq(AdvertRound::getBiddingStatus, AdBiddingStatus.BIDDING_SUCCESS.getValue()));
             if (CollectionUtils.isNotEmpty(advertRoundList)) {
@@ -200,7 +200,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         } else {
             // 从数据库查首页 人气爆品 推广（精准搜索是否存在推广，不存在从已过期的数据中拉数据来凑数）
             List<AdvertRound> advertRoundList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
-                    .isNotNull(AdvertRound::getStoreId).isNotNull(AdvertRound::getProdIdStr).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
+                    .isNotNull(AdvertRound::getStoreId).isNotNull(AdvertRound::getProdIdStr).ne(AdvertRound::getProdIdStr, "").eq(AdvertRound::getDelFlag, Constants.UNDELETED)
                     .eq(AdvertRound::getTypeId, AdType.APP_HOME_POP_RECOMMEND_PROD.getValue()).eq(AdvertRound::getLaunchStatus, AdLaunchStatus.LAUNCHING.getValue())
                     .eq(AdvertRound::getBiddingStatus, AdBiddingStatus.BIDDING_SUCCESS.getValue()));
             if (CollectionUtils.isNotEmpty(advertRoundList)) {
@@ -271,7 +271,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         } else {
             // 从数据库查首页 新品榜 推广（精准搜索是否存在推广，不存在从已过期的数据中拉数据来凑数）
             List<AdvertRound> advertRoundList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
-                    .isNotNull(AdvertRound::getStoreId).isNotNull(AdvertRound::getProdIdStr).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
+                    .isNotNull(AdvertRound::getStoreId).isNotNull(AdvertRound::getProdIdStr).ne(AdvertRound::getProdIdStr, "").eq(AdvertRound::getDelFlag, Constants.UNDELETED)
                     .eq(AdvertRound::getTypeId, AdType.APP_HOME_NEW_PROD_RECOMMEND_PROD.getValue()).eq(AdvertRound::getLaunchStatus, AdLaunchStatus.LAUNCHING.getValue())
                     .eq(AdvertRound::getBiddingStatus, AdBiddingStatus.BIDDING_SUCCESS.getValue()));
             if (CollectionUtils.isNotEmpty(advertRoundList)) {
@@ -364,7 +364,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         } else {
             // 从数据库查首页 新品榜 推广（精准搜索是否存在推广，不存在从已过期的数据中拉数据来凑数）
             List<AdvertRound> advertRoundList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
-                    .isNotNull(AdvertRound::getStoreId).isNotNull(AdvertRound::getProdIdStr).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
+                    .isNotNull(AdvertRound::getStoreId).isNotNull(AdvertRound::getProdIdStr).ne(AdvertRound::getProdIdStr, "").eq(AdvertRound::getDelFlag, Constants.UNDELETED)
                     .eq(AdvertRound::getTypeId, AdType.APP_SEARCH_RESULT_PRODUCT.getValue()).eq(AdvertRound::getLaunchStatus, AdLaunchStatus.LAUNCHING.getValue())
                     .eq(AdvertRound::getBiddingStatus, AdBiddingStatus.BIDDING_SUCCESS.getValue()));
             if (CollectionUtils.isNotEmpty(advertRoundList)) {

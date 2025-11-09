@@ -134,7 +134,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         } else {
             // 从数据库查首页 推荐商品 推广（精准搜索是否存在推广，不存在从已过期的数据中拉数据来凑数）而且必须是 竞价成功的推广（有可能当天有新的竞价推广还未正式审核通过）
             List<AdvertRound> advertRoundList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
-                    .isNotNull(AdvertRound::getStoreId).isNotNull(AdvertRound::getProdIdStr).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
+                    .isNotNull(AdvertRound::getStoreId).isNotNull(AdvertRound::getProdIdStr).ne(AdvertRound::getProdIdStr, "").eq(AdvertRound::getDelFlag, Constants.UNDELETED)
                     .eq(AdvertRound::getTypeId, AdType.PC_HOME_PRODUCT_LIST.getValue()).eq(AdvertRound::getLaunchStatus, AdLaunchStatus.LAUNCHING.getValue())
                     .eq(AdvertRound::getBiddingStatus, AdBiddingStatus.BIDDING_SUCCESS.getValue()));
             if (CollectionUtils.isNotEmpty(advertRoundList)) {
@@ -217,7 +217,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         } else {
             // 从数据库查新品馆 推荐商品 推广（精准搜索是否存在推广，不存在从已过期的数据中拉数据来凑数）
             List<AdvertRound> advertRoundList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
-                    .isNotNull(AdvertRound::getStoreId).isNotNull(AdvertRound::getProdIdStr).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
+                    .isNotNull(AdvertRound::getStoreId).isNotNull(AdvertRound::getProdIdStr).ne(AdvertRound::getProdIdStr, "").eq(AdvertRound::getDelFlag, Constants.UNDELETED)
                     .eq(AdvertRound::getTypeId, AdType.PC_NEW_PROD_PRODUCT_LIST.getValue()).eq(AdvertRound::getLaunchStatus, AdLaunchStatus.LAUNCHING.getValue())
                     .eq(AdvertRound::getBiddingStatus, AdBiddingStatus.BIDDING_SUCCESS.getValue()));
             if (CollectionUtils.isNotEmpty(advertRoundList)) {
@@ -305,7 +305,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         } else {
             // 从数据库查询搜索结果是否有广告（只查询现在正在播放的，不查询历史数据）
             List<AdvertRound> advertRoundList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
-                    .isNotNull(AdvertRound::getStoreId).isNotNull(AdvertRound::getProdIdStr).eq(AdvertRound::getDelFlag, Constants.UNDELETED)
+                    .isNotNull(AdvertRound::getStoreId).isNotNull(AdvertRound::getProdIdStr).ne(AdvertRound::getProdIdStr, "").eq(AdvertRound::getDelFlag, Constants.UNDELETED)
                     .eq(AdvertRound::getTypeId, AdType.PC_SEARCH_RESULT_PRODUCT.getValue()).eq(AdvertRound::getLaunchStatus, AdLaunchStatus.LAUNCHING.getValue())
                     .eq(AdvertRound::getBiddingStatus, AdBiddingStatus.BIDDING_SUCCESS.getValue()));
             if (CollectionUtils.isNotEmpty(advertRoundList)) {
