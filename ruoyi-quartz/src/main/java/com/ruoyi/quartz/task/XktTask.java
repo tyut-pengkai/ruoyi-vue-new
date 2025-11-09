@@ -27,7 +27,6 @@ import com.ruoyi.framework.notice.fs.FsNotice;
 import com.ruoyi.system.mapper.SysDictDataMapper;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.account.WithdrawPrepareResult;
-import com.ruoyi.xkt.dto.advertRound.pc.index.PCIndexTopBannerDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.store.PCStoreRecommendDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.store.PCStoreRecommendTempDTO;
 import com.ruoyi.xkt.dto.dailySale.DailySaleCusDTO;
@@ -126,6 +125,11 @@ public class XktTask {
     final SysDictDataMapper dictDataMapper;
     final StoreProductColorSizeMapper prodColorSizeMapper;
     final VoucherSequenceMapper voucherSequenceMapper;
+    final IWebsitePCService websitePCService;
+    final IWebsitePCIndexService websitePCIndexService;
+    final IWebsitePCNewProdService websitePCNewProdService;
+    final IWebsitePCStoreService websitePCStoreService;
+    final IWebsiteAPPService websiteAPPService;
 
     /**
      * 每天执行定时任务
@@ -855,10 +859,83 @@ public class XktTask {
     @Transactional
     public void clearAndUpdateAdvertShowData() {
         // 1. PC 首页顶部通栏
-//        redisCache.deleteObject(CacheConstants.PC_ADVERT + CacheConstants.PC_ADVERT_INDEX_TOP);
-//
-//        List<PCIndexTopBannerDTO> topBannerList = redisCache.getCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_ADVERT_INDEX_TOP);
-
+        redisCache.deleteObject(CacheConstants.PC_ADVERT + CacheConstants.PC_ADVERT_INDEX_TOP);
+        this.websitePCIndexService.getPcIndexTop();
+        // 2. PC 首页 顶部左侧 轮播图
+        redisCache.deleteObject(CacheConstants.PC_ADVERT + CacheConstants.PC_ADVERT_INDEX_TOP_LEFT);
+        this.websitePCIndexService.getPcIndexTopLeftBanner();
+        // 3. PC 首页 顶部右侧 纵向轮播图
+        redisCache.deleteObject(CacheConstants.PC_ADVERT + CacheConstants.PC_ADVERT_INDEX_TOP_RIGHT);
+        this.websitePCIndexService.getPcIndexTopRightBanner();
+        // 4. PC 首页 销售榜
+        redisCache.deleteObject(CacheConstants.PC_ADVERT + CacheConstants.PC_ADVERT_INDEX_MID_SALE);
+        this.websitePCIndexService.getPcIndexMidSaleList();
+        // 5. PC 首页 风格榜
+        redisCache.deleteObject(CacheConstants.PC_ADVERT + CacheConstants.PC_ADVERT_INDEX_MID_STYLE);
+        this.websitePCIndexService.getPcIndexMidStyleList();
+        // 6. PC 首页 人气榜
+        redisCache.deleteObject(CacheConstants.PC_ADVERT + CacheConstants.PC_ADVERT_INDEX_BOTTOM_POPULAR);
+        this.websitePCIndexService.getPcIndexBottomPopularList();
+        // 7. PC 首页 固定侧边栏
+        redisCache.deleteObject(CacheConstants.PC_ADVERT + CacheConstants.PC_ADVERT_INDEX_FIXED_EAR);
+        this.websitePCIndexService.getPcIndexFixedEar();
+        // 8. 获取搜索框下档口名称
+        redisCache.deleteObject(CacheConstants.PC_ADVERT + CacheConstants.PC_ADVERT_INDEX_SEARCH_UNDERLINE_STORE_NAME);
+        this.websitePCIndexService.getPcIndexSearchUnderlineStoreName();
+        // 9. 搜索框中推荐商品
+        redisCache.deleteObject(CacheConstants.PC_ADVERT + CacheConstants.PC_ADVERT_INDEX_SEARCH_RECOMMEND_PROD);
+        this.websitePCIndexService.getPcIndexSearchRecommendProd();
+        // 10. PC 新品馆 顶部左侧 轮播图
+        redisCache.deleteObject(CacheConstants.PC_ADVERT + CacheConstants.PC_ADVERT_NEW_TOP_LEFT);
+        this.websitePCNewProdService.getPcNewTopLeftBanner();
+        // 11. PC 新品馆 顶部右侧 轮播图
+        redisCache.deleteObject(CacheConstants.PC_ADVERT + CacheConstants.PC_ADVERT_NEW_TOP_RIGHT);
+        this.websitePCNewProdService.getPcNewTopRight();
+        // 12. PC 新品馆 品牌馆
+        redisCache.deleteObject(CacheConstants.PC_ADVERT + CacheConstants.PC_ADVERT_NEW_MID_BRAND);
+        this.websitePCNewProdService.getPcNewMidBrandList();
+        // 13. PC 新品馆 热卖榜左侧
+        redisCache.deleteObject(CacheConstants.PC_ADVERT + CacheConstants.PC_ADVERT_NEW_MID_HOT_LEFT);
+        this.websitePCNewProdService.getPcNewMidHotLeftList();
+        // 14. PC 新品馆 热卖榜右侧商品
+        redisCache.deleteObject(CacheConstants.PC_ADVERT + CacheConstants.PC_ADVERT_NEW_MID_HOT_RIGHT);
+        this.websitePCNewProdService.getPcNewMidHotRightList();
+        // 15. PC 新品馆 底部横幅
+        redisCache.deleteObject(CacheConstants.PC_ADVERT + CacheConstants.PC_ADVERT_NEW_BOTTOM_BANNER);
+        this.websitePCNewProdService.getPcNewBottomBannerList();
+        // 16. PC 档口馆 顶部横幅及商品
+        redisCache.deleteObject(CacheConstants.PC_ADVERT + CacheConstants.PC_ADVERT_STORE_TOP_BANNER);
+        this.websitePCStoreService.getPcStoreTopBannerList();
+        // 17. PC 档口馆 中间横幅
+        redisCache.deleteObject(CacheConstants.PC_ADVERT + CacheConstants.PC_ADVERT_STORE_MID_BANNER);
+        this.websitePCStoreService.getPcStoreMidBannerList();
+        // 18. 以图搜款 广告
+        redisCache.deleteObject(CacheConstants.PC_ADVERT + CacheConstants.PIC_SEARCH);
+        this.websitePCService.getPicSearchList();
+        // 19. PC 用户中心
+        redisCache.deleteObject(CacheConstants.PC_ADVERT + CacheConstants.PC_USER_CENTER);
+        this.websitePCService.getPcUserCenterList();
+        // 20. PC 下载页
+        redisCache.deleteObject(CacheConstants.PC_ADVERT + CacheConstants.PC_DOWNLOAD);
+        this.websitePCService.getPcDownloadList();
+        // 21. PC 搜索结果广告列表
+        redisCache.deleteObject(CacheConstants.PC_ADVERT + CacheConstants.PC_SEARCH_RESULT_ADVERT);
+        this.websitePCService.getPcSearchAdvertList();
+        // 22. APP 首页顶部轮播图
+        redisCache.deleteObject(CacheConstants.APP_ADVERT + CacheConstants.APP_INDEX_TOP_BANNER);
+        this.websiteAPPService.getAppIndexTopBanner();
+        // 23. APP 首页中部品牌好货
+        redisCache.deleteObject(CacheConstants.APP_ADVERT + CacheConstants.APP_INDEX_MID_BRAND);
+        this.websiteAPPService.getAppIndexMidBrand();
+        // 24. APP 首页热卖精选右侧固定位置
+        redisCache.deleteObject(CacheConstants.APP_ADVERT + CacheConstants.APP_INDEX_HOT_SALE_RIGHT_FIX);
+        this.websiteAPPService.getAppIndexHotSaleRightFix();
+        // 25. APP 分类页
+        redisCache.deleteObject(CacheConstants.APP_ADVERT + CacheConstants.APP_CATE);
+        this.websiteAPPService.getAppCateList();
+        // 26. APP 我的猜你喜欢列表
+        redisCache.deleteObject(CacheConstants.APP_ADVERT + CacheConstants.APP_OWN_GUESS_LIKE);
+        this.websiteAPPService.getAppOwnGuessLikeList();
     }
 
     /**

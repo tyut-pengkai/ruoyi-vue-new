@@ -151,6 +151,12 @@ public class DailyTaskController extends BaseController {
         return R.ok();
     }
 
+    @PostMapping("/reset-advert-data")
+    public R clearAndUpdateAdvertShowData(SysJob sysJob) {
+        task.clearAndUpdateAdvertShowData();
+        return R.ok();
+    }
+
 
 
 }
