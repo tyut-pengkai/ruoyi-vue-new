@@ -116,7 +116,7 @@ public class WebsiteController extends XktBaseController {
         return R.ok(BeanUtil.copyToList(websitePCIndexService.getPcIndexTopRightBanner(), PCIndexTopRightBannerVO.class));
     }
 
-    @ApiOperation(value = "PC 首页 销售榜", httpMethod = "GET", response = R.class)
+    @ApiOperation(value = "PC 首页 销量榜", httpMethod = "GET", response = R.class)
     @GetMapping("/pc/index/mid/sales")
     public R<List<PCIndexMidSalesVO>> getPcIndexMidSaleList() {
         return R.ok(BeanUtil.copyToList(websitePCIndexService.getPcIndexMidSaleList(), PCIndexMidSalesVO.class));
