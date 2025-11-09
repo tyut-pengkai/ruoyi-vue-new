@@ -434,7 +434,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                             .setFileId(bigBannerMap.containsKey(x.getFileName()) ? bigBannerMap.get(x.getFileName()).getId() : null))
                     .collect(Collectors.toList()));
         }
-         if (CollectionUtils.isNotEmpty(homepageDTO.getDecorationList())) {
+        if (CollectionUtils.isNotEmpty(homepageDTO.getDecorationList())) {
             homePageList.addAll(homepageDTO.getDecorationList().stream().map(x -> BeanUtil.toBean(x, StoreHomepage.class).setStoreId(homepageDTO.getStoreId()))
                     .collect(Collectors.toList()));
         }

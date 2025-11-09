@@ -535,7 +535,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
             store = Optional.ofNullable(this.storeMapper.selectById(createDTO.getStoreId())).orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
             redisCache.setCacheObject(CacheConstants.STORE_KEY + createDTO.getStoreId(), store);
         }
-       // 购买推广前置校验
+        // 购买推广前置校验
         this.advertPreBuyCheck(createDTO);
         // 当前营销推广位的锁
         Object lockObj = Optional.ofNullable(advertLockMap.get(createDTO.getSymbol())).orElseThrow(() -> new ServiceException("symbol不存在!", HttpStatus.ERROR));
@@ -1125,6 +1125,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
 
     /**
      * 购买推广前置校验
+     *
      * @param createDTO 购买入参
      */
     private void advertPreBuyCheck(AdRoundStoreCreateDTO createDTO) {

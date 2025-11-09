@@ -19,6 +19,7 @@ public interface IUserSearchHistoryService {
 
     /**
      * 清空用户的搜索历史
+     *
      * @return Integer
      */
     Integer clearSearchHisRecord();

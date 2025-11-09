@@ -29,16 +29,51 @@ public class StoreColorServiceImpl implements IStoreColorService {
     final StoreColorMapper storeColorMapper;
 
     private static final Map<String, Integer> colorPriority = new HashMap<String, Integer>() {{
-        put("白", 1); put("黑", 2); put("红", 3); put("棕", 4); put("灰", 5); put("卡", 6);
-        put("银", 7); put("金", 8); put("蓝", 9); put("绿", 10); put("黄", 11); put("粉", 12);
-        put("紫", 13); put("橙", 14); put("米", 15); put("杏", 16); put("香", 17); put("军", 18);
-        put("酒", 19); put("咖", 20); put("焦", 21); put("墨", 22); put("豹", 23); put("蛇", 24);
+        put("白", 1);
+        put("黑", 2);
+        put("红", 3);
+        put("棕", 4);
+        put("灰", 5);
+        put("卡", 6);
+        put("银", 7);
+        put("金", 8);
+        put("蓝", 9);
+        put("绿", 10);
+        put("黄", 11);
+        put("粉", 12);
+        put("紫", 13);
+        put("橙", 14);
+        put("米", 15);
+        put("杏", 16);
+        put("香", 17);
+        put("军", 18);
+        put("酒", 19);
+        put("咖", 20);
+        put("焦", 21);
+        put("墨", 22);
+        put("豹", 23);
+        put("蛇", 24);
     }};
 
-    private static final  Map<String, Integer> suffixPriority = new HashMap<String, Integer>() {{
-        put("", 1); put("单里", 2); put("绒里", 3); put("毛里", 4); put("标准筒", 5); put("加宽筒", 6);
-        put("漆", 7); put("哑光", 8); put("亚光", 9); put("亮", 10); put("雕花", 11); put("爆裂纹", 12);
-        put("马毛", 13); put("豹纹", 14); put("蛇纹", 15); put("石头纹", 16); put("羊翻", 17); put("牛翻", 18);
+    private static final Map<String, Integer> suffixPriority = new HashMap<String, Integer>() {{
+        put("", 1);
+        put("单里", 2);
+        put("绒里", 3);
+        put("毛里", 4);
+        put("标准筒", 5);
+        put("加宽筒", 6);
+        put("漆", 7);
+        put("哑光", 8);
+        put("亚光", 9);
+        put("亮", 10);
+        put("雕花", 11);
+        put("爆裂纹", 12);
+        put("马毛", 13);
+        put("豹纹", 14);
+        put("蛇纹", 15);
+        put("石头纹", 16);
+        put("羊翻", 17);
+        put("牛翻", 18);
     }};
 
 

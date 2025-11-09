@@ -1,7 +1,6 @@
 package com.ruoyi.xkt.service;
 
 import com.ruoyi.common.core.page.Page;
-import com.ruoyi.xkt.domain.StoreFactory;
 import com.ruoyi.xkt.dto.storeFactory.StoreFactoryDTO;
 import com.ruoyi.xkt.dto.storeFactory.StoreFactoryPageDTO;
 import com.ruoyi.xkt.dto.storeFactory.StoreFactoryResDTO;

@@ -68,7 +68,7 @@ public interface IStoreProductStockService {
     /**
      * 根据档口ID和商品货号查询档口商品库存
      *
-     * @param storeId    档口ID
+     * @param storeId     档口ID
      * @param storeProdId 档口商品ID
      * @return String
      */

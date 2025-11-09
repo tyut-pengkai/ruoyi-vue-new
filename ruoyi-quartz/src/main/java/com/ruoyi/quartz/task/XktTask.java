@@ -27,6 +27,7 @@ import com.ruoyi.framework.notice.fs.FsNotice;
 import com.ruoyi.system.mapper.SysDictDataMapper;
 import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.account.WithdrawPrepareResult;
+import com.ruoyi.xkt.dto.advertRound.pc.index.PCIndexTopBannerDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.store.PCStoreRecommendDTO;
 import com.ruoyi.xkt.dto.advertRound.pc.store.PCStoreRecommendTempDTO;
 import com.ruoyi.xkt.dto.dailySale.DailySaleCusDTO;
@@ -167,7 +168,7 @@ public class XktTask {
     }
 
     /**
-     * 每天凌晨12:00:01秒 更新store到redis中
+     * 每天凌晨01:00:01秒 更新store到redis中
      */
     public void saveStoreToRedis() {
         List<Store> storeList = this.storeMapper.selectList(new LambdaQueryWrapper<Store>()
@@ -181,7 +182,7 @@ public class XktTask {
     }
 
     /**
-     * 凌晨12:01 更新推广轮次
+     * 凌晨01:01 更新推广轮次
      */
     @Transactional
     public void dailyAdvertRound() {
@@ -266,14 +267,14 @@ public class XktTask {
 
 
     /**
-     * 凌晨00:04更新symbol对应的锁资源到redis中
+     * 凌晨01:04更新symbol对应的锁资源到redis中
      */
     public void saveSymbolToRedis() {
         advertRoundService.initAdvertLockMap();
     }
 
     /**
-     * 凌晨00:08更新各推广轮次结束时间
+     * 凌晨01:08更新各推广轮次结束时间
      */
     public void saveAdvertDeadlineToRedis() {
         // 直接调service方法，若当时redis出了问题，也方便第一时间 通过业务流程弥补 两边都有一个补偿机制
@@ -281,7 +282,7 @@ public class XktTask {
     }
 
     /**
-     * 凌晨00:10 同步档口销售数据
+     * 凌晨01:10 同步档口销售数据
      */
     @Transactional
     public void dailySale() {
@@ -303,7 +304,7 @@ public class XktTask {
     }
 
     /**
-     * 凌晨00:15 同步档口客户销售数据
+     * 凌晨01:15 同步档口客户销售数据
      */
     @Transactional
     public void dailySaleCustomer() {
@@ -325,7 +326,7 @@ public class XktTask {
     }
 
     /**
-     * 凌晨00:20 同步档口商品销售数据
+     * 凌晨01:20 同步档口商品销售数据
      */
     @Transactional
     public void dailySaleProduct() {
@@ -347,7 +348,7 @@ public class XktTask {
     }
 
     /**
-     * 凌晨00:25 同步商品最新分类排序
+     * 凌晨01:25 同步商品最新分类排序
      */
     @Transactional
     public void dailyCategorySort() {
@@ -396,7 +397,7 @@ public class XktTask {
     }
 
     /**
-     * 凌晨00:30 更新档口的标签
+     * 凌晨01:30 更新档口的标签
      */
     @Transactional
     public void dailyStoreTag() {
@@ -434,7 +435,7 @@ public class XktTask {
     }
 
     /**
-     * 凌晨00:40 更新商品标签
+     * 凌晨01:40 更新商品标签
      */
     @Transactional
     public void dailyProdTag() throws IOException {
@@ -493,7 +494,7 @@ public class XktTask {
     }
 
     /**
-     * 凌晨12:45 将advert的数据暂存到redis中
+     * 凌晨01:45 将advert的数据暂存到redis中
      */
     public void saveAdvertToRedis() {
         List<Advert> advertList = this.advertMapper.selectList(new LambdaQueryWrapper<Advert>()
@@ -506,7 +507,7 @@ public class XktTask {
     }
 
     /**
-     * 凌晨1:00 更新档口商品的各项权重数据
+     * 凌晨02:00 更新档口商品的各项权重数据
      */
     @Transactional
     public void dailyProdWeight() {
@@ -547,7 +548,7 @@ public class XktTask {
     }
 
     /**
-     * 凌晨1:10 更新PC档口馆推荐列表权重数据
+     * 凌晨02:10 更新PC档口馆推荐列表权重数据
      */
     @Transactional
     public void dailyStoreWeight() {
@@ -598,7 +599,7 @@ public class XktTask {
     }
 
     /**
-     * 凌晨01:15 更新用户搜索历史入库
+     * 凌晨02:15 更新用户搜索历史入库
      */
     @Transactional
     public void dailyUpdateUserSearchHistory() {
@@ -635,7 +636,7 @@ public class XktTask {
     }
 
     /**
-     * 凌晨01:20 更新用户浏览记录入库
+     * 凌晨02:20 更新用户浏览记录入库
      */
     @Transactional
     public void dailyUpdateUserBrowsingHistory() {
@@ -670,7 +671,7 @@ public class XktTask {
     }
 
     /**
-     * 凌晨01:25 更新系统热搜到redis中
+     * 凌晨02:25 更新系统热搜到redis中
      */
     @Transactional
     public void dailyUpdateSearchHotToRedis() {
@@ -693,7 +694,7 @@ public class XktTask {
     }
 
     /**
-     * 凌晨01:30 更新统计图搜热款
+     * 凌晨02:30 更新统计图搜热款
      */
     public void imgSearchTopProductStatistics() {
         log.info("-------------统计图搜热款开始-------------");
@@ -702,14 +703,14 @@ public class XktTask {
     }
 
     /**
-     * 凌晨1:35 更新试用期过期档口
+     * 凌晨02:35 更新试用期过期档口
      */
     public void autoCloseTrialStore() {
 
     }
 
     /**
-     * 凌晨1:40 更新年费过期档口
+     * 凌晨02:40 更新年费过期档口
      */
     public void autoCloseTimeoutStore() {
 
@@ -720,7 +721,7 @@ public class XktTask {
     }
 
     /**
-     * 凌晨1:45 更新档口会员过期
+     * 凌晨02:45 更新档口会员过期
      */
     public void autoCloseExpireStoreMember() {
         final Date yesterday = java.sql.Date.valueOf(LocalDate.now().minusDays(1));
@@ -737,7 +738,7 @@ public class XktTask {
     }
 
     /**
-     * 凌晨1:50 将档口会员存到redis中
+     * 凌晨02:50 将档口会员存到redis中
      */
     public void saveStoreMemberToRedis() {
         List<StoreMember> memberList = this.storeMemberMapper.selectList(new LambdaQueryWrapper<StoreMember>()
@@ -749,7 +750,7 @@ public class XktTask {
     }
 
     /**
-     * 凌晨1:55 更新APP商品销量榜、分类商品销量榜
+     * 凌晨02:55 更新APP商品销量榜、分类商品销量榜
      */
     public void dailyProdTopSale() {
         final Date oneMonthAgo = java.sql.Date.valueOf(LocalDate.now().minusMonths(1));
@@ -769,7 +770,7 @@ public class XktTask {
     }
 
     /**
-     * 凌晨2:00更新档口权重到redis
+     * 凌晨03:00更新档口权重到redis
      */
     public void updateStoreWeightToES() throws IOException {
         // 找到昨天开通会员的所有档口
@@ -823,7 +824,7 @@ public class XktTask {
     }
 
     /**
-     * 凌晨2:05更新档口访问量
+     * 凌晨03:05更新档口访问量
      */
     @Transactional
     public void updateStoreVisitCount() {
@@ -846,6 +847,18 @@ public class XktTask {
         });
         // 更新档口访问量
         this.storeMapper.updateById(storeList);
+    }
+
+    /**
+     * 凌晨04:00更新最新的广告展示数据
+     */
+    @Transactional
+    public void clearAndUpdateAdvertShowData() {
+        // 1. PC 首页顶部通栏
+//        redisCache.deleteObject(CacheConstants.PC_ADVERT + CacheConstants.PC_ADVERT_INDEX_TOP);
+//
+//        List<PCIndexTopBannerDTO> topBannerList = redisCache.getCacheObject(CacheConstants.PC_ADVERT + CacheConstants.PC_ADVERT_INDEX_TOP);
+
     }
 
     /**

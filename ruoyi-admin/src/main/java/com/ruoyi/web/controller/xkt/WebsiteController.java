@@ -39,8 +39,7 @@ import com.ruoyi.xkt.dto.advertRound.pc.store.PCStoreRecommendDTO;
 import com.ruoyi.xkt.dto.website.AppStrengthSearchDTO;
 import com.ruoyi.xkt.dto.website.IndexSearchDTO;
 import com.ruoyi.xkt.dto.website.StoreSearchDTO;
-import com.ruoyi.xkt.service.IWebsiteAPPService;
-import com.ruoyi.xkt.service.IWebsitePCService;
+import com.ruoyi.xkt.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -63,6 +62,9 @@ import java.util.List;
 public class WebsiteController extends XktBaseController {
 
     final IWebsitePCService websitePCService;
+    final IWebsitePCIndexService websitePCIndexService;
+    final IWebsitePCNewProdService websitePCNewProdService;
+    final IWebsitePCStoreService websitePCStoreService;
     final IWebsiteAPPService websiteAPPService;
     final RedisCache redisCache;
 
@@ -93,7 +95,7 @@ public class WebsiteController extends XktBaseController {
     @ApiOperation(value = "PC 首页 顶部通栏", httpMethod = "GET", response = R.class)
     @GetMapping("/pc/index/top")
     public R<List<PCIndexTopBannerVO>> getPcIndexTop() {
-        return R.ok(BeanUtil.copyToList(websitePCService.getPcIndexTop(), PCIndexTopBannerVO.class));
+        return R.ok(BeanUtil.copyToList(websitePCIndexService.getPcIndexTop(), PCIndexTopBannerVO.class));
     }
 
     @ApiOperation(value = "PC 搜索结果广告", httpMethod = "GET", response = R.class)
@@ -105,97 +107,97 @@ public class WebsiteController extends XktBaseController {
     @ApiOperation(value = "PC 首页 顶部横向轮播图", httpMethod = "GET", response = R.class)
     @GetMapping("/pc/index/top/left")
     public R<List<PCIndexTopLeftBannerVO>> getPcIndexTopLeftBanner() {
-        return R.ok(BeanUtil.copyToList(websitePCService.getPcIndexTopLeftBanner(), PCIndexTopLeftBannerVO.class));
+        return R.ok(BeanUtil.copyToList(websitePCIndexService.getPcIndexTopLeftBanner(), PCIndexTopLeftBannerVO.class));
     }
 
     @ApiOperation(value = "PC 首页 顶部纵向轮播图", httpMethod = "GET", response = R.class)
     @GetMapping("/pc/index/top/right")
     public R<List<PCIndexTopRightBannerVO>> getPcIndexTopRightBanner() {
-        return R.ok(BeanUtil.copyToList(websitePCService.getPcIndexTopRightBanner(), PCIndexTopRightBannerVO.class));
+        return R.ok(BeanUtil.copyToList(websitePCIndexService.getPcIndexTopRightBanner(), PCIndexTopRightBannerVO.class));
     }
 
     @ApiOperation(value = "PC 首页 销售榜", httpMethod = "GET", response = R.class)
     @GetMapping("/pc/index/mid/sales")
     public R<List<PCIndexMidSalesVO>> getPcIndexMidSaleList() {
-        return R.ok(BeanUtil.copyToList(websitePCService.getPcIndexMidSaleList(), PCIndexMidSalesVO.class));
+        return R.ok(BeanUtil.copyToList(websitePCIndexService.getPcIndexMidSaleList(), PCIndexMidSalesVO.class));
     }
 
     @ApiOperation(value = "PC 首页 风格榜", httpMethod = "GET", response = R.class)
     @GetMapping("/pc/index/mid/styles")
     public R<List<PCIndexMidStyleVO>> getPcIndexMidStyleList() {
-        return R.ok(BeanUtil.copyToList(websitePCService.getPcIndexMidStyleList(), PCIndexMidStyleVO.class));
+        return R.ok(BeanUtil.copyToList(websitePCIndexService.getPcIndexMidStyleList(), PCIndexMidStyleVO.class));
     }
 
     @ApiOperation(value = "PC 首页 人气榜", httpMethod = "GET", response = R.class)
     @GetMapping("/pc/index/bottom/popular")
     public R<PCIndexBottomPopularVO> getPcIndexBottomPopularList() {
-        return R.ok(BeanUtil.toBean(websitePCService.getPcIndexBottomPopularList(), PCIndexBottomPopularVO.class));
+        return R.ok(BeanUtil.toBean(websitePCIndexService.getPcIndexBottomPopularList(), PCIndexBottomPopularVO.class));
     }
 
     @ApiOperation(value = "PC 首页 两侧固定侧边栏", httpMethod = "GET", response = R.class)
     @GetMapping("/pc/index/fixed-ear")
     public R<PCIndexFixedEarVO> getPcIndexFixedEar() {
-        return R.ok(BeanUtil.toBean(websitePCService.getPcIndexFixedEar(), PCIndexFixedEarVO.class));
+        return R.ok(BeanUtil.toBean(websitePCIndexService.getPcIndexFixedEar(), PCIndexFixedEarVO.class));
     }
 
     @ApiOperation(value = "PC 搜索框下方推荐档口名称", httpMethod = "GET", response = R.class)
     @GetMapping("/pc/index/search-underline-store-name")
     public R<List<PCIndexSearchUnderlineStoreNameVO>> getPcIndexSearchUnderlineStoreName() {
-        return R.ok(BeanUtil.copyToList(websitePCService.getPcIndexSearchUnderlineStoreName(), PCIndexSearchUnderlineStoreNameVO.class));
+        return R.ok(BeanUtil.copyToList(websitePCIndexService.getPcIndexSearchUnderlineStoreName(), PCIndexSearchUnderlineStoreNameVO.class));
     }
 
     @ApiOperation(value = "PC 首页 搜索框中推荐商品", httpMethod = "GET", response = R.class)
     @GetMapping("/pc/index/search-recommend-prod")
     public R<List<PCIndexSearchRecommendProdVO>> getPcIndexSearchRecommendProd() {
-        return R.ok(BeanUtil.copyToList(websitePCService.getPcIndexSearchRecommendProd(), PCIndexSearchRecommendProdVO.class));
+        return R.ok(BeanUtil.copyToList(websitePCIndexService.getPcIndexSearchRecommendProd(), PCIndexSearchRecommendProdVO.class));
     }
 
     @ApiOperation(value = "PC 新品馆 顶部横向轮播图", httpMethod = "GET", response = R.class)
     @GetMapping("/pc/new/top/left")
     public R<List<PCNewTopLeftBannerVO>> getPcNewTopLeftBanner() {
-        return R.ok(BeanUtil.copyToList(websitePCService.getPcNewTopLeftBanner(), PCNewTopLeftBannerVO.class));
+        return R.ok(BeanUtil.copyToList(websitePCNewProdService.getPcNewTopLeftBanner(), PCNewTopLeftBannerVO.class));
     }
 
     @ApiOperation(value = "PC 新品馆 顶部纵向图", httpMethod = "GET", response = R.class)
     @GetMapping("/pc/new/top/right")
     public R<PCNewTopRightVO> getPcNewTopRight() {
-        return R.ok(BeanUtil.toBean(websitePCService.getPcNewTopRight(), PCNewTopRightVO.class));
+        return R.ok(BeanUtil.toBean(websitePCNewProdService.getPcNewTopRight(), PCNewTopRightVO.class));
     }
 
     @ApiOperation(value = "PC 新品馆 品牌榜", httpMethod = "GET", response = R.class)
     @GetMapping("/pc/new/mid/brand")
     public R<List<PCNewMidBrandVO>> getPcNewMidBrandList() {
-        return R.ok(BeanUtil.copyToList(websitePCService.getPcNewMidBrandList(), PCNewMidBrandVO.class));
+        return R.ok(BeanUtil.copyToList(websitePCNewProdService.getPcNewMidBrandList(), PCNewMidBrandVO.class));
     }
 
     @ApiOperation(value = "PC 新品馆 热卖榜左侧轮播图", httpMethod = "GET", response = R.class)
     @GetMapping("/pc/new/mid/hot-left")
     public R<List<PCNewMidHotLeftVO>> getPcNewMidHotLeftList() {
-        return R.ok(BeanUtil.copyToList(websitePCService.getPcNewMidHotLeftList(), PCNewMidHotLeftVO.class));
+        return R.ok(BeanUtil.copyToList(websitePCNewProdService.getPcNewMidHotLeftList(), PCNewMidHotLeftVO.class));
     }
 
     @ApiOperation(value = "PC 新品馆 热卖榜右侧商品图", httpMethod = "GET", response = R.class)
     @GetMapping("/pc/new/mid/hot-right")
     public R<List<PCNewMidHotRightVO>> getPcNewMidHotRightList() {
-        return R.ok(BeanUtil.copyToList(websitePCService.getPcNewMidHotRightList(), PCNewMidHotRightVO.class));
+        return R.ok(BeanUtil.copyToList(websitePCNewProdService.getPcNewMidHotRightList(), PCNewMidHotRightVO.class));
     }
 
     @ApiOperation(value = "PC 新品馆 横幅", httpMethod = "GET", response = R.class)
     @GetMapping("/pc/new/bottom/banner")
     public R<List<PCNewBottomBannerVO>> getPcNewBottomBannerList() {
-        return R.ok(BeanUtil.copyToList(websitePCService.getPcNewBottomBannerList(), PCNewBottomBannerVO.class));
+        return R.ok(BeanUtil.copyToList(websitePCNewProdService.getPcNewBottomBannerList(), PCNewBottomBannerVO.class));
     }
 
     @ApiOperation(value = "PC 档口馆 顶部banner", httpMethod = "GET", response = R.class)
     @GetMapping("/pc/store/top/banner")
     public R<List<PCStoreTopBannerVO>> getPcStoreTopBannerList() {
-        return R.ok(BeanUtil.copyToList(websitePCService.getPcStoreTopBannerList(), PCStoreTopBannerVO.class));
+        return R.ok(BeanUtil.copyToList(websitePCStoreService.getPcStoreTopBannerList(), PCStoreTopBannerVO.class));
     }
 
     @ApiOperation(value = "PC 档口馆 中间横幅", httpMethod = "GET", response = R.class)
     @GetMapping("/pc/store/mid/banner")
     public R<List<PCStoreMidBannerVO>> getPcStoreMidBannerList() {
-        return R.ok(BeanUtil.copyToList(websitePCService.getPcStoreMidBannerList(), PCStoreMidBannerVO.class));
+        return R.ok(BeanUtil.copyToList(websitePCStoreService.getPcStoreMidBannerList(), PCStoreMidBannerVO.class));
     }
 
     @ApiOperation(value = "PC 档口馆 档口列表", httpMethod = "POST", response = R.class)
