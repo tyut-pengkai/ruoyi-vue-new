@@ -521,34 +521,51 @@ public class XktTask {
         if (CollectionUtils.isEmpty(storeProdList)) {
             return;
         }
-        // 获取 商品销售、商品浏览量、商品收藏量、商品下载量
+        Set<Long> updateProdIdSet = new HashSet<>();
+        final Date now = java.sql.Date.valueOf(LocalDate.now());
+        final Date fifteenDaysAgo = java.sql.Date.valueOf(LocalDate.now().minusDays(15));
+        final Date twoMonthAgo = java.sql.Date.valueOf(LocalDate.now().minusMonths(2));
+        // 获取 商品销售、商品浏览量、商品收藏量、商品下载量 最近2月
         List<StoreProductStatistics> statisticsList = this.storeProdStatMapper.selectList(new LambdaQueryWrapper<StoreProductStatistics>()
-                .eq(StoreProductStatistics::getDelFlag, Constants.UNDELETED));
-        // 商品浏览量、下载量
-        Map<Long, StoreProductStatistics> prodStatMap = statisticsList.stream().collect(Collectors.toMap(StoreProductStatistics::getStoreProdId, Function.identity()));
+                .eq(StoreProductStatistics::getDelFlag, Constants.UNDELETED).between(StoreProductStatistics::getVoucherDate, twoMonthAgo, now));
+        CollectionUtils.addAll(updateProdIdSet, statisticsList.stream().map(StoreProductStatistics::getStoreProdId).collect(Collectors.toSet()));
+        // 商品浏览量
+        Map<Long, Long> viewCountMap = statisticsList.stream().collect(Collectors.groupingBy(StoreProductStatistics::getStoreProdId, Collectors
+                .summingLong(x -> ObjectUtils.defaultIfNull(x.getViewCount(), 0L))));
+        // 商品下载量
+        Map<Long, Long> downCountMap = statisticsList.stream().collect(Collectors.groupingBy(StoreProductStatistics::getStoreProdId, Collectors
+                .summingLong(x -> ObjectUtils.defaultIfNull(x.getDownloadCount(), 0L))));
         // 商品收藏量
         List<UserFavorites> userFavList = this.userFavMapper.selectList(new LambdaQueryWrapper<UserFavorites>()
                 .eq(UserFavorites::getDelFlag, Constants.UNDELETED));
+        CollectionUtils.addAll(updateProdIdSet, userFavList.stream().map(UserFavorites::getStoreProdId).collect(Collectors.toSet()));
         Map<Long, Long> userFavMap = userFavList.stream().collect(Collectors.groupingBy(UserFavorites::getStoreProdId, Collectors.summingLong(UserFavorites::getId)));
-        // 商品销售量
+        // 商品销售量 最近15天
         List<StoreSaleDetail> saleDetailList = this.saleDetailMapper.selectList(new LambdaQueryWrapper<StoreSaleDetail>()
-                .eq(StoreSaleDetail::getDelFlag, Constants.UNDELETED).eq(StoreSaleDetail::getSaleType, SaleType.GENERAL_SALE.getValue()));
+                .eq(StoreSaleDetail::getDelFlag, Constants.UNDELETED).eq(StoreSaleDetail::getSaleType, SaleType.GENERAL_SALE.getValue())
+                .between(StoreSaleDetail::getVoucherDate, fifteenDaysAgo, now));
         Map<Long, Long> saleMap = saleDetailList.stream().collect(Collectors.groupingBy(StoreSaleDetail::getStoreProdId,
                 Collectors.summingLong(StoreSaleDetail::getQuantity)));
-        storeProdList.forEach(x -> {
-            final long viewCount = ObjectUtils.isEmpty(prodStatMap.get(x.getId())) ? 0L : prodStatMap.get(x.getId()).getViewCount();
-            final long downloadCount = ObjectUtils.isEmpty(prodStatMap.get(x.getId())) ? 0L : prodStatMap.get(x.getId()).getDownloadCount();
-            final long favCount = ObjectUtils.isEmpty(userFavMap.get(x.getId())) ? 0L : userFavMap.get(x.getId());
-            final long saleCount = ObjectUtils.isEmpty(saleMap.get(x.getId())) ? 0L : saleMap.get(x.getId());
-            // 计算推荐权重，权重计算公式为：(浏览次数 * 0.2 + 下载次数 * 0.3 + 收藏次数 * 0.2 + 销售量 * 0.3)
-            final long recommendWeight = (long) (viewCount * 0.2 + downloadCount * 0.3 + favCount * 0.2 + saleCount * 0.3);
-            // 根据销售数量计算销售权重，权重计算公式为：(销售量 * 0.7 + 下载次数 * 0.1 + 收藏次数 * 0.1 + 浏览次数 * 0.1)
-            final long saleWeight = (long) (saleCount * 0.7 + downloadCount * 0.1 + favCount * 0.1 + viewCount * 0.1);
-            // 计算人气权重，权重计算公式为：(浏览次数 * 0.3 + 下载次数 * 0.2 + 收藏次数 * 0.2 + 销售量 * 0.3)
-            final long popularityWeight = (long) (viewCount * 0.3 + downloadCount * 0.2 + favCount * 0.2 + saleCount * 0.3);
-            x.setRecommendWeight(recommendWeight).setSaleWeight(saleWeight).setPopularityWeight(popularityWeight);
-        });
-        this.storeProdMapper.updateById(storeProdList);
+        CollectionUtils.addAll(updateProdIdSet, saleMap.keySet());
+        List<StoreProduct> updateList = storeProdList.stream()
+                .filter(x -> CollectionUtils.isEmpty(updateProdIdSet) || updateProdIdSet.contains(x.getId()))
+                .map(x -> {
+                    final long viewCount = viewCountMap.getOrDefault(x.getId(), 0L);
+                    final long downloadCount = downCountMap.getOrDefault(x.getId(), 0L);
+                    final long favCount = userFavMap.getOrDefault(x.getId(), 0L);
+                    final long saleCount = saleMap.getOrDefault(x.getId(), 0L);
+                    // 计算推荐权重，权重计算公式为：(浏览次数 * 0.2 + 下载次数 * 0.3 + 收藏次数 * 0.2 + 销售量 * 0.3)
+                    final long recommendWeight = (long) (viewCount * 0.2 + downloadCount * 0.3 + favCount * 0.2 + saleCount * 0.3);
+                    // 根据销售数量计算销售权重，权重计算公式为：(销售量 * 0.7 + 下载次数 * 0.1 + 收藏次数 * 0.1 + 浏览次数 * 0.1)
+                    final long saleWeight = (long) (saleCount * 0.7 + downloadCount * 0.1 + favCount * 0.1 + viewCount * 0.1);
+                    // 计算人气权重，权重计算公式为：(浏览次数 * 0.3 + 下载次数 * 0.2 + 收藏次数 * 0.2 + 销售量 * 0.3)
+                    final long popularityWeight = (long) (viewCount * 0.3 + downloadCount * 0.2 + favCount * 0.2 + saleCount * 0.3);
+                    return x.setRecommendWeight(recommendWeight).setSaleWeight(saleWeight).setPopularityWeight(popularityWeight);
+                }).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(updateList)) {
+            return;
+        }
+        this.storeProdMapper.updateById(updateList);
     }
 
     /**
