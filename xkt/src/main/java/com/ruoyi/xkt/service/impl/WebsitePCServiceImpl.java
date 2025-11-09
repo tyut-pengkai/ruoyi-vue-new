@@ -693,10 +693,39 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         }
         final Date now = java.sql.Date.valueOf(LocalDate.now());
         final Date oneMonthAgo = java.sql.Date.valueOf(LocalDate.now().minusMonths(1));
+        // 全量的销量统计数据
         List<CateSaleRankDTO> cateSaleList = this.dailySaleProdMapper.selectSaleRankList(oneMonthAgo, now);
         if (CollectionUtils.isEmpty(cateSaleList)) {
             return new ArrayList<>();
         }
+        // 销售榜榜一到榜四的推广
+        List<AdvertRound> saleRankList = this.advertRoundMapper.selectList(new LambdaQueryWrapper<AdvertRound>()
+                .isNotNull(AdvertRound::getStoreId).isNotNull(AdvertRound::getProdIdStr)
+                .ne(AdvertRound::getProdIdStr, "").eq(AdvertRound::getDelFlag, Constants.UNDELETED)
+                .eq(AdvertRound::getLaunchStatus, AdLaunchStatus.LAUNCHING.getValue()).in(AdvertRound::getTypeId, Arrays.asList(AdType.PC_HOME_SALE_RANK_ONE,
+                        AdType.PC_HOME_SALE_RANK_TWO.getValue(), AdType.PC_HOME_SALE_RANK_THREE.getValue(), AdType.PC_HOME_SALE_RANK_FOUR.getValue())));
+        // 销量榜一到榜四的推广 key 1 2 3 4 便于后面取数据
+        Map<Integer, List<AdvertRound>> saleAdvertMap = saleRankList.stream().collect(Collectors.groupingBy(ad -> {
+            switch (ad.getTypeId()) {
+                case 3:
+                    return 1;
+                case 4:
+                    return 2;
+                case 5:
+                    return 3;
+                case 6:
+                    return 4;
+                default:
+                    return ad.getTypeId();
+            }
+        }));
+        // 推广商品ID列表
+        final List<Long> advertProdIdList = CollectionUtils.isEmpty(saleRankList) ? Collections.emptyList()
+                : saleRankList.stream().map(AdvertRound::getProdIdStr).map(Long::parseLong).collect(Collectors.toList());
+        // 销售榜推广销量等信息
+        List<CateSaleRankDTO> advertSaleList = cateSaleList.stream().filter(x -> advertProdIdList.contains(x.getStoreProdId())).collect(Collectors.toList());
+        Map<Long, CateSaleRankDTO> advertSaleMap = CollectionUtils.isEmpty(advertSaleList) ? new HashMap<>()
+                : advertSaleList.stream().collect(Collectors.toMap(CateSaleRankDTO::getStoreProdId, Function.identity()));
         // 所有二级分类ID map
         Map<Long, Long> parCateIdMap = this.getParCateIdMap();
         final List<Long> storeProdIdList = cateSaleList.stream().map(CateSaleRankDTO::getStoreProdId).collect(Collectors.toList());
@@ -715,10 +744,14 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         // Step 4: 构建返回结果
         List<PCIndexMidSalesDTO> retCateOrderList = new ArrayList<>();
         for (int i = 0; i < top4CateEntries.size(); i++) {
+            // 当前销售榜推广
+            final List<AdvertRound> saleAdvertList = saleAdvertMap.getOrDefault(i + 1, Collections.emptyList());
+            final List<Long> tempAdvertProdIdList = saleAdvertList.stream().map(AdvertRound::getProdIdStr).map(Long::parseLong).collect(Collectors.toList());
             Long cateId = top4CateEntries.get(i).getKey();
             List<CateSaleRankDTO> cateDetailList = topSaleMap.getOrDefault(cateId, Collections.emptyList());
-            // 过滤掉销量为0
-            cateDetailList = cateDetailList.stream().filter(x -> ObjectUtils.defaultIfNull(x.getSaleNum(), 0) > 0).collect(Collectors.toList());
+            // 过滤掉销量为0；并且根据广告数量决定截取的商品数量
+            cateDetailList = cateDetailList.stream().filter(x -> ObjectUtils.defaultIfNull(x.getSaleNum(), 0) > 0)
+                    .filter(x -> !tempAdvertProdIdList.contains(x.getStoreProdId())).limit(5 - saleAdvertList.size()).collect(Collectors.toList());
             List<PCIndexMidSalesDTO.PCIMSSaleDTO> saleDTOList = new ArrayList<>();
             for (int j = 0; j < cateDetailList.size(); j++) {
                 CateSaleRankDTO dto = cateDetailList.get(j);
@@ -732,6 +765,20 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
                                 ? prodPriceAndMainPicMap.get(dto.getStoreProdId()).getMinPrice() : null)
                         .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(dto.getStoreProdId()))
                                 ? prodPriceAndMainPicMap.get(dto.getStoreProdId()).getMainPicUrl() : "");
+                saleDTOList.add(saleDTO);
+            }
+            for (int j = 0; j < saleAdvertList.size(); j++) {
+                CateSaleRankDTO advertSaleDTO = advertSaleMap.get(Long.parseLong(saleAdvertList.get(j).getProdIdStr()));
+                // 绑定档口会员等级
+                StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + advertSaleDTO.getStoreId());
+                PCIndexMidSalesDTO.PCIMSSaleDTO saleDTO = new PCIndexMidSalesDTO.PCIMSSaleDTO().setDisplayType(AdDisplayType.PRODUCT.getValue())
+                        .setStoreId(advertSaleDTO.getStoreId()).setStoreName(advertSaleDTO.getStoreName()).setStoreProdId(advertSaleDTO.getStoreProdId())
+                        .setProdArtNum(advertSaleDTO.getProdArtNum()).setMemberLevel(ObjectUtils.isNotEmpty(member) ? member.getLevel() : null)
+                        .setStoreProdId(advertSaleDTO.getStoreProdId()).setSaleNum(advertSaleDTO.getSaleNum()).setOrderNum(j + 1)
+                        .setPrice(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(advertSaleDTO.getStoreProdId()))
+                                ? prodPriceAndMainPicMap.get(advertSaleDTO.getStoreProdId()).getMinPrice() : null)
+                        .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(advertSaleDTO.getStoreProdId()))
+                                ? prodPriceAndMainPicMap.get(advertSaleDTO.getStoreProdId()).getMainPicUrl() : "");
                 saleDTOList.add(saleDTO);
             }
             retCateOrderList.add(new PCIndexMidSalesDTO().setProdCateId(cateId).setProdCateName(cateIdMap.get(cateId)).setOrderNum(i + 1)

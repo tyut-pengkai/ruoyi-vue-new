@@ -31,13 +31,12 @@
             dsp.store_id,
             s.store_name,
             sp.prod_cate_id,
-            spc.`name` AS prodCateName,
+            sp.prod_cate_name,
             SUM(dsp.sale_num) AS saleNum
         FROM
             daily_sale_product dsp
                 JOIN store_product sp ON dsp.store_prod_id = sp.id
                 JOIN store s ON dsp.store_id = s.id
-                JOIN sys_product_category spc ON sp.prod_cate_id = spc.id
         WHERE
             dsp.del_flag = 0
             AND dsp.voucher_date BETWEEN #{oneMonthAgo} AND #{now}
@@ -46,7 +45,7 @@
             dsp.prod_art_num,
             dsp.store_id,
             sp.prod_cate_id,
-            spc.`name`
+            sp.prod_cate_name
     </select>
 
 
