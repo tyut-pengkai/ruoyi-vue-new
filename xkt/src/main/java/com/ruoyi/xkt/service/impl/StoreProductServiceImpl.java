@@ -558,6 +558,8 @@ public class StoreProductServiceImpl implements IStoreProductService {
                 .in(StoreProductColor::getStoreProdId, storeProdIdList).eq(StoreProductColor::getStoreId, prodStatusDTO.getStoreId()));
         Map<Long, List<StoreProductColor>> prodColorMap = curProdColorList.stream().collect(Collectors.groupingBy(StoreProductColor::getStoreProdId));
         List<StoreProduct> updateProdList = new ArrayList<>();
+        // 已删除的商品列表，需要同时删除 商品库存及商品优惠
+        List<Long> deleteProdIdList = new ArrayList<>();
         prodColorMap.forEach((storeProdId, prodColorList) -> {
             StoreProduct storeProduct = Optional.ofNullable(storeProdMap.get(storeProdId)).orElseThrow(() -> new ServiceException("商品不存在!", HttpStatus.ERROR));
             // 商品颜色中只要有一个为在售，则商品状态为在售
@@ -577,6 +579,11 @@ public class StoreProductServiceImpl implements IStoreProductService {
             updateProdList.add(storeProduct);
         });
         this.storeProdMapper.updateById(updateProdList);
+        // 已删除的商品列表，需要同时删除 商品库存及商品优惠
+        if (CollectionUtils.isNotEmpty(deleteProdIdList)) {
+            this.prodStockMapper.deleteProdStock(deleteProdIdList);
+            this.storeCusProdDiscMapper.deleteProdDisc(deleteProdIdList);
+        }
         // 非私款的商品，才需要更新图搜及ES
         final List<StoreProduct> nonPrivateProdList = updateProdList.stream()
                 .filter(x -> Objects.equals(x.getPrivateItem(), EProductItemType.NON_PRIVATE_ITEM.getValue())).collect(Collectors.toList());

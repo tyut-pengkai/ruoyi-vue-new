@@ -50,5 +50,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             spc.store_color_id
     </select>
 
+    <update id="deleteProdDisc">
+        UPDATE store_customer_product_discount
+        SET del_flag = 2
+        WHERE
+            store_prod_id IN
+            <foreach item="item" collection="deleteProdIdList" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+    </update>
+
 
 </mapper>

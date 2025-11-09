@@ -65,4 +65,11 @@ public interface StoreProductStockMapper extends BaseMapper<StoreProductStock> {
      */
     List<StoreProdStockWebsitePageResDTO> selectWebsitePage(StoreProdWebsiteStockPageDTO pageDTO);
 
+    /**
+     * 删除商品库存
+     *
+     * @param deleteProdIdList 商品ID列表
+     */
+    void deleteProdStock(@Param("deleteProdIdList") List<Long> deleteProdIdList);
+
 }

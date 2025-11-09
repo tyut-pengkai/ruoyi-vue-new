@@ -32,5 +32,11 @@ public interface StoreCustomerProductDiscountMapper extends BaseMapper<StoreCust
      */
     List<StoreCusProdDiscPageResDTO> selectDiscPageRelate(@Param("storeProdColorIdList") List<Long> storeProdColorIdList);
 
+    /**
+     * 删除商品优惠
+     *
+     * @param deleteProdIdList 商品ID列表
+     */
+    void deleteProdDisc(@Param("deleteProdIdList") List<Long> deleteProdIdList);
 
 }

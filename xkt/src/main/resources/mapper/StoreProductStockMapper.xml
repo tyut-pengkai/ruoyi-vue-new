@@ -204,5 +204,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </where>
     </select>
 
+    <update id="deleteProdStock">
+        UPDATE store_product_stock
+        SET del_flag = 2
+        WHERE
+            store_prod_id IN
+            <foreach collection="deleteProdIdList" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </update>
+
 
 </mapper>
