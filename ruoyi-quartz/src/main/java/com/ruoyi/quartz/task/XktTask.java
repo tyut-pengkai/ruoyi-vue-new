@@ -540,12 +540,12 @@ public class XktTask {
             final long downloadCount = ObjectUtils.isEmpty(prodStatMap.get(x.getId())) ? 0L : prodStatMap.get(x.getId()).getDownloadCount();
             final long favCount = ObjectUtils.isEmpty(userFavMap.get(x.getId())) ? 0L : userFavMap.get(x.getId());
             final long saleCount = ObjectUtils.isEmpty(saleMap.get(x.getId())) ? 0L : saleMap.get(x.getId());
-            // 计算推荐权重，权重计算公式为：(浏览次数 * 0.3 + 下载次数 + 收藏次数 + 销售量 * 0.3)
-            final long recommendWeight = (long) (viewCount * 0.3 + downloadCount + favCount + saleCount * 0.3);
-            // 根据销售数量计算销售权重，权重占销售数量的30%
-            final long saleWeight = (long) (saleCount * 0.3);
-            // 计算人气权重，权重计算公式为：(浏览次数 * 0.1 和 100 取最小值) + 下载次数 + 收藏次数
-            final long popularityWeight = (long) (Math.min(viewCount * 0.1, 100) + downloadCount + favCount);
+            // 计算推荐权重，权重计算公式为：(浏览次数 * 0.2 + 下载次数 * 0.3 + 收藏次数 * 0.2 + 销售量 * 0.3)
+            final long recommendWeight = (long) (viewCount * 0.2 + downloadCount * 0.3 + favCount * 0.2 + saleCount * 0.3);
+            // 根据销售数量计算销售权重，权重计算公式为：(销售量 * 0.7 + 下载次数 * 0.1 + 收藏次数 * 0.1 + 浏览次数 * 0.1)
+            final long saleWeight = (long) (saleCount * 0.7 + downloadCount * 0.1 + favCount * 0.1 + viewCount * 0.1);
+            // 计算人气权重，权重计算公式为：(浏览次数 * 0.3 + 下载次数 * 0.2 + 收藏次数 * 0.2 + 销售量 * 0.3)
+            final long popularityWeight = (long) (viewCount * 0.3 + downloadCount * 0.2 + favCount * 0.2 + saleCount * 0.3);
             x.setRecommendWeight(recommendWeight).setSaleWeight(saleWeight).setPopularityWeight(popularityWeight);
         });
         this.storeProdMapper.updateById(storeProdList);
