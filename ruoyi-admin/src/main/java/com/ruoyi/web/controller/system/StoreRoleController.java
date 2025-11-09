@@ -47,7 +47,6 @@ public class StoreRoleController extends XktBaseController {
 
     final ISysRoleService roleService;
     final TokenService tokenService;
-    final ISysUserService userService;
     final ISysMenuService sysMenuService;
 
 

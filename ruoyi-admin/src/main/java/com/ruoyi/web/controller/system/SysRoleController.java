@@ -44,8 +44,6 @@ public class SysRoleController extends XktBaseController {
 
     final ISysRoleService roleService;
     final TokenService tokenService;
-    final ISysUserService userService;
-    final ISysMenuService sysMenuService;
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
     @ApiOperation(value = "角色分页查询 - 管理员")

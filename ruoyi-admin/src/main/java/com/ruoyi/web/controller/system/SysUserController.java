@@ -53,11 +53,7 @@ public class SysUserController extends BaseController {
     @Autowired
     private ISysUserService userService;
     @Autowired
-    private ISysRoleService roleService;
-    @Autowired
     private TokenService tokenService;
-    @Autowired
-    private SysLoginService loginService;
     @Autowired
     private SysPasswordService passwordService;
 
