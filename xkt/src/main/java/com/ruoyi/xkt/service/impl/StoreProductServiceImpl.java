@@ -553,10 +553,9 @@ public class StoreProductServiceImpl implements IStoreProductService {
         Map<Long, StoreProduct> storeProdMap = storeProdList.stream().collect(Collectors.toMap(StoreProduct::getId, Function.identity()));
         // 旧的商品状态map
         final Map<Long, Integer> storeProdStatusMap = storeProdList.stream().collect(Collectors.toMap(StoreProduct::getId, StoreProduct::getProdStatus));
-        // 筛选所有的商品，判断商品的状态
+        // 筛选所有的商品，判断商品的状态 此处不能筛选del_flag=0，因为页面删除时会将del_flag置为2
         List<StoreProductColor> curProdColorList = this.storeProdColorMapper.selectList(new LambdaQueryWrapper<StoreProductColor>()
-                .in(StoreProductColor::getStoreProdId, storeProdIdList).eq(StoreProductColor::getDelFlag, Constants.UNDELETED)
-                .eq(StoreProductColor::getStoreId, prodStatusDTO.getStoreId()));
+                .in(StoreProductColor::getStoreProdId, storeProdIdList).eq(StoreProductColor::getStoreId, prodStatusDTO.getStoreId()));
         Map<Long, List<StoreProductColor>> prodColorMap = curProdColorList.stream().collect(Collectors.groupingBy(StoreProductColor::getStoreProdId));
         List<StoreProduct> updateProdList = new ArrayList<>();
         prodColorMap.forEach((storeProdId, prodColorList) -> {
