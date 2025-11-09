@@ -4,27 +4,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.xkt.mapper.AdvertRoundMapper">
 
-    <select id="isStallOverBuy" >
-        SELECT
-            CASE
-                WHEN
-                        COUNT( id ) >= ( SELECT IFNULL( store_buy_limit, 0 ) FROM advert WHERE id = #{advertId} ) THEN
-                    TRUE ELSE FALSE
-                END AS isOverBuy
-        FROM
-            advert_round
-        WHERE
-            round_id = #{roundId}
-          AND advert_id = #{advertId}
-          AND store_id = #{storeId}
-          AND del_flag = 0
-          AND launch_status IN
-          <foreach item="launchStatus" collection="launchStatusList" open="(" separator="," close=")">
-              #{launchStatus}
-          </foreach>
-    </select>
-
-
     <select id="selectStoreAdvertPage" parameterType="com.ruoyi.xkt.dto.advertRound.AdvertRoundStorePageDTO"
             resultType="com.ruoyi.xkt.dto.advertRound.AdvertRoundStorePageResDTO">
         SELECT

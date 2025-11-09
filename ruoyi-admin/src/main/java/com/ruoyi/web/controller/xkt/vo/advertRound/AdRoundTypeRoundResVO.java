@@ -21,6 +21,8 @@ public class AdRoundTypeRoundResVO {
     private Long advertId;
     @ApiModelProperty(value = "广告轮次ID")
     private Integer roundId;
+    @ApiModelProperty(value = "每个档口可以购买当前广告位数量限制")
+    private Integer storeBuyLimit;
     @ApiModelProperty(value = "是否可购买 true:可购买  false:不可购买")
     private Boolean canPurchased;
     @ApiModelProperty(value = "展示类型")

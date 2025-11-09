@@ -232,13 +232,15 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                     // 如果有当前当前档口购买的推广轮次，则取该条记录，因为setCanPurchased会用到。反之则取第一个
                     AdvertRound advertRound = currentRoundList.stream().filter(x -> Objects.equals(x.getStoreId(), storeId))
                             .findFirst().orElse(currentRoundList.get(0));
+                    // 获取档口能够购买的推广数量
+                    Advert advert = redisCache.getCacheObject(CacheConstants.ADVERT_KEY + advertRound.getAdvertId());
                     Integer durationDay = calculateDurationDay(advertRound.getStartTime(), advertRound.getEndTime(), Boolean.TRUE);
                     AdRoundTypeRoundResDTO typeRoundResDTO = new AdRoundTypeRoundResDTO().setAdvertId(advertRound.getAdvertId()).setRoundId(advertRound.getRoundId())
                             .setSymbol(advertRound.getSymbol()).setLaunchStatus(advertRound.getLaunchStatus()).setStartTime(advertRound.getStartTime())
                             .setEndTime(advertRound.getEndTime()).setStartWeekDay(getDayOfWeek(advertRound.getStartTime())).setDurationDay(durationDay)
                             // 设置是否可以购买当前推广位
                             .setCanPurchased(this.setRoundCanPurchased(advertRound, storeId, currentRoundList))
-                            .setEndWeekDay(getDayOfWeek(advertRound.getEndTime()))
+                            .setEndWeekDay(getDayOfWeek(advertRound.getEndTime())).setStoreBuyLimit(ObjectUtils.isEmpty(advert) ? 1 : advert.getStoreBuyLimit())
                             .setShowType(advertRound.getShowType()).setPosition(advertRound.getPosition())
                             .setUploadDeadline(redisCache.getCacheObject(ADVERT_UPLOAD_FILTER_TIME_KEY + advertRound.getSymbol()));
                     // 如果是播放轮，则播放开始时间展示为当天，因为有可能是播放的中间某一天
@@ -528,42 +530,16 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
     @Override
     @Transactional
     public Integer create(AdRoundStoreCreateDTO createDTO) {
-        // 判断截止时间是否超时，并且只会处理马上播放的这一轮。比如 5.1-5.3，当前为4.30，处理这一轮；当前为5.2，处理这一轮；当前为5.3（最后一天），处理下一轮。
-        if (DateUtils.getTime().compareTo(this.getDeadline(createDTO.getSymbol())) > 0) {
-            throw new ServiceException("竞价失败，已过系统截止时间!", HttpStatus.ERROR);
-        }
         Store store = redisCache.getCacheObject(CacheConstants.STORE_KEY + createDTO.getStoreId());
         if (ObjectUtils.isEmpty(store)) {
-            throw new ServiceException("档口不存在!", HttpStatus.ERROR);
+            store = Optional.ofNullable(this.storeMapper.selectById(createDTO.getStoreId())).orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
+            redisCache.setCacheObject(CacheConstants.STORE_KEY + createDTO.getStoreId(), store);
         }
-        // 如果是位置枚举的推广位，则需要传position
-        if (Objects.equals(createDTO.getShowType(), AdShowType.POSITION_ENUM.getValue()) && StringUtils.isEmpty(createDTO.getPosition())) {
-            throw new ServiceException("当前推广类型position：必传!", HttpStatus.ERROR);
-        }
-        // 如果是时间范围的推广位，则不需要传position
-        if (Objects.equals(createDTO.getShowType(), AdShowType.TIME_RANGE.getValue()) && StringUtils.isNotBlank(createDTO.getPosition())) {
-            throw new ServiceException("当前推广类型position：不传!", HttpStatus.ERROR);
-        }
-        // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(createDTO.getStoreId())) {
-            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
-        }
-        //校验推广支付方式是否存在
-        AdPayWay.of(createDTO.getPayWay());
-        // 校验使用余额情况下，密码是否正确
-        if (Objects.equals(createDTO.getPayWay(), AdPayWay.BALANCE.getValue())
-                && !assetService.checkTransactionPassword(createDTO.getStoreId(), createDTO.getTransactionPassword())) {
-            throw new ServiceException("支付密码错误!请重新输入", HttpStatus.ERROR);
-        }
+       // 购买推广前置校验
+        this.advertPreBuyCheck(createDTO);
         // 当前营销推广位的锁
         Object lockObj = Optional.ofNullable(advertLockMap.get(createDTO.getSymbol())).orElseThrow(() -> new ServiceException("symbol不存在!", HttpStatus.ERROR));
         synchronized (lockObj) {
-            // 判断当前推广位的这一轮每个档口可以买几个，不可超买
-            boolean isOverBuy = this.advertRoundMapper.isStallOverBuy(createDTO.getAdvertId(), createDTO.getRoundId(), createDTO.getStoreId(),
-                    Arrays.asList(AdLaunchStatus.LAUNCHING.getValue(), AdLaunchStatus.UN_LAUNCH.getValue()));
-            if (isOverBuy) {
-                throw new ServiceException("已购买过该推广位，不可超买哦!", HttpStatus.ERROR);
-            }
             LambdaQueryWrapper<AdvertRound> queryWrapper = new LambdaQueryWrapper<AdvertRound>()
                     .eq(AdvertRound::getAdvertId, createDTO.getAdvertId()).eq(AdvertRound::getRoundId, createDTO.getRoundId())
                     .in(AdvertRound::getLaunchStatus, LAUNCHING_STATUS_LIST).in(AdvertRound::getBiddingStatus, BIDDING_STATUS_LIST)
@@ -1146,5 +1122,36 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
         }
         return canPurchased;
     }
+
+    /**
+     * 购买推广前置校验
+     * @param createDTO 购买入参
+     */
+    private void advertPreBuyCheck(AdRoundStoreCreateDTO createDTO) {
+        // 判断截止时间是否超时，并且只会处理马上播放的这一轮。比如 5.1-5.3，当前为4.30，处理这一轮；当前为5.2，处理这一轮；当前为5.3（最后一天），处理下一轮。
+        if (DateUtils.getTime().compareTo(this.getDeadline(createDTO.getSymbol())) > 0) {
+            throw new ServiceException("竞价失败，已过系统截止时间!", HttpStatus.ERROR);
+        }
+        // 如果是位置枚举的推广位，则需要传position
+        if (Objects.equals(createDTO.getShowType(), AdShowType.POSITION_ENUM.getValue()) && StringUtils.isEmpty(createDTO.getPosition())) {
+            throw new ServiceException("当前推广类型position：必传!", HttpStatus.ERROR);
+        }
+        // 如果是时间范围的推广位，则不需要传position
+        if (Objects.equals(createDTO.getShowType(), AdShowType.TIME_RANGE.getValue()) && StringUtils.isNotBlank(createDTO.getPosition())) {
+            throw new ServiceException("当前推广类型position：不传!", HttpStatus.ERROR);
+        }
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(createDTO.getStoreId())) {
+            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
+        }
+        //校验推广支付方式是否存在
+        AdPayWay.of(createDTO.getPayWay());
+        // 校验使用余额情况下，密码是否正确
+        if (Objects.equals(createDTO.getPayWay(), AdPayWay.BALANCE.getValue())
+                && !assetService.checkTransactionPassword(createDTO.getStoreId(), createDTO.getTransactionPassword())) {
+            throw new ServiceException("支付密码错误!请重新输入", HttpStatus.ERROR);
+        }
+    }
+
 
 }
