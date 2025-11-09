@@ -517,14 +517,14 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
         if (CollectionUtils.isEmpty(topRightList)) {
             // 从latest50ProdList中随机选取最多2条数据
             List<StoreProduct> randomProductList = getRandomElements(latest50ProdList, count);
-            topRightRecommendList = randomProductList.stream().map(x -> {
+            topRightRecommendList = randomProductList.stream().filter(x -> attrMap.containsKey(x.getId())).map(x -> {
                 StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getId());
                 return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
                         .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
                         .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
             }).collect(Collectors.toList());
         } else {
-            topRightRecommendList = topRightList.stream().map(x -> {
+            topRightRecommendList = topRightList.stream().filter(x -> attrMap.containsKey(x.getBizId())).map(x -> {
                 StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getBizId());
                 return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
                         .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
@@ -551,14 +551,14 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
         if (CollectionUtils.isEmpty(storeRecommendList)) {
             // 从latest50ProdList中随机选取最多5条数据
             List<StoreProduct> randomProductList = getRandomElements(latest50ProdList, count);
-            recommendList = randomProductList.stream().map(x -> {
+            recommendList = randomProductList.stream().filter(x -> attrMap.containsKey(x.getId())).map(x -> {
                 StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getId());
                 return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
                         .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
                         .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
             }).collect(Collectors.toList());
         } else {
-            recommendList = storeRecommendList.stream().map(x -> {
+            recommendList = storeRecommendList.stream().filter(x -> attrMap.containsKey(x.getBizId())).map(x -> {
                 StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getBizId());
                 return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
                         .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
@@ -586,14 +586,14 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
         if (CollectionUtils.isEmpty(popularSaleList)) {
             // 从latest50ProdList中随机选取最多5条数据
             List<StoreProduct> randomProductList = getRandomElements(latest50ProdList, count);
-            popularRecommendList = randomProductList.stream().map(x -> {
+            popularRecommendList = randomProductList.stream().filter(x -> attrMap.containsKey(x.getId())).map(x -> {
                 StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getId());
                 return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
                         .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
                         .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
             }).collect(Collectors.toList());
         } else {
-            popularRecommendList = popularSaleList.stream().map(x -> {
+            popularRecommendList = popularSaleList.stream().filter(x -> attrMap.containsKey(x.getBizId())).map(x -> {
                 StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getBizId());
                 return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
                         .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
@@ -620,14 +620,14 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
         if (CollectionUtils.isEmpty(seasonNewProductsList)) {
             // 从latest50ProdList中随机选取最多5条数据
             List<StoreProduct> randomProductList = getRandomElements(latest50ProdList, count);
-            seasonNewRecommendList = randomProductList.stream().map(x -> {
+            seasonNewRecommendList = randomProductList.stream().filter(x -> attrMap.containsKey(x.getId())).map(x -> {
                 StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getId());
                 return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
                         .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
                         .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
             }).collect(Collectors.toList());
         } else {
-            seasonNewRecommendList = seasonNewProductsList.stream().map(x -> {
+            seasonNewRecommendList = seasonNewProductsList.stream().filter(x -> attrMap.containsKey(x.getBizId())).map(x -> {
                 StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getBizId());
                 return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
                         .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
@@ -654,14 +654,14 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
         if (CollectionUtils.isEmpty(salesRankingList)) {
             // 从latest50ProdList中随机选取最多10条数据
             List<StoreProduct> randomProductList = getRandomElements(latest50ProdList, count);
-            saleRankRecommendList = randomProductList.stream().map(x -> {
+            saleRankRecommendList = randomProductList.stream().filter(x -> attrMap.containsKey(x.getId())).map(x -> {
                 StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getId());
                 return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
                         .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
                         .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
             }).collect(Collectors.toList());
         } else {
-            saleRankRecommendList = salesRankingList.stream().map(x -> {
+            saleRankRecommendList = salesRankingList.stream().filter(x -> attrMap.containsKey(x.getBizId())).map(x -> {
                 StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getBizId());
                 return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
                         .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)

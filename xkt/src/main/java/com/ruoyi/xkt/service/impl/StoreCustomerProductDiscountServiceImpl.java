@@ -158,7 +158,7 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
         if (CollectionUtils.isEmpty(list)) {
             return Page.empty(pageDTO.getPageSize(), pageDTO.getPageNum());
         }
-        // 处理分页的价格及颜色等
+        // 处理分页的价格及颜色等  此处sql未过滤del_flag=0，因为有可能是商品已删除的颜色（部分）
         List<StoreCusProdDiscPageResDTO> relateList = this.cusProdDiscMapper.selectDiscPageRelate(list.stream()
                 .map(StoreCusProdDiscPageResDTO::getStoreProdColorId).distinct().collect(Collectors.toList()));
         Map<Long, StoreCusProdDiscPageResDTO> relateMap = relateList.stream().collect(Collectors

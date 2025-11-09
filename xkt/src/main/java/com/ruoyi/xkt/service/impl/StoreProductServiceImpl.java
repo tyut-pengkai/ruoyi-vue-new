@@ -573,6 +573,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
                 storeProduct.setProdStatus(EProductStatus.OFF_SALE.getValue());
                 // 商品颜色必须全部为已删除，则商品状态为已删除
             } else {
+                deleteProdIdList.add(storeProdId);
                 storeProduct.setDelFlag(DELETED);
                 storeProduct.setProdStatus(EProductStatus.REMOVED.getValue());
             }
