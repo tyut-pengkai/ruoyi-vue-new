@@ -66,11 +66,9 @@ public class FsNotice extends AbstractNotice {
                 try {
                     //内容
                     FeiShuMsg.ZhCn zhCn = new FeiShuMsg.ZhCn();
-                    List<List<FeiShuMsg.BaseField>> contentFields = new ArrayList<>();
+                    List<List<FeiShuMsg.BaseField>> contentFields = new ArrayList<>(4);
                     contentFields.add(Collections.singletonList(FeiShuTextField
                             .createText(CharSequenceUtil.format("环境：{}", env))));
-                    contentFields.add(Collections.singletonList(FeiShuTextField
-                            .createText(CharSequenceUtil.format("主机：{}", IpUtils.getHostIp()))));
                     contentFields.add(Collections.singletonList(FeiShuTextField
                             .createText(CharSequenceUtil.format("时间：{}", DateUtil.now()))));
                     contentFields.add(Collections.singletonList(FeiShuTextField
