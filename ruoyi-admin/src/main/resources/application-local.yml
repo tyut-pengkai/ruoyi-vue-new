@@ -300,3 +300,10 @@ tencent:
   captcha:
     captchaAppId: 199022475
     appSecretKey: wcqMdqjV3fnvFKxUAq5mwulnD
+
+# 飞书
+fs:
+  robot:
+    monitorSwitch: false
+    monitorChartId: oc_34e207df88addd15d83ec274fda95ef6
+    monitorEnv: 本地

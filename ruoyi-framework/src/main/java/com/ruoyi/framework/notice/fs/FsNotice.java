@@ -35,10 +35,12 @@ public class FsNotice extends AbstractNotice {
     private String defaultAppSecret;
     @Value("${fs.robot.defaultChatId:oc_34e207df88addd15d83ec274fda95ef6}")
     private String defaultChatId;
-    @Value("${fs.robot.monitorSwitch:true}")
+    @Value("${fs.robot.monitorSwitch}")
     private Boolean monitorSwitch;
-    @Value("${fs.robot.monitorChartId:oc_34e207df88addd15d83ec274fda95ef6}")
+    @Value("${fs.robot.monitorChartId}")
     private String monitorChartId;
+    @Value("${fs.robot.monitorEnv}")
+    private String env;
 
     /**
      * 发送消息给默认会话
@@ -47,7 +49,10 @@ public class FsNotice extends AbstractNotice {
      * @param content
      */
     public void sendMsg2DefaultChat(String title, String content) {
-        ThreadUtil.execAsync(() -> sendMsg(title, content, new String[]{defaultChatId}));
+        if (Boolean.TRUE.equals(monitorSwitch)) {
+            ThreadUtil.execAsync(() -> sendMsg(CharSequenceUtil.format("[{}]{}", env, title), content,
+                    new String[]{defaultChatId}));
+        }
     }
 
     /**
@@ -62,6 +67,8 @@ public class FsNotice extends AbstractNotice {
                     //内容
                     FeiShuMsg.ZhCn zhCn = new FeiShuMsg.ZhCn();
                     List<List<FeiShuMsg.BaseField>> contentFields = new ArrayList<>();
+                    contentFields.add(Collections.singletonList(FeiShuTextField
+                            .createText(CharSequenceUtil.format("环境：{}", env))));
                     contentFields.add(Collections.singletonList(FeiShuTextField
                             .createText(CharSequenceUtil.format("主机：{}", IpUtils.getHostIp()))));
                     contentFields.add(Collections.singletonList(FeiShuTextField
