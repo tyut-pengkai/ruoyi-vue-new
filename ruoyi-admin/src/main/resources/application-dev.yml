@@ -53,10 +53,10 @@ ocr:
   endpoint: ocr-api.cn-hangzhou.aliyuncs.com
 es:
   #多个用","分割
-  hosts: 49.234.41.39:9222
+  hosts: 47.99.90.75:9200
   ssl: false
   username: elastic
-  password: eguMAH-Fg*dPETkgJTkD
+  password: wXd3iRUcqHzxZPtKsDRn
   maxConnTotal: 4
   maxConnPerRoute: 2
 # 开发环境配置
