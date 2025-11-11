@@ -3539,24 +3539,25 @@ FOREIGN_KEY_CHECKS = 1;
 DROP TABLE IF EXISTS `store_product_color`;
 CREATE TABLE `store_product_color`
 (
-    `id`             bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '档口商品颜色ID',
-    `store_id`       bigint UNSIGNED NOT NULL COMMENT '档口ID',
-    `store_prod_id`  bigint UNSIGNED NOT NULL COMMENT '档口商品ID',
-    `store_color_id` bigint UNSIGNED NOT NULL COMMENT '档口颜色ID',
-    `color_name`     varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '颜色名称',
-    `order_num`      int UNSIGNED NOT NULL COMMENT '排序',
-    `prod_status`    tinyint UNSIGNED NULL DEFAULT NULL COMMENT '档口商品状态',
-    `version`        bigint UNSIGNED NOT NULL COMMENT '版本号',
-    `del_flag`       char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '删除标志（0代表存在 2代表删除）',
-    `create_by`      varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '创建者',
-    `create_time`    datetime NULL DEFAULT NULL COMMENT '创建时间',
-    `update_by`      varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '更新者',
-    `update_time`    datetime NULL DEFAULT NULL COMMENT '更新时间',
+    `id`                         bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '档口商品颜色ID',
+    `store_color_id`             bigint UNSIGNED NOT NULL COMMENT '档口颜色ID',
+    `store_prod_id`              bigint UNSIGNED NOT NULL COMMENT '档口商品ID',
+    `store_id`                   bigint UNSIGNED NOT NULL COMMENT '档口ID',
+    `color_name`                 varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '颜色名称',
+    `shoe_upper_lining_material` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '内里材质',
+    `order_num`                  int UNSIGNED NOT NULL COMMENT '排序',
+    `prod_status`                tinyint UNSIGNED NULL DEFAULT NULL COMMENT '档口商品状态',
+    `version`                    bigint UNSIGNED NOT NULL COMMENT '版本号',
+    `del_flag`                   char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '删除标志（0代表存在 2代表删除）',
+    `create_by`                  varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '创建者',
+    `create_time`                datetime NULL DEFAULT NULL COMMENT '创建时间',
+    `update_by`                  varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '更新者',
+    `update_time`                datetime NULL DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE,
-    INDEX            `idx_spc_prodid_colorid_del`(`store_prod_id`, `store_color_id`, `del_flag`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '档口当前商品颜色' ROW_FORMAT = DYNAMIC;
-CREATE INDEX idx_spc_store_prod_del ON store_product_color(store_prod_id, del_flag, store_id);
-CREATE INDEX idx_spc_prod_status_del ON store_product_color(prod_status, del_flag);
+    INDEX                        `idx_spc_prodid_colorid_del`(`store_prod_id`, `store_color_id`, `del_flag`) USING BTREE,
+    INDEX                        `idx_spc_store_prod_del`(`store_prod_id`, `del_flag`, `store_id`) USING BTREE,
+    INDEX                        `idx_spc_prod_status_del`(`prod_status`, `del_flag`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 2783 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '档口当前商品颜色' ROW_FORMAT = DYNAMIC;
 
 
 -- ----------------------------
