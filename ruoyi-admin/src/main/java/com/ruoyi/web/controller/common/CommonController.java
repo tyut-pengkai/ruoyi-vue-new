@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.common;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.Charset;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -230,6 +232,14 @@ public class CommonController {
         // 缓存
         redisCache.setCacheObject(cacheKey, JSONUtil.toJsonStr(dto), 10, TimeUnit.MINUTES);
         return R.ok(BeanUtil.toBean(dto, BusinessLicenseVO.class));
+    }
+
+    public static void main(String[] args) {
+        String str = FileUtil.readString("C:\\Users\\123\\Desktop\\privacyPolicy(1).html", Charset.forName("UTF-8"));
+        Map<String, String> json = new HashMap<>();
+        json.put("title", "aaa");
+        json.put("content", str);
+        System.out.println(JSONUtil.toJsonStr(json));
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
