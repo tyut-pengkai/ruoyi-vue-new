@@ -102,13 +102,7 @@ public class SecurityConfig
             .csrf(csrf -> csrf.disable())
             // 禁用HTTP响应标头
             .headers((headersCustomizer) -> {
-                headersCustomizer.cacheControl(cache -> cache.disable()).frameOptions(options -> options.sameOrigin())
-                        .addHeaderWriter((request, response) -> {
-                            // html接口响应头特殊处理
-                            if (StrUtil.startWith(request.getRequestURI(),"/rest/v1/common/html/content/")){
-                                response.setHeader("X-Frame-Options","ALLOWALL");
-                            }
-                        });
+                headersCustomizer.cacheControl(cache -> cache.disable()).frameOptions(options -> options.sameOrigin());
             })
             // 认证失败处理类
             .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
