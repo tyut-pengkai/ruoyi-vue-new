@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.Charset;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -252,7 +253,8 @@ public class CommonController {
 
     @ApiOperation("获取html内容")
     @GetMapping("/html/content/{title}")
-    public String getHtmlContent(@PathVariable("title") String title) {
+    public String getHtmlContent(@PathVariable("title") String title, HttpServletResponse response) {
+        response.setHeader("X-Frame-Options", "ALLOWALL");
         return htmlService.getHtmlContent(title);
     }
 
