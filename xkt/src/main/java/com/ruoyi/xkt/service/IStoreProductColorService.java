@@ -22,7 +22,7 @@ public interface IStoreProductColorService {
      * @param pageDTO 查询入参
      * @return 返回一个列表，包含匹配的产品颜色信息
      */
-    List<StoreProdColorResDTO> fuzzyQueryColorList(StoreProductColorFuzzyPageDTO pageDTO);
+    Page<StoreProdColorResDTO> fuzzyQueryPage(StoreProductColorFuzzyPageDTO pageDTO);
 
     /**
      * 获取档口某个商品所有颜色对应的价格等

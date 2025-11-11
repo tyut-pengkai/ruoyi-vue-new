@@ -51,8 +51,10 @@ public class StoreProductColorServiceImpl implements IStoreProductColorService {
      */
     @Override
     @Transactional(readOnly = true)
-    public List<StoreProdColorResDTO> fuzzyQueryColorList(StoreProductColorFuzzyPageDTO pageDTO) {
-        return storeProdColorMapper.fuzzyQueryColorList(pageDTO);
+    public Page<StoreProdColorResDTO> fuzzyQueryPage(StoreProductColorFuzzyPageDTO pageDTO) {
+        PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
+        List<StoreProdColorResDTO> fuzzyQueryList = storeProdColorMapper.fuzzyQueryPage(pageDTO);
+        return CollectionUtils.isEmpty(fuzzyQueryList) ? Page.empty(pageDTO.getPageSize(), pageDTO.getPageNum()) : Page.convert(new PageInfo<>(fuzzyQueryList));
     }
 
     /**

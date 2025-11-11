@@ -53,7 +53,7 @@ public interface StoreProductColorMapper extends BaseMapper<StoreProductColor> {
      * @param pageDTO 查询入参
      * @return List<StoreProdColorResDTO>
      */
-    List<StoreProdColorResDTO> fuzzyQueryColorList(StoreProductColorFuzzyPageDTO pageDTO);
+    List<StoreProdColorResDTO> fuzzyQueryPage(StoreProductColorFuzzyPageDTO pageDTO);
 
     /**
      * 获取商品颜色价格列表
