@@ -377,14 +377,14 @@ public class StoreProductServiceImpl implements IStoreProductService {
             if (exitProdColorIdList.contains(updateProdColorId)) {
                 StoreProductColor existColor = existColorMap.get(updateProdColorNameList.get(i));
                 if (ObjectUtils.isNotEmpty(existColor)) {
-                    String shoeUpperLiningMaterial = updateColorLineMaterialMap.get(updateProdColorNameList.get(i));
                     // 修改颜色的内里属性
-                    existColor.setShoeUpperLiningMaterial(shoeUpperLiningMaterial);
+                    existColor.setShoeUpperLiningMaterial(updateColorLineMaterialMap.get(updateProdColorNameList.get(i)));
                 }
                 continue;
             }
             // 新增的商品颜色
             dbProdColorList.add(new StoreProductColor().setStoreColorId(updateProdColorId).setStoreProdId(storeProdId).setStoreId(storeId)
+                    .setShoeUpperLiningMaterial(updateColorLineMaterialMap.get(updateProdColorNameList.get(i)))
                     .setColorName(updateProdColorNameList.get(i)).setOrderNum(i + 1).setProdStatus(EProductStatus.ON_SALE.getValue()));
         }
         // 更新商品颜色或新增商品颜色

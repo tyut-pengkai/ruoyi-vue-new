@@ -255,6 +255,7 @@ public class CommonController {
     @GetMapping("/html/content/{title}")
     public String getHtmlContent(@PathVariable("title") String title, HttpServletResponse response) {
         response.setHeader("X-Frame-Options", "ALLOWALL");
+        response.setHeader("Content-Security-Policy", "frame-ancestors *");
         return htmlService.getHtmlContent(title);
     }
 
