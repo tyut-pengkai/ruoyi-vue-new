@@ -1,5 +1,6 @@
 package com.ruoyi.framework.config;
 
+import cn.hutool.core.util.StrUtil;
 import com.ruoyi.framework.config.properties.PermitAllUrlProperties;
 import com.ruoyi.framework.security.filter.JwtAuthenticationTokenFilter;
 import com.ruoyi.framework.security.handle.AuthenticationEntryPointImpl;
@@ -101,7 +102,13 @@ public class SecurityConfig
             .csrf(csrf -> csrf.disable())
             // 禁用HTTP响应标头
             .headers((headersCustomizer) -> {
-                headersCustomizer.cacheControl(cache -> cache.disable()).frameOptions(options -> options.sameOrigin());
+                headersCustomizer.cacheControl(cache -> cache.disable()).frameOptions(options -> options.sameOrigin())
+                        .addHeaderWriter((request, response) -> {
+                            // html接口响应头特殊处理
+                            if (StrUtil.startWith(request.getRequestURI(),"/rest/v1/common/html/content/")){
+                                response.setHeader("X-Frame-Options","ALLOWALL");
+                            }
+                        });
             })
             // 认证失败处理类
             .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
