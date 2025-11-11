@@ -12,6 +12,7 @@ import com.ruoyi.xkt.domain.StoreProductColor;
 import com.ruoyi.xkt.domain.StoreProductColorSize;
 import com.ruoyi.xkt.dto.storeProdColor.StoreProdColorResDTO;
 import com.ruoyi.xkt.dto.storeProdColor.StoreProdColorSnResDTO;
+import com.ruoyi.xkt.dto.storeProdColor.StoreProductColorFuzzyPageDTO;
 import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPricePageDTO;
 import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceResDTO;
 import com.ruoyi.xkt.mapper.StoreProductColorMapper;
@@ -45,14 +46,13 @@ public class StoreProductColorServiceImpl implements IStoreProductColorService {
     /**
      * 根据商店ID和产品款式编号模糊查询颜色列表
      *
-     * @param storeId    商店ID，用于限定查询范围
-     * @param prodArtNum 产品款式编号，用于模糊匹配产品
+     * @param pageDTO 查询入参
      * @return 返回一个列表，包含匹配的产品颜色信息
      */
     @Override
     @Transactional(readOnly = true)
-    public List<StoreProdColorResDTO> fuzzyQueryColorList(Long storeId, String prodArtNum) {
-        return storeProdColorMapper.fuzzyQueryColorList(storeId, prodArtNum);
+    public List<StoreProdColorResDTO> fuzzyQueryColorList(StoreProductColorFuzzyPageDTO pageDTO) {
+        return storeProdColorMapper.fuzzyQueryColorList(pageDTO);
     }
 
     /**

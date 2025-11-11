@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProductColor;
 import com.ruoyi.xkt.dto.storeProdColor.StoreProdColorDTO;
 import com.ruoyi.xkt.dto.storeProdColor.StoreProdColorResDTO;
+import com.ruoyi.xkt.dto.storeProdColor.StoreProductColorFuzzyPageDTO;
 import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPricePageDTO;
 import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceResDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdPageDTO;
@@ -12,7 +13,6 @@ import com.ruoyi.xkt.dto.storeProduct.StoreProdStatusCountResDTO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -50,11 +50,10 @@ public interface StoreProductColorMapper extends BaseMapper<StoreProductColor> {
     /**
      * 输入商品货号模糊查询颜色分类
      *
-     * @param storeId    档口ID
-     * @param prodArtNum 商品货号
+     * @param pageDTO 查询入参
      * @return List<StoreProdColorResDTO>
      */
-    List<StoreProdColorResDTO> fuzzyQueryColorList(@Param("storeId") Long storeId, @Param("prodArtNum") String prodArtNum);
+    List<StoreProdColorResDTO> fuzzyQueryColorList(StoreProductColorFuzzyPageDTO pageDTO);
 
     /**
      * 获取商品颜色价格列表
@@ -76,7 +75,7 @@ public interface StoreProductColorMapper extends BaseMapper<StoreProductColor> {
     /**
      * 获取档口各个状态的数量
      *
-     * @param storeId     档口ID
+     * @param storeId 档口ID
      * @return StoreProdStatusCountResDTO
      */
     StoreProdStatusCountResDTO getStatusNum(@Param("storeId") Long storeId);

@@ -5,6 +5,8 @@ import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.web.controller.xkt.vo.storePordColor.StoreProdColorResVO;
 import com.ruoyi.web.controller.xkt.vo.storePordColor.StoreProdColorSnResVO;
+import com.ruoyi.web.controller.xkt.vo.storePordColor.StoreProductColorFuzzyPageVO;
+import com.ruoyi.xkt.dto.storeProdColor.StoreProductColorFuzzyPageDTO;
 import com.ruoyi.xkt.service.IStoreProductColorService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -27,11 +29,10 @@ public class StoreProductColorController extends XktBaseController {
 
     final IStoreProductColorService storeProdColorService;
 
-    @ApiOperation(value = "模糊查询档口所有的商品颜色分类", httpMethod = "GET", response = R.class)
-    @GetMapping(value = "/fuzzy")
-    public R<List<StoreProdColorResVO>> fuzzyQueryColorList(@RequestParam(value = "prodArtNum", required = false) String prodArtNum,
-                                                            @RequestParam("storeId") Long storeId) {
-        return success(BeanUtil.copyToList(storeProdColorService.fuzzyQueryColorList(storeId, prodArtNum), StoreProdColorResVO.class));
+    @ApiOperation(value = "模糊查询档口所有的商品颜色分类", httpMethod = "POST", response = R.class)
+    @PostMapping(value = "/fuzzy")
+    public R<List<StoreProdColorResVO>> fuzzyQueryColorList(@RequestBody StoreProductColorFuzzyPageVO pageVO) {
+        return success(BeanUtil.copyToList(storeProdColorService.fuzzyQueryColorList(BeanUtil.toBean(pageVO, StoreProductColorFuzzyPageDTO.class)), StoreProdColorResVO.class));
     }
 
     @ApiOperation(value = "根据商品ID查询颜色及已设置颜色条码", httpMethod = "GET", response = R.class)
