@@ -23,8 +23,6 @@ public class StoreProdCateAttrDTO {
     private String shaftLiningMaterial;
     @ApiModelProperty(value = "靴筒面材质")
     private String shaftMaterial;
-    @ApiModelProperty(value = "鞋面内里材质")
-    private String shoeUpperLiningMaterial;
     @ApiModelProperty(value = "靴款品名")
     private String shoeStyleName;
     @ApiModelProperty(value = "筒高")

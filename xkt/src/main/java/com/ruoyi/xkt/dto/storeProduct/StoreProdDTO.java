@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -77,6 +78,8 @@ public class StoreProdDTO {
         private Long storeColorId;
         @ApiModelProperty(value = "颜色名称")
         private String colorName;
+        @ApiModelProperty(value = "内里材质")
+        private String shoeUpperLiningMaterial;
         @ApiModelProperty(value = "商品尺码")
         private Integer size;
         @ApiModelProperty(value = "档口商品定价")

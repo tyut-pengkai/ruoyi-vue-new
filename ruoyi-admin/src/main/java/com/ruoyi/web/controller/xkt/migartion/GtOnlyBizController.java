@@ -352,6 +352,16 @@ public class GtOnlyBizController extends BaseController {
             String shaftMaterialAttr = attrMap.get(Constants.SHAFT_MATERIAL_NAME);
             prodAttr.setShaftMaterial(org.apache.commons.lang3.StringUtils.isEmpty(shaftMaterialAttr) ? attrMap.get(Constants.UPPER_MATERIAL_NAME) : shaftMaterialAttr);
         }
+
+
+
+
+
+
+
+
+
+     /*
         // 4. 鞋面内里材质
         if (attrMap.containsKey(Constants.SHOE_UPPER_LINING_MATERIAL_NAME)) {
             // 先找鞋面内里材质，为空 则 再找 内里材质，为空则再找 里料材质
@@ -364,6 +374,18 @@ public class GtOnlyBizController extends BaseController {
             }
             prodAttr.setShoeUpperLiningMaterial(shoeUpperLiningMaterialAttr);
         }
+        */
+
+
+
+
+
+
+
+
+
+
+
         // 5. 靴款品名
         if (attrMap.containsKey(Constants.SHOE_STYLE_NAME_NAME)) {
             prodAttr.setShoeStyleName(attrMap.get(Constants.SHOE_STYLE_NAME_NAME));

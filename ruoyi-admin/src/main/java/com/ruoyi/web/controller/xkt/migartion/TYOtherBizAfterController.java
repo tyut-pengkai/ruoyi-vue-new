@@ -153,9 +153,44 @@ public class TYOtherBizAfterController extends BaseController {
                 newShoeUpperLiningMaterialMap.put(tyProdVO.getShoeUpperLiningMaterial(), tyProdVO.getShoeUpperLiningMaterial());
 
             }
+
+
+
+
+
+
+
+
+
+
+
+            /*
+
+
+
             // 只设置鞋面材质 和 鞋面内里材质
             prodCateAttrList.add(new StoreProductCategoryAttribute().setStoreId(storeProd.getStoreId()).setStoreProdId(storeProd.getId())
                     .setShaftMaterial(tyProdVO.getShaftMaterial()).setShoeUpperLiningMaterial(tyProdVO.getShoeUpperLiningMaterial()));
+
+
+
+
+            */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             // 初始化商品服务承诺
             prodSvcList.add(new StoreProductService().setStoreProdId(storeProd.getId()).setCustomRefund("0")
                     .setThirtyDayRefund("0").setOneBatchSale("1").setRefundWithinThreeDay("0"));

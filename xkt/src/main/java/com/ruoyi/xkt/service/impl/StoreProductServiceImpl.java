@@ -358,10 +358,13 @@ public class StoreProductServiceImpl implements IStoreProductService {
         // 所有颜色列表
         List<StoreProductColor> dbProdColorList = this.storeProdColorMapper.selectList(new LambdaQueryWrapper<StoreProductColor>()
                 .eq(StoreProductColor::getStoreProdId, storeProdId).eq(StoreProductColor::getDelFlag, Constants.UNDELETED));
+        Map<String, StoreProductColor> existColorMap = dbProdColorList.stream().collect(Collectors.toMap(StoreProductColor::getColorName, x -> x));
         // 当前商品已存在的storeColorId列表
         List<Long> exitProdColorIdList = dbProdColorList.stream().map(StoreProductColor::getStoreColorId).collect(Collectors.toList());
         // 当前商品待更新的storeColorId列表
         List<Long> updateProdColorIdList = updateDTO.getSizeList().stream().map(StoreProdDTO.SPCSizeDTO::getColorName).map(storeColorMap::get).collect(Collectors.toList());
+        // 待更新的商品颜色内里map
+        Map<String, String> updateColorLineMaterialMap = updateDTO.getSizeList().stream().collect(Collectors.toMap(StoreProdDTO.SPCSizeDTO::getColorName, StoreProdDTO.SPCSizeDTO::getShoeUpperLiningMaterial, (v1, v2) -> v2));
         dbProdColorList.stream()
                 // 判断有哪些是删除的颜色
                 .filter(color -> !updateProdColorIdList.contains(color.getStoreColorId()))
@@ -372,6 +375,12 @@ public class StoreProductServiceImpl implements IStoreProductService {
             final Long updateProdColorId = storeColorMap.get(updateProdColorNameList.get(i));
             // 已存在的颜色则不新增
             if (exitProdColorIdList.contains(updateProdColorId)) {
+                StoreProductColor existColor = existColorMap.get(updateProdColorNameList.get(i));
+                if (ObjectUtils.isNotEmpty(existColor)) {
+                    String shoeUpperLiningMaterial = updateColorLineMaterialMap.get(updateProdColorNameList.get(i));
+                    // 修改颜色的内里属性
+                    existColor.setShoeUpperLiningMaterial(shoeUpperLiningMaterial);
+                }
                 continue;
             }
             // 新增的商品颜色
@@ -494,9 +503,13 @@ public class StoreProductServiceImpl implements IStoreProductService {
         // 新增档口颜色尺码与价格
         List<StoreProductColor> prodColorList = new ArrayList<>();
         final List<String> prodColorNameList = createDTO.getSizeList().stream().map(StoreProdDTO.SPCSizeDTO::getColorName).distinct().collect(Collectors.toList());
+        // 颜色与内里的关系
+        final Map<String, String> colorLiningMaterialMap = createDTO.getSizeList().stream().collect(Collectors
+                .toMap(StoreProdDTO.SPCSizeDTO::getColorName, StoreProdDTO.SPCSizeDTO::getShoeUpperLiningMaterial, (v1, v2) -> v2));
         for (int i = 0; i < prodColorNameList.size(); i++) {
             prodColorList.add(new StoreProductColor().setStoreColorId(storeColorMap.get(prodColorNameList.get(i))).setStoreProdId(storeProdId)
-                    .setStoreId(storeId).setColorName(prodColorNameList.get(i)).setOrderNum(i + 1).setProdStatus(EProductStatus.ON_SALE.getValue()));
+                    .setShoeUpperLiningMaterial(colorLiningMaterialMap.get(prodColorNameList.get(i))).setColorName(prodColorNameList.get(i))
+                    .setStoreId(storeId).setOrderNum(i + 1).setProdStatus(EProductStatus.ON_SALE.getValue()));
         }
         this.storeProdColorMapper.insert(prodColorList);
         // 新增档口颜色尺码对应价格
@@ -1441,10 +1454,6 @@ public class StoreProductServiceImpl implements IStoreProductService {
         // 鞋面材质
         if (ObjectUtils.isNotEmpty(cateAttr.getShaftMaterial())) {
             cateAttrMap.put(Constants.CATE_RELATE_MAP.get(SHAFT_MATERIAL), cateAttr.getShaftMaterial());
-        }
-        // 鞋面内里材质
-        if (ObjectUtils.isNotEmpty(cateAttr.getShoeUpperLiningMaterial())) {
-            cateAttrMap.put(Constants.CATE_RELATE_MAP.get(SHOE_UPPER_LINING_MATERIAL), cateAttr.getShoeUpperLiningMaterial());
         }
         // 靴款品名
         if (ObjectUtils.isNotEmpty(cateAttr.getShoeStyleName())) {

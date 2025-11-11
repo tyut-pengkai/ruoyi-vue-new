@@ -45,10 +45,6 @@ public class StoreProductCategoryAttribute extends XktBaseEntity {
      */
     private String shaftMaterial;
     /**
-     * 鞋面内里材质
-     */
-    private String shoeUpperLiningMaterial;
-    /**
      * 靴款品名
      */
     private String shoeStyleName;
