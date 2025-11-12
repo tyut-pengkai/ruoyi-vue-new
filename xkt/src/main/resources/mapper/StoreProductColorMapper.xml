@@ -36,7 +36,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             sf.file_url AS mainPicUrl,
             sp.private_item,
             spca.shaft_material,
-            spca.shoe_upper_lining_material
+            spc.shoe_upper_lining_material
         FROM
             store_product_color spc
                 JOIN store_product sp ON spc.store_prod_id = sp.id
