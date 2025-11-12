@@ -19,6 +19,8 @@ public class StoreProdColorDTO {
     private Long storeColorId;
     @ApiModelProperty(value = "颜色名称")
     private String colorName;
+    @ApiModelProperty(value = "内里材质")
+    private String shoeUpperLiningMaterial;
     @ApiModelProperty(value = "排序")
     private Integer orderNum;
 

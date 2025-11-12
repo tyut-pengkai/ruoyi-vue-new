@@ -181,6 +181,7 @@ public class GtOtherBizAfterController extends BaseController {
         // 获取GT所有的货品
         List<GtProdSkuVO> gtOnSaleCacheList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_GT_SALE_BASIC_KEY + userId), new ArrayList<>());
+        Map<String, GtProdSkuVO> gtProdMap = gtOnSaleCacheList.stream().collect(Collectors.toMap(GtProdSkuVO::getArticle_number, x -> x, (s1, s2) -> s2));
         Map<String, List<GtProdSkuVO>> gtProdSkuMap = gtOnSaleCacheList.stream().collect(Collectors.groupingBy(GtProdSkuVO::getArticle_number));
         // 商品所有颜色 尺码 颜色库存初始化
         List<StoreProductColor> prodColorList = new ArrayList<>();
@@ -198,9 +199,11 @@ public class GtOtherBizAfterController extends BaseController {
             prodColorMap.forEach((color, gtColor) -> {
                 StoreColor storeColor = Optional.ofNullable(storeColorMap.get(gtColor))
                         .orElseThrow(() -> new ServiceException("没有GT商品颜色!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
+                // 获取GT的内里材质
+                final String shoeUpperLiningMaterial = this.getShoeUpperLiningMaterial(userId, gtProdMap.get(storeProd.getProdArtNum()));
                 // 该商品的颜色
                 prodColorList.add(new StoreProductColor().setStoreId(storeProd.getStoreId()).setStoreProdId(storeProd.getId()).setOrderNum(orderNum.addAndGet(1))
-                        .setColorName(storeColor.getColorName()).setStoreColorId(storeColor.getId()).setProdStatus(EProductStatus.ON_SALE.getValue()));
+                        .setColorName(storeColor.getColorName()).setShoeUpperLiningMaterial(shoeUpperLiningMaterial).setStoreColorId(storeColor.getId()).setProdStatus(EProductStatus.ON_SALE.getValue()));
                 Map<Integer, BigDecimal> sizePriceMap = Optional.ofNullable(colorSizePriceMap.get(gtColor))
                         .orElseThrow(() -> new ServiceException("没有GT商品颜色尺码价格!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
                 // 该颜色最低价格
@@ -398,38 +401,6 @@ public class GtOtherBizAfterController extends BaseController {
             String shaftMaterialAttr = attrMap.get(Constants.SHAFT_MATERIAL_NAME);
             prodAttr.setShaftMaterial(org.apache.commons.lang3.StringUtils.isEmpty(shaftMaterialAttr) ? attrMap.get(Constants.UPPER_MATERIAL_NAME) : shaftMaterialAttr);
         }
-
-
-
-
-
-
-
-      /*
-        // 4. 鞋面内里材质
-        if (attrMap.containsKey(Constants.SHOE_UPPER_LINING_MATERIAL_NAME)) {
-            // 先找鞋面内里材质，为空 则 再找 内里材质，为空则再找 里料材质
-            String shoeUpperLiningMaterialAttr = attrMap.get(Constants.SHOE_UPPER_LINING_MATERIAL_NAME);
-            if (org.apache.commons.lang3.StringUtils.isEmpty(shoeUpperLiningMaterialAttr)) {
-                shoeUpperLiningMaterialAttr = attrMap.get(Constants.INNER_MATERIAL);
-                if (org.apache.commons.lang3.StringUtils.isEmpty(shoeUpperLiningMaterialAttr)) {
-                    shoeUpperLiningMaterialAttr = attrMap.get(Constants.OUTER_MATERIAL);
-                }
-            }
-            prodAttr.setShoeUpperLiningMaterial(shoeUpperLiningMaterialAttr);
-        }
-        */
-
-
-
-
-
-
-
-
-
-
-
         // 5. 靴款品名
         if (attrMap.containsKey(Constants.SHOE_STYLE_NAME_NAME)) {
             prodAttr.setShoeStyleName(attrMap.get(Constants.SHOE_STYLE_NAME_NAME));
@@ -513,5 +484,33 @@ public class GtOtherBizAfterController extends BaseController {
         prodAttrMap.put(product_id, prodAttr);
     }
 
+
+    /**
+     * 获取GT商品的内里属性
+     *
+     * @param userId
+     * @param gtProdSkuVO
+     * @return
+     */
+    private String getShoeUpperLiningMaterial(Integer userId, GtProdSkuVO gtProdSkuVO) {
+        String shoeUpperLiningMaterialAttr = "";
+        // 类目属性
+        Map<String, String> attrMap = redisCache.getCacheMap(CacheConstants.MIGRATION_GT_SALE_ATTR_KEY + userId + "_" + gtProdSkuVO.getProduct_id());
+        if (MapUtils.isEmpty(attrMap)) {
+            return shoeUpperLiningMaterialAttr;
+        }
+        // 4. 鞋面内里材质
+        if (attrMap.containsKey(Constants.SHOE_UPPER_LINING_MATERIAL_NAME)) {
+            // 先找鞋面内里材质，为空 则 再找 内里材质，为空则再找 里料材质
+            shoeUpperLiningMaterialAttr = attrMap.get(Constants.SHOE_UPPER_LINING_MATERIAL_NAME);
+            if (org.apache.commons.lang3.StringUtils.isEmpty(shoeUpperLiningMaterialAttr)) {
+                shoeUpperLiningMaterialAttr = attrMap.get(Constants.INNER_MATERIAL);
+                if (org.apache.commons.lang3.StringUtils.isEmpty(shoeUpperLiningMaterialAttr)) {
+                    shoeUpperLiningMaterialAttr = attrMap.get(Constants.OUTER_MATERIAL);
+                }
+            }
+        }
+        return shoeUpperLiningMaterialAttr;
+    }
 
 }

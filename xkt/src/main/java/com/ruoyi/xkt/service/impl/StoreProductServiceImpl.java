@@ -132,8 +132,12 @@ public class StoreProductServiceImpl implements IStoreProductService {
         List<StoreColorDTO> allColorList = this.storeColorMapper.selectListByStoreProdId(storeProd.getStoreId());
         // 档口当前商品颜色列表
         List<StoreProdColorDTO> colorList = this.storeProdColorMapper.selectListByStoreProdId(storeProdId);
+        // 颜色与内里材质映射
+        Map<String, String> colorLiningMaterialMap = colorList.stream().collect(Collectors
+                .toMap(StoreProdColorDTO::getColorName, StoreProdColorDTO::getShoeUpperLiningMaterial, (v1, v2) -> v2));
         // 档口商品颜色尺码价格列表
         List<StoreProdSizeDTO> sizeList = this.storeProdColorSizeMapper.selectListByStoreProdId(storeProdId);
+        sizeList.forEach(size -> size.setShoeUpperLiningMaterial(colorLiningMaterialMap.get(size.getColorName())));
         // 档口商品详情
         StoreProductDetail prodDetail = this.storeProdDetailMapper.selectByStoreProdId(storeProdId);
         // 档口服务承诺

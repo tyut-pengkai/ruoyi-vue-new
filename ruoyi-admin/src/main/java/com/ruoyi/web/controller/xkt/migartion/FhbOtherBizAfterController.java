@@ -145,18 +145,13 @@ public class FhbOtherBizAfterController extends BaseController {
 
         Map<String, FhbProdVO.SMIVO> fhbProdMap = fhbProdList.stream().collect(Collectors.toMap(FhbProdVO.SMIVO::getArtNo, x -> x, (v1, v2) -> v2));
         // 找到枚举的 鞋面材质 和 鞋面内里材质
-        List<SysDictData> attrList = Optional.ofNullable(this.dictDataMapper.selectList(new LambdaQueryWrapper<SysDictData>()
-                        .in(SysDictData::getDictType, Arrays.asList(DICT_TYPE_SHAFT_MATERIAL, DICT_TYPE_SHOE_UPPER_LINING_MATERIAL))
-                        .eq(SysDictData::getDelFlag, Constants.UNDELETED)))
-                .orElseThrow(() -> new ServiceException("系统枚举 鞋面材质及鞋面内里材质 不存在!", HttpStatus.ERROR));
-        Map<String, String> shaftMaterialMap = attrList.stream().filter(x -> Objects.equals(x.getDictType(), DICT_TYPE_SHAFT_MATERIAL))
-                .collect(Collectors.toMap(SysDictData::getDictLabel, SysDictData::getDictValue));
-        Map<String, String> shoeUpperLiningMaterialMap = attrList.stream().filter(x -> Objects.equals(x.getDictType(), DICT_TYPE_SHOE_UPPER_LINING_MATERIAL))
-                .collect(Collectors.toMap(SysDictData::getDictLabel, SysDictData::getDictValue));
+        List<SysDictData> shaftMaterialList = Optional.ofNullable(this.dictDataMapper.selectList(new LambdaQueryWrapper<SysDictData>()
+                        .eq(SysDictData::getDictType, DICT_TYPE_SHAFT_MATERIAL).eq(SysDictData::getDelFlag, Constants.UNDELETED)))
+                .orElseThrow(() -> new ServiceException("系统枚举 鞋面材质 不存在!", HttpStatus.ERROR));
+        Map<String, String> shaftMaterialMap = shaftMaterialList.stream().collect(Collectors.toMap(SysDictData::getDictLabel, SysDictData::getDictValue));
         List<StoreProductCategoryAttribute> prodCateAttrList = new ArrayList<>();
         List<StoreProductService> prodSvcList = new ArrayList<>();
         Map<String, String> newShaftMaterialMap = new HashMap<>();
-        Map<String, String> newShoeUpperLiningMaterialMap = new HashMap<>();
         storeProdList.forEach(storeProd -> {
             FhbProdVO.SMIVO fhbProdVO = Optional.ofNullable(fhbProdMap.get(storeProd.getProdArtNum()))
                     .orElseThrow(() -> new ServiceException("FHB独有商品，未找到FHB对应的商品!", HttpStatus.ERROR));
@@ -164,31 +159,9 @@ public class FhbOtherBizAfterController extends BaseController {
             if (StringUtils.isNotBlank(fhbProdVO.getOutStuff()) && !shaftMaterialMap.containsKey(fhbProdVO.getOutStuff())) {
                 newShaftMaterialMap.put(fhbProdVO.getOutStuff(), fhbProdVO.getOutStuff());
             }
-            if (StringUtils.isNotBlank(fhbProdVO.getInnerStuff()) && !shoeUpperLiningMaterialMap.containsKey(fhbProdVO.getInnerStuff())) {
-                newShoeUpperLiningMaterialMap.put(fhbProdVO.getInnerStuff(), fhbProdVO.getInnerStuff());
-            }
-
-
-
-
-
-          /*
-
-
-            // 只设置鞋面材质 和 鞋面内里材质
-            prodCateAttrList.add(new StoreProductCategoryAttribute().setStoreId(storeProd.getStoreId()).setStoreProdId(storeProd.getId())
-                    .setShaftMaterial(fhbProdVO.getOutStuff()).setShoeUpperLiningMaterial(fhbProdVO.getInnerStuff()));
-
-
-            */
-
-
-
-
-
-
-
-
+            // 只设置鞋面材质
+            prodCateAttrList.add(new StoreProductCategoryAttribute().setStoreId(storeProd.getStoreId())
+                    .setStoreProdId(storeProd.getId()).setShaftMaterial(fhbProdVO.getOutStuff()));
             // 初始化商品服务承诺
             prodSvcList.add(new StoreProductService().setStoreProdId(storeProd.getId()).setCustomRefund("0")
                     .setThirtyDayRefund("0").setOneBatchSale("1").setRefundWithinThreeDay("0"));
@@ -196,10 +169,6 @@ public class FhbOtherBizAfterController extends BaseController {
         List<SysDictData> newDictDataList = new ArrayList<>();
         if (MapUtils.isNotEmpty(newShaftMaterialMap)) {
             newShaftMaterialMap.forEach((k, v) -> newDictDataList.add(new SysDictData().setDictLabel(k).setDictValue(k).setDictType(DICT_TYPE_SHAFT_MATERIAL).setStatus("0").setDictSort(100L)));
-        }
-        if (MapUtils.isNotEmpty(newShoeUpperLiningMaterialMap)) {
-            newShoeUpperLiningMaterialMap.forEach((k, v) -> newDictDataList.add(new SysDictData().setDictLabel(k).setDictValue(k)
-                    .setDictType(DICT_TYPE_SHOE_UPPER_LINING_MATERIAL).setStatus("0").setDictSort(100L)));
         }
         if (CollectionUtils.isNotEmpty(newDictDataList)) {
             this.dictDataMapper.insert(newDictDataList);
@@ -252,9 +221,18 @@ public class FhbOtherBizAfterController extends BaseController {
             throw new ServiceException("FHB cache 数据为空!", HttpStatus.ERROR);
         }
         Map<String, List<FhbProdVO.SMIVO>> fhbProdSkuMap = fhbProdList.stream().collect(Collectors.groupingBy(FhbProdVO.SMIVO::getArtNo));
+
+        // 找到枚举的 鞋面内里材质
+        List<SysDictData> shoeUpperLiningMaterialList = Optional.ofNullable(this.dictDataMapper.selectList(new LambdaQueryWrapper<SysDictData>()
+                        .eq(SysDictData::getDictType, DICT_TYPE_SHOE_UPPER_LINING_MATERIAL).eq(SysDictData::getDelFlag, Constants.UNDELETED)))
+                .orElseThrow(() -> new ServiceException("系统枚举 鞋面内里材质 不存在!", HttpStatus.ERROR));
+        Map<String, String> shoeUpperLiningMaterialMap = shoeUpperLiningMaterialList.stream().collect(Collectors.toMap(SysDictData::getDictLabel, SysDictData::getDictValue));
+
         // 商品所有颜色 尺码 颜色库存初始化
         List<StoreProductColor> prodColorList = new ArrayList<>();
         List<StoreProductColorSize> prodColorSizeList = new ArrayList<>();
+        List<SysDictData> newDictDataList = new ArrayList<>();
+        Map<String, String> newShoeUpperLiningMaterialMap = new HashMap<>();
         storeProdList.forEach(storeProd -> {
             Optional.ofNullable(fhbAfterArtNumGroupMap.get(storeProd.getProdArtNum()))
                     .orElseThrow(() -> new ServiceException("没有FHB[独有]商品货号!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
@@ -263,11 +241,15 @@ public class FhbOtherBizAfterController extends BaseController {
                     .map(fhbProdSkuMap::get).filter(Objects::nonNull).flatMap(List::stream).collect(Collectors.toList());
             AtomicInteger orderNum = new AtomicInteger();
             fhbMatchColorList.forEach(fhbProdColor -> {
+                // 处理内里材质，若步橘没有的，则需要新增
+                if (StringUtils.isNotBlank(fhbProdColor.getInnerStuff()) && !shoeUpperLiningMaterialMap.containsKey(fhbProdColor.getInnerStuff())) {
+                    newShoeUpperLiningMaterialMap.put(fhbProdColor.getInnerStuff(), fhbProdColor.getInnerStuff());
+                }
                 StoreColor storeColor = Optional.ofNullable(storeColorMap.get(fhbProdColor.getColor()))
                         .orElseThrow(() -> new ServiceException("没有FHB[独有]商品颜色!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
                 // 该商品的颜色
                 prodColorList.add(new StoreProductColor().setStoreId(storeProd.getStoreId()).setStoreProdId(storeProd.getId()).setOrderNum(orderNum.addAndGet(1))
-                        .setColorName(storeColor.getColorName()).setStoreColorId(storeColor.getId()).setProdStatus(EProductStatus.ON_SALE.getValue()));
+                        .setColorName(storeColor.getColorName()).setShoeUpperLiningMaterial(fhbProdColor.getInnerStuff()).setStoreColorId(storeColor.getId()).setProdStatus(EProductStatus.ON_SALE.getValue()));
                 // 该颜色最低价格
                 BigDecimal minPrice = ObjectUtils.defaultIfNull(fhbProdColor.getSalePrice(), BigDecimal.ZERO);
                 List<Integer> standardSizeList = StrUtil.split(fhbProdColor.getSize(), ",").stream().map(Integer::parseInt).collect(Collectors.toList());
@@ -285,6 +267,14 @@ public class FhbOtherBizAfterController extends BaseController {
                 }
             });
         });
+
+        // 处理新增的 内里材质 枚举
+        if (MapUtils.isNotEmpty(newShoeUpperLiningMaterialMap)) {
+            newShoeUpperLiningMaterialMap.forEach((k, v) -> newDictDataList.add(new SysDictData().setDictLabel(k).setDictValue(k)
+                    .setDictType(DICT_TYPE_SHOE_UPPER_LINING_MATERIAL).setStatus("0").setDictSort(100L)));
+            this.dictDataMapper.insert(newDictDataList);
+        }
+
         // 插入商品颜色及颜色对应的尺码，档口服务承诺
         this.prodColorMapper.insert(prodColorList);
         // 按照货号颜色尺码升序排列

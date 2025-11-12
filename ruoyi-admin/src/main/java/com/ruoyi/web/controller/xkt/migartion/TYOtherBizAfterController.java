@@ -130,83 +130,34 @@ public class TYOtherBizAfterController extends BaseController {
         Map<String, TyProdImportVO> tyProdMap = tyProdList.stream().collect(Collectors.toMap(TyProdImportVO::getProdArtNum, x -> x, (v1, v2) -> v2));
         // 找到枚举的 鞋面材质 和 鞋面内里材质
         List<SysDictData> attrList = Optional.ofNullable(this.dictDataMapper.selectList(new LambdaQueryWrapper<SysDictData>()
-                        .in(SysDictData::getDictType, Arrays.asList(DICT_TYPE_SHAFT_MATERIAL, DICT_TYPE_SHOE_UPPER_LINING_MATERIAL))
-                        .eq(SysDictData::getDelFlag, Constants.UNDELETED)))
+                        .eq(SysDictData::getDictType, DICT_TYPE_SHAFT_MATERIAL).eq(SysDictData::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("系统枚举 鞋面材质及鞋面内里材质 不存在!", HttpStatus.ERROR));
         Map<String, String> shaftMaterialMap = attrList.stream().filter(x -> Objects.equals(x.getDictType(), DICT_TYPE_SHAFT_MATERIAL))
-                .collect(Collectors.toMap(SysDictData::getDictLabel, SysDictData::getDictValue));
-        Map<String, String> shoeUpperLiningMaterialMap = attrList.stream().filter(x -> Objects.equals(x.getDictType(), DICT_TYPE_SHOE_UPPER_LINING_MATERIAL))
                 .collect(Collectors.toMap(SysDictData::getDictLabel, SysDictData::getDictValue));
         List<StoreProductCategoryAttribute> prodCateAttrList = new ArrayList<>();
         List<StoreProductService> prodSvcList = new ArrayList<>();
         Map<String, String> newShaftMaterialMap = new HashMap<>();
-        Map<String, String> newShoeUpperLiningMaterialMap = new HashMap<>();
         storeProdList.forEach(storeProd -> {
             TyProdImportVO tyProdVO = Optional.ofNullable(tyProdMap.get(storeProd.getProdArtNum()))
                     .orElseThrow(() -> new ServiceException("TY独有商品，未找到TY对应的商品!", HttpStatus.ERROR));
             // 鞋面材质 为数据库不存在的属性，则新增
             if (StringUtils.isNotBlank(tyProdVO.getShaftMaterial()) && !shaftMaterialMap.containsKey(tyProdVO.getShaftMaterial())) {
                 newShaftMaterialMap.put(tyProdVO.getShaftMaterial(), tyProdVO.getShaftMaterial());
-
             }
-            if (StringUtils.isNotBlank(tyProdVO.getShoeUpperLiningMaterial()) && !shoeUpperLiningMaterialMap.containsKey(tyProdVO.getShoeUpperLiningMaterial())) {
-                newShoeUpperLiningMaterialMap.put(tyProdVO.getShoeUpperLiningMaterial(), tyProdVO.getShoeUpperLiningMaterial());
-
-            }
-
-
-
-
-
-
-
-
-
-
-
-            /*
-
-
-
-            // 只设置鞋面材质 和 鞋面内里材质
-            prodCateAttrList.add(new StoreProductCategoryAttribute().setStoreId(storeProd.getStoreId()).setStoreProdId(storeProd.getId())
-                    .setShaftMaterial(tyProdVO.getShaftMaterial()).setShoeUpperLiningMaterial(tyProdVO.getShoeUpperLiningMaterial()));
-
-
-
-
-            */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            // 只设置鞋面材质
+            prodCateAttrList.add(new StoreProductCategoryAttribute().setStoreId(storeProd.getStoreId())
+                    .setStoreProdId(storeProd.getId()).setShaftMaterial(tyProdVO.getShaftMaterial()));
             // 初始化商品服务承诺
             prodSvcList.add(new StoreProductService().setStoreProdId(storeProd.getId()).setCustomRefund("0")
                     .setThirtyDayRefund("0").setOneBatchSale("1").setRefundWithinThreeDay("0"));
         });
 
-        List<SysDictData> newDictDataList = new ArrayList<>();
         if (MapUtils.isNotEmpty(newShaftMaterialMap)) {
+            List<SysDictData> newDictDataList = new ArrayList<>();
             newShaftMaterialMap.forEach((k, v) -> newDictDataList.add(new SysDictData().setDictLabel(k).setDictValue(k).setDictType(DICT_TYPE_SHAFT_MATERIAL).setStatus("0").setDictSort(100L)));
-        }
-        if (MapUtils.isNotEmpty(newShoeUpperLiningMaterialMap)) {
-            newShoeUpperLiningMaterialMap.forEach((k, v) -> newDictDataList.add(new SysDictData().setDictLabel(k).setDictValue(k)
-                    .setDictType(DICT_TYPE_SHOE_UPPER_LINING_MATERIAL).setStatus("0").setDictSort(100L)));
-        }
-        if (CollectionUtils.isNotEmpty(newDictDataList)) {
             this.dictDataMapper.insert(newDictDataList);
         }
+
         this.prodCateAttrMapper.insert(prodCateAttrList);
         this.prodSvcMapper.insert(prodSvcList);
         return R.ok();
@@ -244,7 +195,7 @@ public class TYOtherBizAfterController extends BaseController {
         // 从数据库查询最新数据
         List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getStoreId, storeId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)
-                // TODO 特殊处理，只保留GT单独处理的部分  important important important
+                // TODO 特殊处理，只保留TY单独处理的部分  important important important
                 .in(StoreProduct::getProdArtNum, tyAfterArtNumGroupMap.keySet()));
         List<StoreColor> storeColorList = this.storeColorMapper.selectList(new LambdaQueryWrapper<StoreColor>()
                 .eq(StoreColor::getStoreId, storeId).eq(StoreColor::getDelFlag, Constants.UNDELETED));
@@ -254,9 +205,18 @@ public class TYOtherBizAfterController extends BaseController {
         List<TyProdImportVO> tyProdList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_TY_PROD_KEY + userId), new ArrayList<>());
         Map<String, List<TyProdImportVO>> tyProdSkuMap = tyProdList.stream().collect(Collectors.groupingBy(TyProdImportVO::getProdArtNum));
+
+        // 找到枚举的 鞋面内里材质
+        List<SysDictData> shoeUpperLiningMaterialList = Optional.ofNullable(this.dictDataMapper.selectList(new LambdaQueryWrapper<SysDictData>()
+                        .eq(SysDictData::getDictType, DICT_TYPE_SHOE_UPPER_LINING_MATERIAL).eq(SysDictData::getDelFlag, Constants.UNDELETED)))
+                .orElseThrow(() -> new ServiceException("系统枚举 鞋面内里材质 不存在!", HttpStatus.ERROR));
+        Map<String, String> shoeUpperLiningMaterialMap = shoeUpperLiningMaterialList.stream().collect(Collectors.toMap(SysDictData::getDictLabel, SysDictData::getDictValue));
+
         // 商品所有颜色 尺码 颜色库存初始化
         List<StoreProductColor> prodColorList = new ArrayList<>();
         List<StoreProductColorSize> prodColorSizeList = new ArrayList<>();
+        List<SysDictData> newDictDataList = new ArrayList<>();
+        Map<String, String> newShoeUpperLiningMaterialMap = new HashMap<>();
         storeProdList.forEach(storeProd -> {
             Optional.ofNullable(tyAfterArtNumGroupMap.get(storeProd.getProdArtNum()))
                     .orElseThrow(() -> new ServiceException("没有TY[独有]商品货号!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
@@ -267,6 +227,10 @@ public class TYOtherBizAfterController extends BaseController {
             tyMatchColorList.forEach(tyProdColor -> {
                 StoreColor storeColor = Optional.ofNullable(storeColorMap.get(tyProdColor.getColorName()))
                         .orElseThrow(() -> new ServiceException("没有TY[独有]商品颜色!" + storeProd.getProdArtNum(), HttpStatus.ERROR));
+                // 处理内里材质，若步橘没有的，则需要新增
+                if (StringUtils.isNotBlank(tyProdColor.getShoeUpperLiningMaterial()) && !shoeUpperLiningMaterialMap.containsKey(tyProdColor.getShoeUpperLiningMaterial())) {
+                    newShoeUpperLiningMaterialMap.put(tyProdColor.getShoeUpperLiningMaterial(), tyProdColor.getShoeUpperLiningMaterial());
+                }
                 // 该商品的颜色
                 prodColorList.add(new StoreProductColor().setStoreId(storeProd.getStoreId()).setStoreProdId(storeProd.getId()).setOrderNum(orderNum.addAndGet(1))
                         .setColorName(storeColor.getColorName()).setStoreColorId(storeColor.getId()).setProdStatus(EProductStatus.ON_SALE.getValue()));
@@ -285,6 +249,14 @@ public class TYOtherBizAfterController extends BaseController {
                 }
             });
         });
+
+        // 处理新增的 内里材质 枚举
+        if (MapUtils.isNotEmpty(newShoeUpperLiningMaterialMap)) {
+            newShoeUpperLiningMaterialMap.forEach((k, v) -> newDictDataList.add(new SysDictData().setDictLabel(k).setDictValue(k)
+                    .setDictType(DICT_TYPE_SHOE_UPPER_LINING_MATERIAL).setStatus("0").setDictSort(100L)));
+            this.dictDataMapper.insert(newDictDataList);
+        }
+
         // 插入商品颜色及颜色对应的尺码，档口服务承诺
         this.prodColorMapper.insert(prodColorList);
         // 按照货号颜色尺码升序排列

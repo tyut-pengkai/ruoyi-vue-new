@@ -69,7 +69,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             sp.produce_price AS producePrice,
             spc.order_num AS orderNum,
             spca.shaft_material,
-            spca.shoe_upper_lining_material
+            spc.shoe_upper_lining_material
         FROM
             store_product_color spc
             JOIN store_product sp ON spc.store_prod_id = sp.id
@@ -88,6 +88,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             spc.store_color_id,
             sp.prod_art_num,
             spc.color_name,
+            spc.shoe_upper_lining_material,
             (SELECT MIN(spcs.price) FROM store_product_color_size spcs
                 WHERE spcs.store_prod_id = spc.store_prod_id AND spcs.store_color_id = spc.store_color_id AND spcs.del_flag = 0) AS price,
             spc.order_num

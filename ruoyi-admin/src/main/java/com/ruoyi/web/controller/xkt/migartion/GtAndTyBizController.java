@@ -9,17 +9,18 @@ import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.domain.entity.SysDictData;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
-import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.framework.es.EsClientWrapper;
 import com.ruoyi.framework.notice.fs.FsNotice;
-import com.ruoyi.web.controller.xkt.migartion.vo.gtAndTy.GtAndTYCompareDownloadVO;
-import com.ruoyi.web.controller.xkt.migartion.vo.gtAndTy.GtAndTYInitVO;
+import com.ruoyi.system.mapper.SysDictDataMapper;
 import com.ruoyi.web.controller.xkt.migartion.vo.gt.GtCateVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.gt.GtProdSkuVO;
+import com.ruoyi.web.controller.xkt.migartion.vo.gtAndTy.GtAndTYCompareDownloadVO;
+import com.ruoyi.web.controller.xkt.migartion.vo.gtAndTy.GtAndTYInitVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.ty.TyCusDiscImportVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.ty.TyCusImportVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.ty.TyProdImportVO;
@@ -35,6 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -76,6 +78,10 @@ public class GtAndTyBizController extends BaseController {
     final SysProductCategoryMapper prodCateMapper;
     final EsClientWrapper esClientWrapper;
     final FsNotice fsNotice;
+    final SysDictDataMapper dictDataMapper;
+
+    // 系统枚举 鞋面内里材质
+    private static final String DICT_TYPE_SHOE_UPPER_LINING_MATERIAL = "shoe_upper_lining_material";
 
     /**
      * step1
@@ -348,9 +354,17 @@ public class GtAndTyBizController extends BaseController {
         // gt按照货号分组
         Map<String, List<GtProdSkuVO>> gtSaleGroupMap = gtSaleBasicList.stream().collect(Collectors.groupingBy(GtProdSkuVO::getArticle_number));
 
+        // 找到枚举的 鞋面内里材质
+        List<SysDictData> shoeUpperLiningMaterialList = Optional.ofNullable(this.dictDataMapper.selectList(new LambdaQueryWrapper<SysDictData>()
+                        .eq(SysDictData::getDictType, DICT_TYPE_SHOE_UPPER_LINING_MATERIAL).eq(SysDictData::getDelFlag, Constants.UNDELETED)))
+                .orElseThrow(() -> new ServiceException("系统枚举 鞋面内里材质 不存在!", HttpStatus.ERROR));
+        Map<String, String> shoeUpperLiningMaterialMap = shoeUpperLiningMaterialList.stream().collect(Collectors.toMap(SysDictData::getDictLabel, SysDictData::getDictValue));
+
         // 商品所有颜色 尺码 颜色库存初始化
         List<StoreProductColor> prodColorList = new ArrayList<>();
         List<StoreProductColorSize> prodColorSizeList = new ArrayList<>();
+        List<SysDictData> newDictDataList = new ArrayList<>();
+        Map<String, String> newShoeUpperLiningMaterialMap = new HashMap<>();
         storeProdList.forEach(storeProd -> {
             // 取clearArtNo
             String clearArtNo = this.extractCoreArticleNumber(storeProd.getProdArtNum());
@@ -366,9 +380,14 @@ public class GtAndTyBizController extends BaseController {
                 for (TyProdImportVO tyProdImportVO : tyMatchSkuList) {
                     StoreColor storeColor = Optional.ofNullable(storeColorMap.get(tyProdImportVO.getColorName()))
                             .orElseThrow(() -> new ServiceException("没有TY商品颜色!" + tyArtNo, HttpStatus.ERROR));
+                    // 处理内里材质，若步橘没有的，则需要新增
+                    if (StringUtils.isNotBlank(tyProdImportVO.getShoeUpperLiningMaterial()) && !shoeUpperLiningMaterialMap.containsKey(tyProdImportVO.getShoeUpperLiningMaterial())) {
+                        newShoeUpperLiningMaterialMap.put(tyProdImportVO.getShoeUpperLiningMaterial(), tyProdImportVO.getShoeUpperLiningMaterial());
+                    }
                     // 该商品的颜色
                     prodColorList.add(new StoreProductColor().setStoreId(storeProd.getStoreId()).setStoreProdId(storeProd.getId()).setOrderNum(orderNum.addAndGet(1))
-                            .setColorName(storeColor.getColorName()).setStoreColorId(storeColor.getId()).setProdStatus(EProductStatus.ON_SALE.getValue()));
+                            .setShoeUpperLiningMaterial(tyProdImportVO.getShoeUpperLiningMaterial()).setColorName(storeColor.getColorName())
+                            .setStoreColorId(storeColor.getId()).setProdStatus(EProductStatus.ON_SALE.getValue()));
                     // 该颜色所有的尺码
                     for (int j = 0; j < Constants.SIZE_LIST.size(); j++) {
                         // TY系统条码前缀
@@ -382,6 +401,14 @@ public class GtAndTyBizController extends BaseController {
                 }
             });
         });
+
+        // 处理新增的 内里材质 枚举
+        if (MapUtils.isNotEmpty(newShoeUpperLiningMaterialMap)) {
+            newShoeUpperLiningMaterialMap.forEach((k, v) -> newDictDataList.add(new SysDictData().setDictLabel(k).setDictValue(k)
+                    .setDictType(DICT_TYPE_SHOE_UPPER_LINING_MATERIAL).setStatus("0").setDictSort(100L)));
+            this.dictDataMapper.insert(newDictDataList);
+        }
+
         // 插入商品颜色及颜色对应的尺码，档口服务承诺
         this.prodColorMapper.insert(prodColorList);
         prodColorSizeList.sort(Comparator.comparing(StoreProductColorSize::getStoreProdId).thenComparing(StoreProductColorSize::getSize));
@@ -699,33 +726,8 @@ public class GtAndTyBizController extends BaseController {
         if (attrMap.containsKey(Constants.SHAFT_MATERIAL_NAME)) {
             // 先看靴筒面材质，为空则找帮面材质
             String shaftMaterialAttr = attrMap.get(Constants.SHAFT_MATERIAL_NAME);
-            prodAttr.setShaftMaterial(org.apache.commons.lang3.StringUtils.isEmpty(shaftMaterialAttr) ? attrMap.get(Constants.UPPER_MATERIAL_NAME) : shaftMaterialAttr);
+            prodAttr.setShaftMaterial(StringUtils.isEmpty(shaftMaterialAttr) ? attrMap.get(Constants.UPPER_MATERIAL_NAME) : shaftMaterialAttr);
         }
-
-
-
-     /*
-        // 4. 鞋面内里材质
-        if (attrMap.containsKey(Constants.SHOE_UPPER_LINING_MATERIAL_NAME)) {
-            // 先找鞋面内里材质，为空 则 再找 内里材质，为空则再找 里料材质
-            String shoeUpperLiningMaterialAttr = attrMap.get(Constants.SHOE_UPPER_LINING_MATERIAL_NAME);
-            if (org.apache.commons.lang3.StringUtils.isEmpty(shoeUpperLiningMaterialAttr)) {
-                shoeUpperLiningMaterialAttr = attrMap.get(Constants.INNER_MATERIAL);
-                if (org.apache.commons.lang3.StringUtils.isEmpty(shoeUpperLiningMaterialAttr)) {
-                    shoeUpperLiningMaterialAttr = attrMap.get(Constants.OUTER_MATERIAL);
-                }
-            }
-            prodAttr.setShoeUpperLiningMaterial(shoeUpperLiningMaterialAttr);
-        }*/
-
-
-
-
-
-
-
-
-
         // 5. 靴款品名
         if (attrMap.containsKey(Constants.SHOE_STYLE_NAME_NAME)) {
             prodAttr.setShoeStyleName(attrMap.get(Constants.SHOE_STYLE_NAME_NAME));

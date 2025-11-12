@@ -17,6 +17,8 @@ public class StoreProdSizeDTO {
     private Long storeColorId;
     @ApiModelProperty(value = "颜色名称")
     private String colorName;
+    @ApiModelProperty(value = "内里材质")
+    private String shoeUpperLiningMaterial;
     @ApiModelProperty(value = "商品尺码")
     private Integer size;
     @ApiModelProperty(value = "是否是标准尺码")
