@@ -234,7 +234,8 @@ public class TYOtherBizAfterController extends BaseController {
                 }
                 // 该商品的颜色
                 prodColorList.add(new StoreProductColor().setStoreId(storeProd.getStoreId()).setStoreProdId(storeProd.getId()).setOrderNum(orderNum.addAndGet(1))
-                        .setColorName(storeColor.getColorName()).setStoreColorId(storeColor.getId()).setProdStatus(EProductStatus.ON_SALE.getValue()));
+                        .setColorName(storeColor.getColorName()).setShoeUpperLiningMaterial(tyProdColor.getShoeUpperLiningMaterial())
+                        .setStoreColorId(storeColor.getId()).setProdStatus(EProductStatus.ON_SALE.getValue()));
                 // 该颜色最低价格
                 BigDecimal minPrice = ObjectUtils.defaultIfNull(tyProdColor.getPrice(), BigDecimal.ZERO);
                 // 该颜色所有的尺码  默认34-40为标准尺码
