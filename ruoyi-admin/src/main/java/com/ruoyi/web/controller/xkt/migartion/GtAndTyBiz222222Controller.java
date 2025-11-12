@@ -62,7 +62,7 @@ import static com.ruoyi.common.constant.Constants.WEIGHT_DEFAULT_ZERO;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/rest/v1/gt-ty/t2")
-public class GtAndTyBiz2Controller extends BaseController {
+public class GtAndTyBiz222222Controller extends BaseController {
 
     final RedisCache redisCache;
     final StoreProductColorMapper prodColorMapper;
