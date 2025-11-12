@@ -134,9 +134,10 @@ public class FhbOtherBizAfterController extends BaseController {
         final Date voucherDate = java.sql.Date.valueOf(LocalDate.now());
         // 默认为 单鞋下 弹力靴/袜靴 分类
         final Long prodCateId = 13L;
+        final String prodCateName = "弹力靴/袜靴";
         fhbAfterArtNumGroupMap.forEach((fhbArtNo, matchList) -> {
             // 初始化档口商品 默认为私款，只能打印条码出库等，不可在平台展示
-            StoreProduct storeProd = new StoreProduct().setStoreId(storeId).setProdCateId(prodCateId).setPrivateItem(1)
+            StoreProduct storeProd = new StoreProduct().setStoreId(storeId).setProdCateId(prodCateId).setProdCateName(prodCateName).setPrivateItem(1)
                     .setProdArtNum(fhbArtNo).setProdTitle("上架大卖").setListingWay(ListingType.RIGHT_NOW.getValue())
                     .setVoucherDate(voucherDate).setProdStatus(EProductStatus.ON_SALE.getValue()).setRecommendWeight(0L).setSaleWeight(0L).setPopularityWeight(0L);
             storeProdList.add(storeProd);

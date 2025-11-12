@@ -267,12 +267,12 @@ public class GtAndFhbBizController extends BaseController {
                 .getCacheObject(CacheConstants.MIGRATION_GT_SALE_CATE_KEY + initVO.getUserId()), new ArrayList<>());
         List<SysProductCategory> prodCateList = this.prodCateMapper.selectList(new LambdaQueryWrapper<SysProductCategory>()
                 .eq(SysProductCategory::getDelFlag, Constants.UNDELETED));
-        Map<String, Long> dbCateNameMap = prodCateList.stream().collect(Collectors.toMap(SysProductCategory::getName, SysProductCategory::getId));
+        Map<String, SysProductCategory> dbCateNameMap = prodCateList.stream().collect(Collectors.toMap(SysProductCategory::getName, x -> x));
         // GT商品分类和步橘分类映射
-        Map<Integer, Long> cateRelationMap = new HashMap<>();
+        Map<Integer, SysProductCategory> cateRelationMap = new HashMap<>();
         cacheList.forEach(gtCate -> {
-            final Long cateId = Optional.ofNullable(dbCateNameMap.get(gtCate.getName())).orElseThrow(() -> new ServiceException("GT分类不存在!", HttpStatus.ERROR));
-            cateRelationMap.put(gtCate.getId(), cateId);
+            final SysProductCategory sysCate = Optional.ofNullable(dbCateNameMap.get(gtCate.getName())).orElseThrow(() -> new ServiceException("GT分类不存在!", HttpStatus.ERROR));
+            cateRelationMap.put(gtCate.getId(), sysCate);
         });
 
         // 清洗后，相同货号映射
@@ -287,8 +287,9 @@ public class GtAndFhbBizController extends BaseController {
         commonArtNos.forEach(cleanArtNo -> {
             // 获取GT匹配的商品中的第一个商品
             List<GtProdSkuVO> gtMatchSkuList = this.getGtFirstSku(multiSaleSameGoMap, gtSaleGroupMap, cleanArtNo);
+            final SysProductCategory sysCate = Optional.ofNullable(cateRelationMap.get(gtMatchSkuList.get(0).getCategory_nid())).orElseThrow(() -> new ServiceException("GT分类不存在!", HttpStatus.ERROR));
             // 初始化档口商品
-            StoreProduct storeProd = new StoreProduct().setStoreId(initVO.getStoreId()).setProdCateId(cateRelationMap.get(gtMatchSkuList.get(0).getCategory_nid())).setPrivateItem(0)
+            StoreProduct storeProd = new StoreProduct().setStoreId(initVO.getStoreId()).setProdCateId(sysCate.getId()).setProdCateName(sysCate.getName()).setPrivateItem(0)
                     .setProdArtNum(gtMatchSkuList.get(0).getArticle_number()).setProdTitle(gtMatchSkuList.get(0).getCharacters()).setListingWay(ListingType.RIGHT_NOW.getValue())
                     .setVoucherDate(voucherDate).setProdStatus(EProductStatus.ON_SALE.getValue()).setRecommendWeight(0L).setSaleWeight(0L).setPopularityWeight(0L);
             // 提前设置档口商品的类目属性
@@ -334,13 +335,6 @@ public class GtAndFhbBizController extends BaseController {
         List<StoreColor> storeColorList = this.storeColorMapper.selectList(new LambdaQueryWrapper<StoreColor>()
                 .eq(StoreColor::getStoreId, initVO.getStoreId()).eq(StoreColor::getDelFlag, Constants.UNDELETED));
         Map<String, StoreColor> storeColorMap = storeColorList.stream().collect(Collectors.toMap(StoreColor::getColorName, x -> x, (v1, v2) -> v2));
-
-
-        // TODO 临时处理，10-11之后的数据
-        // TODO 临时处理，10-11之后的数据
-        // TODO 临时处理，10-11之后的数据
-        storeProdList = storeProdList.stream().filter(x -> x.getCreateTime().after(DateUtils.parseDate("2025-10-11 00:00:00"))).collect(Collectors.toList());
-
 
         Map<String, List<String>> multiSaleSameGoMap = new HashMap<>();
         Map<String, List<String>> multiOffSaleSameGoMap = new HashMap<>();
@@ -471,15 +465,6 @@ public class GtAndFhbBizController extends BaseController {
         List<StoreCustomer> storeCusList = this.storeCusMapper.selectList(new LambdaQueryWrapper<StoreCustomer>()
                 .eq(StoreCustomer::getStoreId, initVO.getStoreId()).eq(StoreCustomer::getDelFlag, Constants.UNDELETED));
 
-
-        // TODO 临时处理，10-11之后的数据
-        // TODO 临时处理，10-11之后的数据
-        // TODO 临时处理，10-11之后的数据
-        storeProdList = storeProdList.stream().filter(x -> x.getCreateTime().after(DateUtils.parseDate("2025-10-11 00:00:00"))).collect(Collectors.toList());
-        storeCusList = storeCusList.stream().filter(x -> x.getCreateTime().after(DateUtils.parseDate("2025-10-11 00:00:00"))).collect(Collectors.toList());
-        prodColorList = prodColorList.stream().filter(x -> x.getCreateTime().after(DateUtils.parseDate("2025-10-11 00:00:00"))).collect(Collectors.toList());
-
-
         List<FhbProdVO.SMIVO> cacheList = ObjectUtils.defaultIfNull(redisCache
                 .getCacheObject(CacheConstants.MIGRATION_SUPPLIER_PROD_KEY + initVO.getSupplierId()), new ArrayList<>());
         if (CollectionUtils.isEmpty(cacheList)) {
@@ -563,13 +548,6 @@ public class GtAndFhbBizController extends BaseController {
         // 将公共的商品同步到ES
         List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getDelFlag, Constants.UNDELETED).eq(StoreProduct::getStoreId, storeId));
-
-        // TODO 临时处理，10-11之后的数据
-        // TODO 临时处理，10-11之后的数据
-        // TODO 临时处理，10-11之后的数据
-        storeProdList = storeProdList.stream().filter(x -> x.getCreateTime().after(DateUtils.parseDate("2025-10-11 00:00:00"))).collect(Collectors.toList());
-
-
         if (CollectionUtils.isEmpty(storeProdList)) {
             return R.fail();
         }
@@ -757,12 +735,9 @@ public class GtAndFhbBizController extends BaseController {
         if (attrMap.containsKey(Constants.SHAFT_LINING_MATERIAL_NAME)) {
             prodAttr.setShaftLiningMaterial(attrMap.get(Constants.SHAFT_LINING_MATERIAL_NAME));
         }
-        // 3. 鞋面材质（靴筒面材质）
-        if (attrMap.containsKey(Constants.SHAFT_MATERIAL_NAME)) {
-            // 先看靴筒面材质，为空则找帮面材质
-            String shaftMaterialAttr = attrMap.get(Constants.SHAFT_MATERIAL_NAME);
-            prodAttr.setShaftMaterial(org.apache.commons.lang3.StringUtils.isEmpty(shaftMaterialAttr) ? attrMap.get(Constants.UPPER_MATERIAL_NAME) : shaftMaterialAttr);
-        }
+        // 3.  鞋面材质（靴筒面材质）找不到就找帮面材质
+        prodAttr.setShaftMaterial(attrMap.containsKey(Constants.SHAFT_MATERIAL_NAME)
+                ? attrMap.get(Constants.SHAFT_MATERIAL_NAME) : attrMap.get(Constants.UPPER_MATERIAL_NAME));
         // 5. 靴款品名
         if (attrMap.containsKey(Constants.SHOE_STYLE_NAME_NAME)) {
             prodAttr.setShoeStyleName(attrMap.get(Constants.SHOE_STYLE_NAME_NAME));

@@ -216,12 +216,12 @@ public class GtAndTyBiz2Controller extends BaseController {
                 .getCacheObject(CacheConstants.MIGRATION_GT_SALE_CATE_KEY + initVO.getUserId()), new ArrayList<>());
         List<SysProductCategory> prodCateList = this.prodCateMapper.selectList(new LambdaQueryWrapper<SysProductCategory>()
                 .eq(SysProductCategory::getDelFlag, Constants.UNDELETED));
-        Map<String, Long> dbCateNameMap = prodCateList.stream().collect(Collectors.toMap(SysProductCategory::getName, SysProductCategory::getId));
+        Map<String, SysProductCategory> dbCateNameMap = prodCateList.stream().collect(Collectors.toMap(SysProductCategory::getName, x -> x));
         // GT商品分类和步橘分类映射
-        Map<Integer, Long> cateRelationMap = new HashMap<>();
+        Map<Integer, SysProductCategory> cateRelationMap = new HashMap<>();
         cacheList.forEach(gtCate -> {
-            final Long cateId = Optional.ofNullable(dbCateNameMap.get(gtCate.getName())).orElseThrow(() -> new ServiceException("GT分类不存在!", HttpStatus.ERROR));
-            cateRelationMap.put(gtCate.getId(), cateId);
+            final SysProductCategory sysCate = Optional.ofNullable(dbCateNameMap.get(gtCate.getName())).orElseThrow(() -> new ServiceException("GT分类不存在!", HttpStatus.ERROR));
+            cateRelationMap.put(gtCate.getId(), sysCate);
         });
 
         // 当天
@@ -235,8 +235,9 @@ public class GtAndTyBiz2Controller extends BaseController {
             if (CollectionUtils.isEmpty(initVO.getExcludeArtNoList()) || !initVO.getExcludeArtNoList().contains(gtArtNo)) {
                 // 获取GT匹配的商品中的第一个商品
                 List<GtProdSkuVO> gtMatchSkuList = gtSaleGroupMap.get(gtArtNo);
+                final SysProductCategory sysCate = Optional.ofNullable(cateRelationMap.get(gtMatchSkuList.get(0).getCategory_nid())).orElseThrow(() -> new ServiceException("GT分类不存在!", HttpStatus.ERROR));
                 // 初始化档口商品
-                StoreProduct storeProd = new StoreProduct().setStoreId(initVO.getStoreId()).setProdCateId(cateRelationMap.get(gtMatchSkuList.get(0).getCategory_nid()))
+                StoreProduct storeProd = new StoreProduct().setStoreId(initVO.getStoreId()).setProdCateId(sysCate.getId()).setProdCateName(sysCate.getName())
                         .setPrivateItem(0).setProdArtNum(gtMatchSkuList.get(0).getArticle_number()).setProdTitle(gtMatchSkuList.get(0).getCharacters()).setListingWay(ListingType.RIGHT_NOW.getValue())
                         .setVoucherDate(voucherDate).setProdStatus(EProductStatus.ON_SALE.getValue()).setRecommendWeight(0L).setSaleWeight(0L).setPopularityWeight(0L);
                 // 提前设置档口商品的类目属性
@@ -677,12 +678,9 @@ public class GtAndTyBiz2Controller extends BaseController {
         if (attrMap.containsKey(Constants.SHAFT_LINING_MATERIAL_NAME)) {
             prodAttr.setShaftLiningMaterial(attrMap.get(Constants.SHAFT_LINING_MATERIAL_NAME));
         }
-        // 3. 鞋面材质（靴筒面材质）
-        if (attrMap.containsKey(Constants.SHAFT_MATERIAL_NAME)) {
-            // 先看靴筒面材质，为空则找帮面材质
-            String shaftMaterialAttr = attrMap.get(Constants.SHAFT_MATERIAL_NAME);
-            prodAttr.setShaftMaterial(StringUtils.isEmpty(shaftMaterialAttr) ? attrMap.get(Constants.UPPER_MATERIAL_NAME) : shaftMaterialAttr);
-        }
+        // 3.  鞋面材质（靴筒面材质）找不到就找帮面材质
+        prodAttr.setShaftMaterial(attrMap.containsKey(Constants.SHAFT_MATERIAL_NAME)
+                ? attrMap.get(Constants.SHAFT_MATERIAL_NAME) : attrMap.get(Constants.UPPER_MATERIAL_NAME));
         // 5. 靴款品名
         if (attrMap.containsKey(Constants.SHOE_STYLE_NAME_NAME)) {
             prodAttr.setShoeStyleName(attrMap.get(Constants.SHOE_STYLE_NAME_NAME));

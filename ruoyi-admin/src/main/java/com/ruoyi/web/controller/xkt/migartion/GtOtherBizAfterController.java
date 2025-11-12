@@ -109,12 +109,12 @@ public class GtOtherBizAfterController extends BaseController {
                 .getCacheObject(CacheConstants.MIGRATION_GT_SALE_CATE_KEY + userId), new ArrayList<>());
         List<SysProductCategory> prodCateList = this.prodCateMapper.selectList(new LambdaQueryWrapper<SysProductCategory>()
                 .eq(SysProductCategory::getDelFlag, Constants.UNDELETED));
-        Map<String, Long> dbCateNameMap = prodCateList.stream().collect(Collectors.toMap(SysProductCategory::getName, SysProductCategory::getId));
+        Map<String, SysProductCategory> dbCateNameMap = prodCateList.stream().collect(Collectors.toMap(SysProductCategory::getName, x -> x));
         // GT商品分类和步橘分类映射
-        Map<Integer, Long> cateRelationMap = new HashMap<>();
+        Map<Integer, SysProductCategory> cateRelationMap = new HashMap<>();
         cacheList.forEach(gtCate -> {
-            final Long cateId = Optional.ofNullable(dbCateNameMap.get(gtCate.getName())).orElseThrow(() -> new ServiceException("GT分类不存在!", HttpStatus.ERROR));
-            cateRelationMap.put(gtCate.getId(), cateId);
+            final SysProductCategory sysCate = Optional.ofNullable(dbCateNameMap.get(gtCate.getName())).orElseThrow(() -> new ServiceException("GT分类不存在!", HttpStatus.ERROR));
+            cateRelationMap.put(gtCate.getId(), sysCate);
         });
         // 步骤2: 新增商品
         List<StoreProduct> storeProdList = new ArrayList<>();
@@ -124,8 +124,9 @@ public class GtOtherBizAfterController extends BaseController {
         final Date voucherDate = java.sql.Date.valueOf(LocalDate.now());
         Map<String, GtProdSkuVO> gtProdMap = gtOnSaleCacheList.stream().collect(Collectors.toMap(GtProdSkuVO::getArticle_number, x -> x, (s1, s2) -> s2));
         gtProdMap.forEach((artNum, gtProdSkuVO) -> {
+            final SysProductCategory sysCate = Optional.ofNullable(cateRelationMap.get(gtProdSkuVO.getCategory_nid())).orElseThrow(() -> new ServiceException("GT分类不存在!", HttpStatus.ERROR));
             // 初始化档口商品
-            StoreProduct storeProd = new StoreProduct().setStoreId(storeId).setProdCateId(cateRelationMap.get(gtProdSkuVO.getCategory_nid())).setPrivateItem(0)
+            StoreProduct storeProd = new StoreProduct().setStoreId(storeId).setProdCateId(sysCate.getId()).setProdCateName(sysCate.getName()).setPrivateItem(0)
                     .setProdArtNum(gtProdSkuVO.getArticle_number()).setProdTitle(gtProdSkuVO.getCharacters()).setListingWay(ListingType.RIGHT_NOW.getValue())
                     .setVoucherDate(voucherDate).setProdStatus(EProductStatus.ON_SALE.getValue()).setRecommendWeight(0L).setSaleWeight(0L).setPopularityWeight(0L);
             // 提前设置档口商品的类目属性
@@ -395,12 +396,9 @@ public class GtOtherBizAfterController extends BaseController {
         if (attrMap.containsKey(Constants.SHAFT_LINING_MATERIAL_NAME)) {
             prodAttr.setShaftLiningMaterial(attrMap.get(Constants.SHAFT_LINING_MATERIAL_NAME));
         }
-        // 3. 鞋面材质（靴筒面材质）
-        if (attrMap.containsKey(Constants.SHAFT_MATERIAL_NAME)) {
-            // 先看靴筒面材质，为空则找帮面材质
-            String shaftMaterialAttr = attrMap.get(Constants.SHAFT_MATERIAL_NAME);
-            prodAttr.setShaftMaterial(org.apache.commons.lang3.StringUtils.isEmpty(shaftMaterialAttr) ? attrMap.get(Constants.UPPER_MATERIAL_NAME) : shaftMaterialAttr);
-        }
+        // 3.  鞋面材质（靴筒面材质）找不到就找帮面材质
+        prodAttr.setShaftMaterial(attrMap.containsKey(Constants.SHAFT_MATERIAL_NAME)
+                ? attrMap.get(Constants.SHAFT_MATERIAL_NAME) : attrMap.get(Constants.UPPER_MATERIAL_NAME));
         // 5. 靴款品名
         if (attrMap.containsKey(Constants.SHOE_STYLE_NAME_NAME)) {
             prodAttr.setShoeStyleName(attrMap.get(Constants.SHOE_STYLE_NAME_NAME));
