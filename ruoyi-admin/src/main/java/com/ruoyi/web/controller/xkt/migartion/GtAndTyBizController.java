@@ -464,8 +464,21 @@ public class GtAndTyBizController extends BaseController {
         if (CollectionUtils.isEmpty(tyCusDiscCacheList)) {
             throw new ServiceException("ty供应商客户优惠列表为空!" + initVO.getUserId(), HttpStatus.ERROR);
         }
-        // 增加一重保险，客户优惠必须大于0；且必须滤重
-        tyCusDiscCacheList = tyCusDiscCacheList.stream().filter(x -> x.getDiscount() > 0).distinct().collect(Collectors.toList());
+        Map<String, List<TyCusDiscImportVO>> distinctDiscMap = tyCusDiscCacheList.stream()
+                // 第一重保险：客户优惠必须大于0；且必须滤重
+                .filter(x -> x.getDiscount() > 0).distinct().collect(Collectors
+                        .groupingBy(x -> x.getCusName() + x.getProdArtNum() + ":" + x.getColorName()));
+        List<TyCusDiscImportVO> tyCusDiscDistinctCacheList = new ArrayList<>();
+        distinctDiscMap.forEach((k, multiDiscList) -> {
+            // 存在这种错误数据，同一客户：相同颜色及货号 优惠相同 但初始价格及优惠价格不一样 比如：228 213；218 203 但优惠都是15。所以统一处理，取最大优惠
+            if (multiDiscList.size() > 1) {
+                // 获取最大优惠
+                TyCusDiscImportVO maxDisc = multiDiscList.stream().max(Comparator.comparingInt(TyCusDiscImportVO::getDiscount)).get();
+                tyCusDiscDistinctCacheList.add(maxDisc);
+            } else {
+                tyCusDiscDistinctCacheList.addAll(multiDiscList);
+            }
+        });
 
         // 从redis中获取已存在的商品库存数据
         List<TyProdStockVO> tyStockList = redisCache.getCacheObject(CacheConstants.MIGRATION_TY_PROD_STOCK_KEY + initVO.getUserId());
@@ -476,7 +489,7 @@ public class GtAndTyBizController extends BaseController {
         Map<String, Map<String, TyProdStockVO>> tyProdStockMap = tyStockList.stream().collect(Collectors
                 .groupingBy(TyProdStockVO::getProdArtNum, Collectors.toMap(TyProdStockVO::getColorName, x -> x)));
         // TY 货号颜色优惠对应关系
-        Map<String, Map<String, List<TyCusDiscImportVO>>> tyCusDiscGroupMap = tyCusDiscCacheList.stream().collect(Collectors
+        Map<String, Map<String, List<TyCusDiscImportVO>>> tyCusDiscGroupMap = tyCusDiscDistinctCacheList.stream().collect(Collectors
                 .groupingBy(TyCusDiscImportVO::getProdArtNum, Collectors.groupingBy(TyCusDiscImportVO::getColorName)));
         // 步橘系统商品所有颜色maps
         Map<Long, Map<String, StoreProductColor>> prodColorGroupMap = prodColorList.stream().collect(Collectors

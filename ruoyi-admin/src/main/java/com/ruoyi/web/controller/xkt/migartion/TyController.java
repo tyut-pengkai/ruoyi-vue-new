@@ -147,7 +147,6 @@ public class TyController extends BaseController {
         cacheList = Optional.ofNullable(cacheList).orElse(new ArrayList<>());
         // 前置校验
         this.cusDiscPrefixFilter(userId, cusName, cacheList);
-
         // 获取GT所有下架的存货，将该部分存货排除
         // 先从redis中获取列表数据
         List<GtProdSkuVO> gtOffSaleList = ObjectUtils.defaultIfNull(redisCache
@@ -182,12 +181,21 @@ public class TyController extends BaseController {
                         importList.add(x);
                     }
                 });
+        // 如果同一货号 + 颜色 存在多个优惠，则只取其中之一
+        Map<String, List<TyCusDiscImportVO>> distinctDiscMap = importList.stream().distinct().collect(Collectors.groupingBy(x -> x.getProdArtNum() + ":" + x.getColorName()));
+        List<TyCusDiscImportVO> distinctDiscList = new ArrayList<>();
+        distinctDiscMap.forEach((k, colorDiscList) -> {
+            // 存在这种错误数据，同一客户：相同颜色及货号 优惠相同 但初始价格及优惠价格不一样 比如：228 213；218 203 但优惠都是15。所以统一处理，取最大优惠
+            if (colorDiscList.size() > 1) {
+                // 获取最大优惠
+                TyCusDiscImportVO maxDisc = colorDiscList.stream().max(Comparator.comparingInt(TyCusDiscImportVO::getDiscount)).get();
+                distinctDiscList.add(maxDisc);
+            } else {
+                distinctDiscList.addAll(colorDiscList);
+            }
+        });
         // 加到总的客户优惠上
-        CollectionUtils.addAll(cacheList, importList);
-        // 如果客户优惠不为空，则滤重
-        if (CollectionUtils.isNotEmpty(cacheList)) {
-            cacheList = cacheList.stream().distinct().collect(Collectors.toList());
-        }
+        CollectionUtils.addAll(cacheList, distinctDiscList);
         // TODO 过滤优惠大于0 是在比较插入数据的时候做的
         // 存到redis中
         redisCache.setCacheObject(CacheConstants.MIGRATION_TY_CUS_DISCOUNT_KEY + userId, cacheList);
