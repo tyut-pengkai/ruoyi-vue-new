@@ -177,8 +177,10 @@ public class GtAndTyBiz2Controller extends BaseController {
     @PostMapping("/init-prod")
     @Transactional
     public R<Integer> initProd(@Validated @RequestBody GtAndTYInitVO initVO) {
-        // 去掉可能的空格
-        initVO.setExcludeArtNoList(initVO.getExcludeArtNoList().stream().map(String::trim).collect(Collectors.toList()));
+        if (CollectionUtils.isNotEmpty(initVO.getExcludeArtNoList())) {
+            // 去掉可能的空格
+            initVO.setExcludeArtNoList(initVO.getExcludeArtNoList().stream().map(String::trim).collect(Collectors.toList()));
+        }
         Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
                         .eq(Store::getId, initVO.getStoreId()).eq(Store::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
