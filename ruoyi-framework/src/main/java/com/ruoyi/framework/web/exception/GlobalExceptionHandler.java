@@ -177,6 +177,6 @@ public class GlobalExceptionHandler
      * @param <T>
      */
     private <T extends Exception> void sendExceptionMsg(String uri, T e) {
-        SpringUtils.getBean(FsNotice.class).sendException2MonitorChat(e);
+        SpringUtils.getBean(FsNotice.class).sendException2MonitorChat(uri, e);
     }
 }

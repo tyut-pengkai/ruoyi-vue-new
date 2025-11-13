@@ -59,8 +59,8 @@ public class FsNotice extends AbstractNotice {
      *
      * @param e
      */
-    public <T extends Exception> void sendException2MonitorChat(T e){
-        sendException2MonitorChat(null,e);
+    public <T extends Exception> void sendException2MonitorChat(T e) {
+        sendException2MonitorChat(null, e);
     }
 
     /**
