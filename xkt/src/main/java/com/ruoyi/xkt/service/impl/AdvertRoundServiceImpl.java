@@ -245,7 +245,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                             .setSymbol(advertRound.getSymbol()).setLaunchStatus(advertRound.getLaunchStatus()).setStartTime(advertRound.getStartTime())
                             .setEndTime(advertRound.getEndTime()).setStartWeekDay(getDayOfWeek(advertRound.getStartTime())).setDurationDay(durationDay)
                             // 设置是否可以购买当前推广位
-                            .setCanPurchased(this.setRoundCanPurchased(advertRound, storeId, currentRoundList)).setPlayNum(advert.getPlayNum())
+                            .setCanPurchased(this.setRoundCanPurchased(advertRound, storeId, currentRoundList))
                             .setEndWeekDay(getDayOfWeek(advertRound.getEndTime())).setStoreBuyLimit(advert.getStoreBuyLimit())
                             .setShowType(advertRound.getShowType()).setPosition(advertRound.getPosition())
                             .setUploadDeadline(redisCache.getCacheObject(ADVERT_UPLOAD_FILTER_TIME_KEY + advertRound.getSymbol()));

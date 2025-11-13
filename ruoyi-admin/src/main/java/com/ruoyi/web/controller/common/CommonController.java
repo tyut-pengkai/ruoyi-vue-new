@@ -236,9 +236,9 @@ public class CommonController {
     }
 
     public static void main(String[] args) {
-        String str = FileUtil.readString("C:\\Users\\123\\Desktop\\privacyPolicy(1).html", Charset.forName("UTF-8"));
+        String str = FileUtil.readString("C:\\Users\\123\\Desktop\\步橘网总则.html", Charset.forName("UTF-8"));
         Map<String, String> json = new HashMap<>();
-        json.put("title", "aaa");
+        json.put("title", "generalRules");
         json.put("content", str);
         System.out.println(JSONUtil.toJsonStr(json));
     }
