@@ -71,6 +71,7 @@ public class FsNotice extends AbstractNotice {
      */
     public <T extends Exception> void sendException2MonitorChat(String uri, T e) {
         if (Boolean.TRUE.equals(monitorSwitch)) {
+            String username = SecurityUtils.getUsernameSafe();
             ThreadUtil.execAsync(() -> {
                 try {
                     //内容
@@ -83,7 +84,7 @@ public class FsNotice extends AbstractNotice {
                                 .createText(CharSequenceUtil.format("地址：{}", uri))));
                     }
                     contentFields.add(Collections.singletonList(FeiShuTextField
-                            .createText(CharSequenceUtil.format("用户：{}", SecurityUtils.getUsernameSafe()))));
+                            .createText(CharSequenceUtil.format("用户：{}", username))));
                     contentFields.add(Collections.singletonList(FeiShuTextField
                             .createText(CharSequenceUtil.format("时间：{}", DateUtil.now()))));
                     contentFields.add(Collections.singletonList(FeiShuTextField
