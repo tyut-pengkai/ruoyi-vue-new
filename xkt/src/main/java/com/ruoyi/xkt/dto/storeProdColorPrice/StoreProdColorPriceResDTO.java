@@ -29,6 +29,8 @@ public class StoreProdColorPriceResDTO {
     private String prodArtNum;
     @ApiModelProperty(value = "颜色名称")
     private String colorName;
+    @ApiModelProperty(value = "内里材质")
+    private String shoeUpperLiningMaterial;
     @ApiModelProperty(value = "档口商品颜色最低售价")
     private BigDecimal price;
     @ApiModelProperty(value = "排序")
