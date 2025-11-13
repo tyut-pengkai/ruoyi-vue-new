@@ -115,7 +115,8 @@ public class AdvertServiceImpl implements IAdvertService {
             return Page.empty(pageDTO.getPageSize(), pageDTO.getPageNum());
         }
         List<Long> fileIdList = advertList.stream().map(Advert::getExamplePicId).filter(ObjectUtils::isNotEmpty).collect(Collectors.toList());
-        Map<Long, SysFile> fileMap = this.fileMapper.selectByIds(fileIdList).stream().collect(Collectors.toMap(SysFile::getId, Function.identity()));
+        Map<Long, SysFile> fileMap = CollectionUtils.isEmpty(fileIdList) ? new HashMap<>()
+                : this.fileMapper.selectByIds(fileIdList).stream().collect(Collectors.toMap(SysFile::getId, Function.identity()));
         List<AdvertResDTO> advertResDTOList = advertList.stream().map(x -> {
             AdvertResDTO advertResDTO = BeanUtil.toBean(x, AdvertResDTO.class);
             if (ObjectUtils.isNotEmpty(x.getExamplePicId())) {
