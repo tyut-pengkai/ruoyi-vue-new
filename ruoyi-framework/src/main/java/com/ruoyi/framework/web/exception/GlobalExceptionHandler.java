@@ -40,7 +40,7 @@ public class GlobalExceptionHandler
     {
         String requestURI = request.getRequestURI();
         log.error("请求地址'{}',权限校验失败'{}'", requestURI, e.getMessage());
-        sendExceptionMsg(e);
+        sendExceptionMsg(requestURI, e);
         return AjaxResult.error(HttpStatus.FORBIDDEN, "没有权限，请联系管理员授权");
     }
 
@@ -53,7 +53,7 @@ public class GlobalExceptionHandler
     {
         String requestURI = request.getRequestURI();
         log.error("请求地址'{}',不支持'{}'请求", requestURI, e.getMethod());
-        sendExceptionMsg(e);
+        sendExceptionMsg(requestURI, e);
         return AjaxResult.error(e.getMessage());
     }
 
@@ -63,8 +63,9 @@ public class GlobalExceptionHandler
     @ExceptionHandler(ServiceException.class)
     public AjaxResult handleServiceException(ServiceException e, HttpServletRequest request)
     {
-        log.error("请求地址'{}',发生业务异常'{}'", request.getRequestURI(), e.getMessage());
-        sendExceptionMsg(e);
+        String requestURI = request.getRequestURI();
+        log.error("请求地址'{}',发生业务异常'{}'", requestURI, e.getMessage());
+        sendExceptionMsg(requestURI, e);
         Integer code = e.getCode();
         return StringUtils.isNotNull(code) ? AjaxResult.error(code, e.getMessage()) : AjaxResult.error(e.getMessage());
     }
@@ -75,8 +76,9 @@ public class GlobalExceptionHandler
      */
     @ExceptionHandler(IllegalArgumentException.class)
     public AjaxResult illegalArgumentException(IllegalArgumentException e, HttpServletRequest request) {
-        log.error("请求地址'{}',发生校验异常'{}'", request.getRequestURI(), e.getMessage());
-        sendExceptionMsg(e);
+        String requestURI = request.getRequestURI();
+        log.error("请求地址'{}',发生校验异常'{}'", requestURI, e.getMessage());
+        sendExceptionMsg(requestURI, e);
         return AjaxResult.error(e.getMessage());
     }
 
@@ -88,7 +90,7 @@ public class GlobalExceptionHandler
     {
         String requestURI = request.getRequestURI();
         log.error("请求路径中缺少必需的路径变量'{}',发生系统异常.", requestURI, e);
-        sendExceptionMsg(e);
+        sendExceptionMsg(requestURI, e);
         return AjaxResult.error(String.format("请求路径中缺少必需的路径变量[%s]", e.getVariableName()));
     }
 
@@ -105,7 +107,7 @@ public class GlobalExceptionHandler
             value = EscapeUtil.clean(value);
         }
         log.error("请求参数类型不匹配'{}',发生系统异常.", requestURI, e);
-        sendExceptionMsg(e);
+        sendExceptionMsg(requestURI, e);
         return AjaxResult.error(String.format("请求参数类型不匹配，参数[%s]要求类型为：'%s'，但输入值为：'%s'", e.getName(), e.getRequiredType().getName(), value));
     }
 
@@ -117,7 +119,7 @@ public class GlobalExceptionHandler
     {
         String requestURI = request.getRequestURI();
         log.error("请求地址'{}',发生未知异常.", requestURI, e);
-        sendExceptionMsg(e);
+        sendExceptionMsg(requestURI, e);
         return AjaxResult.error(e.getMessage());
     }
 
@@ -129,7 +131,7 @@ public class GlobalExceptionHandler
     {
         String requestURI = request.getRequestURI();
         log.error("请求地址'{}',发生系统异常.", requestURI, e);
-        sendExceptionMsg(e);
+        sendExceptionMsg(requestURI, e);
         return AjaxResult.error(e.getMessage());
     }
 
@@ -137,11 +139,11 @@ public class GlobalExceptionHandler
      * 自定义验证异常
      */
     @ExceptionHandler(BindException.class)
-    public AjaxResult handleBindException(BindException e)
+    public AjaxResult handleBindException(BindException e, HttpServletRequest request)
     {
         log.error(e.getMessage(), e);
         String message = e.getAllErrors().get(0).getDefaultMessage();
-        sendExceptionMsg(e);
+        sendExceptionMsg(request.getRequestURI(), e);
         return AjaxResult.error(message);
     }
 
@@ -154,7 +156,7 @@ public class GlobalExceptionHandler
         String requestURI = request.getRequestURI();
         String message = e.getBindingResult().getFieldError().getDefaultMessage();
         log.error("请求地址'{}',发生校验异常: {}", requestURI, message);
-        sendExceptionMsg(e);
+        sendExceptionMsg(requestURI, e);
         return AjaxResult.error(message);
     }
 
@@ -170,10 +172,11 @@ public class GlobalExceptionHandler
     /**
      * 发送异常消息
      *
+     * @param uri
      * @param e
      * @param <T>
      */
-    private <T extends Exception> void sendExceptionMsg(T e) {
+    private <T extends Exception> void sendExceptionMsg(String uri, T e) {
         SpringUtils.getBean(FsNotice.class).sendException2MonitorChat(e);
     }
 }

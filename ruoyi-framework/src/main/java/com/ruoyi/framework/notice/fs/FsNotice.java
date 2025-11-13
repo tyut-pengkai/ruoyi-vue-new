@@ -7,7 +7,6 @@ import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.framework.notice.AbstractNotice;
 import com.ruoyi.framework.notice.fs.entity.*;
 import lombok.extern.slf4j.Slf4j;
@@ -60,21 +59,34 @@ public class FsNotice extends AbstractNotice {
      *
      * @param e
      */
-    public <T extends Exception> void sendException2MonitorChat(T e) {
+    public <T extends Exception> void sendException2MonitorChat(T e){
+        sendException2MonitorChat(null,e);
+    }
+
+    /**
+     * 发送异常信息给监控群
+     *
+     * @param e
+     */
+    public <T extends Exception> void sendException2MonitorChat(String uri, T e) {
         if (Boolean.TRUE.equals(monitorSwitch)) {
             ThreadUtil.execAsync(() -> {
                 try {
                     //内容
                     FeiShuMsg.ZhCn zhCn = new FeiShuMsg.ZhCn();
-                    List<List<FeiShuMsg.BaseField>> contentFields = new ArrayList<>(4);
+                    List<List<FeiShuMsg.BaseField>> contentFields = new ArrayList<>(5);
                     contentFields.add(Collections.singletonList(FeiShuTextField
                             .createText(CharSequenceUtil.format("环境：{}", env))));
+                    if (uri != null) {
+                        contentFields.add(Collections.singletonList(FeiShuTextField
+                                .createText(CharSequenceUtil.format("地址：{}", uri))));
+                    }
                     contentFields.add(Collections.singletonList(FeiShuTextField
                             .createText(CharSequenceUtil.format("时间：{}", DateUtil.now()))));
                     contentFields.add(Collections.singletonList(FeiShuTextField
                             .createText(CharSequenceUtil.format("异常：{}", e.getClass().getName()))));
                     contentFields.add(Collections.singletonList(FeiShuTextField
-                            .createText(CharSequenceUtil.format("错误信息：{}", StrUtil.truncateUtf8(e.getMessage(),512)))));
+                            .createText(CharSequenceUtil.format("错误信息：{}", StrUtil.truncateUtf8(e.getMessage(), 512)))));
                     zhCn.setContent(contentFields);
                     //消息体
                     FeiShuMsg feiShuMsg = new FeiShuMsg();

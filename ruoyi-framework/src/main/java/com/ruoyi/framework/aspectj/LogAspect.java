@@ -116,7 +116,7 @@ public class LogAspect
             // 保存数据库
 //            AsyncManager.me().execute(AsyncFactory.recordOper(operLog));
             // 输出到日志文件
-            log.info("接口请求日志：{}", operLog);
+            log.info("【接口请求日志】{}", operLog);
 
         }
         catch (Exception exp)
