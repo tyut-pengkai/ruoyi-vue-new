@@ -483,8 +483,8 @@ public class StoreServiceImpl implements IStoreService {
         if (Objects.equals(store.getStoreStatus(), StoreStatus.TRIAL_PERIOD.getValue())) {
             store.setStoreStatus(StoreStatus.FORMAL_USE.getValue());
         }
-        // 更新服务到期时间 在原服务时间基础上 往后推 1年
-        Date serviceEndTime = ObjectUtils.isNotEmpty(store.getServiceEndTime()) ? store.getServiceEndTime() : new Date();
+        // 如果是试用时间 大于 当前时间在，则以试用时间为准 反之则以当前时间为准
+        Date serviceEndTime = Optional.ofNullable(store.getServiceEndTime()).filter(date -> date.after(new Date())).orElse(new Date());
         store.setServiceEndTime(Date.from(serviceEndTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
                 .plusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant()));
         int count = this.storeMapper.updateById(store);
