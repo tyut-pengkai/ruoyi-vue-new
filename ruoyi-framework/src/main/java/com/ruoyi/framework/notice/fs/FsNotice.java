@@ -7,6 +7,7 @@ import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.notice.AbstractNotice;
 import com.ruoyi.framework.notice.fs.entity.*;
 import lombok.extern.slf4j.Slf4j;
@@ -74,13 +75,15 @@ public class FsNotice extends AbstractNotice {
                 try {
                     //内容
                     FeiShuMsg.ZhCn zhCn = new FeiShuMsg.ZhCn();
-                    List<List<FeiShuMsg.BaseField>> contentFields = new ArrayList<>(5);
+                    List<List<FeiShuMsg.BaseField>> contentFields = new ArrayList<>(6);
                     contentFields.add(Collections.singletonList(FeiShuTextField
                             .createText(CharSequenceUtil.format("环境：{}", env))));
                     if (uri != null) {
                         contentFields.add(Collections.singletonList(FeiShuTextField
                                 .createText(CharSequenceUtil.format("地址：{}", uri))));
                     }
+                    contentFields.add(Collections.singletonList(FeiShuTextField
+                            .createText(CharSequenceUtil.format("用户：{}", SecurityUtils.getUsernameSafe()))));
                     contentFields.add(Collections.singletonList(FeiShuTextField
                             .createText(CharSequenceUtil.format("时间：{}", DateUtil.now()))));
                     contentFields.add(Collections.singletonList(FeiShuTextField
