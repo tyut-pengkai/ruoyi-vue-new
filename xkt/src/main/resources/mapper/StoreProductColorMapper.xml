@@ -13,6 +13,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             id AS storeProdColorId,
             store_color_id AS storeColorId,
             color_name AS colorName,
+            shoe_upper_lining_material,
             order_num AS orderNum
         FROM
             store_product_color
