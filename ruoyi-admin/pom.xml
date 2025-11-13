@@ -80,6 +80,9 @@
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                     <warName>${project.artifactId}</warName>
+                        <compilerArgs>
+                            <arg>-parameters</arg>
+                        </compilerArgs>
                 </configuration>   
            </plugin>   
         </plugins>
