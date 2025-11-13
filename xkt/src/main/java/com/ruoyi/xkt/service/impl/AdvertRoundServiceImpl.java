@@ -66,6 +66,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
     final SysFileMapper fileMapper;
     final IAssetService assetService;
     final INoticeService noticeService;
+    final AdvertMapper advertMapper;
 
 
     // 推广营销位锁 key：symbol + roundId 或者 symbol + roundId + position 。value都是new Object()
@@ -234,13 +235,18 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                             .findFirst().orElse(currentRoundList.get(0));
                     // 获取档口能够购买的推广数量
                     Advert advert = redisCache.getCacheObject(CacheConstants.ADVERT_KEY + advertRound.getAdvertId());
+                    if (ObjectUtils.isEmpty(advert)) {
+                        advert = Optional.ofNullable(this.advertMapper.selectById(advertRound.getAdvertId()))
+                                .orElseThrow(() -> new ServiceException("推广营销不存在!", HttpStatus.ERROR));
+                        redisCache.setCacheObject(CacheConstants.ADVERT_KEY + advertRound.getAdvertId(), advert);
+                    }
                     Integer durationDay = calculateDurationDay(advertRound.getStartTime(), advertRound.getEndTime(), Boolean.TRUE);
                     AdRoundTypeRoundResDTO typeRoundResDTO = new AdRoundTypeRoundResDTO().setAdvertId(advertRound.getAdvertId()).setRoundId(advertRound.getRoundId())
                             .setSymbol(advertRound.getSymbol()).setLaunchStatus(advertRound.getLaunchStatus()).setStartTime(advertRound.getStartTime())
                             .setEndTime(advertRound.getEndTime()).setStartWeekDay(getDayOfWeek(advertRound.getStartTime())).setDurationDay(durationDay)
                             // 设置是否可以购买当前推广位
-                            .setCanPurchased(this.setRoundCanPurchased(advertRound, storeId, currentRoundList))
-                            .setEndWeekDay(getDayOfWeek(advertRound.getEndTime())).setStoreBuyLimit(ObjectUtils.isEmpty(advert) ? 1 : advert.getStoreBuyLimit())
+                            .setCanPurchased(this.setRoundCanPurchased(advertRound, storeId, currentRoundList)).setPlayNum(advert.getPlayNum())
+                            .setEndWeekDay(getDayOfWeek(advertRound.getEndTime())).setStoreBuyLimit(advert.getStoreBuyLimit())
                             .setShowType(advertRound.getShowType()).setPosition(advertRound.getPosition())
                             .setUploadDeadline(redisCache.getCacheObject(ADVERT_UPLOAD_FILTER_TIME_KEY + advertRound.getSymbol()));
                     // 如果是播放轮，则播放开始时间展示为当天，因为有可能是播放的中间某一天
@@ -535,6 +541,12 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
             store = Optional.ofNullable(this.storeMapper.selectById(createDTO.getStoreId())).orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
             redisCache.setCacheObject(CacheConstants.STORE_KEY + createDTO.getStoreId(), store);
         }
+        Advert advert = redisCache.getCacheObject(CacheConstants.ADVERT_KEY + createDTO.getAdvertId());
+        if (ObjectUtils.isEmpty(advert)) {
+            advert = Optional.ofNullable(this.advertMapper.selectById(createDTO.getAdvertId()))
+                    .orElseThrow(() -> new ServiceException("推广营销不存在!", HttpStatus.ERROR));
+            redisCache.setCacheObject(CacheConstants.ADVERT_KEY + createDTO.getAdvertId(), advert);
+        }
         // 购买推广前置校验
         this.advertPreBuyCheck(createDTO);
         // 当前营销推广位的锁
@@ -561,7 +573,6 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
             if (createDTO.getPayPrice().compareTo(ObjectUtils.defaultIfNull(minPriceAdvert.getPayPrice(), BigDecimal.ZERO)) <= 0) {
                 throw new ServiceException("已经有档口出价更高了噢，请重新出价!", HttpStatus.ERROR);
             }
-            Advert advert = redisCache.getCacheObject(CacheConstants.ADVERT_KEY + createDTO.getAdvertId());
             final String position = Objects.equals(minPriceAdvert.getShowType(), AdShowType.TIME_RANGE.getValue()) ? "" : minPriceAdvert.getPosition();
             // storeId不为空，表明之前有其他的档口竞价
             if (ObjectUtils.isNotEmpty(minPriceAdvert.getStoreId())) {
