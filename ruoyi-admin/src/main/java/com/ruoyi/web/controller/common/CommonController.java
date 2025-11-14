@@ -252,8 +252,8 @@ public class CommonController {
     }
 
     @ApiOperation("获取html内容")
-    @GetMapping("/html/content/{title}")
-    public String getHtmlContent(@PathVariable("title") String title, HttpServletResponse response) {
+    @GetMapping("/html/content")
+    public String getHtmlContent(@RequestParam("title") String title, HttpServletResponse response) {
         response.setHeader("Content-Security-Policy", "frame-ancestors *");
         return htmlService.getHtmlContent(title);
     }
