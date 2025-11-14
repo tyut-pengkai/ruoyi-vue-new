@@ -291,17 +291,19 @@ public class WebsitePCIndexServiceImpl implements IWebsitePCIndexService {
             }
             for (int j = 0; j < saleAdvertList.size(); j++) {
                 CateSaleRankDTO advertSaleDTO = advertSaleMap.get(Long.parseLong(saleAdvertList.get(j).getProdIdStr()));
-                // 绑定档口会员等级
-                StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + advertSaleDTO.getStoreId());
-                PCIndexMidSalesDTO.PCIMSSaleDTO saleDTO = new PCIndexMidSalesDTO.PCIMSSaleDTO().setDisplayType(AdDisplayType.PRODUCT.getValue())
-                        .setStoreId(advertSaleDTO.getStoreId()).setStoreName(advertSaleDTO.getStoreName()).setStoreProdId(advertSaleDTO.getStoreProdId())
-                        .setProdArtNum(advertSaleDTO.getProdArtNum()).setMemberLevel(ObjectUtils.isNotEmpty(member) ? member.getLevel() : null)
-                        .setStoreProdId(advertSaleDTO.getStoreProdId()).setSaleNum(advertSaleDTO.getSaleNum()).setOrderNum(j + 1)
-                        .setPrice(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(advertSaleDTO.getStoreProdId()))
-                                ? prodPriceAndMainPicMap.get(advertSaleDTO.getStoreProdId()).getMinPrice() : null)
-                        .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(advertSaleDTO.getStoreProdId()))
-                                ? prodPriceAndMainPicMap.get(advertSaleDTO.getStoreProdId()).getMainPicUrl() : "");
-                saleDTOList.add(saleDTO);
+                if (ObjectUtils.isNotEmpty(advertSaleDTO)) {
+                    // 绑定档口会员等级
+                    StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + advertSaleDTO.getStoreId());
+                    PCIndexMidSalesDTO.PCIMSSaleDTO saleDTO = new PCIndexMidSalesDTO.PCIMSSaleDTO().setDisplayType(AdDisplayType.PRODUCT.getValue())
+                            .setStoreId(advertSaleDTO.getStoreId()).setStoreName(advertSaleDTO.getStoreName()).setStoreProdId(advertSaleDTO.getStoreProdId())
+                            .setProdArtNum(advertSaleDTO.getProdArtNum()).setMemberLevel(ObjectUtils.isNotEmpty(member) ? member.getLevel() : null)
+                            .setStoreProdId(advertSaleDTO.getStoreProdId()).setSaleNum(advertSaleDTO.getSaleNum()).setOrderNum(j + 1)
+                            .setPrice(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(advertSaleDTO.getStoreProdId()))
+                                    ? prodPriceAndMainPicMap.get(advertSaleDTO.getStoreProdId()).getMinPrice() : null)
+                            .setMainPicUrl(ObjectUtils.isNotEmpty(prodPriceAndMainPicMap.get(advertSaleDTO.getStoreProdId()))
+                                    ? prodPriceAndMainPicMap.get(advertSaleDTO.getStoreProdId()).getMainPicUrl() : "");
+                    saleDTOList.add(saleDTO);
+                }
             }
             retCateOrderList.add(new PCIndexMidSalesDTO().setProdCateId(cateId).setProdCateName(cateIdMap.get(cateId)).setOrderNum(i + 1)
                     .setParCateId(parCateIdMap.get(cateId)).setSaleList(saleDTOList));
