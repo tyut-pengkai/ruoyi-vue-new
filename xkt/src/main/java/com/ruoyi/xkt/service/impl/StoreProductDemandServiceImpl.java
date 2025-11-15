@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -400,58 +401,26 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
     @Override
     @Transactional(readOnly = true)
     public List<StoreProdDemandDownloadDTO> export(StoreProdDemandExportDTO exportDTO) {
-        LambdaQueryWrapper<StoreProductDemandDetail> queryWrapper = new LambdaQueryWrapper<StoreProductDemandDetail>()
-                .eq(StoreProductDemandDetail::getStoreId, exportDTO.getStoreId()).eq(StoreProductDemandDetail::getDelFlag, Constants.UNDELETED)
-                .orderByDesc(StoreProductDemandDetail::getCreateTime);
-        if (CollectionUtils.isNotEmpty(exportDTO.getStoreProdDemandDetailIdList())) {
-            queryWrapper.in(StoreProductDemandDetail::getId, exportDTO.getStoreProdDemandDetailIdList());
+        // 如果这两项都为空，则表示是全部状态的导出所有 增加时间显示最近半年数据
+        if (ObjectUtils.isEmpty(exportDTO.getDetailStatus()) && CollectionUtils.isEmpty(exportDTO.getStoreProdDemandDetailIdList())) {
+            exportDTO.setVoucherDateEnd(DateUtils.toDate(LocalDateTime.now()));
+            exportDTO.setVoucherDateStart(DateUtils.toDate(LocalDateTime.now().minusMonths(6)));
         }
-        if (ObjectUtils.isNotEmpty(exportDTO.getDetailStatus())) {
-            queryWrapper.eq(StoreProductDemandDetail::getDetailStatus, exportDTO.getDetailStatus());
+        List<StoreProdDemandDownloadDTO> downloadList = this.storeProdDemandDetailMapper.selectDownloadList(exportDTO);
+        if (CollectionUtils.isEmpty(downloadList)) {
+            return Collections.emptyList();
         }
-        List<StoreProductDemandDetail> demandDetailList = this.storeProdDemandDetailMapper.selectList(queryWrapper);
-        if (CollectionUtils.isEmpty(demandDetailList)) {
-            return new ArrayList<>();
+        // 获取商品内里
+        List<StoreProdDemandDownloadDTO> liningMaterialList = this.storeProdColorMapper
+                .selectLiningMaterialList(exportDTO.getStoreId(), downloadList.stream().map(StoreProdDemandDownloadDTO::getProdArtNum).collect(Collectors.toList()));
+        // 商品货号及颜色的内里材质map
+        Map<String, String> prodColorLiningMaterialMap = liningMaterialList.stream().collect(Collectors
+                .toMap(x -> x.getProdArtNum() + x.getColorName(), StoreProdDemandDownloadDTO::getShoeUpperLiningMaterial));
+        for (int i = 0; i < downloadList.size(); i++) {
+            downloadList.get(i).setOrderNum(i + 1)
+                    .setShoeUpperLiningMaterial(prodColorLiningMaterialMap.get(downloadList.get(i).getProdArtNum() + downloadList.get(i).getColorName()));
         }
-        List<StoreProductDemand> demandList = this.storeProdDemandMapper.selectList(new LambdaQueryWrapper<StoreProductDemand>()
-                .eq(StoreProductDemand::getDelFlag, UNDELETED).in(StoreProductDemand::getId, demandDetailList.stream()
-                        .map(StoreProductDemandDetail::getStoreProdDemandId).collect(Collectors.toList())));
-        Map<Long, String> demandCodeMap = CollectionUtils.isEmpty(demandList) ? new HashMap<>()
-                : demandList.stream().collect(Collectors.toMap(StoreProductDemand::getId, StoreProductDemand::getCode));
-        List<StoreFactory> storeFacList = this.storeFacMapper.selectList(new LambdaQueryWrapper<StoreFactory>()
-                .eq(StoreFactory::getDelFlag, UNDELETED).eq(StoreFactory::getStoreId, exportDTO.getStoreId()));
-        Map<Long, String> storeFacMap = CollectionUtils.isEmpty(storeFacList) ? new HashMap<>()
-                : storeFacList.stream().collect(Collectors.toMap(StoreFactory::getId, StoreFactory::getFacName));
-        List<StoreProdDemandDownloadDTO> downLoadList = demandDetailList.stream().sorted(Comparator.comparing(StoreProductDemandDetail::getProdArtNum))
-                .map(x -> new StoreProdDemandDownloadDTO().setProdArtNum(x.getProdArtNum()).setColorName(x.getColorName())
-                        .setFacName(storeFacMap.getOrDefault(x.getStoreFactoryId(), ""))
-                        .setCode(demandCodeMap.getOrDefault(x.getStoreProdDemandId(), ""))
-                        .setCreateTime(DateUtils.parseDateToStr("yyyy-MM-dd HH:mm", x.getCreateTime()))
-                        .setEmergency(Objects.equals(x.getEmergency(), 0) ? "正常单" : "紧急单")
-                        .setSize30Quantity(x.getSize30()).setSize31Quantity(x.getSize31()).setSize32Quantity(x.getSize32())
-                        .setSize33Quantity(x.getSize33()).setSize34Quantity(x.getSize34()).setSize35Quantity(x.getSize35())
-                        .setSize36Quantity(x.getSize36()).setSize37Quantity(x.getSize37()).setSize38Quantity(x.getSize38())
-                        .setSize39Quantity(x.getSize39()).setSize40Quantity(x.getSize40()).setSize41Quantity(x.getSize41())
-                        .setSize42Quantity(x.getSize42()).setSize43Quantity(x.getSize43())
-                        .setTotalQuantity(ObjectUtils.defaultIfNull(x.getSize30(), 0) +
-                                ObjectUtils.defaultIfNull(x.getSize31(), 0) +
-                                ObjectUtils.defaultIfNull(x.getSize32(), 0) +
-                                ObjectUtils.defaultIfNull(x.getSize33(), 0) +
-                                ObjectUtils.defaultIfNull(x.getSize34(), 0) +
-                                ObjectUtils.defaultIfNull(x.getSize35(), 0) +
-                                ObjectUtils.defaultIfNull(x.getSize36(), 0) +
-                                ObjectUtils.defaultIfNull(x.getSize37(), 0) +
-                                ObjectUtils.defaultIfNull(x.getSize38(), 0) +
-                                ObjectUtils.defaultIfNull(x.getSize39(), 0) +
-                                ObjectUtils.defaultIfNull(x.getSize40(), 0) +
-                                ObjectUtils.defaultIfNull(x.getSize41(), 0) +
-                                ObjectUtils.defaultIfNull(x.getSize42(), 0) +
-                                ObjectUtils.defaultIfNull(x.getSize43(), 0)))
-                .collect(Collectors.toList());
-        for (int i = 0; i < downLoadList.size(); i++) {
-            downLoadList.get(i).setOrderNum(i + 1);
-        }
-        return downLoadList;
+        return downloadList;
     }
 
     /**

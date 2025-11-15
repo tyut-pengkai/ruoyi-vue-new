@@ -14,6 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+import static com.ruoyi.common.constant.Constants.SELECTED;
+import static com.ruoyi.common.constant.Constants.UNSELECTED;
+
 /**
  * 档口需求下载模板Service业务层处理
  *
@@ -26,8 +29,6 @@ public class StoreProductDemandTemplateServiceImpl implements IStoreProductDeman
 
     final StoreProductDemandTemplateMapper templateMapper;
 
-    private static final Integer SELECTED = 1;
-    private static final Integer UNSELECTED = 0;
 
     /**
      * 获取当前档口设置的模板
@@ -66,10 +67,10 @@ public class StoreProductDemandTemplateServiceImpl implements IStoreProductDeman
                 .setSelectPlatformSole(UNSELECTED).setSelectMidsoleFactoryCode(UNSELECTED)
                 .setSelectOutsoleFactoryCode(UNSELECTED).setSelectHeelFactoryCode(UNSELECTED)
                 .setSelectComponents(UNSELECTED).setSelectSecondSoleMaterial(UNSELECTED)
-                .setSelectSecondUpperMaterial(UNSELECTED);
+                .setSelectSecondUpperMaterial(UNSELECTED).setSelectDemandCode(UNSELECTED);
         // 设置初始化值
         template.setSelectSize34(SELECTED).setSelectSize35(SELECTED).setSelectSize36(SELECTED).setSelectSize37(SELECTED).setSelectSize38(SELECTED)
-                .setSelectSize39(SELECTED).setSelectSize40(SELECTED).setSelectFacName(SELECTED).setSelectDemandCode(SELECTED).setSelectMakeTime(SELECTED)
+                .setSelectSize39(SELECTED).setSelectSize40(SELECTED).setSelectFacName(SELECTED).setSelectMakeTime(SELECTED)
                 .setSelectFactoryArtNum(SELECTED).setSelectProdArtNum(SELECTED).setSelectColorName(SELECTED).setSelectShoeUpperLiningMaterial(SELECTED)
                 .setSelectShaftMaterial(SELECTED).setSelectDemandStatus(SELECTED).setSelectEmergency(SELECTED).setSelectQuantity(SELECTED);
         this.templateMapper.insertOrUpdate(template);

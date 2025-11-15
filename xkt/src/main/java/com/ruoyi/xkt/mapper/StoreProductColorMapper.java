@@ -10,6 +10,7 @@ import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdColorPriceResDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdPageDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdPageResDTO;
 import com.ruoyi.xkt.dto.storeProduct.StoreProdStatusCountResDTO;
+import com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandDownloadDTO;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -79,4 +80,14 @@ public interface StoreProductColorMapper extends BaseMapper<StoreProductColor> {
      * @return StoreProdStatusCountResDTO
      */
     StoreProdStatusCountResDTO getStatusNum(@Param("storeId") Long storeId);
+
+    /**
+     * 获取商品的内里
+     *
+     * @param storeId        档口ID
+     * @param prodArtNumList 货号列表
+     * @return List<StoreProdDemandDownloadDTO>
+     */
+    List<StoreProdDemandDownloadDTO> selectLiningMaterialList(@Param("storeId") Long storeId, @Param("prodArtNumList") List<String> prodArtNumList);
+
 }

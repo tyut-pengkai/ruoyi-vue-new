@@ -18,15 +18,15 @@ import java.util.Date;
 
 public class StoreStorageDetailDownloadDTO {
 
-    @Excel(name = "序号", cellType = Excel.ColumnType.NUMERIC, needMerge = true, height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
+    @Excel(name = "序号", cellType = Excel.ColumnType.NUMERIC, height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private Integer orderNum;
-    @Excel(name = "单据编号", needMerge = true, width = 26, height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
+    @Excel(name = "单据编号", width = 26, height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private String code;
     @Excel(name = "工厂名称", width = 20,  height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private String facName;
     @Excel(name = "入库类型", readConverterExp = "1=生产入库,2=其它入库,3=维修入库", height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private Integer storageType;
-    @Excel(name = "入库日期", width = 20, needMerge = true, height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
+    @Excel(name = "入库日期", width = 20, height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private String createTime;
     @Excel(name = "总生产成本", height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private BigDecimal produceAmount;

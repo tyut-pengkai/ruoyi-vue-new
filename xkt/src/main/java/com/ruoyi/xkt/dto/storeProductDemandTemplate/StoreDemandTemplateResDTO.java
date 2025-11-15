@@ -16,7 +16,7 @@ public class StoreDemandTemplateResDTO {
 
     @ApiModelProperty(value = "档口ID")
     private Long storeId;
-     @ApiModelProperty(value = "尺码30")
+    @ApiModelProperty(value = "尺码30")
     private Integer selectSize30;
     @ApiModelProperty(value = "尺码31")
     private Integer selectSize31;

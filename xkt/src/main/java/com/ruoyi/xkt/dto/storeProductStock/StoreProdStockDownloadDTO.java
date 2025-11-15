@@ -15,9 +15,9 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 
 public class StoreProdStockDownloadDTO {
 
-    @Excel(name = "序号", cellType = Excel.ColumnType.NUMERIC, needMerge = true, height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
+    @Excel(name = "序号", cellType = Excel.ColumnType.NUMERIC, height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private Integer orderNum;
-    @Excel(name = "货号", needMerge = true, width = 20, height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
+    @Excel(name = "货号", width = 20, height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private String prodArtNum;
     @Excel(name = "颜色", width = 20, height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private String colorName;

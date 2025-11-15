@@ -55,5 +55,72 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
           AND spdd.create_time between #{sixMonthAgo} AND #{now}
     </select>
 
+    <select id="selectDownloadList" resultType="com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandDownloadDTO">
+        SELECT
+            spp.partner_name,
+            spp.trademark,
+            sf.fac_name,
+            spd.`code`,
+            DATE_FORMAT( spd.create_time, '%Y-%m-%d' ) AS createTime,
+            sp.factory_art_num,
+            sp.prod_art_num,
+            spdd.color_name,
+            spca.shaft_material,
+            spdd.detail_status AS demandStatus,
+            spdd.emergency,
+            spp.shoe_type,
+            spp.shoe_size,
+            spp.main_skin,
+            spp.main_skin_usage,
+            spp.match_skin,
+            spp.match_skin_usage,
+            spp.neckline,
+            spp.insole,
+            spp.fastener,
+            spp.shoe_accessories,
+            spp.toe_cap,
+            spp.edge_binding,
+            spp.mid_outsole,
+            spp.platform_sole,
+            spp.midsole_factory_code,
+            spp.outsole_factory_code,
+            spp.heel_factory_code,
+            spp.components,
+            spp.second_sole_material,
+            spp.second_upper_material,
+            NULLIF( spdd.size_30, 0 ) AS size30Quantity,
+            NULLIF( spdd.size_31, 0 ) AS size31Quantity,
+            NULLIF( spdd.size_32, 0 ) AS size32Quantity,
+            NULLIF( spdd.size_33, 0 ) AS size33Quantity,
+            NULLIF( spdd.size_34, 0 ) AS size34Quantity,
+            NULLIF( spdd.size_35, 0 ) AS size35Quantity,
+            NULLIF( spdd.size_36, 0 ) AS size36Quantity,
+            NULLIF( spdd.size_37, 0 ) AS size37Quantity,
+            NULLIF( spdd.size_38, 0 ) AS size38Quantity,
+            NULLIF( spdd.size_39, 0 ) AS size39Quantity,
+            NULLIF( spdd.size_40, 0 ) AS size40Quantity,
+            NULLIF( spdd.size_41, 0 ) AS size41Quantity,
+            NULLIF( spdd.size_42, 0 ) AS size42Quantity,
+            NULLIF( spdd.size_43, 0 ) AS size43Quantity
+        FROM
+            store_product_demand_detail spdd
+                JOIN store_product_demand spd ON spdd.store_prod_demand_id = spd.id
+                JOIN store_product sp ON spdd.store_prod_id = sp.id AND sp.del_flag = 0
+                JOIN store_factory sf ON spdd.store_id = sf.store_id AND sf.del_flag = 0
+                JOIN store_product_category_attribute spca ON spdd.store_prod_id = spca.store_prod_id AND spca.del_flag = 0
+                JOIN store_product_process spp ON spdd.store_prod_id = spp.store_prod_id AND spp.del_flag = 0
+        WHERE
+            spdd.del_flag = 0 AND spdd.store_id = #{storeId}
+            <if test="voucherDateStart != null"> and spd.create_time &gt;= #{voucherDateStart}</if>
+            <if test="voucherDateEnd != null"> and spd.create_time &lt;= #{voucherDateEnd}</if>
+            <if test="detailStatus != null"> and spdd.detail_status = #{detailStatus}</if>
+            <if test="storeProdDemandDetailIdList != null and storeProdDemandDetailIdList.size > 0">
+                AND spdd.id IN
+                <foreach item="id" collection="storeProdDemandDetailIdList" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+    </select>
+
 
 </mapper>

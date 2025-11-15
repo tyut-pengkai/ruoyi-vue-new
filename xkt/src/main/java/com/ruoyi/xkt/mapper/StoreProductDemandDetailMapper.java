@@ -2,10 +2,7 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProductDemandDetail;
-import com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandPageDTO;
-import com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandPageResDTO;
-import com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandSimpleDTO;
-import com.ruoyi.xkt.dto.storeProductDemand.StoreProdDemandStatusCountResDTO;
+import com.ruoyi.xkt.dto.storeProductDemand.*;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
@@ -46,4 +43,13 @@ public interface StoreProductDemandDetailMapper extends BaseMapper<StoreProductD
     StoreProdDemandStatusCountResDTO getStatusNum(@Param("storeId") Long storeId,
                                                   @Param("sixMonthAgo") Date sixMonthAgo,
                                                   @Param("now") Date now);
+
+    /**
+     * 获取导出列表
+     *
+     * @param exportDTO 导出参数
+     * @return 导出列表
+     */
+    List<StoreProdDemandDownloadDTO> selectDownloadList(StoreProdDemandExportDTO exportDTO);
+    
 }
