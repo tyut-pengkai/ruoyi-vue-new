@@ -30,7 +30,14 @@ public class StoreProductProcess extends XktBaseEntity {
      */
     @Excel(name = "档口商品ID")
     private Long storeProdId;
-
+    /**
+     * 客户
+     */
+    private String partnerName;
+    /**
+     * 商标
+     */
+    private String trademark;
     /**
      * 鞋型
      */

@@ -6,10 +6,11 @@ import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.model.ESystemRole;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.system.service.ISysUserService;
-import com.ruoyi.xkt.domain.*;
+import com.ruoyi.xkt.domain.Store;
+import com.ruoyi.xkt.domain.StoreCertificate;
+import com.ruoyi.xkt.domain.SysFile;
 import com.ruoyi.xkt.dto.storeCertificate.StoreCertDTO;
 import com.ruoyi.xkt.dto.storeCertificate.StoreCertResDTO;
 import com.ruoyi.xkt.dto.storeCertificate.StoreCertStepResDTO;
@@ -47,8 +48,7 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
     final StoreSaleDetailMapper saleDetailMapper;
     final StoreProductMapper storeProdMapper;
     final ISysUserService userService;
-    final VoucherSequenceMapper vsMapper;
-    final StoreCustomerMapper storeCusMapper;
+
 
     /**
      * 新增档口认证
@@ -65,24 +65,7 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
                 .setStoreId(store.getId());
         // 新增档口认证的文件列表
         storeCert = this.handleStoreCertFileList(certDTO, storeCert);
-        int count = this.storeCertMapper.insert(storeCert);
-        // 新增档口的单据编号初始化 销售出库、采购入库、需求单、订单
-        List<VoucherSequence> vsList = new ArrayList<>();
-        // 销售出库
-        vsList.add(this.initVoucherSequence(store.getId(), Constants.VOUCHER_SEQ_STORE_SALE_TYPE, Constants.VOUCHER_SEQ_STORE_SALE_PREFIX));
-        // 采购入库
-        vsList.add(this.initVoucherSequence(store.getId(), Constants.VOUCHER_SEQ_STORAGE_TYPE, Constants.VOUCHER_SEQ_STORAGE_PREFIX));
-        // 需求单
-        vsList.add(this.initVoucherSequence(store.getId(), Constants.VOUCHER_SEQ_DEMAND_TYPE, Constants.VOUCHER_SEQ_DEMAND_PREFIX));
-        // 代发订单
-        vsList.add(this.initVoucherSequence(store.getId(), Constants.VOUCHER_SEQ_STORE_ORDER_TYPE, Constants.VOUCHER_SEQ_STORE_ORDER_PREFIX));
-        this.vsMapper.insert(vsList);
-        // 新增档口 “现金客户”
-        StoreCustomer storeCus = new StoreCustomer().setStoreId(store.getId()).setPhone(store.getContactPhone())
-                // 默认创建现金客户
-                .setCusName(Constants.STORE_CUS_CASH);
-        this.storeCusMapper.insert(storeCus);
-        return count;
+        return this.storeCertMapper.insert(storeCert);
     }
 
 
@@ -266,19 +249,6 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
         // 默认档口状态为：待审核
         store.setStoreStatus(StoreStatus.UN_AUDITED.getValue());
         this.storeMapper.updateById(store);
-    }
-
-    /**
-     * 初始化各类单据情况
-     *
-     * @param storeId 档口ID
-     * @param type    类型
-     * @param prefix  前缀
-     * @return
-     */
-    private VoucherSequence initVoucherSequence(Long storeId, String type, String prefix) {
-        return new VoucherSequence().setStoreId(storeId).setType(type).setDateFormat(DateUtils.YYYY_MM_DD)
-                .setPrefix(prefix).setNextSequence(1).setSequenceFormat(Constants.VOUCHER_SEQ_FORMAT);
     }
 
 

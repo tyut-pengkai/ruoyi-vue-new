@@ -16,6 +16,7 @@ import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.bigDecimal.CollectorsUtil;
@@ -28,10 +29,7 @@ import com.ruoyi.xkt.dto.storeCertificate.StoreCertDTO;
 import com.ruoyi.xkt.dto.storeCertificate.StoreCertResDTO;
 import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.mapper.*;
-import com.ruoyi.xkt.service.IAssetService;
-import com.ruoyi.xkt.service.INoticeService;
-import com.ruoyi.xkt.service.IStoreCertificateService;
-import com.ruoyi.xkt.service.IStoreService;
+import com.ruoyi.xkt.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -78,6 +76,10 @@ public class StoreServiceImpl implements IStoreService {
     final EsClientWrapper esClientWrapper;
     final StoreMemberMapper storeMemberMapper;
     final INoticeService noticeService;
+    final VoucherSequenceMapper vsMapper;
+    final StoreCustomerMapper storeCusMapper;
+    final StoreFactoryMapper storeFactoryMapper;
+    final IStoreProductDemandTemplateService storeTemplateService;
 
     /**
      * 档口分页数据
@@ -141,6 +143,8 @@ public class StoreServiceImpl implements IStoreService {
             store.setStockSys(auditDTO.getStockSys());
             // 将store存到redis中
             redisCache.setCacheObject(CacheConstants.STORE_KEY + store.getId(), store);
+            // 初始化其它数据
+            this.initOthers(store.getId(), store.getContactPhone(), store.getStoreName());
         } else {
             store.setStoreStatus(StoreStatus.AUDIT_REJECTED.getValue());
             store.setRejectReason(auditDTO.getRejectReason());
@@ -805,6 +809,39 @@ public class StoreServiceImpl implements IStoreService {
         SysFile licenseFile = BeanUtil.toBean(license, SysFile.class);
         this.fileMapper.insert(Arrays.asList(idCardFaceFile, idCardEmblemFile, licenseFile));
         return storeCert.setIdCardFaceFileId(idCardFaceFile.getId()).setIdCardEmblemFileId(idCardEmblemFile.getId()).setLicenseFileId(licenseFile.getId());
+    }
+
+    /**
+     * 初始化各类单据情况
+     *
+     * @param storeId 档口ID
+     * @param type    类型
+     * @param prefix  前缀
+     * @return
+     */
+    private VoucherSequence initVoucherSequence(Long storeId, String type, String prefix) {
+        return new VoucherSequence().setStoreId(storeId).setType(type).setDateFormat(DateUtils.YYYY_MM_DD)
+                .setPrefix(prefix).setNextSequence(1).setSequenceFormat(Constants.VOUCHER_SEQ_FORMAT);
+    }
+
+    private void initOthers(Long storeId, String contactPhone, String storeName) {
+        // 新增档口的单据编号初始化 销售出库、采购入库、需求单、订单
+        List<VoucherSequence> vsList = new ArrayList<>();
+        // 销售出库
+        vsList.add(this.initVoucherSequence(storeId, Constants.VOUCHER_SEQ_STORE_SALE_TYPE, Constants.VOUCHER_SEQ_STORE_SALE_PREFIX));
+        // 采购入库
+        vsList.add(this.initVoucherSequence(storeId, Constants.VOUCHER_SEQ_STORAGE_TYPE, Constants.VOUCHER_SEQ_STORAGE_PREFIX));
+        // 需求单
+        vsList.add(this.initVoucherSequence(storeId, Constants.VOUCHER_SEQ_DEMAND_TYPE, Constants.VOUCHER_SEQ_DEMAND_PREFIX));
+        // 代发订单
+        vsList.add(this.initVoucherSequence(storeId, Constants.VOUCHER_SEQ_STORE_ORDER_TYPE, Constants.VOUCHER_SEQ_STORE_ORDER_PREFIX));
+        this.vsMapper.insert(vsList);
+        // 默认创建现金客户
+        this.storeCusMapper.insert(new StoreCustomer().setStoreId(storeId).setPhone(contactPhone).setCusName(Constants.STORE_CUS_CASH));
+        // 创建默认的工厂
+        this.storeFactoryMapper.insert(new StoreFactory().setFacName(storeName + "工厂"));
+        // 创建默认的需求下载模板
+        this.storeTemplateService.initTemplate(storeId);
     }
 
 

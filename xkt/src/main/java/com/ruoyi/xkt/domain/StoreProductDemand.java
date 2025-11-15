@@ -46,9 +46,9 @@ public class StoreProductDemand extends XktBaseEntity {
     private String code;
 
     /**
-     * 需求状态 1 待生产 2 生产中 3 生产完成
+     * 生产状态 1 待生产 2 生产中 3 生产完成
      */
-    @Excel(name = "需求状态")
+    @Excel(name = "生产状态")
     private Integer demandStatus;
     /**
      * 备注

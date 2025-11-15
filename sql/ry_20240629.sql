@@ -3353,7 +3353,6 @@ CREATE TABLE `store_factory`
     `fac_contact` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '联系人',
     `fac_phone`   varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '工厂联系电话',
     `remark`      varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注',
-    `fac_status`  char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '工厂状态',
     `version`     bigint UNSIGNED NOT NULL COMMENT '版本号',
     `del_flag`    char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '删除标志（0代表存在 2代表删除）',
     `create_by`   varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '创建者',
@@ -3603,7 +3602,7 @@ CREATE TABLE `store_product_demand`
     `create_time`      datetime NULL DEFAULT NULL COMMENT '创建时间',
     `update_by`        varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '更新者',
     `update_time`      datetime NULL DEFAULT NULL COMMENT '更新时间',
-    `demand_status`    tinyint UNSIGNED NULL DEFAULT NULL COMMENT '需求状态 1待生产 2 生产中  3 生产完成',
+    `demand_status`    tinyint UNSIGNED NULL DEFAULT NULL COMMENT '生产状态 1待生产 2 生产中  3 生产完成',
     `remark`           varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '档口商品需求单' ROW_FORMAT = DYNAMIC;
@@ -3701,6 +3700,8 @@ CREATE TABLE `store_product_process`
 (
     `id`                    bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '档口商品工艺信息ID',
     `store_prod_id`         bigint UNSIGNED NOT NULL COMMENT '档口商品ID',
+    `partner_name`          varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '客户',
+    `trademark`             varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '商标',
     `shoe_type`             varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '鞋型',
     `shoe_size`             varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '楦号',
     `main_skin`             varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '主皮',
@@ -4354,6 +4355,69 @@ INSERT INTO `express_fee_config` VALUES (129, 1, '513200', NULL, 8.00, 8.00, '0'
 INSERT INTO `express_fee_config` VALUES (130, 2, '440300', NULL, 4.20, 4.20, '0', '', NULL, '', NULL, 0);
 
 
+-- ----------------------------
+-- Table structure for store_product_demand_template
+-- ----------------------------
+DROP TABLE IF EXISTS `store_product_demand_template`;
+CREATE TABLE `store_product_demand_template`
+(
+    `id`                                bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键',
+    `store_id`                          bigint(20) UNSIGNED NOT NULL COMMENT '档口ID',
+    `select_size30`                     tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '尺码30',
+    `select_size31`                     tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '尺码31',
+    `select_size32`                     tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '尺码32',
+    `select_size33`                     tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '尺码33',
+    `select_size34`                     tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '尺码34',
+    `select_size35`                     tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '尺码35',
+    `select_size36`                     tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '尺码36',
+    `select_size37`                     tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '尺码37',
+    `select_size38`                     tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '尺码38',
+    `select_size39`                     tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '尺码39',
+    `select_size40`                     tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '尺码40',
+    `select_size41`                     tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '尺码41',
+    `select_size42`                     tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '尺码42',
+    `select_size43`                     tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '尺码43',
+    `select_fac_name`                   tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '工厂名称',
+    `select_demand_code`                tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '需求单号',
+    `select_make_time`                  tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '提单时间',
+    `select_factory_art_num`            tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '工厂货号',
+    `select_prod_art_num`               tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '商品货号',
+    `select_color_name`                 tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '颜色',
+    `select_shoe_upper_lining_material` tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '内里材质',
+    `select_shaft_material`             tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '鞋面材质',
+    `select_demand_status`              tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '生产状态',
+    `select_emergency`                  tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '紧急程度',
+    `select_quantity`                   tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '总数量',
+    `select_partner_name`               tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '客户名称',
+    `select_trademark`                  tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '商标',
+    `select_shoe_type`                  tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '鞋型',
+    `select_shoe_size`                  tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '楦号',
+    `select_main_skin`                  tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '主皮',
+    `select_main_skin_usage`            tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '主皮用量',
+    `select_match_skin`                 tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '配皮',
+    `select_match_skin_usage`           tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '配皮用量',
+    `select_neckline`                   tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '领口',
+    `select_insole`                     tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '膛底',
+    `select_fastener`                   tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '扣件/拉头',
+    `select_shoe_accessories`           tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '辅料',
+    `select_toe_cap`                    tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '包头',
+    `select_edge_binding`               tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '包边',
+    `select_mid_outsole`                tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '中大底',
+    `select_platform_sole`              tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '防水台',
+    `select_midsole_factory_code`       tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '中底厂家编码',
+    `select_outsole_factory_code`       tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '外底厂家编码',
+    `select_heel_factory_code`          tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '跟厂编码',
+    `select_components`                 tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '配料',
+    `select_second_sole_material`       tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '第二底料',
+    `select_second_upper_material`      tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '第二配料',
+    `version`                           bigint(20) UNSIGNED NOT NULL COMMENT '版本号',
+    `del_flag`                          char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '删除标志（0代表存在 2代表删除）',
+    `create_by`                         varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '创建者',
+    `create_time`                       datetime NULL DEFAULT NULL COMMENT '创建时间',
+    `update_by`                         varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '更新者',
+    `update_time`                       datetime NULL DEFAULT NULL COMMENT '更新时间',
+    PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 
 
