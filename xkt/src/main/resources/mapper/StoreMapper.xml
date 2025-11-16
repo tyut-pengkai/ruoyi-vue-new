@@ -13,7 +13,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             s.contact_back_phone,
             s.store_status,
             s.del_flag,
-            s.store_weight
+            s.store_weight,
+            s.service_amount,
+            s.member_amount
         FROM
             store s JOIN sys_user u ON s.user_id = u.user_id
             <if test="storeName != null  and storeName != ''"> and s.store_name like concat('%', #{storeName}, '%')</if>

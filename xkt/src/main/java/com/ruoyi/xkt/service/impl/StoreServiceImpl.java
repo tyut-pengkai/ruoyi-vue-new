@@ -92,6 +92,17 @@ public class StoreServiceImpl implements IStoreService {
     public Page<StorePageResDTO> page(StorePageDTO pageDTO) {
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
         List<StorePageResDTO> storeList = this.storeMapper.selectStorePage(pageDTO);
+        if (CollectionUtils.isNotEmpty(storeList)) {
+            // 如果没有年费金额 或 会员金额 则设置默认值
+            storeList.forEach(store -> {
+                if (ObjectUtils.isEmpty(store.getServiceAmount())) {
+                    store.setServiceAmount(Constants.STORE_ANNUAL_AMOUNT);
+                }
+                if (ObjectUtils.isEmpty(store.getMemberAmount())) {
+                    store.setMemberAmount(Constants.STORE_MEMBER_AMOUNT);
+                }
+            });
+        }
         return Page.convert(new PageInfo<>(storeList));
     }
 

@@ -3,6 +3,8 @@ package com.ruoyi.xkt.dto.store;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * @author liujiang
  * @version v1.0
@@ -27,5 +29,9 @@ public class StorePageResDTO {
     private String delFlag;
     @ApiModelProperty(value = "档口权重")
     private Integer storeWeight;
+    @ApiModelProperty(value = "年费金额")
+    private BigDecimal serviceAmount;
+    @ApiModelProperty(value = "会员金额")
+    private BigDecimal memberAmount;
 
 }
