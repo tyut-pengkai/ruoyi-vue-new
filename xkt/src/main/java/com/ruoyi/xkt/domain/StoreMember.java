@@ -5,6 +5,7 @@ import com.ruoyi.common.core.domain.XktBaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -32,6 +33,14 @@ public class StoreMember extends XktBaseEntity {
      * 会员等级
      */
     private Integer level;
+    /**
+     * 会员状态 1 未购买待审核 2 已购买待审核  3 审核通过（正式使用） 4 审核拒绝
+     */
+    private Integer memberStatus;
+    /**
+     * 支付金额
+     */
+    private BigDecimal payPrice;
     /**
      * 生效日期 yyyy-MM-dd
      */

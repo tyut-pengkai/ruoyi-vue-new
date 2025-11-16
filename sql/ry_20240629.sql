@@ -3390,20 +3390,22 @@ CREATE TABLE `store_homepage`
 DROP TABLE IF EXISTS `store_member`;
 CREATE TABLE `store_member`
 (
-    `id`           bigint UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '档口会员主键',
-    `store_id`     bigint UNSIGNED NOT NULL COMMENT '档口ID',
-    `level`        int UNSIGNED NOT NULL COMMENT '会员等级',
-    `start_time`   date NOT NULL COMMENT '开始时间',
-    `end_time`     date NOT NULL COMMENT '结束时间',
-    `voucher_date` date NOT NULL COMMENT '单据日期',
-    `version`      bigint UNSIGNED NOT NULL COMMENT '版本号',
-    `del_flag`     char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '删除标志（0代表存在 2代表删除）',
-    `create_by`    varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '创建者',
-    `create_time`  datetime NULL DEFAULT NULL COMMENT '创建时间',
-    `update_by`    varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '更新者',
-    `update_time`  datetime NULL DEFAULT NULL COMMENT '更新时间',
+    `id`            bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '档口会员主键',
+    `store_id`      bigint(20) UNSIGNED NOT NULL COMMENT '档口ID',
+    `level`         int(10) UNSIGNED NULL DEFAULT NULL COMMENT '会员等级',
+    `start_time`    date NULL DEFAULT NULL COMMENT '开始时间',
+    `end_time`      date NULL DEFAULT NULL COMMENT '结束时间',
+    `member_status` tinyint(3) UNSIGNED NULL DEFAULT NULL COMMENT '会员状态',
+    `voucher_date`  date NOT NULL COMMENT '单据日期',
+    `pay_price`     decimal(10, 2) UNSIGNED NULL DEFAULT NULL COMMENT '支付金额',
+    `version`       bigint(20) UNSIGNED NOT NULL COMMENT '版本号',
+    `del_flag`      char(1) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '删除标志（0代表存在 2代表删除）',
+    `create_by`     varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '创建者',
+    `create_time`   datetime NULL DEFAULT NULL COMMENT '创建时间',
+    `update_by`     varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '更新者',
+    `update_time`   datetime NULL DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
 
 
 

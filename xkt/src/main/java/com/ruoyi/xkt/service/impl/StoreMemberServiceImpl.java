@@ -12,6 +12,7 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.Store;
 import com.ruoyi.xkt.domain.StoreMember;
+import com.ruoyi.xkt.dto.storeMember.StoreMemberAuditDTO;
 import com.ruoyi.xkt.dto.storeMember.StoreMemberCreateDTO;
 import com.ruoyi.xkt.dto.storeMember.StoreMemberPageDTO;
 import com.ruoyi.xkt.dto.storeMember.StoreMemberPageResDTO;
@@ -29,10 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * 推广营销Service业务层处理
@@ -74,44 +72,22 @@ public class StoreMemberServiceImpl implements IStoreMemberService {
         Optional.ofNullable(createDTO.getPayPrice()).orElseThrow(() -> new RuntimeException("购买金额不能为空!"));
         // 看是否已存在会员
         StoreMember storeMember = this.storeMemberMapper.selectOne(new LambdaQueryWrapper<StoreMember>()
-                .eq(StoreMember::getStoreId, createDTO.getStoreId()).eq(StoreMember::getDelFlag, Constants.UNDELETED));
-        int count;
-        // 已存在会员，则在之前的基础上续期
+                .eq(StoreMember::getStoreId, createDTO.getStoreId()).eq(StoreMember::getMemberStatus, StoreMemberStatus.AUDIT_PASS.getValue())
+                .eq(StoreMember::getDelFlag, Constants.UNDELETED));
         if (ObjectUtils.isNotEmpty(storeMember)) {
-            // 续期结束时间在原来基础上再加一年
-            Date memberEndTime = storeMember.getEndTime();
-            // 直接增加一年
-            Date memberEndTimePlus = Date.from(memberEndTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-                    .plusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
-            storeMember.setEndTime(memberEndTimePlus);
-            storeMember.setUpdateBy(SecurityUtils.getUsername());
-            count = this.storeMemberMapper.updateById(storeMember);
+            // 将状态置为 2 已购买待审核
+            storeMember.setMemberStatus(StoreMemberStatus.BOUGHT_WAIT_AUDIT.getValue());
         } else {
             storeMember = new StoreMember();
             storeMember.setStoreId(createDTO.getStoreId());
-            // 最低等级会员：实力质造
-            storeMember.setLevel(StoreMemberLevel.STRENGTH_CONSTRUCT.getValue());
-            storeMember.setStartTime(java.sql.Date.valueOf(LocalDate.now()));
-            // 过期时间设置为1年后
-            storeMember.setEndTime(java.sql.Date.valueOf(LocalDate.now().plusYears(1)));
-            storeMember.setVoucherDate(java.sql.Date.valueOf(LocalDate.now()));
+            // 将状态置为 1 未购买待审核
+            storeMember.setMemberStatus(StoreMemberStatus.WAIT_AUDIT.getValue());
             storeMember.setCreateBy(SecurityUtils.getUsername());
-            count = this.storeMemberMapper.insert(storeMember);
-            // 将档口权重增加1
-            Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
-                            .eq(Store::getId, createDTO.getStoreId()).eq(Store::getDelFlag, Constants.UNDELETED)))
-                    .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
-            store.setStoreWeight(ObjectUtils.defaultIfNull(store.getStoreWeight(), 0) + 1);
-            this.storeMapper.updateById(store);
-            // 将档口会员信息添加到 redis 中
-            redisCache.setCacheObject(CacheConstants.STORE_MEMBER + createDTO.getStoreId(), storeMember);
         }
-        // 新增订购成功的消息通知
-        this.noticeService.createSingleNotice(SecurityUtils.getUserId(), "购买会员成功!", NoticeType.NOTICE.getValue(), NoticeOwnerType.SYSTEM.getValue(),
-                createDTO.getStoreId(), UserNoticeType.SYSTEM_MSG.getValue(), "恭喜您！购买:实力质造 会员成功!");
-        // 扣除会员费
-        assetService.payVipFee(createDTO.getStoreId(), createDTO.getPayPrice());
-        return count;
+        storeMember.setVoucherDate(java.sql.Date.valueOf(LocalDate.now()));
+        storeMember.setPayPrice(createDTO.getPayPrice());
+        this.storeMemberMapper.insertOrUpdate(storeMember);
+        return 1;
     }
 
     /**
@@ -129,7 +105,8 @@ public class StoreMemberServiceImpl implements IStoreMemberService {
         }
         // 看是否已存在会员
         StoreMember storeMember = this.storeMemberMapper.selectOne(new LambdaQueryWrapper<StoreMember>()
-                .eq(StoreMember::getStoreId, storeId).eq(StoreMember::getDelFlag, Constants.UNDELETED));
+                .eq(StoreMember::getStoreId, storeId).eq(StoreMember::getMemberStatus, StoreMemberStatus.AUDIT_PASS.getValue())
+                .eq(StoreMember::getDelFlag, Constants.UNDELETED));
         int count;
         // 已存在会员，则在之前的基础上续期
         if (ObjectUtils.isNotEmpty(storeMember)) {
@@ -162,6 +139,57 @@ public class StoreMemberServiceImpl implements IStoreMemberService {
             redisCache.setCacheObject(CacheConstants.STORE_MEMBER + storeId, storeMember);
         }
         return count;
+    }
+
+    /**
+     * 审核档口会员
+     *
+     * @param auditDTO 档口会员审核入参
+     * @return Integer
+     */
+    @Override
+    @Transactional
+    public Integer audit(StoreMemberAuditDTO auditDTO) {
+        // 用户是否为超级管理员
+        if (!SecurityUtils.isSuperAdmin()) {
+            throw new ServiceException("当前用户非超级管理员，无权限操作!", HttpStatus.ERROR);
+        }
+        StoreMember storeMember = Optional.ofNullable(this.storeMemberMapper.selectOne(new LambdaQueryWrapper<StoreMember>()
+                        .eq(StoreMember::getId, auditDTO.getStoreMemberId()).eq(StoreMember::getDelFlag, Constants.UNDELETED)
+                        .in(StoreMember::getMemberStatus, Arrays.asList(StoreMemberStatus.WAIT_AUDIT.getValue(), StoreMemberStatus.BOUGHT_WAIT_AUDIT.getValue()))))
+                .orElseThrow(() -> new ServiceException("会员不存在!", HttpStatus.ERROR));
+        if (Objects.equals(auditDTO.getMemberStatus(), StoreMemberStatus.AUDIT_PASS.getValue())) {
+            // 若结束时间在当前时间之前，则直接设置为当前时间
+            Date startTime = ObjectUtils.isEmpty(storeMember.getEndTime()) ? new Date()
+                    : (storeMember.getEndTime().after(new Date()) ? storeMember.getEndTime() : new Date());
+            // 直接增加一年
+            Date endTime = Date.from(startTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                    .plusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
+            storeMember.setStartTime(startTime);
+            storeMember.setEndTime(endTime);
+            storeMember.setUpdateBy(SecurityUtils.getUsername());
+            storeMember.setMemberStatus(StoreMemberStatus.AUDIT_PASS.getValue());
+            // 最低等级会员：实力质造
+            storeMember.setLevel(StoreMemberLevel.STRENGTH_CONSTRUCT.getValue());
+            storeMember.setVoucherDate(java.sql.Date.valueOf(LocalDate.now()));
+            // 将档口权重增加1
+            Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
+                            .eq(Store::getId, storeMember.getStoreId()).eq(Store::getDelFlag, Constants.UNDELETED)))
+                    .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
+            store.setStoreWeight(ObjectUtils.defaultIfNull(store.getStoreWeight(), 0) + 1);
+            this.storeMapper.updateById(store);
+            // 将档口会员信息添加到 redis 中
+            redisCache.setCacheObject(CacheConstants.STORE_MEMBER + storeMember.getStoreId(), storeMember);
+            // 新增订购成功的消息通知
+            this.noticeService.createSingleNotice(SecurityUtils.getUserId(), "购买会员成功!", NoticeType.NOTICE.getValue(), NoticeOwnerType.SYSTEM.getValue(),
+                    storeMember.getStoreId(), UserNoticeType.SYSTEM_MSG.getValue(), "恭喜您！购买:实力质造 会员成功!");
+            // 扣除会员费
+            assetService.payVipFee(storeMember.getStoreId(), storeMember.getPayPrice());
+        } else {
+            // 如果审核驳回，则直接将该笔审核置为无效
+            storeMember.setDelFlag(Constants.DELETED);
+        }
+        return this.storeMemberMapper.updateById(storeMember);
     }
 
     /**

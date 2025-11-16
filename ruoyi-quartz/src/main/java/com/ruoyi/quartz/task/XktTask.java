@@ -746,9 +746,10 @@ public class XktTask {
      */
     public void autoCloseExpireStoreMember() {
         final Date yesterday = java.sql.Date.valueOf(LocalDate.now().minusDays(1));
-        // 截止昨天，会员过期的档口
+        // 截止昨天，会员过期的档口 必须是正式使用的会员
         List<StoreMember> expireList = this.storeMemberMapper.selectList(new LambdaQueryWrapper<StoreMember>()
-                .eq(StoreMember::getDelFlag, Constants.UNDELETED).eq(StoreMember::getEndTime, yesterday));
+                .eq(StoreMember::getDelFlag, Constants.UNDELETED).eq(StoreMember::getMemberStatus, StoreMemberStatus.AUDIT_PASS.getValue())
+                .eq(StoreMember::getEndTime, yesterday));
         if (CollectionUtils.isEmpty(expireList)) {
             return;
         }
@@ -763,7 +764,7 @@ public class XktTask {
      */
     public void saveStoreMemberToRedis() {
         List<StoreMember> memberList = this.storeMemberMapper.selectList(new LambdaQueryWrapper<StoreMember>()
-                .eq(StoreMember::getDelFlag, Constants.UNDELETED));
+                .eq(StoreMember::getMemberStatus, StoreMemberStatus.AUDIT_PASS.getValue()).eq(StoreMember::getDelFlag, Constants.UNDELETED));
         if (CollectionUtils.isEmpty(memberList)) {
             return;
         }
@@ -793,11 +794,10 @@ public class XktTask {
     /**
      * 凌晨03:00更新档口权重到redis
      */
-    public void updateStoreWeightToES() throws IOException {
+    public void updateStoreWeightToES() {
         // 找到昨天开通会员的所有档口
         List<StoreMember> memberList = this.storeMemberMapper.selectList(new LambdaQueryWrapper<StoreMember>()
-                .eq(StoreMember::getDelFlag, Constants.UNDELETED)
-                .eq(StoreMember::getLevel, StoreMemberLevel.STRENGTH_CONSTRUCT.getValue())
+                .eq(StoreMember::getDelFlag, Constants.UNDELETED).eq(StoreMember::getMemberStatus, StoreMemberStatus.AUDIT_PASS.getValue())
                 .eq(StoreMember::getVoucherDate, java.sql.Date.valueOf(LocalDate.now().minusDays(1))));
         if (CollectionUtils.isEmpty(memberList)) {
             return;

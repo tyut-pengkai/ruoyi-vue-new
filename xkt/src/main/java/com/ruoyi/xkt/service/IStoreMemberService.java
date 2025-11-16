@@ -1,6 +1,7 @@
 package com.ruoyi.xkt.service;
 
 import com.ruoyi.common.core.page.Page;
+import com.ruoyi.xkt.dto.storeMember.StoreMemberAuditDTO;
 import com.ruoyi.xkt.dto.storeMember.StoreMemberCreateDTO;
 import com.ruoyi.xkt.dto.storeMember.StoreMemberPageDTO;
 import com.ruoyi.xkt.dto.storeMember.StoreMemberPageResDTO;
@@ -37,4 +38,11 @@ public interface IStoreMemberService {
      */
     Integer createNoMoney(Long storeId);
 
+    /**
+     * 审核档口会员
+     *
+     * @param auditDTO 档口会员审核入参
+     * @return Integer
+     */
+    Integer audit(StoreMemberAuditDTO auditDTO);
 }

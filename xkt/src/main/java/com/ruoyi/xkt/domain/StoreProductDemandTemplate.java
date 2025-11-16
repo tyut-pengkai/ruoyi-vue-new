@@ -94,7 +94,7 @@ public class StoreProductDemandTemplate extends XktBaseEntity {
      */
     private Integer selectDemandCode;
     /**
-     * 商品信息 提单时间
+     * 商品信息 制单时间
      */
     private Integer selectMakeTime;
     /**
@@ -126,7 +126,7 @@ public class StoreProductDemandTemplate extends XktBaseEntity {
      */
     private Integer selectEmergency;
     /**
-     * 商品信息 总需求数量
+     * 商品信息 总数量
      */
     private Integer selectQuantity;
     /**

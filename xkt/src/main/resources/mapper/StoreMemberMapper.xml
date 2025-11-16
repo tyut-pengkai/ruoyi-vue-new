@@ -20,6 +20,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         WHERE
             sm.del_flag = 0
             <if test="storeName != null  and storeName != ''"> and s.store_name like concat('%', #{storeName}, '%')</if>
+            <if test="memberStatusList != null and memberStatusList.size() > 0">
+                and sm.member_status in
+                <foreach collection="memberStatusList" item="item" index="index" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
         ORDER BY
             sm.create_time DESC
     </select>

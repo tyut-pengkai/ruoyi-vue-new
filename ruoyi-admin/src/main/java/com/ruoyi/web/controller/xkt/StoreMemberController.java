@@ -6,8 +6,10 @@ import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.web.controller.xkt.vo.storeMember.StoreMemberAuditVO;
 import com.ruoyi.web.controller.xkt.vo.storeMember.StoreMemberCreateVO;
 import com.ruoyi.web.controller.xkt.vo.storeMember.StoreMemberPageVO;
+import com.ruoyi.xkt.dto.storeMember.StoreMemberAuditDTO;
 import com.ruoyi.xkt.dto.storeMember.StoreMemberCreateDTO;
 import com.ruoyi.xkt.dto.storeMember.StoreMemberPageDTO;
 import com.ruoyi.xkt.dto.storeMember.StoreMemberPageResDTO;
@@ -39,6 +41,14 @@ public class StoreMemberController extends XktBaseController {
     @PostMapping
     public R<Integer> create(@Validated @RequestBody StoreMemberCreateVO createVO) {
         return R.ok(storeMemberService.create(BeanUtil.toBean(createVO, StoreMemberCreateDTO.class)));
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @ApiOperation(value = "审核档口会员", httpMethod = "PUT", response = R.class)
+    @Log(title = "审核档口会员", businessType = BusinessType.UPDATE)
+    @PutMapping("/audit")
+    public R<Integer> audit(@Validated @RequestBody StoreMemberAuditVO auditVO) {
+        return R.ok(storeMemberService.audit(BeanUtil.toBean(auditVO, StoreMemberAuditDTO.class)));
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin')")
