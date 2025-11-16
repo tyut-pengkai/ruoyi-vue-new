@@ -166,6 +166,10 @@ public class StoreProdResVO {
 
     @Data
     public static class StoreProdProcessVO {
+        @ApiModelProperty(value = "客户")
+        private String partnerName;
+        @ApiModelProperty(value = "商标")
+        private String trademark;
         @ApiModelProperty(value = "鞋型")
         private String shoeType;
         @ApiModelProperty(value = "楦号")

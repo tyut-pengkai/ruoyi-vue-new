@@ -1,7 +1,10 @@
-package com.ruoyi.xkt.dto.storeProdProcess;
+package com.ruoyi.web.controller.xkt.vo.storeProdProcess;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * @author liujiang
@@ -9,10 +12,9 @@ import lombok.Data;
  * @date 2025/3/27 15:12
  */
 @Data
-public class StoreProdProcessDTO {
+@ApiModel
+public class StoreProdProcessUpdateVO {
 
-    @ApiModelProperty(value = "档口商品ID")
-    private Long storeProdId;
     @ApiModelProperty(value = "客户")
     private String partnerName;
     @ApiModelProperty(value = "商标")
