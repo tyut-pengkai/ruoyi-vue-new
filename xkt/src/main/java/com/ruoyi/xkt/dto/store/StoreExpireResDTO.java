@@ -24,7 +24,9 @@ public class StoreExpireResDTO {
     private Date serviceEndTime;
     @ApiModelProperty(value = "试用金额  正式版金额")
     private BigDecimal serviceAmount;
-    @ApiModelProperty(value = "会员过期时间")
+    @ApiModelProperty(value = "会员状态 null 1:未购买待审核 2:已购买待审核 3:审核通过（正式使用）")
+    private Integer memberStatus;
+    @ApiModelProperty(value = "会员过期时间 未购买待审核没有时间")
     private Date memberEndTime;
     @ApiModelProperty(value = "会员金额")
     private BigDecimal memberAmount;

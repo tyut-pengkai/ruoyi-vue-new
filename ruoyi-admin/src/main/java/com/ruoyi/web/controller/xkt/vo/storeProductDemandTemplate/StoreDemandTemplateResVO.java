@@ -51,7 +51,7 @@ public class StoreDemandTemplateResVO {
     private Integer selectFacName;
     @ApiModelProperty(value = "商品信息 需求单号")
     private Integer selectDemandCode;
-    @ApiModelProperty(value = "商品信息 提单时间")
+    @ApiModelProperty(value = "商品信息 制单时间")
     private Integer selectMakeTime;
     @ApiModelProperty(value = "商品信息 工厂货号")
     private Integer selectFactoryArtNum;
@@ -67,9 +67,9 @@ public class StoreDemandTemplateResVO {
     private Integer selectDemandStatus;
     @ApiModelProperty(value = "商品信息 紧急程度 0正常 1紧急")
     private Integer selectEmergency;
-    @ApiModelProperty(value = "商品信息 总需求数量")
+    @ApiModelProperty(value = "商品信息 总数量")
     private Integer selectQuantity;
-    @ApiModelProperty(value = "工艺信息 客户名称")
+    @ApiModelProperty(value = "工艺信息 客户")
     private Integer selectPartnerName;
     @ApiModelProperty(value = "工艺信息 商标")
     private Integer selectTrademark;

@@ -176,6 +176,8 @@ public class StoreMemberServiceImpl implements IStoreMemberService {
             Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
                             .eq(Store::getId, storeMember.getStoreId()).eq(Store::getDelFlag, Constants.UNDELETED)))
                     .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
+            // 将档口购买优惠金额置为null
+            store.setMemberAmount(null);
             store.setStoreWeight(ObjectUtils.defaultIfNull(store.getStoreWeight(), 0) + 1);
             this.storeMapper.updateById(store);
             // 将档口会员信息添加到 redis 中

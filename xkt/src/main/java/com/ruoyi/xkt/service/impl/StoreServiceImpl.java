@@ -434,6 +434,9 @@ public class StoreServiceImpl implements IStoreService {
 
     /**
      * 获取档口到期信息
+     *  1. 试用期 未购买 正式版 未购买会员   返回足额的正式版金额  足额会员金额
+     *  2. 正式使用  未购买会员 [正式使用 会员过期（未购买会员）]   返回足够的正式版金额 返回会员金额差价
+     *  3. 正式使用  已购买会员  返回足额的正式版会员 返回会员金额差价
      *
      * @param storeId 档口ID
      * @return StoreExpireResDTO
@@ -441,16 +444,27 @@ public class StoreServiceImpl implements IStoreService {
     @Override
     @Transactional(readOnly = true)
     public StoreExpireResDTO getExpireInfo(Long storeId) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(storeId)) {
+            throw new ServiceException("当前用户非管理员账号，无权限操作!", HttpStatus.ERROR);
+        }
         Store store = Optional.ofNullable(storeMapper.selectById(storeId)).orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
-        StoreExpireResDTO expireDTO = new StoreExpireResDTO().setStoreId(storeId).setServiceEndTime(store.getServiceEndTime())
-                .setServiceAmount(ObjectUtils.defaultIfNull(store.getServiceAmount(), Constants.STORE_ANNUAL_AMOUNT))
-                .setMemberAmount(ObjectUtils.defaultIfNull(store.getMemberAmount(), Constants.STORE_MEMBER_AMOUNT));
-        // 获取档口会员
-        Date todayStart = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
+        // 是否已购买会员
         StoreMember storeMember = this.storeMemberMapper.selectOne(new LambdaQueryWrapper<StoreMember>()
                 .eq(StoreMember::getStoreId, storeId).eq(StoreMember::getDelFlag, Constants.UNDELETED)
-                .le(StoreMember::getStartTime, todayStart));
-        return expireDTO.setMemberEndTime(ObjectUtils.isNotEmpty(storeMember) ? storeMember.getEndTime() : null);
+                .eq(StoreMember::getMemberStatus, StoreMemberStatus.AUDIT_PASS.getValue()));
+        BigDecimal serviceAmount = ObjectUtils.defaultIfNull(store.getServiceAmount(), Constants.STORE_ANNUAL_AMOUNT);
+        BigDecimal memberAmount = ObjectUtils.defaultIfNull(store.getMemberAmount(), Constants.STORE_MEMBER_AMOUNT);
+        // 如果档口为正式使用，则返回 diff 值
+        if (Objects.equals(store.getStoreStatus(), StoreStatus.FORMAL_USE.getValue())) {
+            // 如果会员价设置的价 比 年费低，则 自动使用默认价格 ；防止误操作
+            memberAmount = memberAmount.compareTo(serviceAmount) <= 0
+                    ? Constants.STORE_MEMBER_AMOUNT.subtract(serviceAmount) : memberAmount.subtract(serviceAmount);
+        }
+        return new StoreExpireResDTO().setStoreId(storeId).setServiceEndTime(store.getServiceEndTime())
+                .setServiceAmount(serviceAmount).setMemberAmount(memberAmount)
+                .setMemberEndTime(ObjectUtils.isNotEmpty(storeMember) ? storeMember.getEndTime() : null)
+                .setMemberStatus(ObjectUtils.isNotEmpty(storeMember) ? storeMember.getMemberStatus() : null);
     }
 
     /**
@@ -840,7 +854,7 @@ public class StoreServiceImpl implements IStoreService {
         this.storeCusMapper.insert(new StoreCustomer().setStoreId(storeId).setPhone(contactPhone).setCusName(Constants.STORE_CUS_CASH));
         // 创建默认的工厂
         this.storeFactoryMapper.insert(new StoreFactory().setFacName(storeName + "工厂"));
-        // 创建默认的需求下载模板
+        // 创建默认的需求模板
         this.storeTemplateService.initTemplate(storeId);
     }
 

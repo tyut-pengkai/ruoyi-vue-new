@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
  * @author ruoyi
  * @date 2025-03-26
  */
-@Api(tags = "档口生产需求下载模板")
+@Api(tags = "档口生产需求模板")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/rest/v1/store-templates")
@@ -37,8 +37,8 @@ public class StoreProductDemandTemplateController extends XktBaseController {
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
-    @Log(title = "更新档口需求下载模板", businessType = BusinessType.UPDATE)
-    @ApiOperation(value = "更新档口需求下载模板", httpMethod = "PUT", response = R.class)
+    @Log(title = "更新档口需求模板", businessType = BusinessType.UPDATE)
+    @ApiOperation(value = "更新档口需求模板", httpMethod = "PUT", response = R.class)
     @PutMapping("")
     public R<Integer> updateTemplate(@RequestBody StoreDemandTemplateUpdateVO updateVO) {
         return R.ok(templateService.updateTemplate(BeanUtil.toBean(updateVO, StoreDemandTemplateUpdateDTO.class)));
