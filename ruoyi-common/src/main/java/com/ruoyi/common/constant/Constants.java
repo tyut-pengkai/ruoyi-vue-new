@@ -8,11 +8,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 通用常量信息
- * 
+ *
  * @author ruoyi
  */
-public class Constants
-{
+public class Constants {
     /**
      * UTF-8 字符集
      */
@@ -161,18 +160,18 @@ public class Constants
     /**
      * 自动识别json对象白名单配置（仅允许解析的包名，范围越小越安全）
      */
-    public static final String[] JSON_WHITELIST_STR = { "org.springframework", "com.ruoyi" };
+    public static final String[] JSON_WHITELIST_STR = {"org.springframework", "com.ruoyi"};
 
     /**
      * 定时任务白名单配置（仅允许访问的包名，如其他需要可以自行添加）
      */
-    public static final String[] JOB_WHITELIST_STR = { "com.ruoyi.quartz.task" };
+    public static final String[] JOB_WHITELIST_STR = {"com.ruoyi.quartz.task"};
 
     /**
      * 定时任务违规的字符
      */
-    public static final String[] JOB_ERROR_STR = { "java.net.URL", "javax.naming.InitialContext", "org.yaml.snakeyaml",
-            "org.springframework", "org.apache", "com.ruoyi.common.utils.file", "com.ruoyi.common.config", "com.ruoyi.generator" };
+    public static final String[] JOB_ERROR_STR = {"java.net.URL", "javax.naming.InitialContext", "org.yaml.snakeyaml",
+            "org.springframework", "org.apache", "com.ruoyi.common.utils.file", "com.ruoyi.common.config", "com.ruoyi.generator"};
 
     public static final String UNDELETED = "0";
     public static final String DELETED = "2";
@@ -279,10 +278,6 @@ public class Constants
      */
     public static final String RELEASE_YEAR_SEASON_DICT = "release_year_season";
     /**
-     * ES 索引 product_info
-     */
-    public static final String ES_IDX_PRODUCT_INFO = "product_info";
-    /**
      * 最顶层商品分类ID
      */
     public static final Long TOPMOST_PRODUCT_CATEGORY_ID = 1L;
@@ -334,8 +329,8 @@ public class Constants
 
     public static final BigDecimal ALI_SERVICE_FEE_RATE = BigDecimal.valueOf(0.006);
 
-    public static final String  INNER_MATERIAL = "内里材质";
-    public static final String  OUTER_MATERIAL = "里料材质";
+    public static final String INNER_MATERIAL = "内里材质";
+    public static final String OUTER_MATERIAL = "里料材质";
 
     public static final String UPPER_MATERIAL = "upperMaterial";
     public static final String UPPER_MATERIAL_NAME = "帮面材质";

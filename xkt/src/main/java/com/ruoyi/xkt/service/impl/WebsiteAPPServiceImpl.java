@@ -44,6 +44,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -78,6 +79,8 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
     final UserSubscriptionsMapper userSubMapper;
     final UserFavoritesMapper userFavMapper;
     final StoreMemberMapper storeMemberMapper;
+    @Value("${es.indexName}")
+    private String ES_INDEX_NAME;
 
     /**
      * APP 首页热卖精选列表
@@ -1119,7 +1122,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         Query query = new Query.Builder().bool(boolQuery.build()).build();
         // 执行搜索
         SearchResponse<ESProductDTO> resList = esClientWrapper.getEsClient()
-                .search(s -> s.index(Constants.ES_IDX_PRODUCT_INFO)
+                .search(s -> s.index(ES_INDEX_NAME)
                                 .query(query)
                                 .from((searchDTO.getPageNum() - 1) * searchDTO.getPageSize())
                                 .size(searchDTO.getPageSize())

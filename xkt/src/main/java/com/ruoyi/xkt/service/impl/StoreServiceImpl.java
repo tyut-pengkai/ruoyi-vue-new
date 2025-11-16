@@ -34,6 +34,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -80,6 +81,8 @@ public class StoreServiceImpl implements IStoreService {
     final StoreCustomerMapper storeCusMapper;
     final StoreFactoryMapper storeFactoryMapper;
     final IStoreProductDemandTemplateService storeTemplateService;
+    @Value("${es.indexName}")
+    private String ES_INDEX_NAME;
 
     /**
      * 档口分页数据
@@ -445,9 +448,9 @@ public class StoreServiceImpl implements IStoreService {
 
     /**
      * 获取档口到期信息
-     *  1. 试用期 未购买 正式版 未购买会员   返回足额的正式版金额  足额会员金额
-     *  2. 正式使用  未购买会员 [正式使用 会员过期（未购买会员）]   返回足够的正式版金额 返回会员金额差价
-     *  3. 正式使用  已购买会员  返回足额的正式版会员 返回会员金额差价
+     * 1. 试用期 未购买 正式版 未购买会员   返回足额的正式版金额  足额会员金额
+     * 2. 正式使用  未购买会员 [正式使用 会员过期（未购买会员）]   返回足够的正式版金额 返回会员金额差价
+     * 3. 正式使用  已购买会员  返回足额的正式版会员 返回会员金额差价
      *
      * @param storeId 档口ID
      * @return StoreExpireResDTO
@@ -762,12 +765,12 @@ public class StoreServiceImpl implements IStoreService {
                                 put("storeWeight", storeWeight);
                             }}))
                             .id(String.valueOf(storeProd.getId()))
-                            .index(Constants.ES_IDX_PRODUCT_INFO))
+                            .index(ES_INDEX_NAME))
                     .build());
         });
         try {
             // 调用bulk方法执行批量更新操作
-            BulkResponse bulkResponse = esClientWrapper.getEsClient().bulk(e -> e.index(Constants.ES_IDX_PRODUCT_INFO).operations(list));
+            BulkResponse bulkResponse = esClientWrapper.getEsClient().bulk(e -> e.index(ES_INDEX_NAME).operations(list));
             log.info("bulkResponse.result() = {}", bulkResponse.items());
         } catch (IOException | RuntimeException e) {
             // 记录日志并抛出或处理异常

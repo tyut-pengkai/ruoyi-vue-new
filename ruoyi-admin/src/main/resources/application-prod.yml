@@ -59,6 +59,7 @@ es:
   password: 0tP&3!GZZDMrglBm&kWJyw
   maxConnTotal: 100
   maxConnPerRoute: 50
+  indexName: product_info
 # 开发环境配置
 server:
   # 服务器的HTTP端口，默认为9310

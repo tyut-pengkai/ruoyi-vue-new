@@ -30,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -67,6 +68,8 @@ public class GtOnlyBizController extends BaseController {
     final EsClientWrapper esClientWrapper;
     final IPictureService pictureService;
     final FsNotice fsNotice;
+    @Value("${es.indexName}")
+    private String ES_INDEX_NAME;
 
 
     /**
@@ -293,13 +296,13 @@ public class GtOnlyBizController extends BaseController {
         List<BulkOperation> bulkOperations = new ArrayList<>();
         for (ESProductDTO esProductDTO : esProductDTOList) {
             BulkOperation bulkOperation = new BulkOperation.Builder()
-                    .index(i -> i.id(esProductDTO.getStoreProdId()).index(Constants.ES_IDX_PRODUCT_INFO).document(esProductDTO))
+                    .index(i -> i.id(esProductDTO.getStoreProdId()).index(ES_INDEX_NAME).document(esProductDTO))
                     .build();
             bulkOperations.add(bulkOperation);
         }
         // 执行批量插入
         try {
-            BulkResponse response = esClientWrapper.getEsClient().bulk(b -> b.index(Constants.ES_IDX_PRODUCT_INFO).operations(bulkOperations));
+            BulkResponse response = esClientWrapper.getEsClient().bulk(b -> b.index(ES_INDEX_NAME).operations(bulkOperations));
             log.info("批量新增到 ES 成功的 id列表: {}", response.items().stream().map(BulkResponseItem::id).collect(Collectors.toList()));
             // 有哪些没执行成功的，需要发飞书通知
             List<String> successIdList = response.items().stream().map(BulkResponseItem::id).collect(Collectors.toList());
@@ -441,6 +444,7 @@ public class GtOnlyBizController extends BaseController {
 
     /**
      * 获取GT商品的内里属性
+     *
      * @param userId
      * @param gtProdSkuVO
      * @return

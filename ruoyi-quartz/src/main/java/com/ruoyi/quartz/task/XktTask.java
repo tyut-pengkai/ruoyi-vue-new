@@ -57,6 +57,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -130,6 +131,8 @@ public class XktTask {
     final IWebsitePCNewProdService websitePCNewProdService;
     final IWebsitePCStoreService websitePCStoreService;
     final IWebsiteAPPService websiteAPPService;
+    @Value("${es.indexName}")
+    private String ES_INDEX_NAME;
 
     /**
      * 每天执行定时任务
@@ -824,12 +827,12 @@ public class XktTask {
                                 put("storeWeight", ObjectUtils.defaultIfNull(storeWeightMap.get(storeProd.getStoreId()), Constants.WEIGHT_DEFAULT_ZERO));
                             }}))
                             .id(String.valueOf(storeProd.getId()))
-                            .index(Constants.ES_IDX_PRODUCT_INFO))
+                            .index(ES_INDEX_NAME))
                     .build());
         });
         try {
             // 调用bulk方法执行批量更新操作
-            BulkResponse bulkResponse = esClientWrapper.getEsClient().bulk(e -> e.index(Constants.ES_IDX_PRODUCT_INFO).operations(list));
+            BulkResponse bulkResponse = esClientWrapper.getEsClient().bulk(e -> e.index(ES_INDEX_NAME).operations(list));
             log.info("定时任务，批量更新档口权重到 ES 成功的 id列表: {}", bulkResponse.items().stream().map(BulkResponseItem::id).collect(Collectors.toList()));
             // 有哪些没执行成功的，需要发飞书通知
             List<String> successIdList = bulkResponse.items().stream().map(BulkResponseItem::id).collect(Collectors.toList());
@@ -1052,7 +1055,7 @@ public class XktTask {
                             // 使用商品ID作为文档ID
                             .id(String.valueOf(product.getId()))
                             // 索引名称
-                            .index(Constants.ES_IDX_PRODUCT_INFO)
+                            .index(ES_INDEX_NAME)
                             // 插入的数据
                             .document(esProductDTO))
                     .build();
@@ -1061,7 +1064,7 @@ public class XktTask {
         }
         // 执行批量插入
         try {
-            BulkResponse bulkResponse = esClientWrapper.getEsClient().bulk(b -> b.index(Constants.ES_IDX_PRODUCT_INFO).operations(bulkOperations));
+            BulkResponse bulkResponse = esClientWrapper.getEsClient().bulk(b -> b.index(ES_INDEX_NAME).operations(bulkOperations));
             log.info("定时发布商品，批量新增商品到 ES 成功的 id列表: {}", bulkResponse.items().stream().map(BulkResponseItem::id).collect(Collectors.toList()));
             // 有哪些没执行成功的，需要发飞书通知
             List<String> successIdList = bulkResponse.items().stream().map(BulkResponseItem::id).collect(Collectors.toList());
@@ -1693,12 +1696,12 @@ public class XktTask {
                                 put("tags", updateTags);
                             }}))
                             .id(String.valueOf(storeProdId))
-                            .index(Constants.ES_IDX_PRODUCT_INFO))
+                            .index(ES_INDEX_NAME))
                     .build());
         });
         try {
             // 调用bulk方法执行批量更新操作
-            BulkResponse bulkResponse = esClientWrapper.getEsClient().bulk(e -> e.index(Constants.ES_IDX_PRODUCT_INFO).operations(list));
+            BulkResponse bulkResponse = esClientWrapper.getEsClient().bulk(e -> e.index(ES_INDEX_NAME).operations(list));
             log.info("批量更新商品标签到 ES 成功的 id列表: {}", bulkResponse.items().stream().map(BulkResponseItem::id).collect(Collectors.toList()));
             // 有哪些没执行成功的，需要发飞书通知
             List<String> successIdList = bulkResponse.items().stream().map(BulkResponseItem::id).collect(Collectors.toList());

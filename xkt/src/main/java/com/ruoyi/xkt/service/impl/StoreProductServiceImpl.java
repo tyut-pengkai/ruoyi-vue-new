@@ -57,6 +57,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -109,6 +110,8 @@ public class StoreProductServiceImpl implements IStoreProductService {
     final OSSClientWrapper ossClient;
     final TencentAuthManager tencentAuthManager;
     final FsNotice fsNotice;
+    @Value("${es.indexName}")
+    private String ES_INDEX_NAME;
 
 
     /**
@@ -1127,7 +1130,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
         ESProductDTO esProductDTO = this.getESDTO(storeProd, storeProdDTO, storeName);
         try {
             // 向索引中添加数据
-            CreateResponse createResponse = esClientWrapper.getEsClient().create(e -> e.index(Constants.ES_IDX_PRODUCT_INFO)
+            CreateResponse createResponse = esClientWrapper.getEsClient().create(e -> e.index(ES_INDEX_NAME)
                     .id(storeProd.getId().toString()).document(esProductDTO));
             log.info("createResponse.result() = {}", createResponse.result());
         } catch (Exception e) {
@@ -1147,7 +1150,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
         ESProductDTO esProductDTO = this.getESDTO(storeProd, updateDTO, storeName);
         try {
             UpdateResponse<ESProductDTO> updateResponse = esClientWrapper.getEsClient().update(u -> u
-                    .index(Constants.ES_IDX_PRODUCT_INFO).doc(esProductDTO).id(storeProd.getId().toString()), ESProductDTO.class);
+                    .index(ES_INDEX_NAME).doc(esProductDTO).id(storeProd.getId().toString()), ESProductDTO.class);
             log.info("updateResponse.result() = {}", updateResponse.result());
         } catch (Exception e) {
             fsNotice.sendMsg2DefaultChat("更新商品，同步到ES 失败", "storeProdId: " + storeProd.getId());
@@ -1206,9 +1209,9 @@ public class StoreProductServiceImpl implements IStoreProductService {
         try {
             // 删除ES索引文档
             List<BulkOperation> list = storeProdIdList.stream().map(x -> new BulkOperation.Builder().delete(
-                    d -> d.id(String.valueOf(x)).index(Constants.ES_IDX_PRODUCT_INFO)).build()).collect(Collectors.toList());
+                    d -> d.id(String.valueOf(x)).index(ES_INDEX_NAME)).build()).collect(Collectors.toList());
             // 调用bulk方法执行批量插入操作
-            BulkResponse bulkResponse = esClientWrapper.getEsClient().bulk(e -> e.index(Constants.ES_IDX_PRODUCT_INFO).operations(list));
+            BulkResponse bulkResponse = esClientWrapper.getEsClient().bulk(e -> e.index(ES_INDEX_NAME).operations(list));
             log.info("bulkResponse.items() = {}", bulkResponse.items());
         } catch (IOException | RuntimeException e) {
             // 记录日志并抛出或处理异常
@@ -1238,10 +1241,10 @@ public class StoreProductServiceImpl implements IStoreProductService {
                     .setParCateId(esDTO.getParCateId()).setParCateName(esDTO.getParCateName()).setProdPrice(esDTO.getProdPrice()).setStoreName(esDTO.getStoreName())
                     .setSeason(esDTO.getSeason()).setStyle(esDTO.getStyle()).setCreateTime(createTime);
             return new BulkOperation.Builder().create(d -> d.document(esProductDTO).id(String.valueOf(x.getId()))
-                    .index(Constants.ES_IDX_PRODUCT_INFO)).build();
+                    .index(ES_INDEX_NAME)).build();
         }).collect(Collectors.toList());
         // 调用bulk方法执行批量插入操作
-        BulkResponse bulkResponse = esClientWrapper.getEsClient().bulk(e -> e.index(Constants.ES_IDX_PRODUCT_INFO).operations(list));
+        BulkResponse bulkResponse = esClientWrapper.getEsClient().bulk(e -> e.index(ES_INDEX_NAME).operations(list));
         System.out.println("bulkResponse.items() = " + bulkResponse.items());
     }
 
@@ -1421,12 +1424,12 @@ public class StoreProductServiceImpl implements IStoreProductService {
                                 put("prodStatus", prodStatus);
                             }}))
                             .id(String.valueOf(storeProdId))
-                            .index(Constants.ES_IDX_PRODUCT_INFO))
+                            .index(ES_INDEX_NAME))
                     .build());
         });
         try {
             // 调用bulk方法执行批量更新操作
-            BulkResponse bulkResponse = esClientWrapper.getEsClient().bulk(e -> e.index(Constants.ES_IDX_PRODUCT_INFO).operations(list));
+            BulkResponse bulkResponse = esClientWrapper.getEsClient().bulk(e -> e.index(ES_INDEX_NAME).operations(list));
             log.info("bulkResponse.result() = {}", bulkResponse.items());
         } catch (IOException | RuntimeException e) {
             // 记录日志并抛出或处理异常

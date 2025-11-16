@@ -59,6 +59,7 @@ es:
   password: wXd3iRUcqHzxZPtKsDRn
   maxConnTotal: 4
   maxConnPerRoute: 2
+  indexName: dev_product_info
 # 开发环境配置
 server:
   # 服务器的HTTP端口，默认为9310
