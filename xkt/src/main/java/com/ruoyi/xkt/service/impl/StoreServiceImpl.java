@@ -578,6 +578,14 @@ public class StoreServiceImpl implements IStoreService {
         }
         if (ObjectUtils.isNotEmpty(specialDTO.getMemberAmount())) {
             store.setMemberAmount(specialDTO.getMemberAmount());
+            // 若档口为正式使用，则需要判断 会员金额 是否大于年费金额
+            if (Objects.equals(store.getStoreStatus(), StoreStatus.FORMAL_USE.getValue())) {
+                BigDecimal serviceAmount = ObjectUtils.defaultIfNull(store.getServiceAmount(), Constants.STORE_ANNUAL_AMOUNT);
+                BigDecimal memberAmount = ObjectUtils.defaultIfNull(store.getMemberAmount(), Constants.STORE_MEMBER_AMOUNT);
+                if (memberAmount.compareTo(serviceAmount) <= 0) {
+                    throw new ServiceException("会员价不能等于或低于年费价! 年费价:" + serviceAmount + ",会员价:" + memberAmount, HttpStatus.ERROR);
+                }
+            }
         }
         return this.storeMapper.updateById(store);
     }
