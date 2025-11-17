@@ -39,8 +39,20 @@ public class StoreTodaySaleSummaryVO {
     public static class STSSProdSaleVO {
         @ApiModelProperty(value = "货号")
         private String prodArtNum;
-
-
+        @ApiModelProperty(value = "颜色")
+        private String colorName;
+        @ApiModelProperty(value = "颜色销售数量")
+        private Integer colorSaleQuantity;
+        @ApiModelProperty(value = "颜色销售金额")
+        private BigDecimal colorSaleAmount;
+        @ApiModelProperty(value = "颜色退货数量")
+        private Integer colorRefundQuantity;
+        @ApiModelProperty(value = "颜色退货金额")
+        private BigDecimal colorRefundAmount;
+        @ApiModelProperty(value = "颜色总的销售数量")
+        private Integer colorTotalQuantity;
+        @ApiModelProperty(value = "颜色总销售金额")
+        private BigDecimal colorTotalAmount;
         @ApiModelProperty(value = "销售金额")
         private BigDecimal saleAmount;
         @ApiModelProperty(value = "退货金额")
