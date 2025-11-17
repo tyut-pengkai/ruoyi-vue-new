@@ -118,6 +118,10 @@ public class StoreServiceImpl implements IStoreService {
     @Override
     @Transactional
     public Integer updateDelFlag(StoreUpdateDelFlagDTO delFlagDTO) {
+        // 是否为超级管理员
+        if (!SecurityUtils.isAdmin()) {
+            throw new ServiceException("当前用户非管理员账号，无权限操作!", HttpStatus.ERROR);
+        }
         Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
                         .eq(Store::getId, delFlagDTO.getStoreId())))
                 .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));

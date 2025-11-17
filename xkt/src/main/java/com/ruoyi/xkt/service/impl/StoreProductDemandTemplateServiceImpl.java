@@ -56,6 +56,7 @@ public class StoreProductDemandTemplateServiceImpl implements IStoreProductDeman
         StoreProductDemandTemplate template = Optional.ofNullable(this.templateMapper.selectOne(new LambdaQueryWrapper<StoreProductDemandTemplate>()
                         .eq(StoreProductDemandTemplate::getStoreId, storeId).eq(StoreProductDemandTemplate::getDelFlag, Constants.UNDELETED)))
                 .orElse(new StoreProductDemandTemplate());
+        template.setStoreId(storeId);
         // 设置初始化值为未选中
         template.setSelectSize30(UNSELECTED).setSelectSize31(UNSELECTED).setSelectSize32(UNSELECTED).setSelectSize33(UNSELECTED)
                 .setSelectSize41(UNSELECTED).setSelectSize42(UNSELECTED).setSelectSize43(UNSELECTED)
