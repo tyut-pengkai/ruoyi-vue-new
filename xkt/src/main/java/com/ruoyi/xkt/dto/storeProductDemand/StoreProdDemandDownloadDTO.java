@@ -16,7 +16,7 @@ public class StoreProdDemandDownloadDTO {
 
     @Excel(name = "序号", cellType = Excel.ColumnType.NUMERIC, width = 3, height = 24, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private Integer orderNum;
-    @Excel(name = "客户名称", width = 10, height = 24, headerBackgroundColor = IndexedColors.SKY_BLUE)
+    @Excel(name = "客户", width = 10, height = 24, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private String partnerName;
     @Excel(name = "商标", width = 10, height = 24, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private String trademark;
