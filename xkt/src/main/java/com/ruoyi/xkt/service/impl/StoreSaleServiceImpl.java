@@ -12,7 +12,6 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.*;
-import com.ruoyi.xkt.dto.dailySale.StoreTodaySaleDTO;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusGeneralSaleDTO;
 import com.ruoyi.xkt.dto.storeProductStock.StoreProdStockDTO;
 import com.ruoyi.xkt.dto.storeSale.*;
@@ -143,41 +142,6 @@ public class StoreSaleServiceImpl implements IStoreSaleService {
         storeSaleList.forEach(x -> x.setPaymentStatus(PaymentStatus.SETTLED.getValue()));
         List<BatchResult> list = this.storeSaleMapper.updateById(storeSaleList);
         return list.size();
-    }
-
-    /**
-     * 获取当前档口今日销售数据
-     *
-     * @param storeId 档口ID
-     * @return StoreTodaySaleDTO
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public StoreTodaySaleDTO getTodaySale(Long storeId) {
-        // 用户是否为档口管理者或子账户
-        if (!SecurityUtils.isAdmin() && !SecurityUtils.isStoreManagerOrSub(storeId)) {
-            throw new ServiceException("当前用户非档口管理者或子账号，无权限操作!", HttpStatus.ERROR);
-        }
-        // 今天 yyyy-MM-dd
-        Date date = java.sql.Date.valueOf(LocalDate.now());
-        List<StoreSaleDetail> saleDetailList = this.storeSaleDetailMapper.selectList(new LambdaQueryWrapper<StoreSaleDetail>()
-                .eq(StoreSaleDetail::getStoreId, storeId).eq(StoreSaleDetail::getDelFlag, Constants.UNDELETED)
-                .eq(StoreSaleDetail::getVoucherDate, date));
-        if (CollectionUtils.isEmpty(saleDetailList)) {
-            return new StoreTodaySaleDTO();
-        }
-        Integer saleQuantity = saleDetailList.stream().filter(x -> Objects.equals(x.getSaleType(), SaleType.GENERAL_SALE.getValue()))
-                .map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
-        BigDecimal saleAmount = saleDetailList.stream().filter(x -> Objects.equals(x.getSaleType(), SaleType.GENERAL_SALE.getValue()))
-                .map(x -> ObjectUtils.defaultIfNull(x.getAmount(), BigDecimal.ZERO)).reduce(BigDecimal.ZERO, BigDecimal::add);
-        Integer refundQuantity = saleDetailList.stream().filter(x -> Objects.equals(x.getSaleType(), SaleType.SALE_REFUND.getValue()))
-                .map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
-        BigDecimal refundAmount = saleDetailList.stream().filter(x -> Objects.equals(x.getSaleType(), SaleType.SALE_REFUND.getValue()))
-                .map(x -> ObjectUtils.defaultIfNull(x.getAmount(), BigDecimal.ZERO)).reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal amount = saleDetailList.stream().map(x -> ObjectUtils.defaultIfNull(x.getAmount(), BigDecimal.ZERO)).reduce(BigDecimal.ZERO, BigDecimal::add);
-        Integer quantity = saleDetailList.stream().map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
-        return new StoreTodaySaleDTO().setStoreId(storeId).setSaleQuantity(saleQuantity).setSaleAmount(saleAmount)
-                .setRefundQuantity(refundQuantity).setRefundAmount(refundAmount).setAmount(amount).setQuantity(quantity);
     }
 
     /**

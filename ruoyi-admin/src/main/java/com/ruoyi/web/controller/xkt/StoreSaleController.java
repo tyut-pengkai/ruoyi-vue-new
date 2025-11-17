@@ -77,13 +77,6 @@ public class StoreSaleController extends XktBaseController {
     }
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
-    @ApiOperation(value = "查询档口今日销售额", httpMethod = "GET", response = R.class)
-    @GetMapping(value = "/today-sale/{storeId}")
-    public R<StoreTodaySaleVO> getTodaySale(@PathVariable("storeId") Long storeId) {
-        return R.ok(BeanUtil.toBean(storeSaleService.getTodaySale(storeId), StoreTodaySaleVO.class));
-    }
-
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @Log(title = "客户欠款结算", businessType = BusinessType.UPDATE)
     @ApiOperation(value = "客户欠款结算", httpMethod = "PUT", response = R.class)
     @PutMapping("/clear-debt")

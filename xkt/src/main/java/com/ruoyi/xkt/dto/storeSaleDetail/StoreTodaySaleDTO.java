@@ -1,4 +1,4 @@
-package com.ruoyi.xkt.dto.dailySale;
+package com.ruoyi.xkt.dto.storeSaleDetail;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

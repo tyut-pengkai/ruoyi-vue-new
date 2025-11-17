@@ -1,7 +1,7 @@
 package com.ruoyi.xkt.service;
 
 import com.ruoyi.common.core.page.Page;
-import com.ruoyi.xkt.dto.dailySale.StoreTodaySaleDTO;
+import com.ruoyi.xkt.dto.storeSaleDetail.StoreTodaySaleDTO;
 import com.ruoyi.xkt.dto.storeCustomer.StoreCusGeneralSaleDTO;
 import com.ruoyi.xkt.dto.storeSale.*;
 
@@ -74,14 +74,6 @@ public interface IStoreSaleService {
      * @return 返回一个整数，表示受影响的债务记录数量或状态更新结果
      */
     Integer clearStoreCusDebt(StoreSalePayStatusDTO payStatusDTO);
-
-    /**
-     * 获取当前档口今日销售数据
-     *
-     * @param storeId 档口ID
-     * @return StoreTodaySaleDTO
-     */
-    StoreTodaySaleDTO getTodaySale(Long storeId);
 
     /**
      * 修改备注

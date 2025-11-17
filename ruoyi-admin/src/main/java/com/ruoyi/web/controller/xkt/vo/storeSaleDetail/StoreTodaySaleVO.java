@@ -1,4 +1,4 @@
-package com.ruoyi.web.controller.xkt.vo.storeSale;
+package com.ruoyi.web.controller.xkt.vo.storeSaleDetail;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
