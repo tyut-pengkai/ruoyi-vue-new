@@ -37,19 +37,42 @@ public class StoreTodaySaleSummaryVO {
     @Data
     @ApiModel
     public static class STSSProdSaleVO {
+        @ApiModelProperty(value = "货号")
+        private String prodArtNum;
 
-        private Integer cusQuantity;
 
+        @ApiModelProperty(value = "销售金额")
+        private BigDecimal saleAmount;
+        @ApiModelProperty(value = "退货金额")
+        private BigDecimal refundAmount;
+        @ApiModelProperty(value = "销售数量")
+        private Integer saleQuantity;
+        @ApiModelProperty(value = "退货数量")
+        private Integer refundQuantity;
+        @ApiModelProperty(value = "退货率")
+        private String refundRate;
     }
 
     @Data
     @ApiModel
     public static class STSSCusSaleVO {
-
-        private Integer cusQuantity;
-
+        @ApiModelProperty(value = "客户名称")
+        private String storeCusName;
+        @ApiModelProperty(value = "销售金额")
+        private BigDecimal saleAmount;
+        @ApiModelProperty(value = "退货金额")
+        private BigDecimal refundAmount;
+        @ApiModelProperty(value = "销售数量")
+        private Integer saleQuantity;
+        @ApiModelProperty(value = "退货数量")
+        private Integer refundQuantity;
+        @ApiModelProperty(value = "合计销售金额")
+        private BigDecimal totalAmount;
+        @ApiModelProperty(value = "合计销售数量")
+        private Integer totalQuantity;
+        @ApiModelProperty(value = "退货率")
+        private String refundRate;
     }
-
 
 
 }

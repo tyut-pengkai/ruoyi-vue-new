@@ -38,10 +38,22 @@ public class StoreTodaySaleSummaryDTO {
 
     @Data
     @ApiModel
+    @Accessors(chain = true)
     public static class STSSProdSaleDTO {
+        @ApiModelProperty(value = "货号")
+        private String prodArtNum;
 
-        private Integer cusQuantity;
 
+        @ApiModelProperty(value = "销售金额")
+        private BigDecimal saleAmount;
+        @ApiModelProperty(value = "退货金额")
+        private BigDecimal refundAmount;
+        @ApiModelProperty(value = "销售数量")
+        private Integer saleQuantity;
+        @ApiModelProperty(value = "退货数量")
+        private Integer refundQuantity;
+        @ApiModelProperty(value = "退货率")
+        private String refundRate;
     }
 
     @Data

@@ -130,22 +130,47 @@ public class StoreSaleDetailServiceImpl implements IStoreSaleDetailService {
             Integer cusRefundQuantity = cusSaleList.stream().filter(x -> Objects.equals(x.getSaleType(), SaleType.SALE_REFUND.getValue()))
                     .map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
             Integer cusTotalQuantity = cusSaleQuantity + cusRefundQuantity;
-            String refundRate = cusSaleQuantity > 0 ? String.format("%.2f", Math.abs(cusRefundQuantity) * 100.0 / cusSaleQuantity) : "0.00%";
+            String refundRate = cusSaleQuantity > 0 ? String.format("%.2f%%", Math.abs(cusRefundQuantity) * 100.0 / cusSaleQuantity) : "0.00%";
             retCusSaleList.add(new StoreTodaySaleSummaryDTO.STSSCusSaleDTO().setStoreCusName(cusName).setSaleAmount(cusSaleAmount)
                     .setRefundAmount(cusRefundAmount).setTotalAmount(cusTotalAmount).setSaleQuantity(cusSaleQuantity)
                     .setRefundQuantity(cusRefundQuantity).setTotalQuantity(cusTotalQuantity).setRefundRate(refundRate));
         });
+        // 按照总的销售金额 由高到低 排
+        retCusSaleList.sort(Comparator.comparing(StoreTodaySaleSummaryDTO.STSSCusSaleDTO::getTotalAmount).reversed());
         return retCusSaleList;
     }
 
     private List<StoreTodaySaleSummaryDTO.STSSProdSaleDTO> getProdSaleSummary(List<StoreSaleDetail> saleDetailList) {
-        List<StoreTodaySaleSummaryDTO.STSSProdSaleDTO> retProdSaleList = new ArrayList<>();
         // 货号维度 销量map
         Map<String, List<StoreSaleDetail>> artNumSaleGroupMap = saleDetailList.stream().collect(Collectors.groupingBy(StoreSaleDetail::getProdArtNum));
         // 货号 颜色 维度，销量map
         Map<String, Map<String, List<StoreSaleDetail>>> artNumColorSaleGroupMap = saleDetailList.stream().collect(Collectors
                 .groupingBy(StoreSaleDetail::getProdArtNum, Collectors.groupingBy(StoreSaleDetail::getColorName)));
 
+        // TODO 颜色的数据如何返回
+        // TODO 颜色的数据如何返回
+        // TODO 颜色的数据如何返回
+
+
+
+        List<StoreTodaySaleSummaryDTO.STSSProdSaleDTO> retProdSaleList = new ArrayList<>();
+
+        artNumSaleGroupMap.forEach((prodArtNum, prodArtNumSaleList) -> {
+            BigDecimal saleAmount = prodArtNumSaleList.stream().filter(x -> Objects.equals(x.getSaleType(), SaleType.GENERAL_SALE.getValue()))
+                    .map(x -> ObjectUtils.defaultIfNull(x.getAmount(), BigDecimal.ZERO)).reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal refundAmount = prodArtNumSaleList.stream().filter(x -> Objects.equals(x.getSaleType(), SaleType.SALE_REFUND.getValue()))
+                    .map(x -> ObjectUtils.defaultIfNull(x.getAmount(), BigDecimal.ZERO)).reduce(BigDecimal.ZERO, BigDecimal::add);
+            Integer saleQuantity = prodArtNumSaleList.stream().filter(x -> Objects.equals(x.getSaleType(), SaleType.GENERAL_SALE.getValue()))
+                    .map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
+            Integer refundQuantity = prodArtNumSaleList.stream().filter(x -> Objects.equals(x.getSaleType(), SaleType.SALE_REFUND.getValue()))
+                    .map(x -> ObjectUtils.defaultIfNull(x.getQuantity(), 0)).reduce(0, Integer::sum);
+            String refundRate = saleQuantity > 0 ? String.format("%.2f%%", Math.abs(refundQuantity) * 100.0 / saleQuantity) : "0.00%";
+            retProdSaleList.add(new StoreTodaySaleSummaryDTO.STSSProdSaleDTO().setProdArtNum(prodArtNum).setSaleAmount(saleAmount)
+                    .setRefundAmount(refundAmount).setSaleQuantity(saleQuantity).setRefundQuantity(refundQuantity).setRefundRate(refundRate));
+        });
+
+        // 按照总的销售金额 由高到低 排
+        retProdSaleList.sort(Comparator.comparing(StoreTodaySaleSummaryDTO.STSSProdSaleDTO::getSaleAmount).reversed());
         return retProdSaleList;
     }
 
