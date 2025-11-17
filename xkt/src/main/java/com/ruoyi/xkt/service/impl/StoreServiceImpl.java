@@ -465,8 +465,7 @@ public class StoreServiceImpl implements IStoreService {
         Store store = Optional.ofNullable(storeMapper.selectById(storeId)).orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
         // 是否已购买会员
         StoreMember storeMember = this.storeMemberMapper.selectOne(new LambdaQueryWrapper<StoreMember>()
-                .eq(StoreMember::getStoreId, storeId).eq(StoreMember::getDelFlag, Constants.UNDELETED)
-                .eq(StoreMember::getMemberStatus, StoreMemberStatus.AUDIT_PASS.getValue()));
+                .eq(StoreMember::getStoreId, storeId).eq(StoreMember::getDelFlag, Constants.UNDELETED));
         BigDecimal serviceAmount = ObjectUtils.defaultIfNull(store.getServiceAmount(), Constants.STORE_ANNUAL_AMOUNT);
         BigDecimal memberAmount = ObjectUtils.defaultIfNull(store.getMemberAmount(), Constants.STORE_MEMBER_AMOUNT);
         // 如果档口为正式使用，则返回 diff 值
