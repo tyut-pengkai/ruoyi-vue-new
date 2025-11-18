@@ -88,6 +88,10 @@ public class AlipayCallbackController extends XktBaseController {
                 return FAILURE;
             }
             //1. 商家需要验证该通知数据中的 out_trade_no 是否为商家系统中创建的订单号。
+            if (StrUtil.isEmpty(alipayCallback.getOutTradeNo())) {
+                logger.warn("支付宝回调无out_trade_no:{}", params);
+                return SUCCESS;
+            }
             StoreOrder order = storeOrderService.getByOrderNo(alipayCallback.getOutTradeNo());
             if (order != null) {
                 //订单支付
