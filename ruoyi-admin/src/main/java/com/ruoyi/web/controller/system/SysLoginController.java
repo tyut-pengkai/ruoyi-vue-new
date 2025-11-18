@@ -351,6 +351,7 @@ public class SysLoginController {
                     vo.setCurrentStoreName(ObjectUtils.isNotEmpty(store) ? store.getStoreName() : "");
                     //档口状态
                     vo.setCurrentStoreStatus(ObjectUtils.isNotEmpty(store) ? store.getStoreStatus() : null);
+                    vo.setStockSys(ObjectUtils.isNotEmpty(store) ? store.getStockSys() : null);
                 }
             }
         }
