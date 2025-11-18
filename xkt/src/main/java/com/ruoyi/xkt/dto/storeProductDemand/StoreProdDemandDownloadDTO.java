@@ -14,6 +14,8 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 @Accessors(chain = true)
 public class StoreProdDemandDownloadDTO {
 
+    @Excel(name = "日期", width = 4, height = 24, headerBackgroundColor = IndexedColors.SKY_BLUE)
+    private String createTime;
     @Excel(name = "客户", width = 10, height = 24, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private String partnerName;
     @Excel(name = "商标", width = 10, height = 24, headerBackgroundColor = IndexedColors.SKY_BLUE)
@@ -22,8 +24,6 @@ public class StoreProdDemandDownloadDTO {
     private String facName;
     @Excel(name = "需求单号", needMerge = true, width = 18, height = 24, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private String code;
-    @Excel(name = "日期", width = 4, height = 24, headerBackgroundColor = IndexedColors.SKY_BLUE)
-    private String createTime;
     @Excel(name = "工厂货号", width = 10, height = 24, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private String factoryArtNum;
     @Excel(name = "商品货号", width = 10, height = 24, headerBackgroundColor = IndexedColors.SKY_BLUE)

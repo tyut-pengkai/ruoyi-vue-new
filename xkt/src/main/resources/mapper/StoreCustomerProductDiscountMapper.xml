@@ -32,6 +32,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectDiscPageRelate" resultType="com.ruoyi.xkt.dto.storeCusProdDiscount.StoreCusProdDiscPageResDTO">
         SELECT
             spc.id AS storeProdColorId,
+            spc.store_prod_id,
+            spc.store_color_id,
             spc.color_name,
             MIN(spcs.price) AS price
         FROM
@@ -45,7 +47,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         GROUP BY
             spc.id,
             spc.store_prod_id,
-            spc.store_color_id
+            spc.store_color_id,
+            spc.color_name
     </select>
 
     <update id="deleteProdDisc">

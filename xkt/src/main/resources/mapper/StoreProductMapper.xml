@@ -55,20 +55,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
 
-    <select id="getStyleList" >
-        SELECT
-            style
-        FROM
-            store_product_category_attribute
-        WHERE
-            del_flag = 0 AND style != ''
-        GROUP BY
-            style
-        ORDER BY
-            COUNT( 1 ) DESC
-    </select>
-
-
     <select id="selectSkuList"  resultType="com.ruoyi.xkt.dto.storeProduct.StoreProdSkuDTO" >
         SELECT
             spc.id AS storeProdColorId,
@@ -276,7 +262,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             AND sp.store_id = #{storeId}
         GROUP BY
             sp.prod_status,
-            sp.prod_cate_id
+            sp.prod_cate_id,
+            sp.prod_cate_name
         ORDER BY
             cateCount DESC
     </select>

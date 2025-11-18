@@ -39,13 +39,6 @@ public interface StoreProductMapper extends BaseMapper<StoreProduct> {
     List<ProductESDTO> selectESDTOList(@Param("idList") List<Long> idList);
 
     /**
-     * 获取风格列表
-     *
-     * @return
-     */
-    List<String> getStyleList();
-
-    /**
      * 获取档口商品的sku列表
      *
      * @param storeProdId 档口商品ID
