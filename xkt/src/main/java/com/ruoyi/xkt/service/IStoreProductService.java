@@ -72,13 +72,6 @@ public interface IStoreProductService {
     List<StoreProdFuzzyResPicDTO> fuzzyQueryResPicList(Long storeId, String prodArtNum);
 
     /**
-     * 获取商品所有的风格
-     *
-     * @return
-     */
-    List<String> getStyleList();
-
-    /**
      * APP获取档口商品详情
      *
      * @param storeProdId 档口商品ID

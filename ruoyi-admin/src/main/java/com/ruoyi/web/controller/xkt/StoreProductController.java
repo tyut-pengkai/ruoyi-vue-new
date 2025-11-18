@@ -34,12 +34,6 @@ public class StoreProductController extends XktBaseController {
 
     final IStoreProductService storeProdService;
 
-    @ApiOperation(value = "查询档口商品所有的风格", httpMethod = "GET", response = R.class)
-    @GetMapping(value = "/styles")
-    public R<List<String>> getStyleList() {
-        return R.ok(storeProdService.getStyleList());
-    }
-
     @ApiOperation(value = "模糊查询档口商品", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/fuzzy/color")
     public R<List<StoreProdFuzzyColorResVO>> fuzzyQueryColorList(@RequestParam(value = "prodArtNum", required = false) String prodArtNum,
