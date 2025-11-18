@@ -417,8 +417,7 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
         Map<String, String> prodColorLiningMaterialMap = liningMaterialList.stream().collect(Collectors
                 .toMap(x -> x.getProdArtNum() + x.getColorName(), StoreProdDemandDownloadDTO::getShoeUpperLiningMaterial));
         for (int i = 0; i < downloadList.size(); i++) {
-            downloadList.get(i).setOrderNum(i + 1)
-                    .setShoeUpperLiningMaterial(prodColorLiningMaterialMap.get(downloadList.get(i).getProdArtNum() + downloadList.get(i).getColorName()));
+            downloadList.get(i).setShoeUpperLiningMaterial(prodColorLiningMaterialMap.get(downloadList.get(i).getProdArtNum() + downloadList.get(i).getColorName()));
         }
         return downloadList;
     }

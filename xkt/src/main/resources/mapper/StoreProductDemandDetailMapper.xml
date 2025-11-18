@@ -61,7 +61,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             spp.trademark,
             sf.fac_name,
             spd.`code`,
-            DATE_FORMAT( spd.create_time, '%Y-%m-%d' ) AS createTime,
+            DATE_FORMAT(spd.create_time, '%m.%d') AS createTime,
             sp.factory_art_num,
             sp.prod_art_num,
             spdd.color_name,

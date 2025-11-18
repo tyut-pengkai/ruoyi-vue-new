@@ -14,8 +14,6 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 @Accessors(chain = true)
 public class StoreProdDemandDownloadDTO {
 
-    @Excel(name = "序号", cellType = Excel.ColumnType.NUMERIC, width = 3, height = 24, headerBackgroundColor = IndexedColors.SKY_BLUE)
-    private Integer orderNum;
     @Excel(name = "客户", width = 10, height = 24, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private String partnerName;
     @Excel(name = "商标", width = 10, height = 24, headerBackgroundColor = IndexedColors.SKY_BLUE)
@@ -24,7 +22,7 @@ public class StoreProdDemandDownloadDTO {
     private String facName;
     @Excel(name = "需求单号", needMerge = true, width = 18, height = 24, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private String code;
-    @Excel(name = "创建日期", width = 10, height = 24, headerBackgroundColor = IndexedColors.SKY_BLUE)
+    @Excel(name = "日期", width = 4, height = 24, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private String createTime;
     @Excel(name = "工厂货号", width = 10, height = 24, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private String factoryArtNum;
@@ -36,7 +34,7 @@ public class StoreProdDemandDownloadDTO {
     private String shoeUpperLiningMaterial;
     @Excel(name = "面料", width = 10, height = 24, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private String shaftMaterial;
-    @Excel(name = "生产状态", readConverterExp = "1=待生产,2=生产中,3=生产完成", width = 10, height = 24, headerBackgroundColor = IndexedColors.SKY_BLUE)
+    @Excel(name = "状态", readConverterExp = "1=待生产,2=生产中,3=生产完成", width = 6, height = 24, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private Integer demandStatus;
     @Excel(name = "紧急度", readConverterExp = "0=正常,1=紧急", width = 5, height = 24, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private Integer emergency;

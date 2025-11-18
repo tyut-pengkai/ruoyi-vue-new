@@ -337,8 +337,10 @@ public class Constants {
     public static final String SHAFT_LINING_MATERIAL = "shaftLiningMaterial";
     public static final String SHAFT_LINING_MATERIAL_NAME = "靴筒内里材质";
     public static final String SHAFT_MATERIAL = "shaftMaterial";
+    public static final String SHAFT_MATERIAL_BUJU_NAME = "面料材质";
     public static final String SHAFT_MATERIAL_NAME = "靴筒面材质";
     public static final String SHOE_UPPER_LINING_MATERIAL = "shoeUpperLiningMaterial";
+    public static final String SHOE_UPPER_LINING_MATERIAL_BUJU_NAME = "内里材质";
     public static final String SHOE_UPPER_LINING_MATERIAL_NAME = "鞋面内里材质";
     public static final String SHOE_STYLE_NAME = "shoeStyleName";
     public static final String SHOE_STYLE_NAME_NAME = "靴款品名";
@@ -387,8 +389,8 @@ public class Constants {
     public static final Map<String, String> CATE_RELATE_MAP = new ConcurrentHashMap<String, String>() {{
         put(UPPER_MATERIAL, UPPER_MATERIAL_NAME);
         put(SHAFT_LINING_MATERIAL, SHAFT_LINING_MATERIAL_NAME);
-        put(SHAFT_MATERIAL, SHAFT_MATERIAL_NAME);
-        put(SHOE_UPPER_LINING_MATERIAL, SHOE_UPPER_LINING_MATERIAL_NAME);
+        put(SHAFT_MATERIAL, SHAFT_MATERIAL_BUJU_NAME);
+        put(SHOE_UPPER_LINING_MATERIAL, SHOE_UPPER_LINING_MATERIAL_BUJU_NAME);
         put(SHOE_STYLE_NAME, SHOE_STYLE_NAME_NAME);
         put(SHAFT_HEIGHT, SHAFT_HEIGHT_NAME);
         put(INSOLE_MATERIAL, INSOLE_MATERIAL_NAME);

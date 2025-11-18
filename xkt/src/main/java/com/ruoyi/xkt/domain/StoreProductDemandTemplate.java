@@ -114,7 +114,7 @@ public class StoreProductDemandTemplate extends XktBaseEntity {
      */
     private Integer selectShoeUpperLiningMaterial;
     /**
-     * 商品信息 鞋面材质
+     * 商品信息 面料材质
      */
     private Integer selectShaftMaterial;
     /**
