@@ -180,9 +180,9 @@ public class StoreSaleDetailServiceImpl implements IStoreSaleDetailService {
                         .setSaleQuantity(saleQuantity).setRefundQuantity(refundQuantity).setRefundRate(refundRate));
             });
         });
-        // 先按货号排，再按照颜色的销售金额由高到低排列
-        retProdSaleList.sort(Comparator.comparing(StoreTodaySaleSummaryDTO.STSSProdSaleDTO::getProdArtNum)
-                .thenComparing(StoreTodaySaleSummaryDTO.STSSProdSaleDTO::getColorSaleAmount).reversed());
+        // 按照总金额倒序排
+        retProdSaleList.sort(Comparator.comparing(StoreTodaySaleSummaryDTO.STSSProdSaleDTO::getSaleAmount).reversed()
+                .thenComparing(StoreTodaySaleSummaryDTO.STSSProdSaleDTO::getProdArtNum));
         return retProdSaleList;
     }
 
