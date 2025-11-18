@@ -27,5 +27,7 @@ public class StoreMemberPageResDTO {
     private Date startTime;
     @ApiModelProperty(value = "生效结束时间")
     private Date endTime;
+    @ApiModelProperty(value = "会员状态")
+    private Integer memberStatus;
 
 }

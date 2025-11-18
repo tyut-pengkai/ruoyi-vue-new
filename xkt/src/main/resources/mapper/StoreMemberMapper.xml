@@ -12,7 +12,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             u.user_name,
             s.contact_phone,
             sm.start_time,
-            sm.end_time
+            sm.end_time,
+            sm.member_status
         FROM
             store_member sm
                 JOIN store s ON sm.store_id = s.id
