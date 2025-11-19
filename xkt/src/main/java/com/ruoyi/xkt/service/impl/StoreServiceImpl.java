@@ -878,7 +878,7 @@ public class StoreServiceImpl implements IStoreService {
         // 默认创建现金客户
         this.storeCusMapper.insert(new StoreCustomer().setStoreId(storeId).setPhone(contactPhone).setCusName(Constants.STORE_CUS_CASH));
         // 创建默认的工厂
-        this.storeFactoryMapper.insert(new StoreFactory().setFacName(storeName + "工厂"));
+        this.storeFactoryMapper.insert(new StoreFactory().setStoreId(storeId).setFacName(storeName + "工厂"));
         // 创建默认的需求模板
         this.storeTemplateService.initTemplate(storeId);
     }
