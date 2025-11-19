@@ -117,9 +117,9 @@ spring:
     druid:
       # 主库数据源
       master:
-        url: jdbc:mysql://rm-bp17756y86qdc110z.mysql.rds.aliyuncs.com:3306/xiekutong?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-        username: xkt
-        password: mtd@3XKSoXm671Yc7oZ5G
+        url: jdbc:mysql://rm-bp17756y86qdc110z.mysql.rds.aliyuncs.com:3306/cdbuju?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+        username: cdbuju
+        password: jNtGVARpbD2IndFE1KMC3z
       # 从库数据源
       slave:
         # 从数据源开关/默认关闭
