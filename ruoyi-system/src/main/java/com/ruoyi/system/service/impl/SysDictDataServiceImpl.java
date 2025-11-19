@@ -17,6 +17,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -83,8 +84,8 @@ public class SysDictDataServiceImpl implements ISysDictDataService {
     public List<DictDataResDTO> selectByDictType(String dictType) {
         List<SysDictData> dataList = this.dictDataMapper.selectList(new LambdaQueryWrapper<SysDictData>()
                 .eq(SysDictData::getDictType, dictType).eq(SysDictData::getDelFlag, Constants.UNDELETED));
-        return dataList.stream().map(x -> BeanUtil.toBean(x, DictDataResDTO.class)
-                .setDictDataId(x.getId())).collect(Collectors.toList());
+        return dataList.stream().map(x -> BeanUtil.toBean(x, DictDataResDTO.class).setDictDataId(x.getId()))
+                .sorted(Comparator.comparing(DictDataResDTO::getDictSort)).collect(Collectors.toList());
     }
 
 

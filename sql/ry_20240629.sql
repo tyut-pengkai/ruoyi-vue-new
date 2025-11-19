@@ -693,8 +693,8 @@ INSERT INTO `sys_dict_type` VALUES (220, '厚薄', 'thickness', '0', '', 0, '0',
 INSERT INTO `sys_dict_type` VALUES (221, '流行元素', 'fashion_elements', '0', '', 0, '0', 'admin', '2025-07-03 19:48:29', '', '2025-07-03 19:48:29');
 INSERT INTO `sys_dict_type` VALUES (222, '退货原因', 'refund_reason', '0', NULL, 0, '0', 'admin', '2025-07-18 22:56:58', '', '2025-07-18 22:57:00');
 INSERT INTO `sys_dict_type` VALUES (223, '季节年份', 'release_year_season', '0', '', 0, '0', 'admin', '2025-08-03 20:51:28', 'admin', '2025-08-03 20:51:28');
-INSERT INTO `sys_dict_type` VALUES (224, '鞋面材质', 'shaft_material', '0', '', 0, '0', 'admin', '2025-10-30 20:09:55', '', '2025-10-30 20:09:55');
-INSERT INTO `sys_dict_type` VALUES (225, '鞋面内里材质', 'shoe_upper_lining_material', '0', '', 0, '0', 'admin', '2025-10-30 21:55:41', '', '2025-10-30 21:55:41');
+INSERT INTO `sys_dict_type` VALUES (224, '面料材质', 'shaft_material', '0', '', 0, '0', 'admin', '2025-10-30 20:09:55', '', '2025-10-30 20:09:55');
+INSERT INTO `sys_dict_type` VALUES (225, '内里材质', 'shoe_upper_lining_material', '0', '', 0, '0', 'admin', '2025-10-30 21:55:41', '', '2025-10-30 21:55:41');
 
 
 
@@ -2163,6 +2163,8 @@ INSERT INTO `sys_dict_data` VALUES (1205, 32, '山羊绒', '山羊绒', 'shoe_up
 INSERT INTO `sys_dict_data` VALUES (1206, 33, '聚酯纤维', '聚酯纤维', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 22:02:19', '', '2025-10-30 22:02:19', '', 0, '0');
 INSERT INTO `sys_dict_data` VALUES (1207, 34, '兔毛', '兔毛', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 22:02:26', '', '2025-10-30 22:02:26', '', 0, '0');
 INSERT INTO `sys_dict_data` VALUES (1208, 35, '狐狸毛', '狐狸毛', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 22:02:34', '', '2025-10-30 22:02:34', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1209, 1, '单里', '单里', 'shoe_upper_lining_material', '0', 'admin', '2025-11-19 23:38:29', '', '2025-11-19 23:38:29', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1210, 1, '绒里', '绒里', 'shoe_upper_lining_material', '0', 'admin', '2025-11-19 23:38:41', '', '2025-11-19 23:38:41', '', 0, '0');
 
 
 -- ----------------------------
