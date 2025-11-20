@@ -168,6 +168,10 @@ public class UserAuthenticationServiceImpl implements IUserAuthenticationService
     @Override
     @Transactional
     public Integer updateDelFlag(UserAuthUpdateDelFlagDTO updateDelFlagDTO) {
+        // 用户是否为超级管理员
+        if (!SecurityUtils.isSuperAdmin()) {
+            throw new ServiceException("当前用户非超级管理员，无权限操作!", HttpStatus.ERROR);
+        }
         UserAuthentication userAuth = Optional.ofNullable(this.userAuthMapper.selectOne(new LambdaQueryWrapper<UserAuthentication>()
                         .eq(UserAuthentication::getId, updateDelFlagDTO.getUserAuthId())))
                 .orElseThrow(() -> new ServiceException("代发不存在!", HttpStatus.ERROR));
