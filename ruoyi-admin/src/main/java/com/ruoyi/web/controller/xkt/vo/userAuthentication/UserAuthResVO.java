@@ -34,5 +34,7 @@ public class UserAuthResVO {
     private String authStatusName;
     @ApiModelProperty(value = "启用状态")
     private Integer delFlag;
+    @ApiModelProperty(value = "拒绝理由")
+    private String rejectReason;
 
 }
