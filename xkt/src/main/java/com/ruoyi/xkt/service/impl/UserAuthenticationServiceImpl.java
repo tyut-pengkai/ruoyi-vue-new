@@ -100,9 +100,11 @@ public class UserAuthenticationServiceImpl implements IUserAuthenticationService
     @Override
     @Transactional(readOnly = true)
     public UserAuthResDTO getInfoByUserId(Long userId) {
-        UserAuthentication userAuth = Optional.ofNullable(this.userAuthMapper.selectOne(new LambdaQueryWrapper<UserAuthentication>()
-                        .eq(UserAuthentication::getUserId, userId)))
-                .orElseThrow(() -> new ServiceException("代发不存在!", HttpStatus.ERROR));
+        UserAuthentication userAuth = this.userAuthMapper.selectOne(new LambdaQueryWrapper<UserAuthentication>()
+                .eq(UserAuthentication::getUserId, userId).eq(UserAuthentication::getDelFlag, Constants.UNDELETED));
+        if (ObjectUtils.isEmpty(userAuth)) {
+            return new UserAuthResDTO();
+        }
         SysFile faceFile = this.fileMapper.selectById(userAuth.getIdCardFaceFileId());
         SysFile emblemFile = this.fileMapper.selectById(userAuth.getIdCardEmblemFileId());
         return BeanUtil.toBean(userAuth, UserAuthResDTO.class).setUserAuthId(userAuth.getId())
