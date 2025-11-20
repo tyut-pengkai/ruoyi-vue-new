@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.RandomUtil;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -21,6 +22,7 @@ import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.bigDecimal.CollectorsUtil;
 import com.ruoyi.framework.es.EsClientWrapper;
+import com.ruoyi.framework.sms.SmsClientWrapper;
 import com.ruoyi.system.mapper.SysUserMapper;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.xkt.domain.*;
@@ -81,6 +83,7 @@ public class StoreServiceImpl implements IStoreService {
     final StoreCustomerMapper storeCusMapper;
     final StoreFactoryMapper storeFactoryMapper;
     final IStoreProductDemandTemplateService storeTemplateService;
+    final SmsClientWrapper smsClient;
     @Value("${es.indexName}")
     private String ES_INDEX_NAME;
 
@@ -596,6 +599,24 @@ public class StoreServiceImpl implements IStoreService {
         return this.storeMapper.updateById(store);
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public void sendSmsVerificationCode(String phoneNumber) {
+        boolean success = smsClient.sendVerificationCode(CacheConstants.SMS_STORE_AUTH_CAPTCHA_CODE_CD_PHONE_NUM_KEY,
+                CacheConstants.SMS_STORE_AUTH_CAPTCHA_CODE_KEY, phoneNumber, RandomUtil.randomNumbers(6));
+        if (!success) {
+            throw new ServiceException("短信发送失败");
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public void validateSmsVerificationCode(String phoneNumber, String code) {
+        boolean match = smsClient.matchVerificationCode(CacheConstants.SMS_STORE_AUTH_CAPTCHA_CODE_KEY, phoneNumber, code);
+        if (!match) {
+            throw new ServiceException("验证码错误或已过期");
+        }
+    }
 
     /**
      * 档口首页今日销售额
