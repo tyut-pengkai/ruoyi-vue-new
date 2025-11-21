@@ -361,8 +361,8 @@ create table sys_user
 -- 初始化-用户信息表数据
 -- ----------------------------
 insert into sys_user
-values (1, 'admin', '若依', '00', 'ry@163.com', '15888888888', '1', '',
-        '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '0', '0', '127.0.0.1', sysdate(), 'admin',
+values (1, 'cdbuju@0115', '超级管理员', '00', 'ry@163.com', '15888888888', '1', '',
+        '$2a$10$5PGlouNhW9CbBDGsUuO2E.RjGBXdd1L8asKmlGz.4FDRS.OBXoC2m', '0', '0', '127.0.0.1', sysdate(), 'admin',
         sysdate(), '', null, '管理员', 0);
 
 
