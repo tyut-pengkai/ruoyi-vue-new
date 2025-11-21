@@ -70,17 +70,21 @@ public class StoreCertCreateVO {
     @Data
     @ApiModel
     public static class SCStoreCertVO {
-        @ApiModelProperty(value = "真实姓名", required = true)
-        @NotBlank(message = "真实姓名不能为空")
-        @Size(min = 0, max = 30, message = "真实姓名长度必须在1到30个字之间")
+        @ApiModelProperty(value = "法人真实姓名", required = true)
+        @NotBlank(message = "法人真实姓名不能为空")
+        @Size(min = 0, max = 30, message = "法人真实姓名长度必须在1到30个字之间")
         private String realName;
-        @ApiModelProperty(value = "联系电话", required = true)
-        @NotBlank(message = "联系电话不能为空")
-        @Pattern(regexp = "^1[3-9]\\d{9}$", message = "联系电话格式不正确，请输入有效的中国大陆手机号")
+        @ApiModelProperty(value = "法人联系电话", required = true)
+        @NotBlank(message = "法人联系电话不能为空")
+        @Pattern(regexp = "^1[3-9]\\d{9}$", message = "法人联系电话格式不正确，请输入有效的中国大陆手机号")
         private String phone;
-        @ApiModelProperty(value = "身份证号", required = true)
-        @NotBlank(message = "身份证号不能为空")
-        @Pattern(regexp = "(^\\d{15}$)|(^\\d{17}([0-9]|X|x)$)", message = "身份证号格式不正确，请输入有效的15位或18位身份证号")
+        @NotBlank(message = "短信验证码不能为空!")
+        @ApiModelProperty(value = "短信验证码", required = true)
+        @Size(min = 0, max = 6, message = "短信验证码长度必须在0到6个字之间")
+        private String code;
+        @ApiModelProperty(value = "法人身份证号", required = true)
+        @NotBlank(message = "法人身份证号不能为空")
+        @Pattern(regexp = "(^\\d{15}$)|(^\\d{17}([0-9]|X|x)$)", message = "法人身份证号格式不正确，请输入有效的15位或18位身份证号")
         private String idCard;
         @Valid
         @ApiModelProperty(value = "认证文件列表", required = true)

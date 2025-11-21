@@ -37,33 +37,33 @@ public class StoreCertificate extends XktBaseEntity {
     private Long storeId;
 
     /**
-     * 真实姓名
+     * 法人真实姓名
      */
-    @Excel(name = "真实姓名")
+    @Excel(name = "法人真实姓名")
     private String realName;
 
     /**
-     * 联系电话
+     * 法人联系电话
      */
-    @Excel(name = "联系电话")
+    @Excel(name = "法人联系电话")
     private String phone;
 
     /**
-     * 身份证号
+     * 法人身份证号
      */
-    @Excel(name = "身份证号")
+    @Excel(name = "法人身份证号")
     private String idCard;
 
     /**
-     * 身份证人脸文件ID
+     * 法人身份证人脸文件ID
      */
-    @Excel(name = "身份证人脸文件ID")
+    @Excel(name = "法人身份证人脸文件ID")
     private Long idCardFaceFileId;
 
     /**
-     * 身份证国徽文件ID
+     * 法人身份证国徽文件ID
      */
-    @Excel(name = "身份证国徽文件ID")
+    @Excel(name = "法人身份证国徽文件ID")
     private Long idCardEmblemFileId;
 
     /**

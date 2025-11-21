@@ -23,6 +23,7 @@ import com.ruoyi.xkt.enums.StoreStatus;
 import com.ruoyi.xkt.mapper.*;
 import com.ruoyi.xkt.service.IAssetService;
 import com.ruoyi.xkt.service.IStoreCertificateService;
+import com.ruoyi.xkt.thirdpart.lfv2.Lfv2Client;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
@@ -52,6 +53,7 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
     final StoreProductMapper storeProdMapper;
     final ISysUserService userService;
     final SmsClientWrapper smsClient;
+    final Lfv2Client lfv2Client;
 
 
     /**
@@ -63,13 +65,26 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
     @Override
     @Transactional
     public Integer create(StoreCertDTO certDTO) {
+        final StoreCertDTO.SCStoreCertDTO storeCert = certDTO.getStoreCert();
+        // 1. 校验短信验证码
+        this.validateSmsVerificationCode(storeCert.getPhone(), storeCert.getCode());
+        // 2. 校验法人身份信息是否通过 手机号  姓名  身份证号
+        boolean phoneCheck = this.lfv2Client.checkPhone(storeCert.getPhone().trim(), storeCert.getRealName().trim(), storeCert.getIdCard().trim());
+        if (!phoneCheck) {
+            throw new ServiceException("法人身份信息验证未通过！可能原因：1. 法人姓名或身份证号输入有误 2. 当前手机号非法人本人实名办理!", HttpStatus.ERROR);
+        }
+        // 3. 校验工商信息是否通过  社会统一信用代码 企业名 法人名称 法人身份证号
+        boolean bizCheck = this.lfv2Client.checkEnterprise(storeCert.getSocialCreditCode().trim(),
+                storeCert.getLicenseName().trim(), storeCert.getRealName().trim(), storeCert.getIdCard().trim());
+        if (!bizCheck) {
+            throw new ServiceException("工商信息验证未通过！请核对您的企业名称、统一社会信用代码、法人姓名及身份证号是否与营业执照完全一致!", HttpStatus.ERROR);
+        }
         // 新增档口
         Store store = this.createStore(certDTO);
-        StoreCertificate storeCert = BeanUtil.toBean(certDTO.getStoreCert(), StoreCertificate.class)
-                .setStoreId(store.getId());
+        StoreCertificate storeCertCreate = BeanUtil.toBean(certDTO.getStoreCert(), StoreCertificate.class).setStoreId(store.getId());
         // 新增档口认证的文件列表
-        storeCert = this.handleStoreCertFileList(certDTO, storeCert);
-        return this.storeCertMapper.insert(storeCert);
+        storeCertCreate = this.handleStoreCertFileList(certDTO, storeCertCreate);
+        return this.storeCertMapper.insert(storeCertCreate);
     }
 
 

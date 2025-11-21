@@ -54,12 +54,14 @@ public class StoreCertDTO {
 
     @Data
     public static class SCStoreCertDTO {
-        @ApiModelProperty(value = "真实姓名", required = true)
+        @ApiModelProperty(value = "法人真实姓名", required = true)
         private String realName;
-        @ApiModelProperty(value = "联系电话", required = true)
+        @ApiModelProperty(value = "法人联系电话", required = true)
         private String phone;
-        @ApiModelProperty(value = "身份证号", required = true)
+        @ApiModelProperty(value = "法人身份证号", required = true)
         private String idCard;
+        @ApiModelProperty(value = "短信验证码")
+        private String code;
         @ApiModelProperty(value = "认证文件列表", required = true)
         private List<SCStoreFileDTO> fileList;
         @ApiModelProperty(value = "统一社会信用代码", required = true)
