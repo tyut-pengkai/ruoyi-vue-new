@@ -1,12 +1,15 @@
 package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.model.ESystemRole;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.framework.sms.SmsClientWrapper;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.xkt.domain.Store;
 import com.ruoyi.xkt.domain.StoreCertificate;
@@ -48,6 +51,7 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
     final StoreSaleDetailMapper saleDetailMapper;
     final StoreProductMapper storeProdMapper;
     final ISysUserService userService;
+    final SmsClientWrapper smsClient;
 
 
     /**
@@ -157,6 +161,25 @@ public class StoreCertificateServiceImpl implements IStoreCertificateService {
             certStepDTO.getStoreBasic().setStoreLogo(BeanUtil.toBean(storeLogo, StoreCertStepResDTO.SCStoreFileDTO.class));
         }
         return certStepDTO;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public void sendSmsVerificationCode(String phoneNumber) {
+        boolean success = smsClient.sendVerificationCode(CacheConstants.SMS_STORE_AUTH_CAPTCHA_CODE_CD_PHONE_NUM_KEY,
+                CacheConstants.SMS_STORE_AUTH_CAPTCHA_CODE_KEY, phoneNumber, RandomUtil.randomNumbers(6));
+        if (!success) {
+            throw new ServiceException("短信发送失败");
+        }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public void validateSmsVerificationCode(String phoneNumber, String code) {
+        boolean match = smsClient.matchVerificationCode(CacheConstants.SMS_STORE_AUTH_CAPTCHA_CODE_KEY, phoneNumber, code);
+        if (!match) {
+            throw new ServiceException("验证码错误或已过期");
+        }
     }
 
 

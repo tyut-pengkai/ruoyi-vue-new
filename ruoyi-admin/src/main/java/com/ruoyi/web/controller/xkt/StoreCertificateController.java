@@ -10,6 +10,7 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.web.service.TokenService;
 import com.ruoyi.system.service.ISysUserService;
+import com.ruoyi.web.controller.xkt.vo.PhoneNumberVO;
 import com.ruoyi.web.controller.xkt.vo.storeCertificate.StoreCertCreateVO;
 import com.ruoyi.web.controller.xkt.vo.storeCertificate.StoreCertResVO;
 import com.ruoyi.web.controller.xkt.vo.storeCertificate.StoreCertStepResVO;
@@ -75,6 +76,14 @@ public class StoreCertificateController extends XktBaseController {
         if (count > 0) {
             this.refreshUserCache();
         }
+        return R.ok();
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')")
+    @ApiOperation(value = "发送短信验证码（档口认证相关功能）")
+    @PostMapping("/sendSmsVerificationCode")
+    public R sendSmsVerificationCode(@Validated @RequestBody PhoneNumberVO vo) {
+        storeCertService.sendSmsVerificationCode(vo.getPhoneNumber());
         return R.ok();
     }
 

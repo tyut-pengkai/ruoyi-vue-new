@@ -43,4 +43,19 @@ public interface IStoreCertificateService {
      * @return StoreCertStepResDTO
      */
     StoreCertStepResDTO getStepCertInfo(Long storeId);
+
+    /**
+     * 发短信验证码（档口认证）
+     *
+     * @param phoneNumber
+     */
+    void sendSmsVerificationCode(String phoneNumber);
+
+    /**
+     * 验证短信验证码（档口认证）
+     *
+     * @param phoneNumber
+     * @param code
+     */
+    void validateSmsVerificationCode(String phoneNumber, String code);
 }

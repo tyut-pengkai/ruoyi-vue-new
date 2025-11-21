@@ -83,7 +83,6 @@ public class StoreServiceImpl implements IStoreService {
     final StoreCustomerMapper storeCusMapper;
     final StoreFactoryMapper storeFactoryMapper;
     final IStoreProductDemandTemplateService storeTemplateService;
-    final SmsClientWrapper smsClient;
     @Value("${es.indexName}")
     private String ES_INDEX_NAME;
 
@@ -597,25 +596,6 @@ public class StoreServiceImpl implements IStoreService {
             }
         }
         return this.storeMapper.updateById(store);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public void sendSmsVerificationCode(String phoneNumber) {
-        boolean success = smsClient.sendVerificationCode(CacheConstants.SMS_STORE_AUTH_CAPTCHA_CODE_CD_PHONE_NUM_KEY,
-                CacheConstants.SMS_STORE_AUTH_CAPTCHA_CODE_KEY, phoneNumber, RandomUtil.randomNumbers(6));
-        if (!success) {
-            throw new ServiceException("短信发送失败");
-        }
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public void validateSmsVerificationCode(String phoneNumber, String code) {
-        boolean match = smsClient.matchVerificationCode(CacheConstants.SMS_STORE_AUTH_CAPTCHA_CODE_KEY, phoneNumber, code);
-        if (!match) {
-            throw new ServiceException("验证码错误或已过期");
-        }
     }
 
     /**
