@@ -230,6 +230,10 @@ public class StoreProductServiceImpl implements IStoreProductService {
                 && Objects.equals(storeProd.getListingWay(), ListingType.RIGHT_NOW.getValue())) {
             // redis中的档口
             Store store = this.redisCache.getCacheObject(CacheConstants.STORE_KEY + storeProd.getStoreId());
+            if (ObjectUtils.isEmpty(store)) {
+                store = Optional.ofNullable(this.storeMapper.selectById(storeProd.getStoreId()))
+                        .orElseThrow(() -> new ServiceException("档口不存在，请联系管理员!", HttpStatus.ERROR));
+            }
             // 向ES索引: product_info 创建文档
             this.createESDoc(storeProd, createDTO, store.getStoreName());
             // 搜图服务同步
@@ -296,6 +300,10 @@ public class StoreProductServiceImpl implements IStoreProductService {
                 || Objects.equals(storeProd.getProdStatus(), EProductStatus.TAIL_GOODS.getValue()))) {
             // 从redis中获取store
             Store store = this.redisCache.getCacheObject(CacheConstants.STORE_KEY + storeProd.getStoreId());
+            if (ObjectUtils.isEmpty(store)) {
+                store = Optional.ofNullable(this.storeMapper.selectById(storeProd.getStoreId()))
+                        .orElseThrow(() -> new ServiceException("档口不存在，请联系管理员!", HttpStatus.ERROR));
+            }
             // 更新索引: product_info 的文档
             this.updateESDoc(storeProd, updateDTO, store.getStoreName());
             // 搜图服务同步
