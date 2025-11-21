@@ -111,8 +111,7 @@ public class StoreCertCreateVO {
         private String registerOrg;
         @ApiModelProperty(value = "登记状态", required = true)
         private Integer registerStatus;
-        @ApiModelProperty(value = "法定代表人/负责人名称", required = true)
-        @NotBlank(message = "法定代表人/负责人名称不能为空")
+        @ApiModelProperty(value = "法定代表人/负责人名称")
         @Size(min = 0, max = 30, message = "法定代表人/负责人名称长度必须在1到30个字之间")
         private String legalName;
         @ApiModelProperty(value = "注册资本(万)")
