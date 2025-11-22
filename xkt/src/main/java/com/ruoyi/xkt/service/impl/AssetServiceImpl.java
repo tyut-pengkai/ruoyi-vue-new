@@ -1,29 +1,30 @@
 package com.ruoyi.xkt.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.core.domain.XktBaseEntity;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.framework.sms.SmsClientWrapper;
 import com.ruoyi.system.mapper.SysUserMapper;
-import com.ruoyi.xkt.domain.ExternalAccount;
-import com.ruoyi.xkt.domain.FinanceBill;
-import com.ruoyi.xkt.domain.InternalAccount;
-import com.ruoyi.xkt.domain.Store;
+import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.account.*;
 import com.ruoyi.xkt.dto.finance.*;
 import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.manager.PaymentManager;
+import com.ruoyi.xkt.mapper.StoreCertificateMapper;
 import com.ruoyi.xkt.mapper.StoreMapper;
 import com.ruoyi.xkt.service.IAssetService;
 import com.ruoyi.xkt.service.IExternalAccountService;
@@ -65,6 +66,8 @@ public class AssetServiceImpl implements IAssetService {
     private SysUserMapper userMapper;
     @Autowired
     private StoreMapper storeMapper;
+    @Autowired
+    private StoreCertificateMapper storeCertificateMapper;
 
 
     @Transactional(rollbackFor = Exception.class)
@@ -167,6 +170,19 @@ public class AssetServiceImpl implements IAssetService {
             if (!StrUtil.equals(alipayBind.getAccountOwnerPhoneNumber(),
                     getStorePhoneNumber(alipayBind.getOwnerId()))) {
                 throw new ServiceException("请输入档口供应商注册账号绑定的手机号");
+            }
+            //档口认证信息
+            StoreCertificate certificate = CollUtil.getFirst(storeCertificateMapper.selectList(Wrappers.lambdaQuery(StoreCertificate.class)
+                    .eq(StoreCertificate::getStoreId, alipayBind.getOwnerId())
+                    .eq(XktBaseEntity::getDelFlag, Constants.UNDELETED)));
+            if (certificate == null) {
+                throw new ServiceException("档口未认证，无法绑定支付宝");
+            }
+            if (!StrUtil.equals(certificate.getPhone(), alipayBind.getAccountOwnerNumber())) {
+                throw new ServiceException("支付宝账号必须是企业法人手机号");
+            }
+            if (!StrUtil.equals(certificate.getLegalName(), alipayBind.getAccountOwnerName())) {
+                throw new ServiceException("真实姓名必须是企业法人姓名");
             }
         } else if (EAccountOwnerType.USER == ownerType) {
             //必须是登录用户的手机号

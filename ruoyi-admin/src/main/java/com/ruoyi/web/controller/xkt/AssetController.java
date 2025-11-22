@@ -73,7 +73,7 @@ public class AssetController extends XktBaseController {
     }
 
     @PreAuthorize("@ss.hasAnyRoles('store')||@ss.hasSupplierSubRole()")
-    @ApiOperation(value = "获取档口支付绑定手机号")
+    @ApiOperation(value = "获取档口手机号")
     @GetMapping(value = "store/phonenumber")
     public R<PhoneNumberVO> getStorePhoneNumber() {
         String pn = assetService.getStorePhoneNumber(SecurityUtils.getStoreId());
@@ -81,7 +81,7 @@ public class AssetController extends XktBaseController {
     }
 
     @PreAuthorize("@ss.hasAnyRoles('seller,agent')")
-    @ApiOperation(value = "获取卖家支付绑定手机号")
+    @ApiOperation(value = "获取卖家手机号")
     @GetMapping(value = "user/phonenumber")
     public R<PhoneNumberVO> getUserPhoneNumber() {
         String pn = assetService.getUserPhoneNumber(SecurityUtils.getUserId());

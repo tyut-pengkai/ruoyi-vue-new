@@ -163,7 +163,7 @@ public interface IAssetService {
     void sendSmsVerificationCode(String phoneNumber);
 
     /**
-     * 获取档口支付绑定手机号
+     * 获取档口手机号
      *
      * @param storeId
      * @return
@@ -171,7 +171,7 @@ public interface IAssetService {
     String getStorePhoneNumber(Long storeId);
 
     /**
-     * 获取卖家支付绑定手机号
+     * 获取卖家手机号
      *
      * @param userId
      * @return
