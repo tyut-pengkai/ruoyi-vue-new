@@ -1111,7 +1111,7 @@ public class XktTask {
     }
 
     public void autoCompleteStoreOrder() {
-        log.info("-------------自动完成订单开始-------------");
+        log.info("-------------自动完成已发货订单开始-------------");
         Integer batchCount = 20;
         Date beforeDate = DateUtil.offset(new Date(), DateField.DAY_OF_YEAR, -15);
         List<Long> storeOrderIds = storeOrderService.listNeedAutoCompleteOrder(beforeDate, batchCount);
@@ -1120,11 +1120,26 @@ public class XktTask {
             try {
                 storeOrderService.completeOrder(storeOrderId, -1L);
             } catch (Exception e) {
-                log.error("自动完成订单异常", e);
-                fsNotice.sendMsg2DefaultChat("自动完成订单异常", "订单ID:" + storeOrderId);
+                log.error("自动完成已发货订单异常", e);
+                fsNotice.sendMsg2DefaultChat("自动完成已发货订单异常", "订单ID:" + storeOrderId);
             }
         }
-        log.info("-------------自动完成订单结束-------------");
+        log.info("-------------自动完成已发货订单结束-------------");
+    }
+
+    public void autoCompletePendingShipmentStoreOrder() {
+        log.info("-------------自动完成待发货订单开始-------------");
+        List<Long> storeOrderIds = storeOrderService.listNeedAutoCompletePendingShipmentOrderIds();
+        for (Long storeOrderId : storeOrderIds) {
+            log.info("开始处理: {}", storeOrderId);
+            try {
+                storeOrderService.completeOrder(storeOrderId, -1L);
+            } catch (Exception e) {
+                log.error("自动完成待发货订单异常", e);
+                fsNotice.sendMsg2DefaultChat("自动完成待发货订单异常", "订单ID:" + storeOrderId);
+            }
+        }
+        log.info("-------------自动完成待发货订单结束-------------");
     }
 
     public void autoRefundStoreOrder() {

@@ -2,13 +2,11 @@ package com.ruoyi.xkt.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreOrder;
-import com.ruoyi.xkt.dto.order.StoreOrderCountDTO;
-import com.ruoyi.xkt.dto.order.StoreOrderCountQueryDTO;
-import com.ruoyi.xkt.dto.order.StoreOrderPageItemDTO;
-import com.ruoyi.xkt.dto.order.StoreOrderQueryDTO;
+import com.ruoyi.xkt.dto.order.*;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -28,4 +26,8 @@ public interface StoreOrderMapper extends BaseMapper<StoreOrder> {
     List<StoreOrder> listNeedAutoCompleteOrder(@Param("deliveryBeforeTime") Date deliveryBeforeTime);
 
     List<StoreOrder> listNeedAutoRefundOrder();
+
+    List<StoreOrder> listNeedAutoCheckCompletePendingShipmentOrders();
+
+    List<StoreOrderDetailStatusDTO> listOrderDetailStatusByOrderIds(@Param("orderIds") Collection<Long> orderIds);
 }

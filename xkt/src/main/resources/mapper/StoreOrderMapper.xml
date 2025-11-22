@@ -143,4 +143,33 @@
             AND NOT EXISTS (SELECT 1 FROM store_order rso WHERE rso.origin_order_id = so.id AND rso.del_flag = '0' AND rso.order_type = 2)
             AND NOT EXISTS (SELECT 1 FROM store_order_detail sod WHERE so.id = sod.store_order_id AND sod.del_flag = '0' AND sod.detail_status != 12)
     </select>
+    <select id="listNeedAutoCheckCompletePendingShipmentOrders" resultType="com.ruoyi.xkt.domain.StoreOrder">
+        SELECT DISTINCT
+            so2.*
+        FROM
+            store_order so1
+            JOIN store_order so2 ON so1.origin_order_id = so2.id
+        WHERE
+            so1.order_status = 24
+            AND so2.order_status = 12
+            AND so2.del_flag = '0'
+    </select>
+    <select id="listOrderDetailStatusByOrderIds"
+            resultType="com.ruoyi.xkt.dto.order.StoreOrderDetailStatusDTO">
+        SELECT
+            sod1.store_order_id AS order_id,
+            sod1.id AS detail_id,
+            sod1.detail_status,
+            sod2.id AS refund_detail_id,
+            sod2.detail_status AS refund_detail_status
+        FROM
+            store_order_detail sod1
+            LEFT JOIN store_order_detail sod2 ON sod1.id = sod2.origin_order_detail_id
+        WHERE
+            sod1.del_flag = '0'
+            AND sod1.store_order_id IN
+            <foreach collection="orderIds" item="obj" open="(" close=")" separator=",">
+                #{obj}
+            </foreach>
+    </select>
 </mapper>

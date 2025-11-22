@@ -322,4 +322,11 @@ public interface IStoreOrderService {
      * @param storeOrderId
      */
     void completeRefundByUser(Long storeOrderId);
+
+    /**
+     * 获取需要自动完成的待发货订单
+     *
+     * @return
+     */
+    List<Long> listNeedAutoCompletePendingShipmentOrderIds();
 }

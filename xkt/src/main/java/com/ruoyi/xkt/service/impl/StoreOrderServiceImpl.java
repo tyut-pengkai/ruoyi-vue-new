@@ -1784,6 +1784,45 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                 new Date());
     }
 
+    @Override
+    public List<Long> listNeedAutoCompletePendingShipmentOrderIds() {
+        List<StoreOrder> orders = storeOrderMapper.listNeedAutoCheckCompletePendingShipmentOrders();
+        if (CollUtil.isEmpty(orders)) {
+            return ListUtil.empty();
+        }
+        Set<Long> orderIds = orders.stream().map(SimpleEntity::getId).collect(Collectors.toSet());
+        Map<Long, List<StoreOrderDetailStatusDTO>> detailMap = storeOrderMapper.listOrderDetailStatusByOrderIds(orderIds)
+                .stream()
+                .collect(Collectors.groupingBy(StoreOrderDetailStatusDTO::getOrderId));
+        List rtn = new ArrayList();
+        long currentTimeMillis = System.currentTimeMillis();
+        for (StoreOrder order : orders) {
+            List<StoreOrderDetailStatusDTO> details = detailMap.get(order.getId());
+            if (CollUtil.isEmpty(details)) {
+                log.warn("订单数据异常：{}", order);
+                continue;
+            }
+            boolean autoComplete = true;
+            long createTimeMillis = order.getCreateTime().getTime();
+            for (StoreOrderDetailStatusDTO detail : details) {
+                if (EOrderStatus.PENDING_SHIPMENT.getValue().equals(detail.getDetailStatus())
+                        && !EOrderStatus.AFTER_SALE_COMPLETED.getValue().equals(detail.getRefundDetailStatus())) {
+                    //明细=待发货 & 明细售后≠已完成
+                    autoComplete = false;
+                }
+                if (EOrderStatus.SHIPPED.getValue().equals(detail.getDetailStatus())
+                        && ((currentTimeMillis - createTimeMillis) < 31 * 24 * 60 * 60 * 1000L)) {
+                    //明细=已发货 & 当前时间 - 订单创建时间 ＜ 31d
+                    autoComplete = false;
+                }
+            }
+            if (autoComplete) {
+                rtn.add(order.getId());
+            }
+        }
+        return rtn;
+    }
+
     /**
      * 检查：若存在已完成售后的订单明细则报错
      *
