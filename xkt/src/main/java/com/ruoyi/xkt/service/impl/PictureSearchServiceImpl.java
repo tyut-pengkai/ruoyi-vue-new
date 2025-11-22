@@ -120,6 +120,9 @@ public class PictureSearchServiceImpl implements IPictureSearchService {
             // 重新缓存数据到redis
             picSearchHotList = this.cacheImgSearchTopProduct();
         }
+        if (CollectionUtils.isEmpty(picSearchHotList)) {
+            return Collections.emptyList();
+        }
         picSearchHotList.forEach(x -> {
             // 查询档口会员等级
             StoreMember member = this.redisCache.getCacheObject(CacheConstants.STORE_MEMBER + x.getStoreId());
