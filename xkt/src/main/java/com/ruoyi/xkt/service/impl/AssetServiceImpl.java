@@ -164,13 +164,17 @@ public class AssetServiceImpl implements IAssetService {
     @Override
     public AssetInfoDTO bindAlipay(AlipayBindDTO alipayBind) {
         Assert.notNull(alipayBind.getOwnerId());
+        Assert.notEmpty(alipayBind.getAccountOwnerName());
+        Assert.notEmpty(alipayBind.getAccountOwnerNumber());
+        Assert.notEmpty(alipayBind.getAccountOwnerPhoneNumber());
         EAccountOwnerType ownerType = EAccountOwnerType.of(alipayBind.getOwnerType());
         if (EAccountOwnerType.STORE == ownerType) {
             //必须是档口注册人的手机号
             if (!StrUtil.equals(alipayBind.getAccountOwnerPhoneNumber(),
                     getStorePhoneNumber(alipayBind.getOwnerId()))) {
-                throw new ServiceException("请输入档口供应商注册账号绑定的手机号");
+                throw new ServiceException("请使用档口供应商账号绑定的手机号接收验证码");
             }
+            validateSmsVerificationCode(alipayBind.getAccountOwnerPhoneNumber(), alipayBind.getVerifyCode());
             //档口认证信息
             StoreCertificate certificate = CollUtil.getFirst(storeCertificateMapper.selectList(Wrappers.lambdaQuery(StoreCertificate.class)
                     .eq(StoreCertificate::getStoreId, alipayBind.getOwnerId())
@@ -188,15 +192,12 @@ public class AssetServiceImpl implements IAssetService {
             //必须是登录用户的手机号
             if (!StrUtil.equals(alipayBind.getAccountOwnerPhoneNumber(),
                     getUserPhoneNumber(alipayBind.getOwnerId()))) {
-                throw new ServiceException("请输入当前用户绑定的手机号");
+                throw new ServiceException("请使用当前用户绑定的手机号接收验证码");
             }
+            validateSmsVerificationCode(alipayBind.getAccountOwnerPhoneNumber(), alipayBind.getVerifyCode());
         } else {
             throw new ServiceException("账户归属异常");
         }
-        Assert.notEmpty(alipayBind.getAccountOwnerName());
-        Assert.notEmpty(alipayBind.getAccountOwnerNumber());
-        Assert.notEmpty(alipayBind.getAccountOwnerPhoneNumber());
-        validateSmsVerificationCode(alipayBind.getAccountOwnerPhoneNumber(), alipayBind.getVerifyCode());
         ExternalAccount alipayExternalAccount = externalAccountService.getAccount(alipayBind.getOwnerId(),
                 ownerType, EAccountType.ALI_PAY);
         if (alipayExternalAccount != null) {
