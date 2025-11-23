@@ -532,6 +532,7 @@ public class GtAndTyBiz222222Controller extends BaseController {
                     .setSeason(ObjectUtils.isNotEmpty(cateAttr) ? cateAttr.getSuitableSeason() : "")
                     .setProdStatus(product.getProdStatus().toString())
                     .setStoreId(product.getStoreId().toString())
+                    .setStoreWeight(ObjectUtils.isNotEmpty(store) ? store.getStoreWeight().toString() : WEIGHT_DEFAULT_ZERO.toString())
                     .setStoreName(ObjectUtils.isNotEmpty(store) ? store.getStoreName() : "")
                     .setStyle(ObjectUtils.isNotEmpty(cateAttr) ? cateAttr.getStyle() : "")
                     .setProdTitle(product.getProdTitle());

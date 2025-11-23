@@ -2,7 +2,7 @@ package com.ruoyi.web.controller.xkt;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.ruoyi.common.annotation.Log;
-import com.ruoyi.common.core.controller.BaseController;
+import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
@@ -27,7 +27,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/rest/v1/notice")
-public class NoticeController extends BaseController {
+public class NoticeController extends XktBaseController {
 
     final INoticeService noticeService;
 
