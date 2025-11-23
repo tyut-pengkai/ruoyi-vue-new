@@ -14,7 +14,10 @@ import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.framework.es.EsClientWrapper;
 import com.ruoyi.framework.notice.fs.FsNotice;
-import com.ruoyi.xkt.domain.*;
+import com.ruoyi.xkt.domain.Store;
+import com.ruoyi.xkt.domain.StoreProduct;
+import com.ruoyi.xkt.domain.StoreProductCategoryAttribute;
+import com.ruoyi.xkt.domain.SysProductCategory;
 import com.ruoyi.xkt.dto.es.ESProductDTO;
 import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdMinPriceDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
@@ -193,99 +196,6 @@ public class ElasticSearchServiceImpl implements IElasticSearchService {
             // 将搜索条件添加到主查询
             boolQueryBuilder.must(searchBoolQuery.build()._toQuery());
         }
-
-
-
-
-
-
-
-
-
-        /*// 优化搜索逻辑 - 修复版
-        if (StringUtils.isNotBlank(searchDTO.getSearch())) {
-            String searchTerm = searchDTO.getSearch().trim();
-
-            // 创建专门的搜索 bool query
-            BoolQuery.Builder searchBoolQuery = new BoolQuery.Builder();
-
-            // 方案1：使用 MultiMatchQuery 进行智能分词搜索（主要方式）
-            MultiMatchQuery multiMatchQuery = MultiMatchQuery.of(m -> m
-                    .query(searchTerm)
-                    .fields("storeName^3", "prodTitle^2", "prodCateName", "parCateName", "prodArtNum^2")
-                    .type(TextQueryType.BestFields)  // 使用最佳字段匹配
-            );
-            searchBoolQuery.should(multiMatchQuery._toQuery());
-
-            // 方案2：对每个字段单独使用 MatchQuery（作为补充）
-            String[] matchFields = {"storeName", "prodTitle", "prodCateName", "parCateName", "prodArtNum"};
-            for (String field : matchFields) {
-                MatchQuery matchQuery = MatchQuery.of(m -> m
-                        .field(field)
-                        .query(searchTerm)
-                        .operator(Operator.Or)  // 使用 OR 操作符，匹配任意分词
-                );
-                searchBoolQuery.should(matchQuery._toQuery());
-            }
-
-            // 方案3：对于包含英文或数字的情况，添加通配符查询到 keyword 字段
-            if (containsEnglishOrNumber(searchTerm)) {
-                String wildcardPattern = "*" + searchTerm + "*";
-                String[] keywordFields = {
-                        "storeName.keyword", "prodTitle.keyword", "prodArtNum.keyword"
-                };
-
-                for (String field : keywordFields) {
-                    WildcardQuery wildcardQuery = WildcardQuery.of(w -> w
-                            .field(field)
-                            .value(wildcardPattern)
-                            .boost(0.3f) // 降低权重
-                    );
-                    searchBoolQuery.should(wildcardQuery._toQuery());
-                }
-            }
-
-            // 方案4：拆分成单个字符进行通配符匹配（针对混合字符串）
-            if (searchTerm.length() > 1) {
-                // 对每个字符单独进行通配符匹配
-                for (int i = 0; i < searchTerm.length(); i++) {
-                    char c = searchTerm.charAt(i);
-                    if (Character.isLetterOrDigit(c)) {
-                        String charPattern = "*" + c + "*";
-                        WildcardQuery charQuery = WildcardQuery.of(w -> w
-                                .field("storeName.keyword")
-                                .value(charPattern)
-                                .boost(0.1f) // 很低权重，确保不影响主要结果
-                        );
-                        searchBoolQuery.should(charQuery._toQuery());
-                    }
-                }
-            }
-
-            // 设置最小匹配条件
-            searchBoolQuery.minimumShouldMatch("1");
-
-            // 将搜索条件添加到主查询
-            boolQueryBuilder.must(searchBoolQuery.build()._toQuery());
-        }*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         // 档口ID 过滤条件
         if (CollectionUtils.isNotEmpty(searchDTO.getStoreIdList())) {
             TermsQueryField termsQueryField = new TermsQueryField.Builder()
@@ -376,8 +286,11 @@ public class ElasticSearchServiceImpl implements IElasticSearchService {
     }
 
 
-
-    // 处理混合文本搜索（中英文数字混合）
+    /**
+     * 处理混合文本搜索（中英文数字混合）
+     * @param searchTerm
+     * @param searchBoolQuery
+     */
     private void handleMixedTextSearch(String searchTerm, BoolQuery.Builder searchBoolQuery) {
         // 1. 整体多字段匹配（主要方式）
         MultiMatchQuery multiMatchQuery = MultiMatchQuery.of(m -> m
@@ -416,7 +329,11 @@ public class ElasticSearchServiceImpl implements IElasticSearchService {
         }
     }
 
-    // 处理短英文数字搜索
+    /**
+     * 处理短英文数字搜索
+     * @param searchTerm
+     * @param searchBoolQuery
+     */
     private void handleShortEnglishNumberSearch(String searchTerm, BoolQuery.Builder searchBoolQuery) {
         // 1. 前缀匹配（最高优先级）
         String prefixPattern = searchTerm + "*";
@@ -443,7 +360,11 @@ public class ElasticSearchServiceImpl implements IElasticSearchService {
         searchBoolQuery.should(artNumQuery._toQuery());
     }
 
-    // 处理短中文搜索
+    /**
+     * 处理短中文搜索
+     * @param searchTerm
+     * @param searchBoolQuery
+     */
     private void handleShortChineseSearch(String searchTerm, BoolQuery.Builder searchBoolQuery) {
         // 使用 MultiMatchQuery 进行分词匹配
         MultiMatchQuery multiMatchQuery = MultiMatchQuery.of(m -> m
@@ -454,7 +375,11 @@ public class ElasticSearchServiceImpl implements IElasticSearchService {
         searchBoolQuery.should(multiMatchQuery._toQuery());
     }
 
-    // 处理标准长文本搜索
+    /**
+     * 处理标准长文本搜索
+     * @param searchTerm
+     * @param searchBoolQuery
+     */
     private void handleStandardTextSearch(String searchTerm, BoolQuery.Builder searchBoolQuery) {
         // 使用标准的 MultiMatchQuery
         MultiMatchQuery multiMatchQuery = MultiMatchQuery.of(m -> m
@@ -466,7 +391,11 @@ public class ElasticSearchServiceImpl implements IElasticSearchService {
     }
 
 
-    // 判断是否包含中文
+    /**
+     * 判断是否包含中文
+     * @param str
+     * @return
+     */
     private boolean containsChinese(String str) {
         if (str == null) return false;
         for (int i = 0; i < str.length(); i++) {
@@ -478,7 +407,11 @@ public class ElasticSearchServiceImpl implements IElasticSearchService {
         return false;
     }
 
-    // 判断是否包含英文或数字
+    /**
+     * 判断是否包含英文或数字
+     * @param str
+     * @return
+     */
     private boolean containsEnglishOrNumber(String str) {
         if (str == null) return false;
         for (int i = 0; i < str.length(); i++) {
@@ -490,7 +423,11 @@ public class ElasticSearchServiceImpl implements IElasticSearchService {
         return false;
     }
 
-    // 提取英文数字部分
+    /**
+     * 提取英文数字部分
+     * @param str
+     * @return
+     */
     private String extractEnglishNumberPart(String str) {
         if (str == null) return "";
         StringBuilder sb = new StringBuilder();
@@ -503,7 +440,11 @@ public class ElasticSearchServiceImpl implements IElasticSearchService {
         return sb.toString();
     }
 
-    // 提取中文部分
+    /**
+     * 提取中文部分
+     * @param str
+     * @return
+     */
     private String extractChinesePart(String str) {
         if (str == null) return "";
         StringBuilder sb = new StringBuilder();

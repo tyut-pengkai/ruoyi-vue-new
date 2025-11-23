@@ -4,10 +4,6 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import co.elastic.clients.elasticsearch._types.FieldValue;
-import co.elastic.clients.elasticsearch._types.SortOptions;
-import co.elastic.clients.elasticsearch._types.SortOrder;
-import co.elastic.clients.elasticsearch._types.query_dsl.*;
-import co.elastic.clients.elasticsearch.core.SearchResponse;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -17,7 +13,6 @@ import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.AdType;
-import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.es.EsClientWrapper;
 import com.ruoyi.xkt.domain.*;
@@ -39,6 +34,7 @@ import com.ruoyi.xkt.dto.website.AppStrengthSearchDTO;
 import com.ruoyi.xkt.dto.website.IndexSearchDTO;
 import com.ruoyi.xkt.enums.*;
 import com.ruoyi.xkt.mapper.*;
+import com.ruoyi.xkt.service.IElasticSearchService;
 import com.ruoyi.xkt.service.IWebsiteAPPService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -51,8 +47,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -79,6 +73,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
     final UserSubscriptionsMapper userSubMapper;
     final UserFavoritesMapper userFavMapper;
     final StoreMemberMapper storeMemberMapper;
+    final IElasticSearchService esService;
     @Value("${es.indexName}")
     private String ES_INDEX_NAME;
 
@@ -1035,105 +1030,7 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
     @Override
     @Transactional(readOnly = true)
     public Page<ESProductDTO> search(IndexSearchDTO searchDTO) throws IOException {
-        // 构建 bool 查询
-        BoolQuery.Builder boolQuery = new BoolQuery.Builder();
-        // 添加 price 范围查询
-        if (ObjectUtils.isNotEmpty(searchDTO.getMinPrice()) && ObjectUtils.isNotEmpty(searchDTO.getMaxPrice())) {
-            RangeQuery.Builder builder = new RangeQuery.Builder();
-            builder.number(NumberRangeQuery.of(n -> n.field("prodPrice").gte(Double.valueOf(searchDTO.getMinPrice()))
-                    .lte(Double.valueOf(searchDTO.getMaxPrice()))));
-            boolQuery.filter(builder.build()._toQuery());
-        }
-        // 添加 multiMatch 查询
-        if (StringUtils.isNotBlank(searchDTO.getSearch())) {
-            MultiMatchQuery multiMatchQuery = MultiMatchQuery.of(m -> m
-                    .query(searchDTO.getSearch())
-                    .fields("storeName", "prodTitle", "prodCateName", "parCateName", "prodArtNum")
-            );
-            boolQuery.must(multiMatchQuery._toQuery());
-        }
-        // 档口ID列表 过滤条件
-        if (CollectionUtils.isNotEmpty(searchDTO.getStoreIdList())) {
-            TermsQueryField termsQueryField = new TermsQueryField.Builder()
-                    .value(searchDTO.getStoreIdList().stream()
-                            .map(WebsiteAPPServiceImpl::newFieldValue)
-                            .collect(Collectors.toList()))
-                    .build();
-            boolQuery.filter(f -> f.terms(t -> t.field("storeId").terms(termsQueryField)));
-        }
-        // 添加prodStatus 过滤条件
-        if (CollectionUtils.isNotEmpty(searchDTO.getProdStatusList())) {
-            TermsQueryField termsQueryField = new TermsQueryField.Builder()
-                    .value(searchDTO.getProdStatusList().stream()
-                            .map(WebsiteAPPServiceImpl::newFieldValue)
-                            .collect(Collectors.toList()))
-                    .build();
-            boolQuery.filter(f -> f.terms(t -> t.field("prodStatus").terms(termsQueryField)));
-        }
-        // 添加 prodCateId 过滤条件
-        if (CollectionUtils.isNotEmpty(searchDTO.getProdCateIdList())) {
-            TermsQueryField termsQueryField = new TermsQueryField.Builder()
-                    .value(searchDTO.getProdCateIdList().stream()
-                            .map(WebsiteAPPServiceImpl::newFieldValue)
-                            .collect(Collectors.toList()))
-                    .build();
-            boolQuery.filter(f -> f.terms(t -> t.field("prodCateId").terms(termsQueryField)));
-        }
-        // 添加 parCateId 过滤条件
-        if (CollectionUtils.isNotEmpty(searchDTO.getParCateIdList())) {
-            TermsQueryField termsQueryField = new TermsQueryField.Builder()
-                    .value(searchDTO.getParCateIdList().stream()
-                            .map(WebsiteAPPServiceImpl::newFieldValue)
-                            .collect(Collectors.toList()))
-                    .build();
-            boolQuery.filter(f -> f.terms(t -> t.field("parCateId").terms(termsQueryField)));
-        }
-        // 添加 style 过滤条件
-        if (CollectionUtils.isNotEmpty(searchDTO.getStyleList())) {
-            TermsQueryField termsQueryField = new TermsQueryField.Builder()
-                    .value(searchDTO.getStyleList().stream()
-                            .map(WebsiteAPPServiceImpl::newFieldValue)
-                            .collect(Collectors.toList()))
-                    .build();
-            boolQuery.filter(f -> f.terms(t -> t.field("style.keyword").terms(termsQueryField)));
-        }
-        // 添加 season 过滤条件
-        if (CollectionUtils.isNotEmpty(searchDTO.getSeasonList())) {
-            TermsQueryField termsQueryField = new TermsQueryField.Builder()
-                    .value(searchDTO.getSeasonList().stream()
-                            .map(WebsiteAPPServiceImpl::newFieldValue)
-                            .collect(Collectors.toList()))
-                    .build();
-            boolQuery.filter(f -> f.terms(t -> t.field("season.keyword").terms(termsQueryField)));
-        }
-        // 如果是按照时间过滤，则表明是“新品”，则限制 时间范围 20天前到现在
-        if (Objects.equals(searchDTO.getSort(), "createTime")) {
-            // 当前时间
-            final String nowStr = DateUtils.getTime();
-            // 当前时间往前推20天，获取当天的0点0分0秒
-            LocalDateTime ago = LocalDateTime.now().minusDays(20).withHour(0).withMinute(0).withSecond(0);
-            // ago 转化为 yyyy-MM-dd HH:mm:ss
-            String agoStr = ago.format(DateTimeFormatter.ofPattern(DateUtils.YYYY_MM_DD_HH_MM_SS));
-            RangeQuery.Builder builder = new RangeQuery.Builder();
-            builder.date(DateRangeQuery.of(d -> d.field("createTime").gte(agoStr).lte(nowStr)));
-            boolQuery.filter(builder.build()._toQuery());
-        }
-        // 构建最终的查询
-        Query query = new Query.Builder().bool(boolQuery.build()).build();
-        // 执行搜索
-        SearchResponse<ESProductDTO> resList = esClientWrapper.getEsClient()
-                .search(s -> s.index(ES_INDEX_NAME)
-                                .query(query)
-                                .from((searchDTO.getPageNum() - 1) * searchDTO.getPageSize())
-                                .size(searchDTO.getPageSize())
-                                .sort(Arrays.asList(
-                                        SortOptions.of(so -> so.field(f -> f.field(searchDTO.getSort()).order(searchDTO.getOrder()))),
-                                        SortOptions.of(so -> so.field(f -> f.field("storeWeight").order(SortOrder.Desc)))
-                                )),
-                        ESProductDTO.class);
-        final long total = resList.hits().total().value();
-        final List<ESProductDTO> esProdList = resList.hits().hits().stream().map(x -> x.source().setStoreProdId(x.id())).collect(Collectors.toList());
-        return new Page<>(searchDTO.getPageNum(), searchDTO.getPageSize(), total / searchDTO.getPageSize() + 1, total, esProdList);
+        return this.esService.search(searchDTO);
     }
 
     /**

@@ -3,11 +3,6 @@ package com.ruoyi.xkt.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
-import co.elastic.clients.elasticsearch._types.FieldValue;
-import co.elastic.clients.elasticsearch._types.SortOptions;
-import co.elastic.clients.elasticsearch._types.SortOrder;
-import co.elastic.clients.elasticsearch._types.query_dsl.*;
-import co.elastic.clients.elasticsearch.core.SearchResponse;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ruoyi.common.constant.CacheConstants;
@@ -16,7 +11,6 @@ import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.enums.AdType;
-import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.es.EsClientWrapper;
 import com.ruoyi.xkt.domain.*;
@@ -57,8 +51,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -824,11 +816,6 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         return tempList.stream().limit(limitCount).collect(Collectors.toList());
     }
 
-    private static FieldValue newFieldValue(String value) {
-        return FieldValue.of(value);
-    }
-
-
     /**
      * 网站首页搜索
      *
@@ -837,163 +824,7 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
     @Override
     @Transactional(readOnly = true)
     public Page<ESProductDTO> search(IndexSearchDTO searchDTO) throws IOException {
-
-       return this.esService.search(searchDTO);
-       /*
-        // 构建 bool 查询
-        BoolQuery.Builder boolQueryBuilder = new BoolQuery.Builder();
-        // 添加 price 范围查询
-        if (ObjectUtils.isNotEmpty(searchDTO.getMinPrice()) && ObjectUtils.isNotEmpty(searchDTO.getMaxPrice())) {
-            RangeQuery.Builder rangeBuilder = new RangeQuery.Builder();
-            rangeBuilder.number(NumberRangeQuery.of(n -> n.field("prodPrice").gte(Double.valueOf(searchDTO.getMinPrice()))
-                    .lte(Double.valueOf(searchDTO.getMaxPrice()))));
-            boolQueryBuilder.filter(rangeBuilder.build()._toQuery());
-        }
-        // 优化搜索逻辑
-        if (StringUtils.isNotBlank(searchDTO.getSearch())) {
-            String searchTerm = searchDTO.getSearch().trim();
-            // 创建专门的搜索 bool query
-            BoolQuery.Builder searchBoolQuery = new BoolQuery.Builder();
-            // 1. 使用 MatchQuery 利用 IK 分词器（主要搜索方式）
-            String[] matchFields = {"storeName", "prodTitle", "prodCateName", "parCateName", "prodArtNum"};
-            for (String field : matchFields) {
-                MatchQuery matchQuery = MatchQuery.of(m -> m
-                        .field(field)
-                        .query(searchTerm)
-                        .boost(field.equals("storeName") || field.equals("prodArtNum") ? 2.0f : 1.0f)
-                );
-                searchBoolQuery.should(matchQuery._toQuery());
-            }
-            // 2. 对于短字符（1-2个字符），添加通配符查询到 keyword 字段
-            if (searchTerm.length() <= 2) {
-                String wildcardPattern = "*" + searchTerm + "*";
-                String[] keywordFields = {
-                        "storeName.keyword", "prodTitle.keyword", "prodCateName.keyword",
-                        "parCateName.keyword", "prodArtNum.keyword"
-                };
-                for (String field : keywordFields) {
-                    WildcardQuery wildcardQuery = WildcardQuery.of(w -> w
-                            .field(field)
-                            .value(wildcardPattern)
-                            .boost(0.5f) // 降低权重，优先使用分词匹配
-                    );
-                    searchBoolQuery.should(wildcardQuery._toQuery());
-                }
-                // 3. 额外添加前缀匹配，对短字符特别有效
-                String prefixPattern = searchTerm + "*";
-                WildcardQuery prefixQuery = WildcardQuery.of(w -> w
-                        .field("storeName.keyword")
-                        .value(prefixPattern)
-                        .boost(1.0f)
-                );
-                searchBoolQuery.should(prefixQuery._toQuery());
-            }
-            // 4. 对于中文单字，添加专门的匹配
-            if (searchTerm.length() == 1 && isChineseCharacter(searchTerm)) {
-                // 使用 term 查询在 keyword 字段上精确匹配
-                String[] keywordFields = {
-                        "storeName.keyword", "prodTitle.keyword", "prodCateName.keyword",
-                        "parCateName.keyword", "prodArtNum.keyword"
-                };
-                for (String field : keywordFields) {
-                    WildcardQuery charQuery = WildcardQuery.of(w -> w
-                            .field(field)
-                            .value("*" + searchTerm + "*")
-                            .boost(0.8f)
-                    );
-                    searchBoolQuery.should(charQuery._toQuery());
-                }
-            }
-            // 设置最小匹配条件
-            searchBoolQuery.minimumShouldMatch("1");
-            // 将搜索条件添加到主查询
-            boolQueryBuilder.must(searchBoolQuery.build()._toQuery());
-        }
-        // 档口ID 过滤条件
-        if (CollectionUtils.isNotEmpty(searchDTO.getStoreIdList())) {
-            TermsQueryField termsQueryField = new TermsQueryField.Builder()
-                    .value(searchDTO.getStoreIdList().stream()
-                            .map(WebsitePCServiceImpl::newFieldValue)
-                            .collect(Collectors.toList()))
-                    .build();
-            boolQueryBuilder.filter(f -> f.terms(t -> t.field("storeId").terms(termsQueryField)));
-        }
-        // 添加prodStatus 过滤条件
-        if (CollectionUtils.isNotEmpty(searchDTO.getProdStatusList())) {
-            TermsQueryField termsQueryField = new TermsQueryField.Builder()
-                    .value(searchDTO.getProdStatusList().stream()
-                            .map(WebsitePCServiceImpl::newFieldValue)
-                            .collect(Collectors.toList()))
-                    .build();
-            boolQueryBuilder.filter(f -> f.terms(t -> t.field("prodStatus").terms(termsQueryField)));
-        }
-        // 添加 prodCateId 过滤条件
-        if (CollectionUtils.isNotEmpty(searchDTO.getProdCateIdList())) {
-            TermsQueryField termsQueryField = new TermsQueryField.Builder()
-                    .value(searchDTO.getProdCateIdList().stream()
-                            .map(WebsitePCServiceImpl::newFieldValue)
-                            .collect(Collectors.toList()))
-                    .build();
-            boolQueryBuilder.filter(f -> f.terms(t -> t.field("prodCateId").terms(termsQueryField)));
-        }
-        // 添加 parCateId 过滤条件
-        if (CollectionUtils.isNotEmpty(searchDTO.getParCateIdList())) {
-            TermsQueryField termsQueryField = new TermsQueryField.Builder()
-                    .value(searchDTO.getParCateIdList().stream()
-                            .map(WebsitePCServiceImpl::newFieldValue)
-                            .collect(Collectors.toList()))
-                    .build();
-            boolQueryBuilder.filter(f -> f.terms(t -> t.field("parCateId").terms(termsQueryField)));
-        }
-        // 添加 style 过滤条件
-        if (CollectionUtils.isNotEmpty(searchDTO.getStyleList())) {
-            TermsQueryField termsQueryField = new TermsQueryField.Builder()
-                    .value(searchDTO.getStyleList().stream()
-                            .map(WebsitePCServiceImpl::newFieldValue)
-                            .collect(Collectors.toList()))
-                    .build();
-            boolQueryBuilder.filter(f -> f.terms(t -> t.field("style.keyword").terms(termsQueryField)));
-        }
-        // 添加 season 过滤条件
-        if (CollectionUtils.isNotEmpty(searchDTO.getSeasonList())) {
-            TermsQueryField termsQueryField = new TermsQueryField.Builder()
-                    .value(searchDTO.getSeasonList().stream()
-                            .map(WebsitePCServiceImpl::newFieldValue)
-                            .collect(Collectors.toList()))
-                    .build();
-            boolQueryBuilder.filter(f -> f.terms(t -> t.field("season.keyword").terms(termsQueryField)));
-        }
-        // 如果是按照时间过滤，则表明是"新品"，则限制 时间范围 30天前到现在
-        if (Objects.equals(searchDTO.getSort(), "createTime")) {
-            // 当前时间
-            final String nowStr = DateUtils.getTime();
-            // 当前时间往前推30天，获取当天的0点0分0秒
-            LocalDateTime ago = LocalDateTime.now().minusDays(30).withHour(0).withMinute(0).withSecond(0);
-            // ago 转化为 yyyy-MM-dd HH:mm:ss
-            String agoStr = ago.format(DateTimeFormatter.ofPattern(DateUtils.YYYY_MM_DD_HH_MM_SS));
-            RangeQuery.Builder rangeBuilder = new RangeQuery.Builder();
-            rangeBuilder.date(DateRangeQuery.of(d -> d.field("createTime").gte(agoStr).lte(nowStr)));
-            boolQueryBuilder.filter(rangeBuilder.build()._toQuery());
-        }
-        // 构建最终的 bool query
-        BoolQuery boolQuery = boolQueryBuilder.build();
-        // 构建最终的查询
-        Query query = new Query.Builder().bool(boolQuery).build();
-        // 执行搜索
-        SearchResponse<ESProductDTO> resList = esClientWrapper.getEsClient()
-                .search(s -> s.index(ES_INDEX_NAME)
-                                .query(query)
-                                .from((searchDTO.getPageNum() - 1) * searchDTO.getPageSize())
-                                .size(searchDTO.getPageSize())
-                                .sort(Arrays.asList(
-                                        SortOptions.of(so -> so.field(f -> f.field(searchDTO.getSort()).order(searchDTO.getOrder()))),
-                                        SortOptions.of(so -> so.field(f -> f.field("storeWeight").order(SortOrder.Desc)))
-                                )),
-                        ESProductDTO.class);
-        final long total = resList.hits().total().value();
-        final List<ESProductDTO> esProdList = resList.hits().hits().stream().map(x -> x.source().setStoreProdId(x.id())).collect(Collectors.toList());
-        return new Page<>(searchDTO.getPageNum(), searchDTO.getPageSize(), total / searchDTO.getPageSize() + 1, total, esProdList);
-   */
+        return this.esService.search(searchDTO);
     }
 
     /**
@@ -1051,13 +882,5 @@ public class WebsitePCServiceImpl implements IWebsitePCService {
         redisCache.setCacheObject(CacheConstants.USER_SEARCH_HISTORY + loginUser.getUserId(), userSearchList);
     }
 
-    // 判断是否为中文字符
-    private boolean isChineseCharacter(String str) {
-        if (str == null || str.length() != 1) {
-            return false;
-        }
-        char c = str.charAt(0);
-        return (c >= '\u4e00' && c <= '\u9fa5');
-    }
 
 }
