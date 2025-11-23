@@ -10,7 +10,9 @@ import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
 import co.elastic.clients.elasticsearch.core.bulk.BulkResponseItem;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.page.Page;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.framework.es.EsClientWrapper;
 import com.ruoyi.framework.notice.fs.FsNotice;
@@ -18,6 +20,8 @@ import com.ruoyi.xkt.domain.Store;
 import com.ruoyi.xkt.domain.StoreProduct;
 import com.ruoyi.xkt.domain.StoreProductCategoryAttribute;
 import com.ruoyi.xkt.domain.SysProductCategory;
+import com.ruoyi.xkt.dto.elasticSearch.EsProdBatchCreateDTO;
+import com.ruoyi.xkt.dto.elasticSearch.EsProdBatchDeleteDTO;
 import com.ruoyi.xkt.dto.es.ESProductDTO;
 import com.ruoyi.xkt.dto.storeProdColorPrice.StoreProdMinPriceDTO;
 import com.ruoyi.xkt.dto.storeProductFile.StoreProdMainPicDTO;
@@ -67,89 +71,86 @@ public class ElasticSearchServiceImpl implements IElasticSearchService {
     /**
      * 批量往ES新增商品数据
      *
+     * @param storeId 档口ID
      * @return Integer
      */
     @Override
     @Transactional
-    public Integer batchCreate() {
-        List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
-                .eq(StoreProduct::getDelFlag, Constants.UNDELETED));
+    public void batchCreate(Long storeId) {
+        LambdaQueryWrapper<StoreProduct> wrapper = new LambdaQueryWrapper<StoreProduct>()
+                .eq(StoreProduct::getDelFlag, Constants.UNDELETED);
+        if (ObjectUtils.isNotEmpty(storeId)) {
+            wrapper.eq(StoreProduct::getStoreId, storeId);
+        }
+        List<StoreProduct> storeProdList = this.storeProdMapper.selectList(wrapper);
         if (CollectionUtils.isEmpty(storeProdList)) {
-            return 0;
+            throw new ServiceException("商品不存在", HttpStatus.ERROR);
         }
-        final List<String> storeProdIdList = storeProdList.stream().map(StoreProduct::getId).map(String::valueOf).collect(Collectors.toList());
-        // 所有的分类
-        List<SysProductCategory> prodCateList = this.prodCateMapper.selectList(new LambdaQueryWrapper<SysProductCategory>()
-                .eq(SysProductCategory::getDelFlag, Constants.UNDELETED));
-        Map<Long, SysProductCategory> prodCateMap = prodCateList.stream().collect(Collectors.toMap(SysProductCategory::getId, x -> x));
-        List<StoreProdMainPicDTO> mainPicDTOList = this.prodFileMapper.selectMainPicByStoreProdIdList(storeProdIdList.stream()
-                .map(Long::valueOf).collect(Collectors.toList()), FileType.MAIN_PIC.getValue(), Constants.ORDER_NUM_1);
-        Map<Long, String> mainPicMap = mainPicDTOList.stream().collect(Collectors.toMap(StoreProdMainPicDTO::getStoreProdId, StoreProdMainPicDTO::getFileUrl));
-        // 获取当前商品最低价格
-        Map<Long, BigDecimal> prodMinPriceMap = this.prodColorSizeMapper.selectStoreProdMinPriceList(storeProdIdList).stream().collect(Collectors
-                .toMap(StoreProdMinPriceDTO::getStoreProdId, StoreProdMinPriceDTO::getPrice));
-        // 档口商品的属性map
-        Map<Long, StoreProductCategoryAttribute> cateAttrMap = this.prodCateAttrMapper.selectList(new LambdaQueryWrapper<StoreProductCategoryAttribute>()
-                        .eq(StoreProductCategoryAttribute::getDelFlag, Constants.UNDELETED).in(StoreProductCategoryAttribute::getStoreProdId, storeProdIdList))
-                .stream().collect(Collectors.toMap(StoreProductCategoryAttribute::getStoreProdId, x -> x));
-        // 档口商品对应的档口
-        Map<Long, Store> storeMap = this.storeMapper.selectList(new LambdaQueryWrapper<Store>().eq(Store::getDelFlag, Constants.UNDELETED)
-                        .in(Store::getId, storeProdList.stream().map(StoreProduct::getStoreId).collect(Collectors.toList())))
-                .stream().collect(Collectors.toMap(Store::getId, x -> x));
-        List<ESProductDTO> esProductDTOList = new ArrayList<>();
-        for (StoreProduct product : storeProdList) {
-            final SysProductCategory cate = prodCateMap.get(product.getProdCateId());
-            final SysProductCategory parCate = ObjectUtils.isEmpty(cate) ? null : prodCateMap.get(cate.getParentId());
-            final Store store = storeMap.get(product.getStoreId());
-            final BigDecimal prodMinPrice = prodMinPriceMap.get(product.getId());
-            final StoreProductCategoryAttribute cateAttr = cateAttrMap.get(product.getId());
-            ESProductDTO esProductDTO = new ESProductDTO().setStoreProdId(product.getId().toString()).setProdArtNum(product.getProdArtNum())
-                    .setHasVideo(Boolean.FALSE).setProdCateId(product.getProdCateId().toString()).setCreateTime(DateUtils.getTime())
-                    .setProdCateName(ObjectUtils.isNotEmpty(cate) ? cate.getName() : "")
-                    .setSaleWeight(WEIGHT_DEFAULT_ZERO.toString()).setRecommendWeight(WEIGHT_DEFAULT_ZERO.toString())
-                    .setPopularityWeight(WEIGHT_DEFAULT_ZERO.toString())
-                    .setMainPicUrl(mainPicMap.get(product.getId())).setMainPicName("").setMainPicSize(BigDecimal.ZERO)
-                    .setParCateId(ObjectUtils.isNotEmpty(parCate) ? parCate.getId().toString() : "")
-                    .setParCateName(ObjectUtils.isNotEmpty(parCate) ? parCate.getName() : "")
-                    .setProdPrice(ObjectUtils.isNotEmpty(prodMinPrice) ? prodMinPrice.toString() : "")
-                    .setSeason(ObjectUtils.isNotEmpty(cateAttr) ? cateAttr.getSuitableSeason() : "")
-                    .setProdStatus(product.getProdStatus().toString()).setStoreId(product.getStoreId().toString())
-                    .setStoreWeight(ObjectUtils.isNotEmpty(store) ? store.getStoreWeight().toString() : WEIGHT_DEFAULT_ZERO.toString())
-                    .setStoreName(ObjectUtils.isNotEmpty(store) ? store.getStoreName() : "")
-                    .setStyle(ObjectUtils.isNotEmpty(cateAttr) ? cateAttr.getStyle() : "")
-                    .setProdTitle(product.getProdTitle());
-            if (ObjectUtils.isNotEmpty(cateAttr) && StringUtils.isNotBlank(cateAttr.getStyle())) {
-                esProductDTO.setTags(Collections.singletonList(cateAttr.getStyle()));
-            }
-            esProductDTOList.add(esProductDTO);
-        }
-        // 构建批量操作请求
-        List<BulkOperation> bulkOperations = new ArrayList<>();
-        for (ESProductDTO esProductDTO : esProductDTOList) {
-            BulkOperation bulkOperation = new BulkOperation.Builder()
-                    .index(i -> i.id(esProductDTO.getStoreProdId()).index(ES_INDEX_NAME).document(esProductDTO))
-                    .build();
-            bulkOperations.add(bulkOperation);
-        }
-        // 执行批量插入
-        try {
-            BulkResponse response = esClientWrapper.getEsClient().bulk(b -> b.index(ES_INDEX_NAME).operations(bulkOperations));
-            log.info("全量新增到 ES 成功的 id列表: {}", response.items().stream().map(BulkResponseItem::id).collect(Collectors.toList()));
-            // 有哪些没执行成功的，需要发飞书通知
-            List<String> successIdList = response.items().stream().map(BulkResponseItem::id).collect(Collectors.toList());
-            List<String> unExeIdList = storeProdIdList.stream().map(String::valueOf).filter(x -> !successIdList.contains(x)).collect(Collectors.toList());
-            if (CollectionUtils.isNotEmpty(unExeIdList)) {
-                fsNotice.sendMsg2DefaultChat("全量新增商品到 ES 失败", "以下storeProdId未执行成功: " + unExeIdList);
-            } else {
-                fsNotice.sendMsg2DefaultChat("全量新增商品到 ES 成功", "共处理 " + response.items().size() + " 条记录");
-            }
-        } catch (Exception e) {
-            log.error("批量新增到 ES 失败", e);
-            fsNotice.sendMsg2DefaultChat("全量新增商品到 ES 失败", e.getMessage());
-        }
-        return 1;
+        // 创建商品到ES中
+        this.createProdToEs(storeProdList);
     }
 
+    /**
+     * 批量新增商品数据
+     *
+     * @param createProdDTO 新增商品入参
+     * @return Integer
+     */
+    @Override
+    @Transactional
+    public void batchCreateProd(EsProdBatchCreateDTO createProdDTO) {
+        LambdaQueryWrapper<StoreProduct> wrapper = new LambdaQueryWrapper<StoreProduct>()
+                .eq(StoreProduct::getDelFlag, Constants.UNDELETED).eq(StoreProduct::getStoreId, createProdDTO.getStoreId())
+                .in(StoreProduct::getId, createProdDTO.getStoreProdIdList());
+        List<StoreProduct> storeProdList = this.storeProdMapper.selectList(wrapper);
+        if (CollectionUtils.isEmpty(storeProdList)) {
+            throw new ServiceException("商品不存在", HttpStatus.ERROR);
+        }
+        // 创建商品到ES中
+        this.createProdToEs(storeProdList);
+    }
+
+    /**
+     * 批量删除商品数据
+     *
+     * @param storeId 档口ID
+     * @return Integer
+     */
+    @Override
+    @Transactional
+    public void batchDelete(Long storeId) {
+        LambdaQueryWrapper<StoreProduct> queryWrapper = new LambdaQueryWrapper<StoreProduct>()
+                .eq(StoreProduct::getDelFlag, Constants.UNDELETED);
+        if (ObjectUtils.isNotEmpty(storeId)) {
+            queryWrapper.eq(StoreProduct::getStoreId, storeId);
+        }
+        List<StoreProduct> storeProdList = this.storeProdMapper.selectList(queryWrapper);
+        if (CollectionUtils.isEmpty(storeProdList)) {
+            throw new ServiceException("商品不存在", HttpStatus.ERROR);
+        }
+        // 批量删除商品
+        this.deleteEsProd(storeProdList);
+    }
+
+
+    /**
+     * 批量删除商品数据
+     *
+     * @param deleteDTO 删除商品入参
+     */
+    @Override
+    @Transactional
+    public void batchDeleteProd(EsProdBatchDeleteDTO deleteDTO) {
+        LambdaQueryWrapper<StoreProduct> queryWrapper = new LambdaQueryWrapper<StoreProduct>()
+                .eq(StoreProduct::getDelFlag, Constants.UNDELETED).eq(StoreProduct::getStoreId, deleteDTO.getStoreId())
+                .in(StoreProduct::getId, deleteDTO.getStoreProdIdList());
+        List<StoreProduct> storeProdList = this.storeProdMapper.selectList(queryWrapper);
+        if (CollectionUtils.isEmpty(storeProdList)) {
+            throw new ServiceException("商品不存在", HttpStatus.ERROR);
+        }
+        // 批量删除商品
+        this.deleteEsProd(storeProdList);
+    }
 
 
     /**
@@ -288,6 +289,7 @@ public class ElasticSearchServiceImpl implements IElasticSearchService {
 
     /**
      * 处理混合文本搜索（中英文数字混合）
+     *
      * @param searchTerm
      * @param searchBoolQuery
      */
@@ -331,6 +333,7 @@ public class ElasticSearchServiceImpl implements IElasticSearchService {
 
     /**
      * 处理短英文数字搜索
+     *
      * @param searchTerm
      * @param searchBoolQuery
      */
@@ -362,6 +365,7 @@ public class ElasticSearchServiceImpl implements IElasticSearchService {
 
     /**
      * 处理短中文搜索
+     *
      * @param searchTerm
      * @param searchBoolQuery
      */
@@ -377,6 +381,7 @@ public class ElasticSearchServiceImpl implements IElasticSearchService {
 
     /**
      * 处理标准长文本搜索
+     *
      * @param searchTerm
      * @param searchBoolQuery
      */
@@ -393,6 +398,7 @@ public class ElasticSearchServiceImpl implements IElasticSearchService {
 
     /**
      * 判断是否包含中文
+     *
      * @param str
      * @return
      */
@@ -409,6 +415,7 @@ public class ElasticSearchServiceImpl implements IElasticSearchService {
 
     /**
      * 判断是否包含英文或数字
+     *
      * @param str
      * @return
      */
@@ -425,6 +432,7 @@ public class ElasticSearchServiceImpl implements IElasticSearchService {
 
     /**
      * 提取英文数字部分
+     *
      * @param str
      * @return
      */
@@ -442,6 +450,7 @@ public class ElasticSearchServiceImpl implements IElasticSearchService {
 
     /**
      * 提取中文部分
+     *
      * @param str
      * @return
      */
@@ -455,6 +464,117 @@ public class ElasticSearchServiceImpl implements IElasticSearchService {
             }
         }
         return sb.toString();
+    }
+
+    /**
+     * 创建商品数据到ES中
+     *
+     * @param storeProdList
+     */
+    private void createProdToEs(List<StoreProduct> storeProdList) {
+        final List<String> storeProdIdList = storeProdList.stream().map(StoreProduct::getId).map(String::valueOf).collect(Collectors.toList());
+        // 所有的分类
+        List<SysProductCategory> prodCateList = this.prodCateMapper.selectList(new LambdaQueryWrapper<SysProductCategory>()
+                .eq(SysProductCategory::getDelFlag, Constants.UNDELETED));
+        Map<Long, SysProductCategory> prodCateMap = prodCateList.stream().collect(Collectors.toMap(SysProductCategory::getId, x -> x));
+        List<StoreProdMainPicDTO> mainPicDTOList = this.prodFileMapper.selectMainPicByStoreProdIdList(storeProdIdList.stream()
+                .map(Long::valueOf).collect(Collectors.toList()), FileType.MAIN_PIC.getValue(), Constants.ORDER_NUM_1);
+        Map<Long, String> mainPicMap = mainPicDTOList.stream().collect(Collectors.toMap(StoreProdMainPicDTO::getStoreProdId, StoreProdMainPicDTO::getFileUrl));
+        // 获取当前商品最低价格
+        Map<Long, BigDecimal> prodMinPriceMap = this.prodColorSizeMapper.selectStoreProdMinPriceList(storeProdIdList).stream().collect(Collectors
+                .toMap(StoreProdMinPriceDTO::getStoreProdId, StoreProdMinPriceDTO::getPrice));
+        // 档口商品的属性map
+        Map<Long, StoreProductCategoryAttribute> cateAttrMap = this.prodCateAttrMapper.selectList(new LambdaQueryWrapper<StoreProductCategoryAttribute>()
+                        .eq(StoreProductCategoryAttribute::getDelFlag, Constants.UNDELETED).in(StoreProductCategoryAttribute::getStoreProdId, storeProdIdList))
+                .stream().collect(Collectors.toMap(StoreProductCategoryAttribute::getStoreProdId, x -> x));
+        // 档口商品对应的档口
+        Map<Long, Store> storeMap = this.storeMapper.selectList(new LambdaQueryWrapper<Store>().eq(Store::getDelFlag, Constants.UNDELETED)
+                        .in(Store::getId, storeProdList.stream().map(StoreProduct::getStoreId).collect(Collectors.toList())))
+                .stream().collect(Collectors.toMap(Store::getId, x -> x));
+        List<ESProductDTO> esProductDTOList = new ArrayList<>();
+        for (StoreProduct product : storeProdList) {
+            final SysProductCategory cate = prodCateMap.get(product.getProdCateId());
+            final SysProductCategory parCate = ObjectUtils.isEmpty(cate) ? null : prodCateMap.get(cate.getParentId());
+            final Store store = storeMap.get(product.getStoreId());
+            final BigDecimal prodMinPrice = prodMinPriceMap.get(product.getId());
+            final StoreProductCategoryAttribute cateAttr = cateAttrMap.get(product.getId());
+            ESProductDTO esProductDTO = new ESProductDTO().setStoreProdId(product.getId().toString()).setProdArtNum(product.getProdArtNum())
+                    .setHasVideo(Boolean.FALSE).setProdCateId(product.getProdCateId().toString()).setCreateTime(DateUtils.getTime())
+                    .setProdCateName(ObjectUtils.isNotEmpty(cate) ? cate.getName() : "")
+                    .setSaleWeight(WEIGHT_DEFAULT_ZERO.toString()).setRecommendWeight(WEIGHT_DEFAULT_ZERO.toString())
+                    .setPopularityWeight(WEIGHT_DEFAULT_ZERO.toString())
+                    .setMainPicUrl(mainPicMap.get(product.getId())).setMainPicName("").setMainPicSize(BigDecimal.ZERO)
+                    .setParCateId(ObjectUtils.isNotEmpty(parCate) ? parCate.getId().toString() : "")
+                    .setParCateName(ObjectUtils.isNotEmpty(parCate) ? parCate.getName() : "")
+                    .setProdPrice(ObjectUtils.isNotEmpty(prodMinPrice) ? prodMinPrice.toString() : "")
+                    .setSeason(ObjectUtils.isNotEmpty(cateAttr) ? cateAttr.getSuitableSeason() : "")
+                    .setProdStatus(product.getProdStatus().toString()).setStoreId(product.getStoreId().toString())
+                    .setStoreWeight(ObjectUtils.isNotEmpty(store) ? store.getStoreWeight().toString() : WEIGHT_DEFAULT_ZERO.toString())
+                    .setStoreName(ObjectUtils.isNotEmpty(store) ? store.getStoreName() : "")
+                    .setStyle(ObjectUtils.isNotEmpty(cateAttr) ? cateAttr.getStyle() : "")
+                    .setProdTitle(product.getProdTitle());
+            if (ObjectUtils.isNotEmpty(cateAttr) && StringUtils.isNotBlank(cateAttr.getStyle())) {
+                esProductDTO.setTags(Collections.singletonList(cateAttr.getStyle()));
+            }
+            esProductDTOList.add(esProductDTO);
+        }
+        // 构建批量操作请求
+        List<BulkOperation> bulkOperations = new ArrayList<>();
+        for (ESProductDTO esProductDTO : esProductDTOList) {
+            BulkOperation bulkOperation = new BulkOperation.Builder()
+                    .index(i -> i.id(esProductDTO.getStoreProdId()).index(ES_INDEX_NAME).document(esProductDTO))
+                    .build();
+            bulkOperations.add(bulkOperation);
+        }
+        // 执行批量插入
+        try {
+            BulkResponse response = esClientWrapper.getEsClient().bulk(b -> b.index(ES_INDEX_NAME).operations(bulkOperations));
+            log.info("全量新增到 ES 成功的 id列表: {}", response.items().stream().map(BulkResponseItem::id).collect(Collectors.toList()));
+            // 有哪些没执行成功的，需要发飞书通知
+            List<String> successIdList = response.items().stream().map(BulkResponseItem::id).collect(Collectors.toList());
+            List<String> unExeIdList = storeProdIdList.stream().map(String::valueOf).filter(x -> !successIdList.contains(x)).collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(unExeIdList)) {
+                fsNotice.sendMsg2DefaultChat("全量新增商品到 ES 失败", "以下storeProdId未执行成功: " + unExeIdList);
+            } else {
+                fsNotice.sendMsg2DefaultChat("全量新增商品到 ES 成功", "共处理 " + response.items().size() + " 条记录");
+            }
+        } catch (Exception e) {
+            log.error("批量新增到 ES 失败", e);
+            fsNotice.sendMsg2DefaultChat("全量新增商品到 ES 失败", e.getMessage());
+        }
+    }
+
+    /**
+     * 批量删除商品数据
+     *
+     * @param storeProdList 批量删除商品
+     */
+    private void deleteEsProd(List<StoreProduct> storeProdList) {
+        final List<String> storeProdIdList = storeProdList.stream().map(StoreProduct::getId).map(String::valueOf).collect(Collectors.toList());
+        // 构建批量删除操作请求
+        List<BulkOperation> bulkOperations = new ArrayList<>();
+        for (String storeProdId : storeProdIdList) {
+            BulkOperation bulkOperation = new BulkOperation.Builder()
+                    .delete(d -> d.id(storeProdId).index(ES_INDEX_NAME))
+                    .build();
+            bulkOperations.add(bulkOperation);
+        }
+        // 执行批量删除
+        try {
+            BulkResponse response = esClientWrapper.getEsClient().bulk(b -> b.index(ES_INDEX_NAME).operations(bulkOperations));
+            log.info("全量删除 ES 成功的 id列表: {}", response.items().stream().map(BulkResponseItem::id).collect(Collectors.toList()));
+            // 有哪些没执行成功的，需要发飞书通知
+            List<String> successIdList = response.items().stream().map(BulkResponseItem::id).collect(Collectors.toList());
+            List<String> unExeIdList = storeProdIdList.stream().map(String::valueOf).filter(x -> !successIdList.contains(x)).collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(unExeIdList)) {
+                fsNotice.sendMsg2DefaultChat("全量删除商品到 ES 失败", "以下storeProdId未执行成功: " + unExeIdList);
+            } else {
+                fsNotice.sendMsg2DefaultChat("全量删除商品到 ES 成功", "共处理 " + response.items().size() + " 条记录");
+            }
+        } catch (Exception e) {
+            log.error("批量删除 ES 失败", e);
+            fsNotice.sendMsg2DefaultChat("全量删除商品到 ES 失败", e.getMessage());
+        }
     }
 
 }
