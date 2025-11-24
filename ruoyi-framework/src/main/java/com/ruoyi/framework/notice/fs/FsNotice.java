@@ -7,9 +7,9 @@ import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.notice.AbstractNotice;
 import com.ruoyi.framework.notice.fs.entity.*;
+import com.ruoyi.system.domain.SysOperLog;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -58,39 +58,29 @@ public class FsNotice extends AbstractNotice {
     /**
      * 发送异常信息给监控群
      *
-     * @param e
+     * @param optLog
      */
-    public <T extends Exception> void sendException2MonitorChat(T e) {
-        sendException2MonitorChat(null, e);
-    }
-
-    /**
-     * 发送异常信息给监控群
-     *
-     * @param e
-     */
-    public <T extends Exception> void sendException2MonitorChat(String uri, T e) {
+    public void sendException2MonitorChat(final SysOperLog optLog) {
         if (Boolean.TRUE.equals(monitorSwitch)) {
-            String username = SecurityUtils.getUsernameSafe();
             ThreadUtil.execAsync(() -> {
                 try {
                     //内容
                     FeiShuMsg.ZhCn zhCn = new FeiShuMsg.ZhCn();
-                    List<List<FeiShuMsg.BaseField>> contentFields = new ArrayList<>(6);
+                    List<List<FeiShuMsg.BaseField>> contentFields = new ArrayList<>(7);
                     contentFields.add(Collections.singletonList(FeiShuTextField
                             .createText(CharSequenceUtil.format("环境：{}", env))));
-                    if (uri != null) {
-                        contentFields.add(Collections.singletonList(FeiShuTextField
-                                .createText(CharSequenceUtil.format("地址：{}", uri))));
-                    }
                     contentFields.add(Collections.singletonList(FeiShuTextField
-                            .createText(CharSequenceUtil.format("用户：{}", username))));
+                            .createText(CharSequenceUtil.format("地址：{}", optLog.getOperUrl()))));
                     contentFields.add(Collections.singletonList(FeiShuTextField
-                            .createText(CharSequenceUtil.format("时间：{}", DateUtil.now()))));
+                            .createText(CharSequenceUtil.format("入参：{}", StrUtil.truncateUtf8(optLog.getOperParam(), 512)))));
                     contentFields.add(Collections.singletonList(FeiShuTextField
-                            .createText(CharSequenceUtil.format("异常：{}", e.getClass().getName()))));
+                            .createText(CharSequenceUtil.format("用户：{}", optLog.getOperName()))));
                     contentFields.add(Collections.singletonList(FeiShuTextField
-                            .createText(CharSequenceUtil.format("错误信息：{}", StrUtil.truncateUtf8(e.getMessage(), 512)))));
+                            .createText(CharSequenceUtil.format("时间：{}", DateUtil.formatDateTime(optLog.getOperTime())))));
+                    contentFields.add(Collections.singletonList(FeiShuTextField
+                            .createText(CharSequenceUtil.format("异常：{}", optLog.getTitle()))));
+                    contentFields.add(Collections.singletonList(FeiShuTextField
+                            .createText(CharSequenceUtil.format("错误信息：{}", StrUtil.truncateUtf8(optLog.getErrorMsg(), 512)))));
                     zhCn.setContent(contentFields);
                     //消息体
                     FeiShuMsg feiShuMsg = new FeiShuMsg();
@@ -105,7 +95,6 @@ public class FsNotice extends AbstractNotice {
             });
         }
     }
-
 
     /**
      * 发送消息
