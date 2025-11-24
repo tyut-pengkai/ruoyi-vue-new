@@ -9,6 +9,7 @@ import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.AdType;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.Advert;
 import com.ruoyi.xkt.domain.SysFile;
 import com.ruoyi.xkt.dto.advert.*;
@@ -52,6 +53,10 @@ public class AdvertServiceImpl implements IAdvertService {
     @Override
     @Transactional
     public Integer create(AdvertCreateDTO createDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isAdmin()) {
+            throw new ServiceException("当前用户非管理员账号，无权限操作!", HttpStatus.ERROR);
+        }
         Advert advert = BeanUtil.toBean(createDTO, Advert.class);
         advert.setBasicSymbol(random10Str());
         advert.setOnlineStatus(AdOnlineStatus.ONLINE.getValue());
@@ -136,6 +141,10 @@ public class AdvertServiceImpl implements IAdvertService {
     @Override
     @Transactional
     public Integer updateAdvert(AdvertUpdateDTO updateDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isAdmin()) {
+            throw new ServiceException("当前用户非管理员账号，无权限操作!", HttpStatus.ERROR);
+        }
         Advert advert = Optional.ofNullable(this.advertMapper.selectOne(new LambdaQueryWrapper<Advert>()
                         .eq(Advert::getId, updateDTO.getAdvertId()).eq(Advert::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("推广营销不存在!", HttpStatus.ERROR));
@@ -158,6 +167,10 @@ public class AdvertServiceImpl implements IAdvertService {
     @Override
     @Transactional
     public Integer changeAdvertStatus(AdvertChangeStatusDTO changeStatusDTO) {
+        // 用户是否为档口管理者或子账户
+        if (!SecurityUtils.isAdmin()) {
+            throw new ServiceException("当前用户非管理员账号，无权限操作!", HttpStatus.ERROR);
+        }
         // 判断状态是否合法
         AdOnlineStatus.of(changeStatusDTO.getStatus());
         Advert advert = Optional.ofNullable(this.advertMapper.selectOne(new LambdaQueryWrapper<Advert>()

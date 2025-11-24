@@ -32,7 +32,7 @@ public class AdvertController extends XktBaseController {
 
     final IAdvertService advertService;
 
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @PreAuthorize("@ss.hasAnyRoles('admin')")
     @ApiOperation(value = "新增推广营销", httpMethod = "POST", response = R.class)
     @Log(title = "新增推广营销", businessType = BusinessType.INSERT)
     @PostMapping
@@ -40,21 +40,21 @@ public class AdvertController extends XktBaseController {
         return R.ok(advertService.create(BeanUtil.toBean(createVO, AdvertCreateDTO.class)));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @PreAuthorize("@ss.hasAnyRoles('admin')")
     @ApiOperation(value = "获取推广营销详细信息", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/{advertId}")
     public R<AdvertResVO> getInfo(@PathVariable("advertId") Long advertId) {
         return R.ok(BeanUtil.toBean(advertService.getInfo(advertId), AdvertResVO.class));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @PreAuthorize("@ss.hasAnyRoles('admin')")
     @ApiOperation(value = "查询推广营销列表 ", httpMethod = "POST", response = R.class)
     @PostMapping("/page")
     public R<Page<AdvertResDTO>> page(@Validated @RequestBody AdvertPageVO pageVO) {
         return R.ok(advertService.page(BeanUtil.toBean(pageVO, AdvertPageDTO.class)));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @PreAuthorize("@ss.hasAnyRoles('admin')")
     @ApiOperation(value = "修改推广营销信息", httpMethod = "PUT", response = R.class)
     @Log(title = "修改推广营销信息", businessType = BusinessType.UPDATE)
     @PutMapping
@@ -62,7 +62,7 @@ public class AdvertController extends XktBaseController {
         return R.ok(advertService.updateAdvert(BeanUtil.toBean(updateVO, AdvertUpdateDTO.class)));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @PreAuthorize("@ss.hasAnyRoles('admin')")
     @ApiOperation(value = "上线/下线 营销推广", httpMethod = "PUT", response = R.class)
     @Log(title = "上线/下线 营销推广", businessType = BusinessType.UPDATE)
     @PutMapping("/change-status")
