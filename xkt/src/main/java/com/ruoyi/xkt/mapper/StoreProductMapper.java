@@ -3,6 +3,7 @@ package com.ruoyi.xkt.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruoyi.xkt.domain.StoreProduct;
 import com.ruoyi.xkt.dto.dailyStoreTag.DailyStoreTagDTO;
+import com.ruoyi.xkt.dto.picture.ProductMatchDTO;
 import com.ruoyi.xkt.dto.storeHomepage.StoreRecommendResDTO;
 import com.ruoyi.xkt.dto.storeProduct.*;
 import org.apache.ibatis.annotations.Param;
@@ -138,6 +139,14 @@ public interface StoreProductMapper extends BaseMapper<StoreProduct> {
      * @return StoreProdPcDownloadInfoResDTO
      */
     StoreProdPcDownloadInfoResDTO selectDownloadProdInfo(@Param("storeProdId") Long storeProdId);
+
+    /**
+     * 过滤掉无效的档口商品
+     *
+     * @param storeProdIdList 档口商品ID列表
+     * @return List<ProductMatchDTO>
+     */
+    List<ProductMatchDTO> filterInvalidStoreProd(@Param("storeProdIdList") List<Long> storeProdIdList);
 
 }
 

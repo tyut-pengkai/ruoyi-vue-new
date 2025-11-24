@@ -9,11 +9,14 @@ import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
 import co.elastic.clients.elasticsearch.core.bulk.BulkResponseItem;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.page.Page;
+import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.es.EsClientWrapper;
 import com.ruoyi.framework.notice.fs.FsNotice;
 import com.ruoyi.xkt.domain.Store;
@@ -65,6 +68,7 @@ public class ElasticSearchServiceImpl implements IElasticSearchService {
     final EsClientWrapper esClientWrapper;
     final StoreProductFileMapper prodFileMapper;
     final FsNotice fsNotice;
+    final RedisCache redisCache;
     @Value("${es.indexName}")
     private String ES_INDEX_NAME;
 
@@ -77,6 +81,10 @@ public class ElasticSearchServiceImpl implements IElasticSearchService {
     @Override
     @Transactional
     public void batchCreate(Long storeId) {
+        // 用户是否为超级管理员
+        if (!SecurityUtils.isSuperAdmin()) {
+            throw new ServiceException("当前用户非超级管理员，无权限操作!", HttpStatus.ERROR);
+        }
         LambdaQueryWrapper<StoreProduct> wrapper = new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getDelFlag, Constants.UNDELETED);
         if (ObjectUtils.isNotEmpty(storeId)) {
@@ -99,6 +107,10 @@ public class ElasticSearchServiceImpl implements IElasticSearchService {
     @Override
     @Transactional
     public void batchCreateProd(EsProdBatchCreateDTO createProdDTO) {
+        // 用户是否为超级管理员
+        if (!SecurityUtils.isSuperAdmin()) {
+            throw new ServiceException("当前用户非超级管理员，无权限操作!", HttpStatus.ERROR);
+        }
         LambdaQueryWrapper<StoreProduct> wrapper = new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getDelFlag, Constants.UNDELETED).eq(StoreProduct::getStoreId, createProdDTO.getStoreId())
                 .in(StoreProduct::getId, createProdDTO.getStoreProdIdList());
@@ -119,6 +131,10 @@ public class ElasticSearchServiceImpl implements IElasticSearchService {
     @Override
     @Transactional
     public void batchDelete(Long storeId) {
+        // 用户是否为超级管理员
+        if (!SecurityUtils.isSuperAdmin()) {
+            throw new ServiceException("当前用户非超级管理员，无权限操作!", HttpStatus.ERROR);
+        }
         LambdaQueryWrapper<StoreProduct> queryWrapper = new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getDelFlag, Constants.UNDELETED);
         if (ObjectUtils.isNotEmpty(storeId)) {
@@ -141,6 +157,10 @@ public class ElasticSearchServiceImpl implements IElasticSearchService {
     @Override
     @Transactional
     public void batchDeleteProd(EsProdBatchDeleteDTO deleteDTO) {
+        // 用户是否为超级管理员
+        if (!SecurityUtils.isSuperAdmin()) {
+            throw new ServiceException("当前用户非超级管理员，无权限操作!", HttpStatus.ERROR);
+        }
         LambdaQueryWrapper<StoreProduct> queryWrapper = new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getDelFlag, Constants.UNDELETED).eq(StoreProduct::getStoreId, deleteDTO.getStoreId())
                 .in(StoreProduct::getId, deleteDTO.getStoreProdIdList());
@@ -197,15 +217,30 @@ public class ElasticSearchServiceImpl implements IElasticSearchService {
             // 将搜索条件添加到主查询
             boolQueryBuilder.must(searchBoolQuery.build()._toQuery());
         }
-        // 档口ID 过滤条件
+
+        // 处理逻辑 获取所有可用的档口，如果该档口是停用状态，则不返回该档口的任何数据
+        List<String> existStoreIdList = this.redisCache.getCacheObject(CacheConstants.STORE_LIST_KEY);
+        List<String> effectiveStoreIds = null;
         if (CollectionUtils.isNotEmpty(searchDTO.getStoreIdList())) {
+            // 如果查询条件中有指定档口，则过滤掉不在existStoreIdList中的档口
+            effectiveStoreIds = CollectionUtils.isEmpty(existStoreIdList) ? searchDTO.getStoreIdList()
+                    : searchDTO.getStoreIdList().stream().filter(existStoreIdList::contains).collect(Collectors.toList());
+        } else {
+            // 如果查询条件中没有指定档口，则使用所有可用档口
+            if (CollectionUtils.isNotEmpty(existStoreIdList)) {
+                effectiveStoreIds = new ArrayList<>(existStoreIdList);
+            }
+        }
+        // 档口ID 过滤条件
+        if (CollectionUtils.isNotEmpty(effectiveStoreIds)) {
             TermsQueryField termsQueryField = new TermsQueryField.Builder()
-                    .value(searchDTO.getStoreIdList().stream()
+                    .value(effectiveStoreIds.stream()
                             .map(FieldValue::of)
                             .collect(Collectors.toList()))
                     .build();
             boolQueryBuilder.filter(f -> f.terms(t -> t.field("storeId").terms(termsQueryField)));
         }
+
         // 添加prodStatus 过滤条件
         if (CollectionUtils.isNotEmpty(searchDTO.getProdStatusList())) {
             TermsQueryField termsQueryField = new TermsQueryField.Builder()

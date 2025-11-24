@@ -4,7 +4,6 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
-import cn.hutool.core.util.RandomUtil;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.elasticsearch.core.bulk.BulkOperation;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -22,7 +21,6 @@ import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.bigDecimal.CollectorsUtil;
 import com.ruoyi.framework.es.EsClientWrapper;
-import com.ruoyi.framework.sms.SmsClientWrapper;
 import com.ruoyi.system.mapper.SysUserMapper;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.xkt.domain.*;
@@ -128,7 +126,21 @@ public class StoreServiceImpl implements IStoreService {
                         .eq(Store::getId, delFlagDTO.getStoreId())))
                 .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
         store.setDelFlag(delFlagDTO.getDelFlag() ? Constants.UNDELETED : Constants.DELETED);
-        return storeMapper.updateById(store);
+        int count = storeMapper.updateById(store);
+        if (delFlagDTO.getDelFlag()) {
+            // 如果为启用，则重新添加到redis中
+            redisCache.setCacheObject(CacheConstants.STORE_KEY + store.getId(), store);
+        } else {
+            // 如果为停用，则从redis中删除
+            redisCache.deleteObject(CacheConstants.STORE_KEY + store.getId());
+        }
+        // 获取所有的档口，并且存到redis中
+        List<Store> storeList = this.storeMapper.selectList(new LambdaQueryWrapper<Store>()
+                .eq(Store::getDelFlag, Constants.UNDELETED));
+        if (CollectionUtils.isNotEmpty(storeList)) {
+            redisCache.setCacheObject(CacheConstants.STORE_LIST_KEY, storeList.stream().map(Store::getId).map(String::valueOf).collect(Collectors.toList()));
+        }
+        return count;
     }
 
     /**

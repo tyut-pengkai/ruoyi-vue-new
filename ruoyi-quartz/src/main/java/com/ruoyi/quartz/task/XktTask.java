@@ -183,9 +183,10 @@ public class XktTask {
         if (CollectionUtils.isEmpty(storeList)) {
             return;
         }
-        storeList.forEach(store -> {
-            redisCache.setCacheObject(CacheConstants.STORE_KEY + store.getId(), store);
-        });
+        // 单个档口到redis中
+        storeList.forEach(store -> redisCache.setCacheObject(CacheConstants.STORE_KEY + store.getId(), store));
+        // 所有正在生效的档口
+        redisCache.setCacheObject(CacheConstants.STORE_LIST_KEY, storeList.stream().map(Store::getId).map(String::valueOf).collect(Collectors.toList()));
     }
 
     /**

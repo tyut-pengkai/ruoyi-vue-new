@@ -97,8 +97,18 @@ public class PictureSearchServiceImpl implements IPictureSearchService {
         final List<Long> storeProdIdList = picSearchAdverts.stream().map(x -> x.getStoreProdId()).collect(Collectors.toList());
         // 搜索结果过滤掉广告商品
         List<ProductMatchDTO> filterResults = results.stream().filter(x -> !storeProdIdList.contains(x.getStoreProductId())).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(filterResults)) {
+            return BeanUtil.copyToList(picSearchAdverts, StoreProdViewDTO.class);
+        }
+        // 过滤掉无效的档口，有可能该档口没有续费之类的，被下架了
+        List<ProductMatchDTO> trueResultList = this.storeProdMapper.filterInvalidStoreProd(filterResults.stream()
+                .map(ProductMatchDTO::getStoreProductId).distinct().collect(Collectors.toList()));
+        // 过滤掉无效的商品之后，是否还剩下商品
+        if (CollectionUtils.isEmpty(trueResultList)) {
+            return BeanUtil.copyToList(picSearchAdverts, StoreProdViewDTO.class);
+        }
         // 档口商品显示的基本属性 数据库筛选，必须要带prodStatus，因为图搜搜出来的可能是下架的商品
-        List<StoreProdViewDTO> storeProdViewAttrList = this.storeProdMapper.getStoreProdViewAttr(filterResults.stream()
+        List<StoreProdViewDTO> storeProdViewAttrList = this.storeProdMapper.getStoreProdViewAttr(trueResultList.stream()
                         .map(ProductMatchDTO::getStoreProductId).distinct().collect(Collectors.toList()),
                 java.sql.Date.valueOf(LocalDate.now().minusMonths(2)), java.sql.Date.valueOf(LocalDate.now()));
         // 设置商品标签

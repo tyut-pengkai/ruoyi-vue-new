@@ -91,6 +91,11 @@ public class CacheConstants {
     public static final String STORE_KEY = "store:";
 
     /**
+     * 正在生效的档口列表
+     */
+    public static final String STORE_LIST_KEY = "store_list";
+
+    /**
      * 推广购买截止时间
      */
     public static final String ADVERT_DEADLINE_KEY = "advert_deadline:";

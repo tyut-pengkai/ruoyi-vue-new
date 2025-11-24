@@ -27,7 +27,7 @@ public class ElasticSearchController extends XktBaseController {
 
     final IElasticSearchService esService;
 
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @PreAuthorize("@ss.hasAnyRoles('admin')")
     @Log(title = "ES批量新增数据", businessType = BusinessType.INSERT)
     @PutMapping("/batch-create")
     public R<Integer> batchCreate(@RequestParam(required = false) Long storeId) {
@@ -35,7 +35,7 @@ public class ElasticSearchController extends XktBaseController {
         return R.ok();
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @PreAuthorize("@ss.hasAnyRoles('admin')")
     @Log(title = "ES批量新增数据（特定商品）", businessType = BusinessType.INSERT)
     @PutMapping("/prod/batch-create")
     public R<Integer> batchCreateProd(@Validated @RequestBody EsProdBatchCreateVO createVO) {
@@ -43,7 +43,7 @@ public class ElasticSearchController extends XktBaseController {
         return R.ok();
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @PreAuthorize("@ss.hasAnyRoles('admin')")
     @Log(title = "ES批量删除数据", businessType = BusinessType.DELETE)
     @DeleteMapping("/batch-delete")
     public R<Integer> batchDelete(@RequestParam(required = false) Long storeId) {
@@ -51,7 +51,7 @@ public class ElasticSearchController extends XktBaseController {
         return R.ok();
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin')")
+    @PreAuthorize("@ss.hasAnyRoles('admin')")
     @Log(title = "ES批量删除数据（特定商品）", businessType = BusinessType.DELETE)
     @DeleteMapping("/prod/batch-delete")
     public R<Integer> batchDeleteProd(@Validated @RequestBody EsProdBatchDeleteVO deleteVO) {
