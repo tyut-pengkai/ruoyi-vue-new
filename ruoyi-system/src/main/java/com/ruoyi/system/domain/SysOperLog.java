@@ -1,18 +1,19 @@
 package com.ruoyi.system.domain;
 
-import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.annotation.Excel.ColumnType;
 import com.ruoyi.common.core.domain.BaseEntity;
 import lombok.ToString;
 
+import java.util.Date;
+
 /**
  * 操作日志记录表 oper_log
  * 
  * @author ruoyi
  */
-@ToString(callSuper = false)
+@ToString(callSuper = false, exclude = {"operId"})
 public class SysOperLog extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
