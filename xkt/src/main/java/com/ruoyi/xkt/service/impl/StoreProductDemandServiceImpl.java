@@ -199,12 +199,12 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
         List<StoreProductColor> prodColorList = this.storeProdColorMapper.selectList(new LambdaQueryWrapper<StoreProductColor>()
                 .in(StoreProductColor::getId, demandList.stream().map(StoreProdDemandPageResDTO::getStoreProdColorId).distinct().collect(Collectors.toList())));
         Map<Long, String> liningMaterialMap = CollectionUtils.isEmpty(prodColorList) ? new HashMap<>()
-                : prodColorList.stream().collect(Collectors.toMap(StoreProductColor::getId, StoreProductColor::getShoeUpperLiningMaterial));
+                : prodColorList.stream().collect(Collectors.toMap(StoreProductColor::getId, StoreProductColor::getShoeUpperLiningMaterial, (v1, v2) -> v2));
         // 查询面料材质
         List<StoreProductCategoryAttribute> prodCateAttrList = this.prodCateAttrMapper.selectList(new LambdaQueryWrapper<StoreProductCategoryAttribute>()
                 .in(StoreProductCategoryAttribute::getStoreProdId, demandList.stream().map(StoreProdDemandPageResDTO::getStoreProdId).distinct().collect(Collectors.toList())));
         Map<Long, String> shaftMaterialMap = CollectionUtils.isEmpty(prodCateAttrList) ? new HashMap<>()
-                : prodCateAttrList.stream().collect(Collectors.toMap(StoreProductCategoryAttribute::getStoreProdId, StoreProductCategoryAttribute::getShaftMaterial));
+                : prodCateAttrList.stream().collect(Collectors.toMap(StoreProductCategoryAttribute::getStoreProdId, StoreProductCategoryAttribute::getShaftMaterial, (v1, v2) -> v2));
         // 提取需求详情ID列表，用于后续查询抵扣信息
         List<Long> demandDetailIdList = demandList.stream().map(StoreProdDemandPageResDTO::getStoreProdDemandDetailId).distinct().collect(Collectors.toList());
         // 找到需求单抵扣的数据
