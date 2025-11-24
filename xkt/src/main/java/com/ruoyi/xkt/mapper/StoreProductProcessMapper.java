@@ -11,7 +11,19 @@ import com.ruoyi.xkt.domain.StoreProductProcess;
  */
 public interface StoreProductProcessMapper extends BaseMapper<StoreProductProcess> {
 
+    /**
+     * 将商品工艺信息置为无效
+     *
+     * @param storeProdId 档口商品ID
+     */
     void updateDelFlagByStoreProdId(Long storeProdId);
 
+    /**
+     * 查询档口商品工艺信息
+     *
+     * @param storeProdId 档口商品ID
+     * @return StoreProductProcess
+     */
     StoreProductProcess selectByStoreProdId(Long storeProdId);
+
 }

@@ -37,7 +37,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectStoreProductProcessVo">
-        select id, store_prod_id, shoe_type, shoe_size, main_skin, main_skin_usage, match_skin, match_skin_usage, neckline, insole, fastener, shoe_accessories, toe_cap, edge_binding, mid_outsole, platform_sole, midsole_factory_code, outsole_factory_code, heel_factory_code, components, second_sole_material, second_upper_material, custom_attr, version, del_flag, create_by, create_time, update_by, update_time from store_product_process
+        select id, store_prod_id, partner_name, trademark, shoe_type, shoe_size, main_skin, main_skin_usage, match_skin, match_skin_usage, neckline, insole, fastener, shoe_accessories, toe_cap, edge_binding, mid_outsole, platform_sole, midsole_factory_code, outsole_factory_code, heel_factory_code, components, second_sole_material, second_upper_material, custom_attr, version, del_flag, create_by, create_time, update_by, update_time from store_product_process
     </sql>
 
     <update id="updateDelFlagByStoreProdId" parameterType="Long">
