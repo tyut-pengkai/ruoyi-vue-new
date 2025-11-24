@@ -1,6 +1,7 @@
 package com.ruoyi.framework.web.exception;
 
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.json.JSONUtil;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -12,6 +13,7 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.html.EscapeUtil;
 import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.common.utils.spring.SpringUtils;
+import com.ruoyi.framework.aspectj.LogAspect;
 import com.ruoyi.framework.notice.fs.FsNotice;
 import com.ruoyi.system.domain.SysOperLog;
 import org.slf4j.Logger;
@@ -216,6 +218,10 @@ public class GlobalExceptionHandler
         Map<String, String> params = new HashMap<>();
         for (Map.Entry<String, String[]> entry : requestParams.entrySet()) {
             String name = entry.getKey();
+            if (ArrayUtil.contains(LogAspect.EXCLUDE_PROPERTIES, name)) {
+                //敏感信息不记入日志
+                continue;
+            }
             String[] values = entry.getValue();
             StringBuilder valueStrBuilder = new StringBuilder();
             if (values != null) {
