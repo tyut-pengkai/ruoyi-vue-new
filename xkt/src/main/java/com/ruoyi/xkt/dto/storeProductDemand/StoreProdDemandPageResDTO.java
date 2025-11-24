@@ -37,6 +37,10 @@ public class StoreProdDemandPageResDTO {
     private Long storeProdColorId;
     @ApiModelProperty(value = "档口颜色ID")
     private Long storeColorId;
+    @ApiModelProperty(value = "面料材质（靴筒面材质）")
+    private String shaftMaterial;
+    @ApiModelProperty(value = "内里材质")
+    private String shoeUpperLiningMaterial;
     @ApiModelProperty(value = "档口商品ID")
     private Long storeProdId;
     @ApiModelProperty(value = "生产状态")

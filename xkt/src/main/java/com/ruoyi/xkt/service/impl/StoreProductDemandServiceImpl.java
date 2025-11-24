@@ -52,6 +52,7 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
     final IVoucherSequenceService sequenceService;
     final StoreProductStorageDemandDeductMapper storageDemandDeductMapper;
     final StoreFactoryMapper storeFacMapper;
+    final StoreProductCategoryAttributeMapper prodCateAttrMapper;
 
 
     /**
@@ -194,6 +195,16 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
         if (CollectionUtils.isEmpty(demandList)) {
             return Page.empty(pageDTO.getPageSize(), pageDTO.getPageNum());
         }
+        // 查询内里材质
+        List<StoreProductColor> prodColorList = this.storeProdColorMapper.selectList(new LambdaQueryWrapper<StoreProductColor>()
+                .in(StoreProductColor::getId, demandList.stream().map(StoreProdDemandPageResDTO::getStoreProdColorId).distinct().collect(Collectors.toList())));
+        Map<Long, String> liningMaterialMap = CollectionUtils.isEmpty(prodColorList) ? new HashMap<>()
+                : prodColorList.stream().collect(Collectors.toMap(StoreProductColor::getId, StoreProductColor::getShoeUpperLiningMaterial));
+        // 查询面料材质
+        List<StoreProductCategoryAttribute> prodCateAttrList = this.prodCateAttrMapper.selectList(new LambdaQueryWrapper<StoreProductCategoryAttribute>()
+                .in(StoreProductCategoryAttribute::getStoreProdId, demandList.stream().map(StoreProdDemandPageResDTO::getStoreProdId).distinct().collect(Collectors.toList())));
+        Map<Long, String> shaftMaterialMap = CollectionUtils.isEmpty(prodCateAttrList) ? new HashMap<>()
+                : prodCateAttrList.stream().collect(Collectors.toMap(StoreProductCategoryAttribute::getStoreProdId, StoreProductCategoryAttribute::getShaftMaterial));
         // 提取需求详情ID列表，用于后续查询抵扣信息
         List<Long> demandDetailIdList = demandList.stream().map(StoreProdDemandPageResDTO::getStoreProdDemandDetailId).distinct().collect(Collectors.toList());
         // 找到需求单抵扣的数据
@@ -205,7 +216,9 @@ public class StoreProductDemandServiceImpl implements IStoreProductDemandService
         // 更新需求列表中的每个项，设置库存数量和生产中数量
         demandList.forEach(x -> {
             final Integer deductQuantity = deductQuantityMap.getOrDefault(x.getStoreProdDemandDetailId(), 0);
-            x.setStorageQuantity(deductQuantity).setInProdQuantity(x.getQuantity());
+            x.setShaftMaterial(shaftMaterialMap.getOrDefault(x.getStoreProdId(), ""))
+                    .setShoeUpperLiningMaterial(liningMaterialMap.getOrDefault(x.getStoreProdColorId(), ""))
+                    .setStorageQuantity(deductQuantity).setInProdQuantity(x.getQuantity());
         });
         // 将查询结果转换为分页对象并返回
         return Page.convert(new PageInfo<>(demandList));

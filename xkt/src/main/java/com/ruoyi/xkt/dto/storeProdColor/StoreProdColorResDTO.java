@@ -33,9 +33,9 @@ public class StoreProdColorResDTO {
     private BigDecimal producePrice;
     @ApiModelProperty(value = "排序")
     private Integer orderNum;
-    @ApiModelProperty(value = "鞋面材质（靴筒面材质）")
+    @ApiModelProperty(value = "面料材质（靴筒面材质）")
     private String shaftMaterial;
-    @ApiModelProperty(value = "鞋面内里材质")
+    @ApiModelProperty(value = "内里材质")
     private String shoeUpperLiningMaterial;
 
 }
