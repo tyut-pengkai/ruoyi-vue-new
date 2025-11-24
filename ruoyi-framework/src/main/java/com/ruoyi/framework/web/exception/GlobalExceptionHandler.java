@@ -2,6 +2,7 @@ package com.ruoyi.framework.web.exception;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -11,6 +12,7 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.html.EscapeUtil;
+import com.ruoyi.common.utils.http.HttpHelper;
 import com.ruoyi.common.utils.ip.IpUtils;
 import com.ruoyi.common.utils.spring.SpringUtils;
 import com.ruoyi.framework.aspectj.LogAspect;
@@ -186,7 +188,7 @@ public class GlobalExceptionHandler
      * @param optLog
      */
     private void sendExceptionMsg(SysOperLog optLog) {
-        log.info("【异常请求日志】{}", optLog);
+        log.info("【异常日志】{}", optLog);
         SpringUtils.getBean(FsNotice.class).sendException2MonitorChat(optLog);
     }
 
@@ -210,29 +212,41 @@ public class GlobalExceptionHandler
      * @param request
      * @return
      */
-    private Map<String, String> getParamsMap(HttpServletRequest request) {
+    private Map<String, Object> getParamsMap(HttpServletRequest request) {
+        Map<String, Object> params = new HashMap<>();
         Map<String, String[]> requestParams = request.getParameterMap();
-        if (MapUtil.isEmpty(requestParams)) {
-            return MapUtil.empty();
-        }
-        Map<String, String> params = new HashMap<>();
-        for (Map.Entry<String, String[]> entry : requestParams.entrySet()) {
-            String name = entry.getKey();
-            if (ArrayUtil.contains(LogAspect.EXCLUDE_PROPERTIES, name)) {
-                //敏感信息不记入日志
-                continue;
-            }
-            String[] values = entry.getValue();
-            StringBuilder valueStrBuilder = new StringBuilder();
-            if (values != null) {
-                for (int i = 0; i < values.length; i++) {
-                    valueStrBuilder.append(values[i]);
-                    if (i != values.length - 1) {
-                        valueStrBuilder.append(",");
+        if (MapUtil.isNotEmpty(requestParams)) {
+            for (Map.Entry<String, String[]> entry : requestParams.entrySet()) {
+                String name = entry.getKey();
+                if (ArrayUtil.contains(LogAspect.EXCLUDE_PROPERTIES, name)) {
+                    //敏感信息不记入日志
+                    continue;
+                }
+                String[] values = entry.getValue();
+                StringBuilder valueStrBuilder = new StringBuilder();
+                if (values != null) {
+                    for (int i = 0; i < values.length; i++) {
+                        valueStrBuilder.append(values[i]);
+                        if (i != values.length - 1) {
+                            valueStrBuilder.append(",");
+                        }
                     }
                 }
+                params.put(name, valueStrBuilder.toString());
             }
-            params.put(name, valueStrBuilder.toString());
+        }
+        String requestBodyStr = HttpHelper.getBodyString(request);
+        if (JSONUtil.isTypeJSONObject(requestBodyStr)) {
+            JSONObject requestBody = JSONUtil.parseObj(requestBodyStr);
+            for (Map.Entry<String, Object> entry : requestBody.entrySet()) {
+                String name = entry.getKey();
+                if (ArrayUtil.contains(LogAspect.EXCLUDE_PROPERTIES, name)) {
+                    //敏感信息不记入日志
+                    continue;
+                }
+                Object value = entry.getValue();
+                params.put(name, value);
+            }
         }
         return params;
     }
