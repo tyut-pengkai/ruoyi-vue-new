@@ -15,41 +15,41 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 
 public class StoreProdStockDownloadDTO {
 
-    @Excel(name = "序号", cellType = Excel.ColumnType.NUMERIC, height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
+    @Excel(name = "序号", cellType = Excel.ColumnType.NUMERIC, width = 6, height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private Integer orderNum;
     @Excel(name = "货号", width = 20, height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private String prodArtNum;
     @Excel(name = "颜色", width = 20, height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private String colorName;
-    @Excel(name = "30", height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
+    @Excel(name = "30", width = 6, height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private Integer size30Quantity;
-    @Excel(name = "31", height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
+    @Excel(name = "31", width = 6, height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private Integer size31Quantity;
-    @Excel(name = "32", height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
+    @Excel(name = "32", width = 6, height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private Integer size32Quantity;
-    @Excel(name = "33", height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
+    @Excel(name = "33", width = 6, height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private Integer size33Quantity;
-    @Excel(name = "34", height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
+    @Excel(name = "34", width = 6, height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private Integer size34Quantity;
-    @Excel(name = "35", height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
+    @Excel(name = "35", width = 6, height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private Integer size35Quantity;
-    @Excel(name = "36", height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
+    @Excel(name = "36", width = 6, height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private Integer size36Quantity;
-    @Excel(name = "37", height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
+    @Excel(name = "37", width = 6, height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private Integer size37Quantity;
-    @Excel(name = "38", height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
+    @Excel(name = "38", width = 6, height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private Integer size38Quantity;
-    @Excel(name = "39", height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
+    @Excel(name = "39", width = 6, height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private Integer size39Quantity;
-    @Excel(name = "40", height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
+    @Excel(name = "40", width = 6, height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private Integer size40Quantity;
-    @Excel(name = "41", height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
+    @Excel(name = "41", width = 6, height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private Integer size41Quantity;
-    @Excel(name = "42", height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
+    @Excel(name = "42", width = 6, height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private Integer size42Quantity;
-    @Excel(name = "43", height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
+    @Excel(name = "43", width = 6, height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private Integer size43Quantity;
-    @Excel(name = "总库存", height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
+    @Excel(name = "总库存", width = 6, height = 28, headerBackgroundColor = IndexedColors.SKY_BLUE)
     private Integer totalQuantity;
 
 }
