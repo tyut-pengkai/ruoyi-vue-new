@@ -268,10 +268,10 @@ public class Constants {
     // 每个档口默认 现金客户
     public static final String STORE_CUS_CASH = "现金客户";
 
-    // 年费暂定3999
-    public static final BigDecimal STORE_ANNUAL_AMOUNT = new BigDecimal(3999);
-    // 会员费暂定5999
-    public static final BigDecimal STORE_MEMBER_AMOUNT = new BigDecimal(5999);
+    // 年费暂定3888
+    public static final BigDecimal STORE_ANNUAL_AMOUNT = new BigDecimal(3888);
+    // 会员费暂定5888
+    public static final BigDecimal STORE_MEMBER_AMOUNT = new BigDecimal(5888);
 
     /**
      * 上市季节年份
