@@ -252,6 +252,9 @@ public class StoreOrderPageItemVO extends StoreOrderDTO {
     @ApiModelProperty(value = "平台介入结果")
     private String platformInvolveResult;
 
+    @ApiModelProperty(value = "平台发货标识")
+    private Boolean shipByPlatformFlag;
+
     @ApiModelProperty(value = "物流运单号（快递单号）信息集合")
     private List<ExpressWaybillNoInfoVO> expressWaybillNoInfos;
 

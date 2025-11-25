@@ -32,6 +32,8 @@ public class StoreOrderPageItemDTO extends StoreOrderDTO {
 
     private String destinationCountyName;
 
+    private Boolean shipByPlatformFlag;
+
     private List<StoreOrderDetailInfoDTO> orderDetails;
 
     private List<ExpressWaybillNoInfoDTO> expressWaybillNoInfos;

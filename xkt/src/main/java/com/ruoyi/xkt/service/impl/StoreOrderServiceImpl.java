@@ -579,6 +579,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                 order.setOriginCountyName(regionMap.get(order.getOriginCountyCode()));
                 order.setOrderDetails(orderDetailGroup.get(order.getId()));
                 Set<ExpressWaybillNoInfoDTO> expressWaybillNoInfos = new LinkedHashSet<>();
+                boolean shipByPlatformFlag = false;
                 for (StoreOrderDetailInfoDTO detail : order.getOrderDetails()) {
                     //首图
                     detail.setFirstMainPicUrl(mainPicMap.get(detail.getStoreProdId()));
@@ -590,8 +591,12 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                             expressWaybillNoInfos.add(new ExpressWaybillNoInfoDTO(eId, eName, no));
                         }
                     }
+                    if (EExpressType.PLATFORM.getValue().equals(detail.getExpressType())) {
+                        shipByPlatformFlag = true;
+                    }
                 }
                 order.setExpressWaybillNoInfos(new ArrayList<>(expressWaybillNoInfos));
+                order.setShipByPlatformFlag(shipByPlatformFlag);
             }
         }
         return list;
