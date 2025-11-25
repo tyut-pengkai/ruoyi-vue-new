@@ -8,6 +8,7 @@ import lombok.experimental.Accessors;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.math.BigDecimal;
 
 /**
  * @author liujiang
@@ -48,5 +49,21 @@ public class StoreUpdateVO {
     private String facAddress;
     @ApiModelProperty(value = "生产规模")
     private Integer prodScale;
+    @ApiModelProperty(value = "档口logo")
+    private SUFileVO storeLogo;
+
+
+    @Data
+    public static class SUFileVO {
+        @ApiModelProperty(value = "文件名称")
+        private String fileName;
+        @ApiModelProperty(value = "文件路径")
+        private String fileUrl;
+        @ApiModelProperty(value = "文件类型（6档口营业执照）")
+        private Integer fileType;
+        @ApiModelProperty(value = "文件大小")
+        private BigDecimal fileSize;
+    }
+
 
 }

@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.math.BigDecimal;
+
 /**
  * @author liujiang
  * @version v1.0
@@ -15,13 +17,13 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class StoreUpdateDTO {
 
-    @ApiModelProperty(value = "档口ID", required = true)
+    @ApiModelProperty(value = "档口ID")
     private Long storeId;
-    @ApiModelProperty(value = "档口名称", required = true)
+    @ApiModelProperty(value = "档口名称")
     private String storeName;
-    @ApiModelProperty(value = "联系人", required = true)
+    @ApiModelProperty(value = "联系人")
     private String contactName;
-    @ApiModelProperty(value = "联系电话", required = true)
+    @ApiModelProperty(value = "联系电话")
     private String contactPhone;
     @ApiModelProperty(value = "备选联系电话")
     private String contactBackPhone;
@@ -39,5 +41,20 @@ public class StoreUpdateDTO {
     private String facAddress;
     @ApiModelProperty(value = "生产规模")
     private Integer prodScale;
+    @ApiModelProperty(value = "档口logo")
+    private SUFileDTO storeLogo;
+
+
+    @Data
+    public static class SUFileDTO {
+        @ApiModelProperty(value = "文件名称")
+        private String fileName;
+        @ApiModelProperty(value = "文件路径")
+        private String fileUrl;
+        @ApiModelProperty(value = "文件类型（6档口营业执照）")
+        private Integer fileType;
+        @ApiModelProperty(value = "文件大小")
+        private BigDecimal fileSize;
+    }
 
 }

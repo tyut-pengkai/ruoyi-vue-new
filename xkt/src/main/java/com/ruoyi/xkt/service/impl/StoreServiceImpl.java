@@ -301,6 +301,12 @@ public class StoreServiceImpl implements IStoreService {
                         .eq(Store::getId, storeUpdateDTO.getStoreId()).eq(Store::getDelFlag, Constants.UNDELETED)))
                 .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
         BeanUtil.copyProperties(storeUpdateDTO, store);
+        // 如果有档口LOGO，则更新档口LOGO
+        if (ObjectUtils.isNotEmpty(storeUpdateDTO.getStoreLogo())) {
+            SysFile sysFile = BeanUtil.toBean(storeUpdateDTO.getStoreLogo(), SysFile.class);
+            this.fileMapper.insert(sysFile);
+            store.setStoreLogoId(sysFile.getId());
+        }
         return storeMapper.updateById(store);
     }
 
