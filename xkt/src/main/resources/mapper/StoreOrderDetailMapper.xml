@@ -27,4 +27,13 @@
                 #{storeOrderId}
             </foreach>
     </select>
+    <select id="listRefundOrderDetailOriginIds" resultType="java.lang.Long">
+        SELECT
+            sod1.origin_order_detail_id
+        FROM
+            store_order_detail sod1
+            JOIN store_order_detail sod2 ON sod1.origin_order_detail_id = sod2.id
+        WHERE
+            sod2.store_order_id = #{storeOrderId}
+    </select>
 </mapper>

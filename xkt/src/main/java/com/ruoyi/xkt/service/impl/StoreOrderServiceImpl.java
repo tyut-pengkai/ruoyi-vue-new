@@ -809,12 +809,12 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             throw new ServiceException(CharSequenceUtil.format("订单[{}]当前状态无法发货",
                     order.getOrderNo()));
         }
-        List<Long> existsRefundDetailIds = checkNoCompleteRefundDetail(storeOrderDetailIds,
-                "售后完成状态的商品无法发货");
+        checkNoCompleteRefundDetail(storeOrderDetailIds, "售后完成状态的商品无法发货");
         List<StoreOrderDetail> containDetails = storeOrderDetailMapper.selectList(
                 Wrappers.lambdaQuery(StoreOrderDetail.class)
                         .eq(StoreOrderDetail::getStoreOrderId, order.getId())
                         .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
+        List<Long> existsRefundDetailIds = storeOrderDetailMapper.listRefundOrderDetailOriginIds(storeOrderId);
         for (StoreOrderDetail containDetail : containDetails) {
             if (EDeliveryType.SHIP_COMPLETE.getValue().equals(order.getDeliveryType())) {
                 //如果是货齐再发，此次发货需要包含所有明细（排除已存在售后的明细）
@@ -906,12 +906,12 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             throw new ServiceException(CharSequenceUtil.format("订单[{}]当前状态无法发货",
                     order.getOrderNo()));
         }
-        List<Long> existsRefundDetailIds = checkNoCompleteRefundDetail(storeOrderDetailIds,
-                "售后完成状态的商品无法发货");
+        checkNoCompleteRefundDetail(storeOrderDetailIds, "售后完成状态的商品无法发货");
         List<StoreOrderDetail> containDetails = storeOrderDetailMapper.selectList(
                 Wrappers.lambdaQuery(StoreOrderDetail.class)
                         .eq(StoreOrderDetail::getStoreOrderId, order.getId())
                         .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
+        List<Long> existsRefundDetailIds = storeOrderDetailMapper.listRefundOrderDetailOriginIds(storeOrderId);
         for (StoreOrderDetail containDetail : containDetails) {
             if (EDeliveryType.SHIP_COMPLETE.getValue().equals(order.getDeliveryType())) {
                 //如果是货齐再发，此次发货需要包含所有明细（排除已存在售后的明细）
@@ -986,8 +986,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
     public ExpressShippingLabelDTO printOrder(Long storeOrderId, List<Long> storeOrderDetailIds, Long expressId,
                                               Boolean needShip, Long operatorId) {
         Assert.notEmpty(storeOrderDetailIds);
-        List<Long> existsRefundDetailIds = checkNoCompleteRefundDetail(storeOrderDetailIds,
-                "售后完成状态的商品无法打印快递单");
+        checkNoCompleteRefundDetail(storeOrderDetailIds, "售后完成状态的商品无法打印快递单");
         ExpressManager expressManager = expressService.getExpressManager(expressId);
         Express express = expressService.getById(expressId);
         if (!BeanValidators.exists(express) || !express.getSystemDeliverAccess()) {
@@ -1002,6 +1001,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                 Wrappers.lambdaQuery(StoreOrderDetail.class)
                         .eq(StoreOrderDetail::getStoreOrderId, order.getId())
                         .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
+        List<Long> existsRefundDetailIds = storeOrderDetailMapper.listRefundOrderDetailOriginIds(storeOrderId);
         for (StoreOrderDetail containDetail : containDetails) {
             if (EDeliveryType.SHIP_COMPLETE.getValue().equals(order.getDeliveryType())) {
                 //如果是货齐再发，此次发货需要包含所有明细（排除已存在售后的明细）
@@ -1834,26 +1834,20 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
      *
      * @param orderDetailIds
      * @param errorMsg
-     * @return 已存在售后的订单明细ID
      */
-    private List<Long> checkNoCompleteRefundDetail(Collection<Long> orderDetailIds, String errorMsg) {
+    private void checkNoCompleteRefundDetail(Collection<Long> orderDetailIds, String errorMsg) {
         if (CollUtil.isEmpty(orderDetailIds)) {
-            return ListUtil.empty();
+            return;
         }
         List<StoreOrderDetail> refundDetails = storeOrderDetailMapper.selectList(Wrappers
                 .lambdaQuery(StoreOrderDetail.class)
                 .in(StoreOrderDetail::getOriginOrderDetailId, orderDetailIds)
                 .eq(SimpleEntity::getDelFlag, Constants.UNDELETED));
-        List<Long> existsRefundDetailIds = new ArrayList<>();
         for (StoreOrderDetail refundDetail : refundDetails) {
-            if (orderDetailIds.contains(refundDetail.getOriginOrderDetailId())) {
-                existsRefundDetailIds.add(refundDetail.getOriginOrderDetailId());
-            }
             if (EOrderStatus.AFTER_SALE_COMPLETED.getValue().equals(refundDetail.getDetailStatus())) {
                 throw new ServiceException(errorMsg);
             }
         }
-        return existsRefundDetailIds;
     }
 
     /**

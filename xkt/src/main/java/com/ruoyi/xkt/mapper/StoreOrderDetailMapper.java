@@ -17,4 +17,6 @@ import java.util.List;
 public interface StoreOrderDetailMapper extends BaseMapper<StoreOrderDetail> {
 
     List<StoreOrderDetailInfoDTO> listInfoByStoreOrderIds(@Param("storeOrderIds") Collection<Long> storeOrderIds);
+
+    List<Long> listRefundOrderDetailOriginIds(@Param("storeOrderId")Long storeOrderId);
 }
