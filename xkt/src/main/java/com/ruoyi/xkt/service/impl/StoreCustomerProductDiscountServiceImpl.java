@@ -11,11 +11,13 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.xkt.domain.StoreCustomer;
 import com.ruoyi.xkt.domain.StoreCustomerProductDiscount;
+import com.ruoyi.xkt.domain.StoreProduct;
 import com.ruoyi.xkt.domain.StoreProductColor;
 import com.ruoyi.xkt.dto.storeCusProdDiscount.*;
 import com.ruoyi.xkt.mapper.StoreCustomerMapper;
 import com.ruoyi.xkt.mapper.StoreCustomerProductDiscountMapper;
 import com.ruoyi.xkt.mapper.StoreProductColorMapper;
+import com.ruoyi.xkt.mapper.StoreProductMapper;
 import com.ruoyi.xkt.service.IStoreCustomerProductDiscountService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -40,6 +42,7 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
     final StoreCustomerProductDiscountMapper cusProdDiscMapper;
     final StoreCustomerMapper storeCusMapper;
     final StoreProductColorMapper storeProdColorMapper;
+    final StoreProductMapper storeProdMapper;
 
     /**
      * 修改档口客户优惠
@@ -72,10 +75,13 @@ public class StoreCustomerProductDiscountServiceImpl implements IStoreCustomerPr
         // 档口所有的商品
         List<StoreProductColor> storeProdColorList = this.storeProdColorMapper.selectList(new LambdaQueryWrapper<StoreProductColor>()
                 .eq(StoreProductColor::getStoreId, cusProdDisDTO.getStoreId()).eq(StoreProductColor::getDelFlag, Constants.UNDELETED));
+        List<StoreProduct> storeProdList = this.storeProdMapper.selectByIds(storeProdColorList.stream().map(StoreProductColor::getStoreProdId).collect(Collectors.toList()));
+        Map<Long, String> prodArtNumMap = storeProdList.stream().collect(Collectors.toMap(StoreProduct::getId, StoreProduct::getProdArtNum));
         // 绑定其它商品的优惠
         List<StoreCustomerProductDiscount> addDiscountList = storeProdColorList.stream().filter(x -> !existDiscountProdColorIdList.contains(x.getId()))
                 .map(x -> BeanUtil.toBean(x, StoreCustomerProductDiscount.class).setDiscount(cusProdDisDTO.getAllProductDiscount()).setStoreProdColorId(x.getId())
-                        .setStoreId(cusProdDisDTO.getStoreId()).setStoreCusId(storeCus.getId()).setStoreCusName(cusProdDisDTO.getStoreCusName()))
+                        .setStoreId(cusProdDisDTO.getStoreId()).setStoreCusId(storeCus.getId()).setStoreCusName(cusProdDisDTO.getStoreCusName())
+                        .setProdArtNum(prodArtNumMap.get(x.getStoreProdId())))
                 .collect(Collectors.toList());
         // 档口所有商品优惠
         if (CollectionUtils.isNotEmpty(addDiscountList)) {

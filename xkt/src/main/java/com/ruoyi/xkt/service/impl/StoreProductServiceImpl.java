@@ -1289,7 +1289,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
      * @param mainPicUrl  商品主图URL
      */
     private void updateUserBrowsingToRedis(Long storeProdId, Long storeId, String storeName, String prodArtNum, String prodTitle, BigDecimal minPrice, String mainPicUrl) {
-        final Long userId = SecurityUtils.getUserId();
+        final Long userId = SecurityUtils.getUserIdSafe();
         if (ObjectUtils.isEmpty(userId)) {
             return;
         }
