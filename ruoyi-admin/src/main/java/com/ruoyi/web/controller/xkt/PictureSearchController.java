@@ -1,8 +1,10 @@
 package com.ruoyi.web.controller.xkt;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.web.controller.xkt.vo.pictureSearch.PicSearchVO;
 import com.ruoyi.web.controller.xkt.vo.storeProd.StoreProdViewVO;
 import com.ruoyi.xkt.dto.picture.SearchRequestDTO;
@@ -32,6 +34,7 @@ public class PictureSearchController extends XktBaseController {
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,seller,agent')")
     @ApiOperation(value = "电商卖家 以图搜款", httpMethod = "POST", response = R.class)
+    @Log(title = "以图搜款", businessType = BusinessType.OTHER)
     @PostMapping("")
     public R<List<StoreProdViewVO>> searchProductByPic(@Validated @RequestBody PicSearchVO searchVO) {
         return R.ok(BeanUtil.copyToList(picSearchService
