@@ -38,12 +38,18 @@ public class CacheConstants {
     public static final String SMS_STORE_AUTH_CAPTCHA_CODE_KEY = "sms_store_auth_captcha_codes:";
 
     /**
+     * 档口认证验证码
+     */
+    public static final String SMS_AGENT_AUTH_CAPTCHA_CODE_KEY = "sms_agent_auth_captcha_codes:";
+
+    /**
      * 短信验证码CD中号码
      */
     public static final String SMS_ASSET_CAPTCHA_CODE_CD_PHONE_NUM_KEY = "sms_asset_captcha_code_cd_phone_nums:";
     public static final String SMS_LOGIN_CAPTCHA_CODE_CD_PHONE_NUM_KEY = "sms_login_captcha_code_cd_phone_nums:";
     public static final String SMS_REGISTER_CAPTCHA_CODE_CD_PHONE_NUM_KEY = "sms_register_captcha_code_cd_phone_nums:";
     public static final String SMS_STORE_AUTH_CAPTCHA_CODE_CD_PHONE_NUM_KEY = "sms_store_auth_captcha_code_cd_phone_nums:";
+    public static final String SMS_AGENT_AUTH_CAPTCHA_CODE_CD_PHONE_NUM_KEY = "sms_agent_auth_captcha_code_cd_phone_nums:";
 
     /**
      * 扫码登录浏览器ID

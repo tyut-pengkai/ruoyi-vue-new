@@ -1,11 +1,15 @@
 package com.ruoyi.web.controller.xkt;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.RandomUtil;
 import com.ruoyi.common.annotation.Log;
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.framework.sms.SmsClientWrapper;
+import com.ruoyi.web.controller.xkt.vo.PhoneNumberVO;
 import com.ruoyi.web.controller.xkt.vo.userAuthentication.*;
 import com.ruoyi.xkt.dto.userAuthentication.*;
 import com.ruoyi.xkt.service.IUserAuthenticationService;
@@ -29,6 +33,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserAuthenticationController extends XktBaseController {
 
     final IUserAuthenticationService userAuthService;
+    final SmsClientWrapper smsClient;
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,agent')")
     @ApiOperation(value = "新增代发", httpMethod = "POST", response = R.class)
@@ -89,6 +94,18 @@ public class UserAuthenticationController extends XktBaseController {
     @PutMapping("/approve")
     public R<Integer> approve(@Validated @RequestBody UserAuthAuditVO auditVO) {
         return R.ok(userAuthService.approve(BeanUtil.toBean(auditVO, UserAuthAuditDTO.class)));
+    }
+
+    @PreAuthorize("@ss.hasAnyRoles('agent')")
+    @ApiOperation(value = "发送短信验证码（代发认证相关功能）")
+    @PostMapping("/sendSmsVerificationCode")
+    public R sendSmsVerificationCode(@Validated @RequestBody PhoneNumberVO vo) {
+        boolean success = smsClient.sendVerificationCode(CacheConstants.SMS_AGENT_AUTH_CAPTCHA_CODE_CD_PHONE_NUM_KEY,
+                CacheConstants.SMS_AGENT_AUTH_CAPTCHA_CODE_KEY, vo.getPhoneNumber(), RandomUtil.randomNumbers(6));
+        if (!success) {
+            return R.fail("短信发送失败");
+        }
+        return R.ok();
     }
 
 }
