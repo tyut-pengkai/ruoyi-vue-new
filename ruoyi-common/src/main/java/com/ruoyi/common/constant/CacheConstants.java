@@ -38,7 +38,7 @@ public class CacheConstants {
     public static final String SMS_STORE_AUTH_CAPTCHA_CODE_KEY = "sms_store_auth_captcha_codes:";
 
     /**
-     * 档口认证验证码
+     * 代发认证验证码
      */
     public static final String SMS_AGENT_AUTH_CAPTCHA_CODE_KEY = "sms_agent_auth_captcha_codes:";
 

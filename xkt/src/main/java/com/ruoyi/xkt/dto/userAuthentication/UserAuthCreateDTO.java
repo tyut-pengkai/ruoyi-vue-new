@@ -14,15 +14,17 @@ import java.math.BigDecimal;
 
 public class UserAuthCreateDTO {
 
-    @ApiModelProperty(value = "真实名称", required = true)
+    @ApiModelProperty(value = "真实名称")
     private String realName;
-    @ApiModelProperty(value = "联系电话", required = true)
+    @ApiModelProperty(value = "联系电话")
     private String phonenumber;
-    @ApiModelProperty(value = "身份证号", required = true)
+    @ApiModelProperty(value = "验证码")
+    private String code;
+    @ApiModelProperty(value = "身份证号")
     private String idCard;
-    @ApiModelProperty(value = "人脸图片", required = true)
+    @ApiModelProperty(value = "人脸图片")
     private UACFileDTO faceFile;
-    @ApiModelProperty(value = "国徽图片", required = true)
+    @ApiModelProperty(value = "国徽图片")
     private UACFileDTO emblemFile;
 
     @Data

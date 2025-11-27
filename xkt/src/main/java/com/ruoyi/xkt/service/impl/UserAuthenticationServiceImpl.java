@@ -4,11 +4,13 @@ import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.page.Page;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.framework.sms.SmsClientWrapper;
 import com.ruoyi.xkt.domain.SysFile;
 import com.ruoyi.xkt.domain.UserAuthentication;
 import com.ruoyi.xkt.dto.userAuthentication.*;
@@ -16,6 +18,7 @@ import com.ruoyi.xkt.enums.UserAuthStatus;
 import com.ruoyi.xkt.mapper.SysFileMapper;
 import com.ruoyi.xkt.mapper.UserAuthenticationMapper;
 import com.ruoyi.xkt.service.IUserAuthenticationService;
+import com.ruoyi.xkt.thirdpart.lfv2.Lfv2Client;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
@@ -37,6 +40,8 @@ public class UserAuthenticationServiceImpl implements IUserAuthenticationService
 
     final UserAuthenticationMapper userAuthMapper;
     final SysFileMapper fileMapper;
+    final SmsClientWrapper smsClient;
+    final Lfv2Client lfv2Client;
 
     /**
      * 新增代发
@@ -50,6 +55,16 @@ public class UserAuthenticationServiceImpl implements IUserAuthenticationService
         Long userId = SecurityUtils.getUserIdSafe();
         if (ObjectUtils.isEmpty(userId)) {
             throw new ServiceException("用户未登录，请先登录!", HttpStatus.ERROR);
+        }
+        // 验证码验证
+        boolean match = smsClient.matchVerificationCode(CacheConstants.SMS_AGENT_AUTH_CAPTCHA_CODE_KEY, createDTO.getPhonenumber().trim(), createDTO.getCode().trim());
+        if (!match) {
+            throw new ServiceException("验证码错误或已过期");
+        }
+        // 2. 校验代发身份信息是否通过 手机号  姓名  身份证号
+        boolean phoneCheck = this.lfv2Client.checkPhone(createDTO.getPhonenumber().trim(), createDTO.getRealName().trim(), createDTO.getIdCard().trim());
+        if (!phoneCheck) {
+            throw new ServiceException("代发人员身份信息验证未通过！可能原因：1. 代发人员姓名或身份证号输入有误 2. 当前手机号非代发人员本人实名办理!", HttpStatus.ERROR);
         }
         // 保存身份证人脸
         SysFile idCardFace = BeanUtil.toBean(createDTO.getFaceFile(), SysFile.class);

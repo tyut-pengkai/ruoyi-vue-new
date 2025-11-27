@@ -27,6 +27,9 @@ public class UserAuthCreateVO {
     @NotBlank(message = "联系电话不能为空")
     @ApiModelProperty(value = "联系电话", required = true)
     private String phonenumber;
+    @NotBlank(message = "验证码不能为空")
+    @ApiModelProperty(value = "验证码", required = true)
+    private String code;
     @NotBlank(message = "身份证号不能为空")
     @ApiModelProperty(value = "身份证号", required = true)
     private String idCard;
