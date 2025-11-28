@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.xkt;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.web.controller.xkt.vo.StoreProductStatistics.StoreProdAppViewRankResVO;
@@ -26,6 +27,7 @@ public class StoreProductStatisticsController extends BaseController {
 
     final IStoreProductStatisticsService prodStatisticsService;
 
+    @Anonymous
     @ApiOperation(value = "APP商品访问榜", httpMethod = "GET", response = R.class)
     @GetMapping("/app/view-rank")
     public R<StoreProdAppViewRankResVO> getAppViewRank() {

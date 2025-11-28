@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.xkt;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
@@ -83,6 +84,7 @@ public class StoreProductController extends XktBaseController {
         return R.ok(BeanUtil.toBean(storeProdService.getPCInfo(storeProdId), StoreProdPCResVO.class));
     }
 
+    @Anonymous
     @ApiOperation(value = "APP获取档口商品详细信息", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/app/detail/{storeProdId}")
     public R<StoreProdAppResVO> getAppInfo(@PathVariable("storeProdId") Long storeProdId) {
