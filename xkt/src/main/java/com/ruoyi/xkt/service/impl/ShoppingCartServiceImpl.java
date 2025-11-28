@@ -254,9 +254,13 @@ public class ShoppingCartServiceImpl implements IShoppingCartService {
     @Override
     @Transactional(readOnly = true)
     public List<ShoppingCartDTO> getList(ShopCartListDTO listDTO) {
+        Long userId = SecurityUtils.getUserIdSafe();
+        if (ObjectUtils.isEmpty(userId)) {
+            return Collections.emptyList();
+        }
         List<ShoppingCart> shoppingCartList = this.shopCartMapper.selectList(new LambdaQueryWrapper<ShoppingCart>()
                 .in(ShoppingCart::getStoreProdId, listDTO.getStoreProdIdList()).eq(ShoppingCart::getDelFlag, Constants.UNDELETED)
-                .eq(ShoppingCart::getUserId, SecurityUtils.getUserId()));
+                .eq(ShoppingCart::getUserId, userId));
         if (CollectionUtils.isEmpty(shoppingCartList)) {
             return new ArrayList<>();
         }
