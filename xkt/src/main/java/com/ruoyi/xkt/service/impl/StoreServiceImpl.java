@@ -243,13 +243,17 @@ public class StoreServiceImpl implements IStoreService {
         List<DailyStoreTag> storeTagList = this.storeTagMapper.selectList(new LambdaQueryWrapper<DailyStoreTag>()
                 .eq(DailyStoreTag::getStoreId, storeId).eq(DailyStoreTag::getDelFlag, Constants.UNDELETED)
                 .orderByAsc(DailyStoreTag::getType));
-        // 判断当前用户是否已关注档口
-        UserSubscriptions userSub = this.userSubMapper.selectOne(new LambdaQueryWrapper<UserSubscriptions>()
-                .eq(UserSubscriptions::getUserId, SecurityUtils.getUserId()).eq(UserSubscriptions::getStoreId, storeId)
-                .eq(UserSubscriptions::getDelFlag, Constants.UNDELETED));
-        StoreAppResDTO appResDTO = BeanUtil.toBean(store, StoreAppResDTO.class).setStoreId(storeId)
-                .setAttention(ObjectUtils.isNotEmpty(userSub) ? Boolean.TRUE : Boolean.FALSE)
+        StoreAppResDTO appResDTO = BeanUtil.toBean(store, StoreAppResDTO.class).setStoreId(storeId).setAttention(Boolean.FALSE)
                 .setTagList(storeTagList.stream().map(DailyStoreTag::getTag).collect(Collectors.toList()));
+        // 获取当前登录用户，APP可未登录进入档口首页 需调整
+        Long userId = SecurityUtils.getUserIdSafe();
+        if (ObjectUtils.isNotEmpty(userId)) {
+            // 判断当前用户是否已关注档口
+            UserSubscriptions userSub = this.userSubMapper.selectOne(new LambdaQueryWrapper<UserSubscriptions>()
+                    .eq(UserSubscriptions::getUserId, userId).eq(UserSubscriptions::getStoreId, storeId)
+                    .eq(UserSubscriptions::getDelFlag, Constants.UNDELETED));
+            appResDTO.setAttention(ObjectUtils.isNotEmpty(userSub) ? Boolean.TRUE : Boolean.FALSE);
+        }
         // 获取档口LOGO
         if (ObjectUtils.isNotEmpty(store.getStoreLogoId())) {
             SysFile logo = this.fileMapper.selectById(store.getStoreLogoId());
