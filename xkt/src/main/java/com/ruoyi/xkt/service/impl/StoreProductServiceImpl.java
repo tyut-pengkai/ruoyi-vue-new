@@ -841,7 +841,7 @@ public class StoreProductServiceImpl implements IStoreProductService {
     @Transactional(readOnly = true)
     public StoreProdAppResDTO getAppInfo(Long storeProdId) {
         // 档口商品的基础信息
-        StoreProdAppResDTO appResDTO = this.storeProdMapper.getAppInfo(storeProdId, SecurityUtils.getUserId());
+        StoreProdAppResDTO appResDTO = this.storeProdMapper.getAppInfo(storeProdId, SecurityUtils.getUserIdSafe());
         StoreProductCategoryAttribute cateAttr = this.storeProdCateAttrMapper.selectOne(new LambdaQueryWrapper<StoreProductCategoryAttribute>()
                 .eq(StoreProductCategoryAttribute::getStoreProdId, storeProdId).eq(StoreProductCategoryAttribute::getDelFlag, Constants.UNDELETED));
         List<StoreProductColor> colorList = this.storeProdColorMapper.selectList(new LambdaQueryWrapper<StoreProductColor>()

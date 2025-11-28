@@ -286,6 +286,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="userId != null">
                 EXISTS ( SELECT 1 FROM user_favorites uf WHERE sp.id = uf.store_prod_id AND uf.del_flag = 0 AND uf.user_id = #{userId} ) AS collectProd
             </if>
+            <if test="userId == null">
+                false AS collectProd
+            </if>
         FROM
             store_product sp
                 JOIN store s ON sp.store_id = s.id
