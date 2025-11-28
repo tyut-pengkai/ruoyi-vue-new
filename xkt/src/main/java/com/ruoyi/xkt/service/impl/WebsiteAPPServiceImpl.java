@@ -1042,6 +1042,10 @@ public class WebsiteAPPServiceImpl implements IWebsiteAPPService {
         if (StringUtils.isEmpty(search)) {
             return;
         }
+        Long userId = SecurityUtils.getUserIdSafe();
+        if (ObjectUtils.isEmpty(userId)) {
+            return;
+        }
         // 将用户搜索的数据存放到redis中，每晚统一存到数据库中
         LoginUser loginUser = SecurityUtils.getLoginUser();
         // 获取用户在redis中的搜索数据
