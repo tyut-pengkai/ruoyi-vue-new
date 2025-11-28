@@ -203,7 +203,12 @@ public class ExpressServiceImpl implements IExpressService {
         List<ExpressRegionTreeNodeDTO> treeNodeList = redisCache.getCacheList(Constants.EXPRESS_REGION_TREE_CACHE_KEY);
         if (CollUtil.isEmpty(treeNodeList)) {
             List<ExpressRegionDTO> dtoList = getRegionListCache().stream()
-                    .filter(o -> Constants.UNDELETED.equals(o.getDelFlag()))
+                    .filter(o -> Constants.UNDELETED.equals(o.getDelFlag())
+                                    //排除港澳台及海外
+                                    && !StrUtil.startWith(o.getRegionCode(), "71")
+                                    && !StrUtil.startWith(o.getRegionCode(), "81")
+                                    && !StrUtil.startWith(o.getRegionCode(), "82")
+                                    && !StrUtil.startWith(o.getRegionCode(), "99"))
                     .collect(Collectors.toList());
             List<ExpressRegionTreeNodeDTO> list = BeanUtil.copyToList(dtoList, ExpressRegionTreeNodeDTO.class);
             treeNodeList = CollUtil.newArrayList();

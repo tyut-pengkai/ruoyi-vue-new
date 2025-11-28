@@ -52,7 +52,7 @@ public class UserAddressServiceImpl implements IUserAddressService {
         Assert.notEmpty(structAddressDTO.getCityName(), "市名称异常");
         Assert.notEmpty(structAddressDTO.getCountyCode(), "区县编码异常");
         Assert.notEmpty(structAddressDTO.getCountyName(), "区县名称异常");
-        Assert.notEmpty(structAddressDTO.getDetailAddress(), "详细地址异常");
+        Assert.notEmpty(structAddressDTO.getDetailAddress(), "地址数据异常，请检查并修改！");
         userAddress.setProvinceCode(structAddressDTO.getProvinceCode());
         userAddress.setCityCode(structAddressDTO.getCityCode());
         userAddress.setDistrictCode(structAddressDTO.getCountyCode());
