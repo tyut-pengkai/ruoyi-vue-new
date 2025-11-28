@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.xkt;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.XktBaseController;
 import com.ruoyi.common.core.domain.R;
@@ -70,7 +71,7 @@ public class ShoppingCartController extends XktBaseController {
     }
 
     // 如果进货车不对档口开放权限，则商城首页商品详情显示会有问题
-    @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store,seller,agent')||@ss.hasSupplierSubRole()")
+    @Anonymous
     @ApiOperation(value = "进货车下单时及商品下单时获取商品列表", httpMethod = "POST", response = R.class)
     @PostMapping("/list")
     public R<List<ShopCartResVO>> getList(@Validated @RequestBody ShopCartListVO listVO) {

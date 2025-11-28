@@ -91,6 +91,7 @@ public class StoreProductController extends XktBaseController {
         return R.ok(BeanUtil.toBean(storeProdService.getAppInfo(storeProdId), StoreProdAppResVO.class));
     }
 
+    @Anonymous
     @ApiOperation(value = "获取档口商品颜色及sku等", httpMethod = "GET", response = R.class)
     @GetMapping(value = "/sku/{storeProdId}")
     public R<StoreProdSkuResVO> getSkuList(@PathVariable("storeProdId") Long storeProdId) {
