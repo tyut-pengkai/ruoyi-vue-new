@@ -2932,6 +2932,14 @@ INSERT INTO `express`(`id`, `express_code`, `express_name`, `system_deliver_acce
                       `user_refund_access`, `system_config`, `del_flag`, `create_by`, `create_time`, `update_by`,
                       `update_time`, `version`)
 VALUES (2, 'YTO', '圆通', b'1', b'1', b'1', NULL, '0', '', NULL, '', NULL, 0);
+INSERT INTO express(express_code,express_name,user_refund_access) VALUES ('STO','申通',1);
+INSERT INTO express(express_code,express_name,user_refund_access) VALUES ('YD','韵达',1);
+INSERT INTO express(express_code,express_name,user_refund_access) VALUES ('JTSD','极兔',1);
+INSERT INTO express(express_code,express_name,user_refund_access) VALUES ('SF','顺丰',1);
+INSERT INTO express(express_code,express_name,user_refund_access) VALUES ('JD','京东',1);
+INSERT INTO express(express_code,express_name,user_refund_access) VALUES ('EMS','EMS',1);
+INSERT INTO express(express_code,express_name,user_refund_access) VALUES ('YZPY','中国邮政',1);
+INSERT INTO express(express_code,express_name,user_refund_access) VALUES ('DBL','德邦',1);
 
 
 DROP TABLE IF EXISTS `voucher_sequence`;
