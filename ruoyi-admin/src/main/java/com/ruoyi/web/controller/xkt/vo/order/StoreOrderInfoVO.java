@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.xkt.vo.order;
 
+import com.ruoyi.xkt.dto.express.ExpressWaybillNoInfoDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -249,6 +250,20 @@ public class StoreOrderInfoVO {
     @ApiModelProperty(value = "付款时间")
     private Date payTime;
 
+    @ApiModelProperty(value = "快递物流信息")
+    private List<ExpressWaybillNoInfoVO> expressWaybillNoInfos;
+
+    @ApiModel
+    @Data
+    public static class ExpressWaybillNoInfoVO {
+
+        private Long expressId;
+
+        private String expressName;
+
+        private String expressWaybillNo;
+
+    }
 
     @ApiModel
     @Data

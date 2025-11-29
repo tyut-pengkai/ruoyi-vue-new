@@ -1,5 +1,6 @@
 package com.ruoyi.xkt.dto.order;
 
+import com.ruoyi.xkt.dto.express.ExpressWaybillNoInfoDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -39,5 +40,7 @@ public class StoreOrderInfoDTO extends StoreOrderDTO {
     private Date payTime;
 
     private List<StoreOrderDetailInfoDTO> orderDetails;
+
+    private List<ExpressWaybillNoInfoDTO> expressWaybillNoInfos;
 
 }

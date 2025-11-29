@@ -407,6 +407,8 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                         FileType.MAIN_PIC.getValue(), ORDER_NUM_1).stream()
                 .collect(Collectors.toMap(StoreProdMainPicDTO::getStoreProdId, StoreProdMainPicDTO::getFileUrl,
                         (o, n) -> n));
+        Map<Long, String> expressMap = expressService.getAllExpressNameMap();
+        Set<ExpressWaybillNoInfoDTO> expressWaybillNoInfos = new LinkedHashSet<>();
         for (StoreOrderDetailInfoDTO detailInfo : detailInfos) {
             detailInfo.setFirstMainPicUrl(mainPicMap.get(detailInfo.getStoreProdId()));
             //档口信息
@@ -415,7 +417,16 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                 detailInfo.setStoreName(store.getStoreName());
                 detailInfo.setStoreAddress(store.getStoreAddress());
             }
+            if (StrUtil.isNotEmpty(detailInfo.getExpressWaybillNo())) {
+                String[] nos = detailInfo.getExpressWaybillNo().split(",");
+                Long eId = detailInfo.getExpressId();
+                String eName = expressMap.get(eId);
+                for (String no : nos) {
+                    expressWaybillNoInfos.add(new ExpressWaybillNoInfoDTO(eId, eName, no));
+                }
+            }
         }
+        orderInfo.setExpressWaybillNoInfos(new ArrayList<>(expressWaybillNoInfos));
         //付款记录
         StoreOrderOperationRecordDTO payRecord = operationRecordService.getOneRecord(storeOrderId,
                 EOrderTargetTypeAction.ORDER, EOrderAction.PAY);
