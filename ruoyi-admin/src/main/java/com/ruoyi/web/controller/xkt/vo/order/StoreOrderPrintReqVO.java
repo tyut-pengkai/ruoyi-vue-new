@@ -30,4 +30,52 @@ public class StoreOrderPrintReqVO {
 
     @ApiModelProperty(value = "打印成功后立即发货", required = true)
     private Boolean needShip;
+
+    @NotEmpty(message = "发货人名称不能为空")
+    @ApiModelProperty(value = "发货人-名称", required = true)
+    private String originContactName;
+
+    @NotEmpty(message = "发货人电话不能为空")
+    @ApiModelProperty(value = "发货人-电话", required = true)
+    private String originContactPhoneNumber;
+
+    @NotEmpty(message = "发货人省编码不能为空")
+    @ApiModelProperty(value = "发货人-省编码", required = true)
+    private String originProvinceCode;
+
+    @NotEmpty(message = "发货人市编码不能为空")
+    @ApiModelProperty(value = "发货人-市编码", required = true)
+    private String originCityCode;
+
+    @NotEmpty(message = "发货人区县编码不能为空")
+    @ApiModelProperty(value = "发货人-区县编码", required = true)
+    private String originCountyCode;
+
+    @NotEmpty(message = "发货人详细地址不能为空")
+    @ApiModelProperty(value = "发货人-详细地址", required = true)
+    private String originDetailAddress;
+
+    @NotEmpty(message = "收货人名称不能为空")
+    @ApiModelProperty(value = "收货人-名称", required = true)
+    private String destinationContactName;
+
+    @NotEmpty(message = "收货人电话不能为空")
+    @ApiModelProperty(value = "收货人-电话", required = true)
+    private String destinationContactPhoneNumber;
+
+    @NotEmpty(message = "收货人省编码不能为空")
+    @ApiModelProperty(value = "收货人-省编码", required = true)
+    private String destinationProvinceCode;
+
+    @NotEmpty(message = "收货人市编码不能为空")
+    @ApiModelProperty(value = "收货人-市编码", required = true)
+    private String destinationCityCode;
+
+    @NotEmpty(message = "收货人区县编码不能为空")
+    @ApiModelProperty(value = "收货人-区县编码", required = true)
+    private String destinationCountyCode;
+
+    @NotEmpty(message = "收货人详细地址不能为空")
+    @ApiModelProperty(value = "收货人-详细地址", required = true)
+    private String destinationDetailAddress;
 }

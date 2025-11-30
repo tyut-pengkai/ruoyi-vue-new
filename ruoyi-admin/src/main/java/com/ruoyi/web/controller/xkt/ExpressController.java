@@ -33,10 +33,32 @@ public class ExpressController extends XktBaseController {
     @Autowired
     private IExpressService expressService;
 
-    @ApiOperation("全部物流")
+    @ApiOperation("全部物流: systemDeliverAccess-系统发货是否可选则，storeDeliverAccess-档口发货是否可选择，userRefundAccess-用户退货是否可选择")
     @GetMapping("allExpress")
-    public R<List<ExpressVO>> allExpress() {
-        return success(BeanUtil.copyToList(expressService.allExpress(), ExpressVO.class));
+    public R<List<ExpressVO>> allExpress(@RequestParam(value = "systemDeliverAccess", required = false)
+                                                 Boolean systemDeliverAccess,
+                                         @RequestParam(value = "storeDeliverAccess", required = false)
+                                                 Boolean storeDeliverAccess,
+                                         @RequestParam(value = "userRefundAccess", required = false)
+                                                 Boolean userRefundAccess) {
+        List<ExpressVO> voList = expressService.allExpress()
+                .stream()
+                .filter(o -> {
+                    boolean rtn = true;
+                    if (systemDeliverAccess != null && !systemDeliverAccess.equals(o.getSystemDeliverAccess())) {
+                        rtn = false;
+                    }
+                    if (storeDeliverAccess != null && !storeDeliverAccess.equals(o.getStoreDeliverAccess())) {
+                        rtn = false;
+                    }
+                    if (userRefundAccess != null && !userRefundAccess.equals(o.getStoreDeliverAccess())) {
+                        rtn = false;
+                    }
+                    return rtn;
+                })
+                .map(o -> BeanUtil.toBean(o, ExpressVO.class))
+                .collect(Collectors.toList());
+        return success(voList);
     }
 
     @ApiOperation("下单时物流选择列表 - 含快递费")

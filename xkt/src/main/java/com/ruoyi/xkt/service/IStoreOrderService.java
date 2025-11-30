@@ -170,12 +170,13 @@ public interface IStoreOrderService {
      * @param storeOrderId
      * @param storeOrderDetailIds
      * @param expressId
+     * @param shipAddress
      * @param needShip
      * @param operatorId
      * @return
      */
     ExpressShippingLabelDTO printOrder(Long storeOrderId, List<Long> storeOrderDetailIds, Long expressId,
-                                       Boolean needShip, Long operatorId);
+                                       ShipAddressDTO shipAddress, Boolean needShip, Long operatorId);
 
     /**
      * 确认收货

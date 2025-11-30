@@ -964,6 +964,19 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             orderDetail.setExpressType(EExpressType.STORE.getValue());
             orderDetail.setExpressStatus(EExpressStatus.COMPLETED.getValue());
             orderDetail.setExpressWaybillNo(expressWaybillNo);
+            //档口发货的物流信息从订单中取
+            orderDetail.setOriginContactName(order.getOriginContactName());
+            orderDetail.setOriginContactPhoneNumber(order.getOriginContactPhoneNumber());
+            orderDetail.setOriginProvinceCode(order.getOriginProvinceCode());
+            orderDetail.setOriginCityCode(order.getOriginCityCode());
+            orderDetail.setOriginCountyCode(order.getOriginCountyCode());
+            orderDetail.setOriginDetailAddress(order.getOriginDetailAddress());
+            orderDetail.setDestinationContactName(order.getDestinationContactName());
+            orderDetail.setDestinationContactPhoneNumber(order.getDestinationContactPhoneNumber());
+            orderDetail.setDestinationProvinceCode(order.getDestinationProvinceCode());
+            orderDetail.setDestinationCityCode(order.getDestinationCityCode());
+            orderDetail.setDestinationCountyCode(order.getDestinationCountyCode());
+            orderDetail.setDestinationDetailAddress(order.getDestinationDetailAddress());
             int orderDetailSuccess = storeOrderDetailMapper.updateById(prepareUpdate(orderDetail));
             if (orderDetailSuccess == 0) {
                 throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
@@ -1000,7 +1013,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ExpressShippingLabelDTO printOrder(Long storeOrderId, List<Long> storeOrderDetailIds, Long expressId,
-                                              Boolean needShip, Long operatorId) {
+                                              ShipAddressDTO shipAddress, Boolean needShip, Long operatorId) {
         Assert.notEmpty(storeOrderDetailIds);
         checkNoCompleteRefundDetail(storeOrderDetailIds, "售后完成状态的商品无法打印快递单");
         ExpressManager expressManager = expressService.getExpressManager(expressId);
@@ -1050,7 +1063,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             }
         }
         //物流发货
-        ExpressShipReqDTO shipReq = createShipReq(order, orderDetails);
+        ExpressShipReqDTO shipReq = createShipReq(order, orderDetails, shipAddress);
         ExpressShippingLabelDTO shippingLabelDTO = expressManager.shipStoreOrder(shipReq);
         //订阅轨迹
         ExpressTrackSubReqDTO trackSubReq = new ExpressTrackSubReqDTO(shipReq.getExpressReqNo(),
@@ -1067,6 +1080,19 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             orderDetail.setExpressStatus(EExpressStatus.PLACED.getValue());
             orderDetail.setExpressReqNo(shipReq.getExpressReqNo());
             orderDetail.setExpressWaybillNo(shippingLabelDTO.getExpressWaybillNo());
+            //平台发货的物流信息
+            orderDetail.setOriginContactName(shipReq.getOriginContactName());
+            orderDetail.setOriginContactPhoneNumber(shipReq.getOriginContactPhoneNumber());
+            orderDetail.setOriginProvinceCode(shipReq.getOriginProvinceCode());
+            orderDetail.setOriginCityCode(shipReq.getOriginCityCode());
+            orderDetail.setOriginCountyCode(shipReq.getOriginCountyCode());
+            orderDetail.setOriginDetailAddress(shipReq.getOriginDetailAddress());
+            orderDetail.setDestinationContactName(shipReq.getDestinationContactName());
+            orderDetail.setDestinationContactPhoneNumber(shipReq.getDestinationContactPhoneNumber());
+            orderDetail.setDestinationProvinceCode(shipReq.getDestinationProvinceCode());
+            orderDetail.setDestinationCityCode(shipReq.getDestinationCityCode());
+            orderDetail.setDestinationCountyCode(shipReq.getDestinationCountyCode());
+            orderDetail.setDestinationDetailAddress(shipReq.getDestinationDetailAddress());
             int orderDetailSuccess = storeOrderDetailMapper.updateById(prepareUpdate(orderDetail));
             if (orderDetailSuccess == 0) {
                 throw new ServiceException(Constants.VERSION_LOCK_ERROR_COMMON_MSG);
@@ -2041,18 +2067,32 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
     }
 
 
-    private ExpressShipReqDTO createShipReq(StoreOrder order, List<StoreOrderDetail> orderDetails) {
+    private ExpressShipReqDTO createShipReq(StoreOrder order, List<StoreOrderDetail> orderDetails,
+                                            ShipAddressDTO shipAddress) {
         ExpressShipReqDTO reqDTO = BeanUtil.toBean(order, ExpressShipReqDTO.class);
+        //收/发件人信息
+        reqDTO.setOriginContactName(shipAddress.getOriginContactName());
+        reqDTO.setOriginContactPhoneNumber(shipAddress.getOriginContactPhoneNumber());
+        reqDTO.setOriginProvinceCode(shipAddress.getOriginProvinceCode());
+        reqDTO.setOriginCityCode(shipAddress.getOriginCityCode());
+        reqDTO.setOriginCountyCode(shipAddress.getOriginCountyCode());
+        reqDTO.setOriginDetailAddress(shipAddress.getOriginDetailAddress());
+        reqDTO.setDestinationContactName(shipAddress.getDestinationContactName());
+        reqDTO.setDestinationContactPhoneNumber(shipAddress.getDestinationContactPhoneNumber());
+        reqDTO.setDestinationProvinceCode(shipAddress.getDestinationProvinceCode());
+        reqDTO.setDestinationCityCode(shipAddress.getDestinationCityCode());
+        reqDTO.setDestinationCountyCode(shipAddress.getDestinationCountyCode());
+        reqDTO.setDestinationDetailAddress(shipAddress.getDestinationDetailAddress());
         //生成请求号
         reqDTO.setExpressReqNo(IdUtil.simpleUUID());
         //行政区划信息
         Map<String, String> regionMap = expressService.getRegionNameMapCache();
-        reqDTO.setDestinationProvinceName(regionMap.get(order.getDestinationProvinceCode()));
-        reqDTO.setDestinationCityName(regionMap.get(order.getDestinationCityCode()));
-        reqDTO.setDestinationCountyName(regionMap.get(order.getDestinationCountyCode()));
-        reqDTO.setOriginProvinceName(regionMap.get(order.getOriginProvinceCode()));
-        reqDTO.setOriginCityName(regionMap.get(order.getOriginCityCode()));
-        reqDTO.setOriginCountyName(regionMap.get(order.getOriginCountyCode()));
+        reqDTO.setDestinationProvinceName(regionMap.get(shipAddress.getDestinationProvinceCode()));
+        reqDTO.setDestinationCityName(regionMap.get(shipAddress.getDestinationCityCode()));
+        reqDTO.setDestinationCountyName(regionMap.get(shipAddress.getDestinationCountyCode()));
+        reqDTO.setOriginProvinceName(regionMap.get(shipAddress.getOriginProvinceCode()));
+        reqDTO.setOriginCityName(regionMap.get(shipAddress.getOriginCityCode()));
+        reqDTO.setOriginCountyName(regionMap.get(shipAddress.getOriginCountyCode()));
         reqDTO.setRemark(order.getOrderRemark());
         //货物信息
         List<ExpressShipReqDTO.OrderItem> orderItems = CollUtil.emptyIfNull(orderDetails).stream()
