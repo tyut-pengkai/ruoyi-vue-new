@@ -289,7 +289,7 @@ public class StoreOrderController extends XktBaseController {
 
     @PreAuthorize("@ss.hasAnyRoles('admin,general_admin,store')||@ss.hasSupplierSubRole()")
     @Log(title = "订单", businessType = BusinessType.OTHER)
-    @ApiOperation("发货-无单号（未在平台打印过快递单）")
+    @ApiOperation("发货-无单号（未在平台打印过快递单，档口自己联系物流发货）")
     @PostMapping("ship/store")
     public R<List<StoreOrderShipRespVO>> shipByStore(@Valid @RequestBody StoreOrderShipByStoreReqVO vo) {
         if (!SecurityUtils.isAdmin()) {
@@ -316,8 +316,10 @@ public class StoreOrderController extends XktBaseController {
             //仅档口可操作
             storeOrderService.checkOrderStore(vo.getStoreOrderDetailIds(), SecurityUtils.getStoreId());
         }
+        ShipAddressDTO shipAddress = BeanUtil.toBean(vo, ShipAddressDTO.class);
         ExpressShippingLabelDTO dto = storeOrderService.printOrder(vo.getStoreOrderId(),
-                vo.getStoreOrderDetailIds(), vo.getExpressId(), vo.getNeedShip(), SecurityUtils.getUserId());
+                vo.getStoreOrderDetailIds(), vo.getExpressId(), shipAddress, vo.getNeedShip(),
+                SecurityUtils.getUserId());
         return success(DesensitizationUtil.desensitize(BeanUtil.toBean(dto, ExpressShippingLabelVO.class)));
     }
 

@@ -354,7 +354,7 @@ public class ZtoExpressManagerImpl implements ExpressManager, InitializingBean {
         //发件人信息
         ZtoCreateOrderParam.SenderInfo senderInfo = new ZtoCreateOrderParam.SenderInfo();
         reqDTO.setSenderInfo(senderInfo);
-        senderInfo.setSenderName(expressShipReqDTO.getOriginCountyName());
+        senderInfo.setSenderName(expressShipReqDTO.getOriginContactName());
         senderInfo.setSenderPhone(expressShipReqDTO.getOriginContactPhoneNumber());
         senderInfo.setSenderProvince(expressShipReqDTO.getOriginProvinceName());
         senderInfo.setSenderCity(expressShipReqDTO.getOriginCityName());
