@@ -55,6 +55,7 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.ruoyi.common.constant.Constants.TOPMOST_PRODUCT_CATEGORY_ID;
 import static com.ruoyi.common.constant.Constants.WEIGHT_DEFAULT_ZERO;
 
 /**
@@ -518,8 +519,6 @@ public class GtAndFhbBiz22222222Controller extends BaseController {
                     .setSaleWeight(WEIGHT_DEFAULT_ZERO.toString()).setRecommendWeight(WEIGHT_DEFAULT_ZERO.toString())
                     .setPopularityWeight(WEIGHT_DEFAULT_ZERO.toString())
                     .setMainPicUrl("").setMainPicName("").setMainPicSize(BigDecimal.ZERO)
-                    .setParCateId(ObjectUtils.isNotEmpty(parCate) ? parCate.getId().toString() : "")
-                    .setParCateName(ObjectUtils.isNotEmpty(parCate) ? parCate.getName() : "")
                     .setProdPrice(ObjectUtils.isNotEmpty(prodMinPrice) ? prodMinPrice.toString() : "")
                     .setSeason(ObjectUtils.isNotEmpty(cateAttr) ? cateAttr.getSuitableSeason() : "")
                     .setProdStatus(product.getProdStatus().toString())
@@ -528,6 +527,11 @@ public class GtAndFhbBiz22222222Controller extends BaseController {
                     .setStoreName(ObjectUtils.isNotEmpty(store) ? store.getStoreName() : "")
                     .setStyle(ObjectUtils.isNotEmpty(cateAttr) ? cateAttr.getStyle() : "")
                     .setProdTitle(product.getProdTitle());
+            if (ObjectUtils.isNotEmpty(parCate)) {
+                // 如果父级分类为顶层分类，则prodCateId 和 parCateId 一样即可
+                esProductDTO.setParCateId(Objects.equals(parCate.getId(), TOPMOST_PRODUCT_CATEGORY_ID) ? product.getProdCateId().toString() : parCate.getId().toString())
+                        .setParCateName(Objects.equals(parCate.getId(), TOPMOST_PRODUCT_CATEGORY_ID) ? cate.getName() : parCate.getName());
+            }
             if (ObjectUtils.isNotEmpty(cateAttr) && StringUtils.isNotBlank(cateAttr.getStyle())) {
                 esProductDTO.setTags(Collections.singletonList(cateAttr.getStyle()));
             }

@@ -73,6 +73,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.ruoyi.common.constant.Constants.TOPMOST_PRODUCT_CATEGORY_ID;
+
 /**
  * 鞋库通定时任务
  *
@@ -1040,8 +1042,6 @@ public class XktTask {
                     .setMainPicUrl(ObjectUtils.isNotEmpty(mainPic) ? mainPic.getFileUrl() : "")
                     .setMainPicName(ObjectUtils.isNotEmpty(mainPic) ? mainPic.getFileName() : "")
                     .setMainPicSize(ObjectUtils.isNotEmpty(mainPic) ? mainPic.getFileSize() : BigDecimal.ZERO)
-                    .setParCateId(ObjectUtils.isNotEmpty(parCate) ? parCate.getId().toString() : "")
-                    .setParCateName(ObjectUtils.isNotEmpty(parCate) ? parCate.getName() : "")
                     .setProdPrice(ObjectUtils.isNotEmpty(prodMinPrice) ? prodMinPrice.toString() : "")
                     .setSeason(ObjectUtils.isNotEmpty(cateAttr) ? cateAttr.getSuitableSeason() : "")
                     .setProdStatus(product.getProdStatus().toString())
@@ -1050,6 +1050,11 @@ public class XktTask {
                     .setStyle(ObjectUtils.isNotEmpty(cateAttr) ? cateAttr.getStyle() : "")
                     .setTags(ObjectUtils.isNotEmpty(cateAttr) ? Collections.singletonList(cateAttr.getStyle()) : new ArrayList<>())
                     .setProdTitle(product.getProdTitle());
+            if (ObjectUtils.isNotEmpty(parCate)) {
+                // 如果父级分类为顶层分类，则prodCateId 和 parCateId 一样即可
+                esProductDTO.setParCateId(Objects.equals(parCate.getId(), TOPMOST_PRODUCT_CATEGORY_ID) ? product.getProdCateId().toString() : parCate.getId().toString())
+                        .setParCateName(Objects.equals(parCate.getId(), TOPMOST_PRODUCT_CATEGORY_ID) ? cate.getName() : parCate.getName());
+            }
             // 创建更新操作
             BulkOperation bulkOperation = new BulkOperation.Builder()
                     .index(i -> i

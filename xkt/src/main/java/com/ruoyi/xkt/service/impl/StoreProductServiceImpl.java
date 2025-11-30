@@ -1185,7 +1185,10 @@ public class StoreProductServiceImpl implements IStoreProductService {
                 .setProdCateName(updateDTO.getProdCateName()).setStoreName(storeName).setMainPicUrl(firstMainPic)
                 .setCreateTime(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, storeProd.getCreateTime()))
                 .setSaleWeight(WEIGHT_DEFAULT_ZERO.toString()).setRecommendWeight(WEIGHT_DEFAULT_ZERO.toString()).setPopularityWeight(WEIGHT_DEFAULT_ZERO.toString())
-                .setParCateId(parCate.getProdCateId().toString()).setParCateName(parCate.getName()).setProdPrice(minPrice.toString());
+                // 如果父级分类为顶层分类，则prodCateId 和 parCateId 一样即可
+                .setParCateId(Objects.equals(parCate.getProdCateId(), TOPMOST_PRODUCT_CATEGORY_ID) ? updateDTO.getProdCateId().toString() : parCate.getProdCateId().toString())
+                .setParCateName(Objects.equals(parCate.getProdCateId(), TOPMOST_PRODUCT_CATEGORY_ID) ? updateDTO.getProdCateName() : parCate.getName())
+                .setProdPrice(minPrice.toString());
         if (StringUtils.isNotBlank(season)) {
             esProdDTO.setSeason(season);
         }
@@ -1215,34 +1218,6 @@ public class StoreProductServiceImpl implements IStoreProductService {
             log.error("删除ES文档失败，商品ID: {}, 错误信息: {}", storeProdIdList, e.getMessage(), e);
             throw e; // 或者做其他补偿处理，比如异步重试
         }
-    }
-
-    /**
-     * 重新创建ES索引下的文档
-     *
-     * @param reSaleList 重新上架商品列表
-     * @throws IOException
-     */
-    private void reSaleCreateESDoc(List<StoreProduct> reSaleList) throws IOException {
-        if (CollectionUtils.isEmpty(reSaleList)) {
-            return;
-        }
-        List<ProductESDTO> esDTOList = this.storeProdMapper.selectESDTOList(reSaleList.stream()
-                .map(StoreProduct::getId).distinct().collect(Collectors.toList()));
-        Map<Long, ProductESDTO> esDTOMap = esDTOList.stream().collect(Collectors.toMap(ProductESDTO::getId, Function.identity()));
-        // 构建一个批量数据集合
-        List<BulkOperation> list = reSaleList.stream().map(x -> {
-            final String createTime = DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, x.getCreateTime());
-            final ProductESDTO esDTO = Optional.ofNullable(esDTOMap.get(x.getId())).orElseThrow(() -> new ServiceException("档口商品不存在!", HttpStatus.ERROR));
-            ESProductDTO esProductDTO = BeanUtil.toBean(x, ESProductDTO.class).setProdCateName(esDTO.getProdCateName()).setMainPicUrl(esDTO.getMainPic())
-                    .setParCateId(esDTO.getParCateId()).setParCateName(esDTO.getParCateName()).setProdPrice(esDTO.getProdPrice()).setStoreName(esDTO.getStoreName())
-                    .setSeason(esDTO.getSeason()).setStyle(esDTO.getStyle()).setCreateTime(createTime);
-            return new BulkOperation.Builder().create(d -> d.document(esProductDTO).id(String.valueOf(x.getId()))
-                    .index(ES_INDEX_NAME)).build();
-        }).collect(Collectors.toList());
-        // 调用bulk方法执行批量插入操作
-        BulkResponse bulkResponse = esClientWrapper.getEsClient().bulk(e -> e.index(ES_INDEX_NAME).operations(list));
-        System.out.println("bulkResponse.items() = " + bulkResponse.items());
     }
 
     /**
