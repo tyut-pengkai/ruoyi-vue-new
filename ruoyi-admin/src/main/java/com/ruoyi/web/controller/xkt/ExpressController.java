@@ -51,7 +51,7 @@ public class ExpressController extends XktBaseController {
                     if (storeDeliverAccess != null && !storeDeliverAccess.equals(o.getStoreDeliverAccess())) {
                         rtn = false;
                     }
-                    if (userRefundAccess != null && !userRefundAccess.equals(o.getStoreDeliverAccess())) {
+                    if (userRefundAccess != null && !userRefundAccess.equals(o.getUserRefundAccess())) {
                         rtn = false;
                     }
                     return rtn;
