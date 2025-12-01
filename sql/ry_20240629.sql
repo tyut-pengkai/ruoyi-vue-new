@@ -4123,6 +4123,7 @@ CREATE TABLE `user_authentication`
     `user_id`                bigint UNSIGNED NOT NULL COMMENT 'sys_user.id',
     `real_name`              varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '真实名称',
     `id_card`                varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '身份证号码',
+    `phonenumber`            varchar(11)  default '' comment '手机号码',
     `id_card_face_file_id`   bigint UNSIGNED NULL DEFAULT NULL COMMENT '身份证头像面文件ID',
     `id_card_emblem_file_id` bigint UNSIGNED NULL DEFAULT NULL COMMENT '身份证国徽面文件ID',
     `auth_status`            int UNSIGNED NULL DEFAULT NULL COMMENT '代发认证状态',
