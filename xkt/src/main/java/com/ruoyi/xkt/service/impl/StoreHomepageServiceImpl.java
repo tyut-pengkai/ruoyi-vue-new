@@ -429,9 +429,9 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
             List<SysFile> bigBannerFileList = homepageDTO.getBigBannerList().stream().filter(x -> StringUtils.isNotBlank(x.getFileUrl()))
                     .map(x -> BeanUtil.toBean(x, SysFile.class).setId(null)).collect(Collectors.toList());
             this.fileMapper.insert(bigBannerFileList);
-            Map<String, SysFile> bigBannerMap = bigBannerFileList.stream().collect(Collectors.toMap(SysFile::getFileName, Function.identity()));
+            Map<String, SysFile> bigBannerMap = bigBannerFileList.stream().collect(Collectors.toMap(SysFile::getFileUrl, Function.identity()));
             homePageList.addAll(homepageDTO.getBigBannerList().stream().map(x -> BeanUtil.toBean(x, StoreHomepage.class).setStoreId(homepageDTO.getStoreId())
-                            .setFileId(bigBannerMap.containsKey(x.getFileName()) ? bigBannerMap.get(x.getFileName()).getId() : null))
+                            .setFileId(bigBannerMap.containsKey(x.getFileUrl()) ? bigBannerMap.get(x.getFileUrl()).getId() : null))
                     .collect(Collectors.toList()));
         }
         if (CollectionUtils.isNotEmpty(homepageDTO.getDecorationList())) {
