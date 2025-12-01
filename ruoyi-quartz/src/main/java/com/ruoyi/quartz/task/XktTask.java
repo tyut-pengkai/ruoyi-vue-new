@@ -523,6 +523,7 @@ public class XktTask {
     public void dailyProdWeight() {
         // 筛选非私款的商品
         List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+                .in(StoreProduct::getProdStatus, Arrays.asList(EProductStatus.ON_SALE.getValue(), EProductStatus.TAIL_GOODS.getValue()))
                 .eq(StoreProduct::getDelFlag, Constants.UNDELETED).eq(StoreProduct::getPrivateItem, EProductItemType.NON_PRIVATE_ITEM.getValue()));
         if (CollectionUtils.isEmpty(storeProdList)) {
             return;
@@ -581,6 +582,7 @@ public class XktTask {
     public void dailyStoreWeight() {
         // 筛选非私款的商品
         List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+                .in(StoreProduct::getProdStatus, Arrays.asList(EProductStatus.ON_SALE.getValue(), EProductStatus.TAIL_GOODS.getValue()))
                 .eq(StoreProduct::getDelFlag, Constants.UNDELETED).eq(StoreProduct::getPrivateItem, EProductItemType.NON_PRIVATE_ITEM.getValue()));
         if (CollectionUtils.isEmpty(storeProdList)) {
             return;
@@ -813,6 +815,7 @@ public class XktTask {
                 .eq(Store::getDelFlag, Constants.UNDELETED).in(Store::getId, storeIdList));
         // 非私款商品才会计入权重
         List<StoreProduct> storeProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+                .in(StoreProduct::getProdStatus, Arrays.asList(EProductStatus.ON_SALE.getValue(), EProductStatus.TAIL_GOODS.getValue()))
                 .eq(StoreProduct::getDelFlag, Constants.UNDELETED).eq(StoreProduct::getPrivateItem, EProductItemType.NON_PRIVATE_ITEM.getValue())
                 .in(StoreProduct::getStoreId, storeIdList));
         if (CollectionUtils.isEmpty(storeProdList)) {
