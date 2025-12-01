@@ -184,13 +184,23 @@ public class ElasticSearchServiceImpl implements IElasticSearchService {
     public Page<ESProductDTO> search(IndexSearchDTO searchDTO) throws IOException {
         // 构建 bool 查询
         BoolQuery.Builder boolQueryBuilder = new BoolQuery.Builder();
+
         // 添加 price 范围查询
-        if (ObjectUtils.isNotEmpty(searchDTO.getMinPrice()) && ObjectUtils.isNotEmpty(searchDTO.getMaxPrice())) {
+        if (ObjectUtils.isNotEmpty(searchDTO.getMinPrice())) {
             RangeQuery.Builder rangeBuilder = new RangeQuery.Builder();
-            rangeBuilder.number(NumberRangeQuery.of(n -> n.field("prodPrice").gte(Double.valueOf(searchDTO.getMinPrice()))
-                    .lte(Double.valueOf(searchDTO.getMaxPrice()))));
+            NumberRangeQuery.Builder numberRangeBuilder = new NumberRangeQuery.Builder();
+            numberRangeBuilder.field("prodPrice");
+            if (ObjectUtils.isNotEmpty(searchDTO.getMinPrice())) {
+                numberRangeBuilder.gte(Double.valueOf(searchDTO.getMinPrice()));
+            }
+            if (ObjectUtils.isNotEmpty(searchDTO.getMaxPrice())) {
+                numberRangeBuilder.lte(Double.valueOf(searchDTO.getMaxPrice()));
+            }
+            rangeBuilder.number(numberRangeBuilder.build());
             boolQueryBuilder.filter(rangeBuilder.build()._toQuery());
         }
+
+        // 处理具体的查询内容逻辑
         if (StringUtils.isNotBlank(searchDTO.getSearch())) {
             String searchTerm = searchDTO.getSearch().trim();
             // 创建专门的搜索 bool query
