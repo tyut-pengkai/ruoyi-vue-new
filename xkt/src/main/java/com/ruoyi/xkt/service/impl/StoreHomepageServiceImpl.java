@@ -427,7 +427,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
         if (CollectionUtils.isNotEmpty(homepageDTO.getBigBannerList())) {
             // 新增的首页轮播大图部分
             List<SysFile> bigBannerFileList = homepageDTO.getBigBannerList().stream().filter(x -> StringUtils.isNotBlank(x.getFileUrl()))
-                    .map(x -> BeanUtil.toBean(x, SysFile.class)).collect(Collectors.toList());
+                    .map(x -> BeanUtil.toBean(x, SysFile.class).setId(null)).collect(Collectors.toList());
             this.fileMapper.insert(bigBannerFileList);
             Map<String, SysFile> bigBannerMap = bigBannerFileList.stream().collect(Collectors.toMap(SysFile::getFileName, Function.identity()));
             homePageList.addAll(homepageDTO.getBigBannerList().stream().map(x -> BeanUtil.toBean(x, StoreHomepage.class).setStoreId(homepageDTO.getStoreId())
