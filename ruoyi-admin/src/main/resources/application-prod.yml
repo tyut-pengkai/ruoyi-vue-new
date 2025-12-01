@@ -1,6 +1,6 @@
 # 项目相关配置
 app:
-  version: 1.0.2
+  version: 1.0.0
   download-url: http://oss.cdbuju.cn/apk/cdbuju-1.0.0.apk
   update-notes: 新版本
   forced-update: false
