@@ -24,6 +24,8 @@ public class NoticeResDTO {
     private Long id;
     @ApiModelProperty(value = "公告标题")
     private String noticeTitle;
+    @ApiModelProperty(value = "公告类型（1通知 2公告）")
+    private Integer noticeType;
     @ApiModelProperty(value = "公告内容")
     private String noticeContent;
     @ApiModelProperty(value = "谁发的公告 1 档口  2 系统")
