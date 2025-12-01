@@ -31,7 +31,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         SELECT
             ua.id AS userAuthId,
             ua.real_name,
-            u.phonenumber,
+            ua.phonenumber,
             u.avatar
         FROM
             user_authentication ua JOIN sys_user u ON ua.user_id = u.user_id

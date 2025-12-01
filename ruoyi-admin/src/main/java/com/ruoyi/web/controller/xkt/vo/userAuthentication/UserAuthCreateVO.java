@@ -7,6 +7,7 @@ import lombok.Data;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 
@@ -26,6 +27,7 @@ public class UserAuthCreateVO {
     private String realName;
     @NotBlank(message = "联系电话不能为空")
     @ApiModelProperty(value = "联系电话", required = true)
+    @Pattern(regexp = "^1[3-9]\\d{9}$", message = "联系电话格式不正确，请输入有效的中国大陆手机号")
     private String phonenumber;
     @NotBlank(message = "验证码不能为空")
     @ApiModelProperty(value = "验证码", required = true)

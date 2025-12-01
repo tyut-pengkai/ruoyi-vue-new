@@ -40,6 +40,10 @@ public class UserAuthentication extends XktBaseEntity {
      */
     private Long idCardFaceFileId;
     /**
+     * 代发人员手机号
+     */
+    private String phonenumber;
+    /**
      * 身份证国徽面文件ID
      */
     private Long idCardEmblemFileId;

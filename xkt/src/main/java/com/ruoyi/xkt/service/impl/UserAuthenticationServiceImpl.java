@@ -72,7 +72,7 @@ public class UserAuthenticationServiceImpl implements IUserAuthenticationService
         // 保存身份证国徽
         SysFile idCardEmblem = BeanUtil.toBean(createDTO.getEmblemFile(), SysFile.class);
         this.fileMapper.insert(idCardEmblem);
-        UserAuthentication userAuth = new UserAuthentication().setIdCard(createDTO.getIdCard())
+        UserAuthentication userAuth = new UserAuthentication().setIdCard(createDTO.getIdCard()).setPhonenumber(createDTO.getPhonenumber())
                 .setRealName(createDTO.getRealName()).setUserId(userId).setAuthStatus(UserAuthStatus.UN_AUDITED.getValue())
                 .setIdCardFaceFileId(idCardFace.getId()).setIdCardEmblemFileId(idCardEmblem.getId());
         return userAuthMapper.insert(userAuth);
@@ -100,7 +100,7 @@ public class UserAuthenticationServiceImpl implements IUserAuthenticationService
         // 保存身份证国徽
         SysFile idCardEmblem = BeanUtil.toBean(updateDTO.getEmblemFile(), SysFile.class);
         this.fileMapper.insert(idCardEmblem);
-        userAuth.setIdCard(updateDTO.getIdCard())
+        userAuth.setIdCard(updateDTO.getIdCard()).setPhonenumber(updateDTO.getPhonenumber())
                 .setRealName(updateDTO.getRealName()).setUserId(userId).setAuthStatus(UserAuthStatus.UN_AUDITED.getValue())
                 .setIdCardFaceFileId(idCardFace.getId()).setIdCardEmblemFileId(idCardEmblem.getId());
         return userAuthMapper.updateById(userAuth);
