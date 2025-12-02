@@ -13,7 +13,7 @@ import java.util.List;
  * @version v1.0
  * @date 2025/3/27 15:12
  */
-@ApiModel("档口首页模板一返回数据")
+@ApiModel
 @Data
 @Accessors(chain = true)
 public class StoreHomeTemplateItemResDTO {

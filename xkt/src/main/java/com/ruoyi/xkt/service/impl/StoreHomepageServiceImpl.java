@@ -96,10 +96,12 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                             .setFileType(x.getFileType()).setFileUrl(fileMap.containsKey(x.getFileId()) ? fileMap.get(x.getFileId()).getFileUrl() : "");
                     // 跳转到商品
                     if (Objects.equals(x.getDisplayType(), HomepageJumpType.JUMP_PRODUCT.getValue())) {
-                        decorationDTO.setBizName(storeProdMap.containsKey(x.getStoreProdId()) ? storeProdMap.get(x.getStoreProdId()).getProdArtNum() : "");
+                        decorationDTO.setStoreId(x.getJumpStoreId()).setBizName(storeProdMap.containsKey(x.getStoreProdId())
+                                ? storeProdMap.get(x.getStoreProdId()).getProdArtNum() : "");
                         // 跳转到档口首页
                     } else if (Objects.equals(x.getDisplayType(), HomepageJumpType.JUMP_STORE.getValue())) {
-                        decorationDTO.setBizName(ObjectUtils.isEmpty(x.getStoreProdId()) ? "" : store.getStoreName());
+                        decorationDTO.setStoreId(x.getJumpStoreId())
+                                .setBizName(ObjectUtils.isEmpty(x.getStoreProdId()) ? "" : store.getStoreName());
                     }
                     return decorationDTO;
                 }).collect(Collectors.toList());
@@ -431,7 +433,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
             this.fileMapper.insert(bigBannerFileList);
             Map<String, SysFile> bigBannerMap = bigBannerFileList.stream().collect(Collectors.toMap(SysFile::getFileUrl, Function.identity()));
             homePageList.addAll(homepageDTO.getBigBannerList().stream().map(x -> BeanUtil.toBean(x, StoreHomepage.class).setStoreId(homepageDTO.getStoreId())
-                            .setFileId(bigBannerMap.containsKey(x.getFileUrl()) ? bigBannerMap.get(x.getFileUrl()).getId() : null))
+                            .setJumpStoreId(x.getStoreId()).setFileId(bigBannerMap.containsKey(x.getFileUrl()) ? bigBannerMap.get(x.getFileUrl()).getId() : null))
                     .collect(Collectors.toList()));
         }
         if (CollectionUtils.isNotEmpty(homepageDTO.getDecorationList())) {

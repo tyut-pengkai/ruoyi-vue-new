@@ -31,8 +31,13 @@ public class StoreHomepage extends XktBaseEntity {
     /**
      * 档口ID
      */
-    @Excel(name = "档口ID")
     private Long storeId;
+
+    /**
+     * 跳转档口ID
+     */
+    @Excel(name = "跳转档口ID")
+    private Long jumpStoreId;
 
     /**
      * 商品ID storeProdId

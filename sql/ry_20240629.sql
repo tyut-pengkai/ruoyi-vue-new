@@ -3394,7 +3394,8 @@ CREATE TABLE `store_homepage`
     `store_id`      bigint UNSIGNED NOT NULL COMMENT '档口ID',
     `file_type`     int UNSIGNED NULL DEFAULT NULL COMMENT '档口各位置类型',
     `display_type`  int UNSIGNED NOT NULL COMMENT '跳转类型：1档口、2商品、10不跳转',
-    `store_prod_id` bigint UNSIGNED NOT NULL COMMENT '档口商品ID',
+    `jump_store_id` bigint UNSIGNED NULL DEFAULT NULL COMMENT '跳转档口ID',
+    `store_prod_id` bigint UNSIGNED NULL DEFAULT NULL COMMENT '档口商品ID',
     `file_id`       bigint UNSIGNED NULL DEFAULT NULL COMMENT '档口各位置文件ID',
     `order_num`     int UNSIGNED NULL DEFAULT NULL COMMENT '排序',
     `version`       bigint UNSIGNED NOT NULL COMMENT '版本号',
@@ -3404,7 +3405,7 @@ CREATE TABLE `store_homepage`
     `update_by`     varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '' COMMENT '更新者',
     `update_time`   datetime NULL DEFAULT NULL COMMENT '更新时间',
     PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '档口首页' ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 57 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '档口首页' ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Table structure for store_member

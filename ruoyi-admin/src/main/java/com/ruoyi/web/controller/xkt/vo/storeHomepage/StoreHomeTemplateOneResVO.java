@@ -32,6 +32,8 @@ public class StoreHomeTemplateOneResVO {
     public static class SHTOTopBannerVO {
         @ApiModelProperty(value = "storeProdId")
         private Long storeProdId;
+        @ApiModelProperty(value = "档口id")
+        private Long storeId;
         @ApiModelProperty(value = "1.档口（推广图） 2.商品  10.不跳转")
         private Integer displayType;
         @ApiModelProperty(value = "跳转链接")
