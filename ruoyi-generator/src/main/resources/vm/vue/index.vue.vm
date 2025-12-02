@@ -193,25 +193,26 @@
 #set($comment=$column.columnComment)
 #end
 #set($dictType=$column.dictType)
+#set($mode="!(form.zhuId ? " + $column.edit + " : " + $column.insert + ")")
 #if($column.htmlType == "input")
         <el-form-item label="${comment}" prop="${field}">
-          <el-input v-model="form.${field}" placeholder="请输入${comment}" />
+          <el-input :disabled="${mode}" v-model="form.${field}" placeholder="请输入${comment}" />
         </el-form-item>
 #elseif($column.htmlType == "imageUpload")
         <el-form-item label="${comment}" prop="${field}">
-          <image-upload v-model="form.${field}"/>
+          <image-upload :disabled="${mode}" v-model="form.${field}"/>
         </el-form-item>
 #elseif($column.htmlType == "fileUpload")
         <el-form-item label="${comment}" prop="${field}">
-          <file-upload v-model="form.${field}"/>
+          <file-upload :disabled="${mode}" v-model="form.${field}"/>
         </el-form-item>
 #elseif($column.htmlType == "editor")
         <el-form-item label="${comment}">
-          <editor v-model="form.${field}" :min-height="192"/>
+          <editor :disabled="${mode}" v-model="form.${field}" :min-height="192"/>
         </el-form-item>
 #elseif($column.htmlType == "select" && "" != $dictType)
         <el-form-item label="${comment}" prop="${field}">
-          <el-select v-model="form.${field}" placeholder="请选择${comment}">
+          <el-select :disabled="${mode}" v-model="form.${field}" placeholder="请选择${comment}">
             <el-option
               v-for="dict in dict.type.${dictType}"
               :key="dict.value"
@@ -226,13 +227,13 @@
         </el-form-item>
 #elseif($column.htmlType == "select" && $dictType)
         <el-form-item label="${comment}" prop="${field}">
-          <el-select v-model="form.${field}" placeholder="请选择${comment}">
+          <el-select :disabled="${mode}" v-model="form.${field}" placeholder="请选择${comment}">
             <el-option label="请选择字典生成" value="" />
           </el-select>
         </el-form-item>
 #elseif($column.htmlType == "checkbox" && "" != $dictType)
         <el-form-item label="${comment}" prop="${field}">
-          <el-checkbox-group v-model="form.${field}">
+          <el-checkbox-group :disabled="${mode}" v-model="form.${field}">
             <el-checkbox
               v-for="dict in dict.type.${dictType}"
               :key="dict.value"
@@ -243,13 +244,13 @@
         </el-form-item>
 #elseif($column.htmlType == "checkbox" && $dictType)
         <el-form-item label="${comment}" prop="${field}">
-          <el-checkbox-group v-model="form.${field}">
+          <el-checkbox-group :disabled="${mode}" v-model="form.${field}">
             <el-checkbox>请选择字典生成</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
 #elseif($column.htmlType == "radio" && "" != $dictType)
         <el-form-item label="${comment}" prop="${field}">
-          <el-radio-group v-model="form.${field}">
+          <el-radio-group :disabled="${mode}" v-model="form.${field}">
             <el-radio
               v-for="dict in dict.type.${dictType}"
               :key="dict.value"
@@ -263,13 +264,13 @@
         </el-form-item>
 #elseif($column.htmlType == "radio" && $dictType)
         <el-form-item label="${comment}" prop="${field}">
-          <el-radio-group v-model="form.${field}">
+          <el-radio-group :disabled="${mode}" v-model="form.${field}">
             <el-radio label="1">请选择字典生成</el-radio>
           </el-radio-group>
         </el-form-item>
 #elseif($column.htmlType == "datetime")
         <el-form-item label="${comment}" prop="${field}">
-          <el-date-picker clearable
+          <el-date-picker :disabled="${mode}" clearable
             v-model="form.${field}"
             type="date"
             value-format="yyyy-MM-dd"
@@ -278,7 +279,7 @@
         </el-form-item>
 #elseif($column.htmlType == "textarea")
         <el-form-item label="${comment}" prop="${field}">
-          <el-input v-model="form.${field}" type="textarea" placeholder="请输入内容" />
+          <el-input :disabled="${mode}" v-model="form.${field}" type="textarea" placeholder="请输入内容" />
         </el-form-item>
 #end
 #end
