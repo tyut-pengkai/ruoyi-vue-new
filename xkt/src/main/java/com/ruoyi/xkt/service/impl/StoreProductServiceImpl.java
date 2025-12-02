@@ -1269,11 +1269,11 @@ public class StoreProductServiceImpl implements IStoreProductService {
             return;
         }
         List<UserBrowsingHisDTO> browsingList = CollUtil.defaultIfEmpty(this.redisCache
-                .getCacheObject(CacheConstants.USER_BROWSING_HISTORY + SecurityUtils.getUserId()), new ArrayList<>());
+                .getCacheObject(CacheConstants.USER_BROWSING_HISTORY + userId), new ArrayList<>());
         browsingList.add(new UserBrowsingHisDTO().setUserId(userId).setProdArtNum(prodArtNum).setProdTitle(prodTitle)
                 .setStoreId(storeId).setStoreName(storeName).setProdPrice(minPrice).setMainPicUrl(mainPicUrl)
                 .setBrowsingTime(new Date()).setStoreProdId(storeProdId));
-        this.redisCache.setCacheObject(CacheConstants.USER_BROWSING_HISTORY + SecurityUtils.getUserId(), browsingList);
+        this.redisCache.setCacheObject(CacheConstants.USER_BROWSING_HISTORY + userId, browsingList);
     }
 
     /**

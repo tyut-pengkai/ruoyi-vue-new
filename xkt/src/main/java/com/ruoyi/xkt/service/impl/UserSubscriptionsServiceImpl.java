@@ -96,6 +96,9 @@ public class UserSubscriptionsServiceImpl implements IUserSubscriptionsService {
     @Override
     @Transactional
     public Integer delete(UserSubscDeleteDTO deleteDTO) {
+        if (CollectionUtils.isEmpty(deleteDTO.getStoreIdList())) {
+            return 0;
+        }
         // 获取当前登录用户
         LoginUser loginUser = SecurityUtils.getLoginUser();
         List<UserSubscriptions> list = Optional.ofNullable(this.userSubMapper.selectList(new LambdaQueryWrapper<UserSubscriptions>()
