@@ -78,7 +78,7 @@ public class UserAddressController extends XktBaseController {
         return success(BeanUtil.toBean(infoDTO, UserAddressInfoVO.class));
     }
 
-    @PreAuthorize("@ss.hasAnyRoles('seller,agent')")
+    @PreAuthorize("@ss.hasAnyRoles('seller,agent,store')")
     @ApiOperation(value = "用户收货地址列表", httpMethod = "POST", response = R.class)
     @PostMapping("/list")
     public R<List<UserAddressInfoVO>> list() {
