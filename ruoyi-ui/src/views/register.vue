@@ -60,17 +60,19 @@
       </el-form-item>
     </el-form>
     <!--  底部  -->
-    <div class="el-register-footer">
-      <span>Copyright © 2018-2025 ruoyi.vip All Rights Reserved.</span>
-    </div>
+    <copyright class="el-register-footer" :inner="false"/>
   </div>
 </template>
 
 <script>
 import { getCodeImg, register } from "@/api/login"
+import copyright from "@/layout/components/Copyright"
 
 export default {
   name: "Register",
+  components: {
+    copyright
+  },
   data() {
     const equalToPassword = (rule, value, callback) => {
       if (this.registerForm.password !== value) {
@@ -147,7 +149,7 @@ export default {
 }
 </script>
 
-<style rel="stylesheet/scss" lang="scss">
+<style rel="stylesheet/scss" lang="scss" scoped>
 .register {
   display: flex;
   justify-content: center;
@@ -169,7 +171,7 @@ export default {
   padding: 25px 25px 5px 25px;
   .el-input {
     height: 38px;
-    input {
+    ::v-deep input {
       height: 38px;
     }
   }
