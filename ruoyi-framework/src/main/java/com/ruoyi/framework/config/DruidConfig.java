@@ -49,6 +49,34 @@ public class DruidConfig
         return druidProperties.dataSource(dataSource);
     }
 
+    // 202.10.28 新增多个从库，避免后期修改代码
+    @Bean
+    @ConfigurationProperties("spring.datasource.druid.slave2")
+    @ConditionalOnProperty(prefix = "spring.datasource.druid.slave2", name = "enabled", havingValue = "true")
+    public DataSource slaveDataSource2(DruidProperties druidProperties)
+    {
+        DruidDataSource dataSource = DruidDataSourceBuilder.create().build();
+        return druidProperties.dataSource(dataSource);
+    }
+    @Bean
+    @ConfigurationProperties("spring.datasource.druid.slave3")
+    @ConditionalOnProperty(prefix = "spring.datasource.druid.slave3", name = "enabled", havingValue = "true")
+    public DataSource slaveDataSource3(DruidProperties druidProperties)
+    {
+        DruidDataSource dataSource = DruidDataSourceBuilder.create().build();
+        return druidProperties.dataSource(dataSource);
+    }
+    @Bean
+    @ConfigurationProperties("spring.datasource.druid.slave4")
+    @ConditionalOnProperty(prefix = "spring.datasource.druid.slave4", name = "enabled", havingValue = "true")
+    public DataSource slaveDataSource4(DruidProperties druidProperties)
+    {
+        DruidDataSource dataSource = DruidDataSourceBuilder.create().build();
+        return druidProperties.dataSource(dataSource);
+    }
+    // 202.10.28 新增多个从库，避免后期修改代码（end）
+
+
     @Bean(name = "dynamicDataSource")
     @Primary
     public DynamicDataSource dataSource(DataSource masterDataSource)
@@ -56,6 +84,12 @@ public class DruidConfig
         Map<Object, Object> targetDataSources = new HashMap<>();
         targetDataSources.put(DataSourceType.MASTER.name(), masterDataSource);
         setDataSource(targetDataSources, DataSourceType.SLAVE.name(), "slaveDataSource");
+        // 202.10.28 新增多个从库，避免后期修改代码
+        setDataSource(targetDataSources, DataSourceType.SLAVE2.name(), "slaveDataSource2");
+        setDataSource(targetDataSources, DataSourceType.SLAVE3.name(), "slaveDataSource3");
+        setDataSource(targetDataSources, DataSourceType.SLAVE4.name(), "slaveDataSource4");
+        // 202.10.28 新增多个从库，避免后期修改代码（end）
+
         return new DynamicDataSource(masterDataSource, targetDataSources);
     }
     
