@@ -44,7 +44,7 @@ sms:
   regionId:
   send: true
   verificationCode:
-    testModel: false
+    testModel: true
     signName: 成都智创步橘科技
     templateCode: SMS_323190329
 ocr:
