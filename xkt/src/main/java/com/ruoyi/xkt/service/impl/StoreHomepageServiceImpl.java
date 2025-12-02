@@ -77,7 +77,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
         Map<Long, SysFile> fileMap = fileList.stream().collect(Collectors.toMap(SysFile::getId, Function.identity()));
         // 档口商品ID列表
         List<Long> storeProdIdList = homeList.stream()
-                .filter(x -> Objects.equals(x.getDisplayType(), HomepageJumpType.JUMP_PRODUCT.getValue())).map(StoreHomepage::getBizId).collect(Collectors.toList());
+                .filter(x -> Objects.equals(x.getDisplayType(), HomepageJumpType.JUMP_PRODUCT.getValue())).map(StoreHomepage::getStoreProdId).collect(Collectors.toList());
         // 所有的档口商品ID
         List<StoreProduct> storeProdList = Optional.ofNullable(this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
                         .eq(StoreProduct::getStoreId, storeId).in(StoreProduct::getId, storeProdIdList).eq(StoreProduct::getDelFlag, Constants.UNDELETED)))
@@ -96,18 +96,18 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                             .setFileType(x.getFileType()).setFileUrl(fileMap.containsKey(x.getFileId()) ? fileMap.get(x.getFileId()).getFileUrl() : "");
                     // 跳转到商品
                     if (Objects.equals(x.getDisplayType(), HomepageJumpType.JUMP_PRODUCT.getValue())) {
-                        decorationDTO.setBizName(storeProdMap.containsKey(x.getBizId()) ? storeProdMap.get(x.getBizId()).getProdArtNum() : "");
+                        decorationDTO.setBizName(storeProdMap.containsKey(x.getStoreProdId()) ? storeProdMap.get(x.getStoreProdId()).getProdArtNum() : "");
                         // 跳转到档口首页
                     } else if (Objects.equals(x.getDisplayType(), HomepageJumpType.JUMP_STORE.getValue())) {
-                        decorationDTO.setBizName(ObjectUtils.isEmpty(x.getBizId()) ? "" : store.getStoreName());
+                        decorationDTO.setBizName(ObjectUtils.isEmpty(x.getStoreProdId()) ? "" : store.getStoreName());
                     }
                     return decorationDTO;
                 }).collect(Collectors.toList());
         // 其它图部分
         List<StoreHomeDecorationResDTO.DecorationDTO> decorList = homeList.stream().filter(x -> !Objects.equals(x.getFileType(), HomepageType.SLIDING_PICTURE.getValue()))
                 .map(x -> BeanUtil.toBean(x, StoreHomeDecorationResDTO.DecorationDTO.class)
-                        .setBizName(storeProdMap.containsKey(x.getBizId()) ? storeProdMap.get(x.getBizId()).getProdArtNum() : null)
-                        .setFileType(x.getFileType()).setFileUrl(mainPicMap.get(x.getBizId())))
+                        .setBizName(storeProdMap.containsKey(x.getStoreProdId()) ? storeProdMap.get(x.getStoreProdId()).getProdArtNum() : null)
+                        .setFileType(x.getFileType()).setFileUrl(mainPicMap.get(x.getStoreProdId())))
                 .collect(Collectors.toList());
         return new StoreHomeDecorationResDTO() {{
             setStoreId(storeId);
@@ -166,11 +166,11 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
         }
         // 商品价格、主图、标签等
         List<StoreProdPriceAndMainPicAndTagDTO> attrList = this.storeProdMapper.selectPriceAndMainPicAndTagList(recommendList.stream()
-                .map(StoreHomepage::getBizId).collect(Collectors.toList()));
+                .map(StoreHomepage::getStoreProdId).collect(Collectors.toList()));
         Map<Long, StoreProdPriceAndMainPicAndTagDTO> attrMap = attrList.stream()
                 .collect(Collectors.toMap(StoreProdPriceAndMainPicAndTagDTO::getStoreProdId, Function.identity()));
         return recommendList.stream().map(x -> {
-                    StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getBizId());
+                    StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getStoreProdId());
                     if (ObjectUtils.isEmpty(dto)) {
                         return null;
                     }
@@ -200,7 +200,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                         HomepageType.SLIDING_PICTURE_SMALL.getValue(), HomepageType.SEASON_NEW_PRODUCTS.getValue(),
                         HomepageType.STORE_RECOMMENDED.getValue(), HomepageType.SALES_RANKING.getValue()))), new ArrayList<>());
         // 商品ID列表
-        List<Long> prodIdList = CollectionUtils.isEmpty(otherList) ? new ArrayList<>() : otherList.stream().map(StoreHomepage::getBizId).collect(Collectors.toList());
+        List<Long> prodIdList = CollectionUtils.isEmpty(otherList) ? new ArrayList<>() : otherList.stream().map(StoreHomepage::getStoreProdId).collect(Collectors.toList());
         // 筛选商品最新的30条数据
         List<StoreProduct> latest50ProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getStoreId, storeId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)
@@ -257,7 +257,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                         HomepageType.SEASON_NEW_PRODUCTS.getValue(), HomepageType.STORE_RECOMMENDED.getValue(),
                         HomepageType.SALES_RANKING.getValue())));
         // 商品ID列表
-        List<Long> prodIdList = CollectionUtils.isEmpty(otherList) ? new ArrayList<>() : otherList.stream().map(StoreHomepage::getBizId).collect(Collectors.toList());
+        List<Long> prodIdList = CollectionUtils.isEmpty(otherList) ? new ArrayList<>() : otherList.stream().map(StoreHomepage::getStoreProdId).collect(Collectors.toList());
         // 筛选商品最新的50条数据
         List<StoreProduct> latest50ProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getStoreId, storeId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)
@@ -298,7 +298,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                 .in(StoreHomepage::getFileType, Arrays.asList(HomepageType.SLIDING_PICTURE_SMALL.getValue(),
                         HomepageType.STORE_RECOMMENDED.getValue(), HomepageType.SALES_RANKING.getValue())));
         // 商品ID列表
-        List<Long> prodIdList = CollectionUtils.isEmpty(otherList) ? new ArrayList<>() : otherList.stream().map(StoreHomepage::getBizId).collect(Collectors.toList());
+        List<Long> prodIdList = CollectionUtils.isEmpty(otherList) ? new ArrayList<>() : otherList.stream().map(StoreHomepage::getStoreProdId).collect(Collectors.toList());
         // 筛选商品最新的50条数据
         List<StoreProduct> latest50ProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getStoreId, storeId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)
@@ -338,7 +338,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                         HomepageType.SLIDING_PICTURE_SMALL.getValue(), HomepageType.SEASON_NEW_PRODUCTS.getValue(),
                         HomepageType.STORE_RECOMMENDED.getValue())));
         // 商品ID列表
-        List<Long> prodIdList = CollectionUtils.isEmpty(otherList) ? new ArrayList<>() : otherList.stream().map(StoreHomepage::getBizId).collect(Collectors.toList());
+        List<Long> prodIdList = CollectionUtils.isEmpty(otherList) ? new ArrayList<>() : otherList.stream().map(StoreHomepage::getStoreProdId).collect(Collectors.toList());
         // 筛选商品最新的50条数据
         List<StoreProduct> latest50ProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getStoreId, storeId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)
@@ -393,7 +393,7 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                         HomepageType.SLIDING_PICTURE_SMALL.getValue(), HomepageType.SEASON_NEW_PRODUCTS.getValue(),
                         HomepageType.STORE_RECOMMENDED.getValue(), HomepageType.SALES_RANKING.getValue())));
         // 商品ID列表
-        List<Long> prodIdList = CollectionUtils.isEmpty(otherList) ? new ArrayList<>() : otherList.stream().map(StoreHomepage::getBizId).collect(Collectors.toList());
+        List<Long> prodIdList = CollectionUtils.isEmpty(otherList) ? new ArrayList<>() : otherList.stream().map(StoreHomepage::getStoreProdId).collect(Collectors.toList());
         // 筛选商品最新的50条数据
         List<StoreProduct> latest50ProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getStoreId, storeId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)
@@ -524,8 +524,8 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                         .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
             }).collect(Collectors.toList());
         } else {
-            topRightRecommendList = topRightList.stream().filter(x -> attrMap.containsKey(x.getBizId())).map(x -> {
-                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getBizId());
+            topRightRecommendList = topRightList.stream().filter(x -> attrMap.containsKey(x.getStoreProdId())).map(x -> {
+                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getStoreProdId());
                 return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
                         .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
                         .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
@@ -558,8 +558,8 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                         .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
             }).collect(Collectors.toList());
         } else {
-            recommendList = storeRecommendList.stream().filter(x -> attrMap.containsKey(x.getBizId())).map(x -> {
-                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getBizId());
+            recommendList = storeRecommendList.stream().filter(x -> attrMap.containsKey(x.getStoreProdId())).map(x -> {
+                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getStoreProdId());
                 return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
                         .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
                         .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
@@ -593,8 +593,8 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                         .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
             }).collect(Collectors.toList());
         } else {
-            popularRecommendList = popularSaleList.stream().filter(x -> attrMap.containsKey(x.getBizId())).map(x -> {
-                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getBizId());
+            popularRecommendList = popularSaleList.stream().filter(x -> attrMap.containsKey(x.getStoreProdId())).map(x -> {
+                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getStoreProdId());
                 return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
                         .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
                         .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
@@ -627,8 +627,8 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                         .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
             }).collect(Collectors.toList());
         } else {
-            seasonNewRecommendList = seasonNewProductsList.stream().filter(x -> attrMap.containsKey(x.getBizId())).map(x -> {
-                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getBizId());
+            seasonNewRecommendList = seasonNewProductsList.stream().filter(x -> attrMap.containsKey(x.getStoreProdId())).map(x -> {
+                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getStoreProdId());
                 return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
                         .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
                         .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
@@ -661,8 +661,8 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                         .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);
             }).collect(Collectors.toList());
         } else {
-            saleRankRecommendList = salesRankingList.stream().filter(x -> attrMap.containsKey(x.getBizId())).map(x -> {
-                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getBizId());
+            saleRankRecommendList = salesRankingList.stream().filter(x -> attrMap.containsKey(x.getStoreProdId())).map(x -> {
+                StoreProdPriceAndMainPicAndTagDTO dto = attrMap.get(x.getStoreProdId());
                 return BeanUtil.toBean(dto, StoreHomeTemplateItemResDTO.class)
                         .setDisplayType(AdDisplayType.PRODUCT.getValue()).setProdPrice(ObjectUtils.isNotEmpty(dto) ? dto.getMinPrice() : null)
                         .setTags(ObjectUtils.isNotEmpty(dto) && StringUtils.isNotBlank(dto.getTagStr()) ? StrUtil.split(dto.getTagStr(), ",") : null);

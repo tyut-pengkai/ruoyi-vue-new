@@ -30,8 +30,8 @@ public class StoreHomeDecorationResDTO {
     @ApiModel(value = "档口首页各模块")
     @Accessors(chain = true)
     public static class DecorationDTO {
-        @ApiModelProperty(value = "业务ID")
-        private Long bizId;
+        @ApiModelProperty(value = "storeProdId")
+        private Long storeProdId;
         @ApiModelProperty(value = "业务名称")
         private String bizName;
         @ApiModelProperty(value = "1.档口（推广图） 2.商品  10.不跳转")

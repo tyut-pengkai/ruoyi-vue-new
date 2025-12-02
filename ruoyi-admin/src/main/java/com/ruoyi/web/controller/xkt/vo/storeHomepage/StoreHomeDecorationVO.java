@@ -31,8 +31,8 @@ public class StoreHomeDecorationVO {
 
     @Data
     public static class DecorationVO {
-        @ApiModelProperty(value = "业务类型ID，如果选择：不跳转 不传，选择：跳转店铺，传storeId，选择：跳转商品，传storeProdId")
-        private Long bizId;
+        @ApiModelProperty(value = "storeProdId")
+        private Long storeProdId;
         @ApiModelProperty(value = "业务名称")
         private String bizName;
         @ApiModelProperty(value = "1.档口（推广图） 2.商品  10.不跳转")

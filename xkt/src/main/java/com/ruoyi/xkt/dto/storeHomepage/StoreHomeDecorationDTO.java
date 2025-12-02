@@ -29,8 +29,8 @@ public class StoreHomeDecorationDTO {
     @Data
     @ApiModel(value = "档口首页各模块")
     public static class BigBannerDTO {
-        @ApiModelProperty(value = "业务类型ID，如果选择：不跳转 不传，选择：跳转店铺，传storeId，选择：跳转商品，传storeProdId")
-        private Long bizId;
+        @ApiModelProperty(value = "storeProdId")
+        private Long storeProdId;
         @ApiModelProperty(value = "业务名称")
         private String bizName;
         @ApiModelProperty(value = "1.档口（推广图） 2.商品  10.不跳转")
@@ -50,8 +50,8 @@ public class StoreHomeDecorationDTO {
     @Data
     @ApiModel(value = "档口首页各模块")
     public static class DecorationDTO {
-        @ApiModelProperty(value = "文件大小")
-        private Long bizId;
+        @ApiModelProperty(value = "storeProdId")
+        private Long storeProdId;
         @ApiModelProperty(value = "业务名称")
         private String bizName;
         @ApiModelProperty(value = "1.档口（推广图） 2.商品  10.不跳转")
