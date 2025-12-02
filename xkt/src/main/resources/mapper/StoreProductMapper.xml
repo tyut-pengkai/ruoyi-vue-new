@@ -264,6 +264,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             sp.del_flag = 0
             AND sp.private_item = 0
             AND sp.store_id = #{storeId}
+            <if test="prodStatusList != null">
+                AND sp.prod_status IN
+                <foreach item="status" collection="prodStatusList" open="(" separator="," close=")">
+                    #{status}
+                </foreach>
+            </if>
         GROUP BY
             sp.prod_status,
             sp.prod_cate_id,
