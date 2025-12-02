@@ -163,9 +163,7 @@ public class GenUtils
      */
     public static String getBusinessName(String tableName)
     {
-        int lastIndex = tableName.lastIndexOf("_");
-        int nameLength = tableName.length();
-        return StringUtils.substring(tableName, lastIndex + 1, nameLength);
+        return StringUtils.toCamelCase(tableName);
     }
 
     /**
