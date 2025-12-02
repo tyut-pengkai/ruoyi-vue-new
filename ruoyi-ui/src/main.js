@@ -56,6 +56,18 @@ Vue.component('FileUpload', FileUpload)
 Vue.component('ImageUpload', ImageUpload)
 Vue.component('ImagePreview', ImagePreview)
 
+// 图片预览插件
+import Viewer from "v-viewer"
+import "viewerjs/dist/viewer.css"
+
+Vue.use(Viewer, {
+  defaultOptions: {
+    zIndex: 9999999,
+    navbar: true,
+    fullscreen: false
+  }
+})
+
 Vue.use(directive)
 Vue.use(plugins)
 DictData.install()
