@@ -147,13 +147,13 @@
           <el-input v-model="form.dictType" :disabled="true" />
         </el-form-item>
         <el-form-item label="数据标签" prop="dictLabel">
-          <el-input v-model="form.dictLabel" placeholder="请输入数据标签" />
+          <el-input v-model="form.dictLabel" placeholder="请输入数据标签" maxlength="100" />
         </el-form-item>
         <el-form-item label="数据键值" prop="dictValue">
-          <el-input v-model="form.dictValue" placeholder="请输入数据键值" />
+          <el-input v-model="form.dictValue" placeholder="请输入数据键值" maxlength="100" />
         </el-form-item>
         <el-form-item label="样式属性" prop="cssClass">
-          <el-input v-model="form.cssClass" placeholder="请输入样式属性" />
+          <el-input v-model="form.cssClass" placeholder="请输入样式属性" maxlength="100" />
         </el-form-item>
         <el-form-item label="显示排序" prop="dictSort">
           <el-input-number v-model="form.dictSort" controls-position="right" :min="0" />
@@ -178,7 +178,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
+          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" maxlength="500"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">

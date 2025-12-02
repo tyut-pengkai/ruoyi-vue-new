@@ -159,7 +159,7 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="角色名称" prop="roleName">
-          <el-input v-model="form.roleName" placeholder="请输入角色名称" />
+          <el-input v-model="form.roleName" placeholder="请输入角色名称" maxlength="30" />
         </el-form-item>
         <el-form-item prop="roleKey">
           <span slot="label">
@@ -168,10 +168,10 @@
             </el-tooltip>
             权限字符
           </span>
-          <el-input v-model="form.roleKey" placeholder="请输入权限字符" />
+          <el-input v-model="form.roleKey" placeholder="请输入权限字符" maxlength="100" />
         </el-form-item>
         <el-form-item label="角色顺序" prop="roleSort">
-          <el-input-number v-model="form.roleSort" controls-position="right" :min="0" />
+          <el-input-number v-model="form.roleSort" controls-position="right" :min="0" :max="9999" />
         </el-form-item>
         <el-form-item label="状态">
           <el-radio-group v-model="form.status">
@@ -198,7 +198,7 @@
           ></el-tree>
         </el-form-item>
         <el-form-item label="备注">
-          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
+          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" maxlength="500"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">

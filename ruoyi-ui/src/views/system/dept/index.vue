@@ -109,12 +109,12 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="部门名称" prop="deptName">
-              <el-input v-model="form.deptName" placeholder="请输入部门名称" />
+              <el-input v-model="form.deptName" placeholder="请输入部门名称" maxlength="30" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="显示排序" prop="orderNum">
-              <el-input-number v-model="form.orderNum" controls-position="right" :min="0" />
+              <el-input-number v-model="form.orderNum" controls-position="right" :min="0" :max="9999" />
             </el-form-item>
           </el-col>
         </el-row>

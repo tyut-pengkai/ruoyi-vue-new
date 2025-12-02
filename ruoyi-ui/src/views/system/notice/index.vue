@@ -128,7 +128,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="公告标题" prop="noticeTitle">
-              <el-input v-model="form.noticeTitle" placeholder="请输入公告标题" />
+              <el-input v-model="form.noticeTitle" placeholder="请输入公告标题" maxlength="50" />
             </el-form-item>
           </el-col>
           <el-col :span="12">

@@ -153,19 +153,19 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="显示排序" prop="orderNum">
-              <el-input-number v-model="form.orderNum" controls-position="right" :min="0" />
+              <el-input-number v-model="form.orderNum" controls-position="right" :min="0" :max="9999"/>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
             <el-form-item label="菜单名称" prop="menuName">
-              <el-input v-model="form.menuName" placeholder="请输入菜单名称" />
+              <el-input v-model="form.menuName" placeholder="请输入菜单名称" maxlength="50" />
             </el-form-item>
           </el-col>
           <el-col :span="12" v-if="form.menuType == 'C'">
             <el-form-item prop="routeName">
-              <el-input v-model="form.routeName" placeholder="请输入路由名称" />
+              <el-input v-model="form.routeName" placeholder="请输入路由名称" maxlength="50" />
               <span slot="label">
                 <el-tooltip content="默认不填则和路由地址相同：如地址为：`user`，则名称为`User`（注意：为避免名字的冲突，特殊情况下请自定义，保证唯一性）" placement="top">
                 <i class="el-icon-question"></i>
@@ -198,7 +198,7 @@
                 </el-tooltip>
                 路由地址
               </span>
-              <el-input v-model="form.path" placeholder="请输入路由地址" />
+              <el-input v-model="form.path" placeholder="请输入路由地址" maxlength="200"/>
             </el-form-item>
           </el-col>
         </el-row>
@@ -211,7 +211,7 @@
                 </el-tooltip>
                 组件路径
               </span>
-              <el-input v-model="form.component" placeholder="请输入组件路径" />
+              <el-input v-model="form.component" placeholder="请输入组件路径" maxlength="255"/>
             </el-form-item>
           </el-col>
           <el-col :span="12" v-if="form.menuType != 'M'">
