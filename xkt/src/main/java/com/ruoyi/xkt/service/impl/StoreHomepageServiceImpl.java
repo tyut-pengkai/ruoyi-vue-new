@@ -100,8 +100,8 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                                 ? storeProdMap.get(x.getStoreProdId()).getProdArtNum() : "");
                         // 跳转到档口首页
                     } else if (Objects.equals(x.getDisplayType(), HomepageJumpType.JUMP_STORE.getValue())) {
-                        decorationDTO.setStoreId(x.getJumpStoreId())
-                                .setBizName(ObjectUtils.isEmpty(x.getStoreProdId()) ? "" : store.getStoreName());
+                        Store jumpStore = this.storeMapper.selectById(x.getJumpStoreId());
+                        decorationDTO.setStoreId(x.getJumpStoreId()).setBizName(ObjectUtils.isNotEmpty(jumpStore) ? jumpStore.getStoreName() : "");
                     }
                     return decorationDTO;
                 }).collect(Collectors.toList());
