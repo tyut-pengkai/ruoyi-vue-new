@@ -55,7 +55,7 @@ public class UserBrowsingHistory extends XktBaseEntity {
     /**
      * 商品价格
      */
-    private BigDecimal price;
+    private BigDecimal prodPrice;
     /**
      * 浏览日期
      */

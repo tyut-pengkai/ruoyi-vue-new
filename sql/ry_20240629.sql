@@ -4150,7 +4150,7 @@ CREATE TABLE `user_browsing_history`
     `store_prod_id` bigint UNSIGNED NOT NULL COMMENT '档口商品ID',
     `prod_art_num`  varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '商品货号',
     `main_pic_url`  varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '第一张主图路径',
-    `price`         decimal(10, 2) NULL DEFAULT NULL COMMENT '商品价格',
+    `prod_price`    decimal(10, 2) NULL DEFAULT NULL COMMENT '商品价格',
     `prod_title`    varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '商品标题',
     `browsing_time` datetime NULL DEFAULT NULL COMMENT '凭证日期',
     `version`       bigint UNSIGNED NOT NULL COMMENT '版本号',

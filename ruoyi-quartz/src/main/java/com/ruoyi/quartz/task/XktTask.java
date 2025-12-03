@@ -712,11 +712,12 @@ public class XktTask {
         if (CollectionUtils.isNotEmpty(insertBrowsingList)) {
             this.userBrowHisMapper.insert(BeanUtil.copyToList(insertBrowsingList, UserBrowsingHistory.class));
         }
-        final Date sixMonthAgo = java.sql.Date.valueOf(LocalDate.now().minusMonths(6));
+        // 最近一月的浏览记录
+        final Date oneMonthAgo = java.sql.Date.valueOf(LocalDate.now().minusMonths(1));
         final Date now = java.sql.Date.valueOf(LocalDate.now());
         // 将最新的数据更新到redis中
         List<UserBrowsingHistory> latestBrowsingList = this.userBrowHisMapper.selectList(new LambdaQueryWrapper<UserBrowsingHistory>()
-                .eq(UserBrowsingHistory::getDelFlag, Constants.UNDELETED).between(UserBrowsingHistory::getBrowsingTime, sixMonthAgo, now));
+                .eq(UserBrowsingHistory::getDelFlag, Constants.UNDELETED).between(UserBrowsingHistory::getBrowsingTime, oneMonthAgo, now));
         if (CollectionUtils.isEmpty(latestBrowsingList)) {
             return;
         }
