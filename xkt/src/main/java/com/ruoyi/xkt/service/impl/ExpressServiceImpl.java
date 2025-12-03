@@ -63,11 +63,19 @@ public class ExpressServiceImpl implements IExpressService {
     private List<ExpressManager> expressManagers;
 
     @Override
-    public void checkExpress(Long expressId) {
+    public void checkExpressSystemDeliverAccess(Long expressId) {
         Assert.notNull(expressId);
         Express express = expressMapper.selectById(expressId);
         Assert.isTrue(BeanValidators.exists(express), "快递不存在");
         Assert.isTrue(express.getSystemDeliverAccess(), "快递不可用");
+    }
+
+    @Override
+    public void checkExpressUserRefundAccess(Long expressId) {
+        Assert.notNull(expressId);
+        Express express = expressMapper.selectById(expressId);
+        Assert.isTrue(BeanValidators.exists(express), "快递不存在");
+        Assert.isTrue(express.getUserRefundAccess(), "快递不可用");
     }
 
     @Override

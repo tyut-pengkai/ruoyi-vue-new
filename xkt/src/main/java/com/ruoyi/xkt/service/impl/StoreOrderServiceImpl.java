@@ -101,7 +101,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
         //校验
         Assert.notNull(orderUserId);
         Assert.notNull(payChannel);
-        expressService.checkExpress(expressId);
+        expressService.checkExpressSystemDeliverAccess(expressId);
         checkDelivery(storeOrderAddDTO.getDeliveryType(), storeOrderAddDTO.getDeliveryEndTime());
         OrderDetailCheckRtn detailCheckRtn = checkOrderDetailThenRtnUsedMap(storeId, storeOrderAddDTO.getDetailList());
         Map<Long, StoreProductColorSize> spcsMap = detailCheckRtn.getSpcsMap();
@@ -244,7 +244,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
             throw new ServiceException(CharSequenceUtil.format("订单[{}]已完成支付，无法修改",
                     storeOrderUpdateDTO.getId()));
         }
-        expressService.checkExpress(expressId);
+        expressService.checkExpressSystemDeliverAccess(expressId);
         checkDelivery(storeOrderUpdateDTO.getDeliveryType(), storeOrderUpdateDTO.getDeliveryEndTime());
         OrderDetailCheckRtn detailCheckRtn = checkOrderDetailThenRtnUsedMap(storeId,
                 storeOrderUpdateDTO.getDetailList());
@@ -1257,7 +1257,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
     public AfterSaleApplyResultDTO createAfterSaleOrder(StoreOrderAfterSaleDTO afterSaleDTO) {
         Assert.notEmpty(afterSaleDTO.getStoreOrderDetailIds());
         if (afterSaleDTO.getExpressId() != null) {
-            expressService.checkExpress(afterSaleDTO.getExpressId());
+            expressService.checkExpressUserRefundAccess(afterSaleDTO.getExpressId());
         }
         //获取原订单
         StoreOrder originOrder = getAndBaseCheck(afterSaleDTO.getStoreOrderId());
