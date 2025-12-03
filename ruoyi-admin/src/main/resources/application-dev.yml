@@ -18,14 +18,14 @@ ruoyi:
   # 验证码类型 math 数字计算 char 字符验证  num 纯数字
   captchaType: num
 oss:
-  endPoint: oss-cn-beijing.aliyuncs.com
-  accessKeyId: LTAI5tFXTfY5Rsiwvrg9gUuk
-  accessKeySecret: Ebbj7anXSdbJwfm5zbTfHkJ5QWDbTP
-  bucketName: lyq-private
-  publicBucketName: lyq-public
+  endPoint: oss-cn-hangzhou.aliyuncs.com
+  accessKeyId: LTAI5tCrN19aDVWLLfpKVEZw
+  accessKeySecret: aVddl48X8SoKua7NaI51CL1Am84XNp
+  bucketName: cdbuju-pri-test
+  publicBucketName: cdbuju-test
   https: true
-  regionId: cn-beijing
-  roleArn: acs:ram::1919425406190533:role/sts-role
+  regionId: cn-hangzhou
+  roleArn: acs:ram::1970150216435822:role/oss-upload-test
   expiredDuration: 3600
   tempDir: /temp/
   stsCacheDuration: 1800

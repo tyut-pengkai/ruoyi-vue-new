@@ -21,15 +21,15 @@ oss:
   endPoint: oss-cn-hangzhou.aliyuncs.com
   accessKeyId: LTAI5tCrN19aDVWLLfpKVEZw
   accessKeySecret: aVddl48X8SoKua7NaI51CL1Am84XNp
-  bucketName: cdbuju-pri
-  publicBucketName: cdbuju
+  bucketName: cdbuju-pri-test
+  publicBucketName: cdbuju-test
   https: true
   regionId: cn-hangzhou
-  roleArn: acs:ram::1970150216435822:role/oss-upload
+  roleArn: acs:ram::1970150216435822:role/oss-upload-test
   expiredDuration: 3600
   tempDir: E:/temp/
   stsCacheDuration: 1800
-  callbackUrl: https://api.cdbuju.cn/rest/v1/oss-callback/upload
+  callbackUrl: http://112.124.31.119:9310/rest/v1/oss-callback/upload
 img-search:
   endPoint: imagesearch.cn-hangzhou.aliyuncs.com
   accessKeyId: LTAI5tBFXhTu7Di1ZumRPYZs
