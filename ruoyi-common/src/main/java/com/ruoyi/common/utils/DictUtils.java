@@ -1,12 +1,16 @@
 package com.ruoyi.common.utils;
 
-import java.util.Collection;
-import java.util.List;
 import com.alibaba.fastjson2.JSONArray;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.core.domain.entity.SysDictData;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.utils.spring.SpringUtils;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * 字典工具类
@@ -89,37 +93,29 @@ public class DictUtils
      */
     public static String getDictLabel(String dictType, String dictValue, String separator)
     {
-        StringBuilder propertyString = new StringBuilder();
-        List<SysDictData> datas = getDictCache(dictType);
-        if (StringUtils.isNull(datas))
+        List<SysDictData> data = getDictCache(dictType);
+        if (Objects.isNull(data))
         {
             return StringUtils.EMPTY;
         }
-        if (StringUtils.containsAny(separator, dictValue))
+
+        // 先将字典集合转换为 Map<dictValue, dictLabel> 结构，便于后续按 dictValue 取值。
+        Map<String, String> dictMap = data.stream()
+                .collect(HashMap::new, (map, dict) -> map.put(dict.getDictValue(), dict.getDictLabel()), Map::putAll);
+        if (!StringUtils.contains(dictValue, separator))
         {
-            for (SysDictData dict : datas)
+            return dictMap.getOrDefault(dictValue, StringUtils.EMPTY);
+        }
+
+        StringBuilder labelBuilder = new StringBuilder();
+        for (String seperatedValue : dictValue.split(separator))
+        {
+            if (dictMap.containsKey(seperatedValue))
             {
-                for (String value : dictValue.split(separator))
-                {
-                    if (value.equals(dict.getDictValue()))
-                    {
-                        propertyString.append(dict.getDictLabel()).append(separator);
-                        break;
-                    }
-                }
+                labelBuilder.append(dictMap.get(seperatedValue)).append(separator);
             }
         }
-        else
-        {
-            for (SysDictData dict : datas)
-            {
-                if (dictValue.equals(dict.getDictValue()))
-                {
-                    return dict.getDictLabel();
-                }
-            }
-        }
-        return StringUtils.stripEnd(propertyString.toString(), separator);
+        return StringUtils.removeEnd(labelBuilder.toString(), separator);
     }
 
     /**
