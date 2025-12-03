@@ -6,8 +6,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectTopLeftList" resultType="com.ruoyi.xkt.dto.storeHomepage.StoreHomeTopBannerResDTO">
         SELECT
+            CASE WHEN sh.display_type = 1 THEN
+                     (SELECT s.store_name FROM store s  WHERE s.del_flag = 0 AND s.id = sh.jump_store_id)
+                ELSE null
+                END AS bizName,
             CASE WHEN sh.display_type = 2 THEN
-                     (SELECT sp.store_id FROM store_product sp WHERE sp.del_flag = 0 AND sp.id = sh.store_prod_id)
+                     (SELECT sp.store_id FROM store_product sp  WHERE sp.del_flag = 0 AND sp.id = sh.store_prod_id)
                 ELSE sh.jump_store_id
                 END AS storeId,
             sh.store_prod_id,
