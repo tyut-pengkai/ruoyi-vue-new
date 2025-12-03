@@ -19,10 +19,7 @@ import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.es.EsClientWrapper;
 import com.ruoyi.framework.notice.fs.FsNotice;
-import com.ruoyi.xkt.domain.Store;
-import com.ruoyi.xkt.domain.StoreProduct;
-import com.ruoyi.xkt.domain.StoreProductCategoryAttribute;
-import com.ruoyi.xkt.domain.SysProductCategory;
+import com.ruoyi.xkt.domain.*;
 import com.ruoyi.xkt.dto.elasticSearch.EsProdBatchCreateDTO;
 import com.ruoyi.xkt.dto.elasticSearch.EsProdBatchDeleteDTO;
 import com.ruoyi.xkt.dto.es.ESProductDTO;
@@ -523,6 +520,7 @@ public class ElasticSearchServiceImpl implements IElasticSearchService {
         List<SysProductCategory> prodCateList = this.prodCateMapper.selectList(new LambdaQueryWrapper<SysProductCategory>()
                 .eq(SysProductCategory::getDelFlag, Constants.UNDELETED));
         Map<Long, SysProductCategory> prodCateMap = prodCateList.stream().collect(Collectors.toMap(SysProductCategory::getId, x -> x));
+        // 第一张主图的路径
         List<StoreProdMainPicDTO> mainPicDTOList = this.prodFileMapper.selectMainPicByStoreProdIdList(storeProdIdList.stream()
                 .map(Long::valueOf).collect(Collectors.toList()), FileType.MAIN_PIC.getValue(), Constants.ORDER_NUM_1);
         Map<Long, String> mainPicMap = mainPicDTOList.stream().collect(Collectors.toMap(StoreProdMainPicDTO::getStoreProdId, StoreProdMainPicDTO::getFileUrl));
@@ -537,6 +535,12 @@ public class ElasticSearchServiceImpl implements IElasticSearchService {
         Map<Long, Store> storeMap = this.storeMapper.selectList(new LambdaQueryWrapper<Store>().eq(Store::getDelFlag, Constants.UNDELETED)
                         .in(Store::getId, storeProdList.stream().map(StoreProduct::getStoreId).collect(Collectors.toList())))
                 .stream().collect(Collectors.toMap(Store::getId, x -> x));
+        // 主图视频列表
+        List<StoreProductFile> videoFileList = this.prodFileMapper.selectList(new LambdaQueryWrapper<StoreProductFile>()
+                .eq(StoreProductFile::getDelFlag, Constants.UNDELETED).eq(StoreProductFile::getFileType, FileType.MAIN_PIC_VIDEO.getValue())
+                .in(StoreProductFile::getStoreProdId, storeProdIdList));
+        Map<Long, Long> videoMap = CollectionUtils.isEmpty(videoFileList) ? new HashMap<>()
+                : videoFileList.stream().collect(Collectors.toMap(StoreProductFile::getStoreProdId, StoreProductFile::getId));
         List<ESProductDTO> esProductDTOList = new ArrayList<>();
         for (StoreProduct product : storeProdList) {
             final SysProductCategory cate = prodCateMap.get(product.getProdCateId());
@@ -545,7 +549,8 @@ public class ElasticSearchServiceImpl implements IElasticSearchService {
             final BigDecimal prodMinPrice = prodMinPriceMap.get(product.getId());
             final StoreProductCategoryAttribute cateAttr = cateAttrMap.get(product.getId());
             ESProductDTO esProductDTO = new ESProductDTO().setStoreProdId(product.getId().toString()).setProdArtNum(product.getProdArtNum())
-                    .setHasVideo(Boolean.FALSE).setProdCateId(product.getProdCateId().toString()).setCreateTime(DateUtils.getTime())
+                    .setHasVideo(videoMap.containsKey(product.getId()) ? Boolean.TRUE : Boolean.FALSE)
+                    .setProdCateId(product.getProdCateId().toString()).setCreateTime(DateUtils.getTime())
                     .setProdCateName(ObjectUtils.isNotEmpty(cate) ? cate.getName() : "")
                     .setSaleWeight(WEIGHT_DEFAULT_ZERO.toString()).setRecommendWeight(WEIGHT_DEFAULT_ZERO.toString())
                     .setPopularityWeight(WEIGHT_DEFAULT_ZERO.toString())
