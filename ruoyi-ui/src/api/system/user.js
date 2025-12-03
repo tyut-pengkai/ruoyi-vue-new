@@ -1,3 +1,4 @@
+import qs from 'qs'
 import request from '@/utils/request'
 import { parseStrEmpty } from "@/utils/ruoyi";
 
@@ -9,6 +10,16 @@ export function listUser(query) {
     params: query
   })
 }
+
+export function sendMailBatch(data) {
+  return request({
+    url: '/system/user/mail/batch',
+    method: 'post',
+    data: data  // 所有参数都在请求体中
+  })
+}
+
+
 
 // 查询用户详细
 export function getUser(userId) {

@@ -147,6 +147,15 @@
                 <artifactId>commons-io</artifactId>
                 <version>${commons.io.version}</version>
             </dependency>
+            <!-- ruoyi-framework/pom.xml 里加（或 common 模块） -->
+
+            <!-- 方式一：显式指定版本 ，AI帮写-->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-mail</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+
 
             <!-- excel工具 -->
             <dependency>

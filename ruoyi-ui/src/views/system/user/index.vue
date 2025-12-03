@@ -50,6 +50,12 @@
               <el-col :span="1.5">
                 <el-button type="info" plain icon="el-icon-upload2" size="mini" @click="handleImport" v-hasPermi="['system:user:import']">导入</el-button>
               </el-col>
+              <!-- 新增邮件发送前端代码 -->
+              <el-col :span="1.5">
+              <el-button type="text" icon="el-icon-message" @click="openBatchMail(1)"
+                          :disabled="ids.length===0">群发邮件</el-button>
+             
+              </el-col>
               <el-col :span="1.5">
                 <el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport" v-hasPermi="['system:user:export']">导出</el-button>
               </el-col>
@@ -63,6 +69,7 @@
               <el-table-column label="用户昵称" align="center" key="nickName" prop="nickName" v-if="columns.nickName.visible" :show-overflow-tooltip="true" />
               <el-table-column label="部门" align="center" key="deptName" prop="dept.deptName" v-if="columns.deptName.visible" :show-overflow-tooltip="true" />
               <el-table-column label="手机号码" align="center" key="phonenumber" prop="phonenumber" v-if="columns.phonenumber.visible" width="120" />
+              
               <el-table-column label="状态" align="center" key="status" v-if="columns.status.visible">
                 <template slot-scope="scope">
                   <el-switch v-model="scope.row.status" active-value="0" inactive-value="1" @change="handleStatusChange(scope.row)"></el-switch>
@@ -178,6 +185,24 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+    <!-- 群发邮件 新增*****************************************-->
+    <el-dialog title="群发邮件" :visible.sync="batchMailOpen" width="600px" append-to-body>
+      <el-form label-width="70px">
+        <el-form-item label="邮件主题">
+          <el-input v-model="batchForm.subject" placeholder="请输入主题"/>
+        </el-form-item>
+        <el-form-item label="正文">
+          <Editor v-model="batchForm.html" :min-height="250"/>
+        </el-form-item>
+        <el-form-item label="变量提示">
+          <span style="color:#999;">支持 {userName} {deptName} 会自动替换</span>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="batchMailOpen=false">取 消</el-button>
+        <el-button type="primary" @click="submitBatchMail">发 送</el-button>
+      </div>
+    </el-dialog>
 
     <!-- 用户导入对话框 -->
     <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body>
@@ -198,10 +223,12 @@
       </div>
     </el-dialog>
   </div>
+  
 </template>
 
+
 <script>
-import { listUser, getUser, delUser, addUser, updateUser, resetUserPwd, changeUserStatus, deptTreeSelect } from "@/api/system/user"
+import { listUser, getUser, delUser, addUser, updateUser, resetUserPwd, changeUserStatus, deptTreeSelect ,sendMailBatch } from "@/api/system/user"/* 这里也加了一个引入 */
 import { getToken } from "@/utils/auth"
 import Treeselect from "@riophae/vue-treeselect"
 import "@riophae/vue-treeselect/dist/vue-treeselect.css"
@@ -214,6 +241,7 @@ export default {
   components: { Treeselect, Splitpanes, Pane },
   data() {
     return {
+      
       // 遮罩层
       loading: true,
       // 选中数组
@@ -267,6 +295,12 @@ export default {
         // 上传的地址
         url: process.env.VUE_APP_BASE_API + "/system/user/importData"
       },
+      /* 新增变量**************************************************************** */
+      batchMailOpen: false,      // 弹窗显示
+      batchForm: {               // 表单
+         subject: '',
+         html: ''
+       },
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -341,7 +375,61 @@ export default {
         }
       )
     },
+    // 打开弹窗，新增三个函数************************************
+    openBatchMail(type){
+      if(type===1 && this.ids.length===0){
+        this.$modal.msgWarning('请先勾选用户')
+        return
+      }
+      this.batchForm = { subject:'', html:'' }
+      this.batchForm.type = type
+      this.batchMailOpen = true
+    },
+    /* // 提交发送
+    submitBatchMail(){
+      const data = {
+        ...this.batchForm,
+        userIds: this.batchForm.type===1 ? this.ids : undefined,
+        deptId: this.batchForm.type===3 ? this.queryParams.deptId : undefined,
+        queryUser: this.batchForm.type===2 ? this.queryParams : undefined
+      }
+      this.$modal.confirm('确认发送邮件？').then(()=>
+        sendMailBatch(data)
+      ).then(res=>{
+        this.$modal.msgSuccess(res.msg)
+        this.batchMailOpen = false
+      })
+    }, */
+    // 提交发送
+// 提交发送
+submitBatchMail(){
+  const data = {
+    type: this.batchForm.type.toString(),
+    subject: this.batchForm.subject,
+    html: this.batchForm.html,
+    userIds: this.batchForm.type === 1 || this.batchForm.type === '1' ? this.ids : undefined,
+    deptId: this.batchForm.type === 3 || this.batchForm.type === '3' ? this.queryParams.deptId : undefined,
+    queryUser: this.batchForm.type === 2 || this.batchForm.type === '2' ? this.queryParams : undefined
+  }
+  
+  if (!data.type || !data.subject || !data.html) {
+    this.$modal.msgError('请填写完整信息')
+    return
+  }
+  
+  this.$modal.confirm('确认发送邮件？').then(() => {
+    return sendMailBatch(data)
+  }).then(res => {
+    this.$modal.msgSuccess(res.msg)
+    this.batchMailOpen = false
+  }).catch(err => {
+    this.$modal.msgError('发送失败: ' + (err.message || '未知错误'))
+  })
+},
+
+
     /** 查询部门下拉树结构 */
+
     getDeptTree() {
       deptTreeSelect().then(response => {
         this.deptOptions = response.data

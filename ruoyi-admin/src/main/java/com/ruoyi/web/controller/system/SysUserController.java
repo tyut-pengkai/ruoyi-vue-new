@@ -1,20 +1,15 @@
 package com.ruoyi.web.controller.system;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
+import com.ruoyi.common.utils.MailUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
@@ -52,6 +47,10 @@ public class SysUserController extends BaseController
 
     @Autowired
     private ISysPostService postService;
+
+    @Autowired
+    private MailUtils mailUtils;
+
 
     /**
      * 获取用户列表
@@ -253,4 +252,84 @@ public class SysUserController extends BaseController
     {
         return success(deptService.selectDeptTreeList(dept));
     }
+
+    /**
+     * 群发邮件
+     * type=1 按userIds  type=2 按条件  type=3 按部门  type=4 按角色
+     */
+    @PreAuthorize("@ss.hasPermi('system:user:mail')")
+    @Log(title = "用户管理", businessType = BusinessType.OTHER)
+    @PostMapping("/mail/batch")
+    public AjaxResult sendMailBatch(@RequestBody Map<String, Object> requestData) {
+        // 从请求体中提取所有参数
+        String type = (String) requestData.get("type");
+        String subject = (String) requestData.get("subject");
+        String html = (String) requestData.get("html");
+
+        // 验证必需参数
+        if (StringUtils.isEmpty(type) || StringUtils.isEmpty(subject) || StringUtils.isEmpty(html)) {
+            return error("缺少必要参数");
+        }
+
+        // 提取可选参数
+        List<Long> userIds = null;
+        Long deptId = null;
+        SysUser queryUser = null;
+
+        if (requestData.containsKey("userIds")) {
+            userIds = (List<Long>) requestData.get("userIds");
+        }
+        if (requestData.containsKey("deptId")) {
+            Object deptIdObj = requestData.get("deptId");
+            if (deptIdObj instanceof Number) {
+                deptId = ((Number) deptIdObj).longValue();
+            } else {
+                deptId = Long.valueOf(deptIdObj.toString());
+            }
+        }
+        if (requestData.containsKey("queryUser")) {
+            Map<String, Object> userMap = (Map<String, Object>) requestData.get("queryUser");
+            queryUser = new SysUser();
+            // 根据需要设置queryUser的属性
+            if (userMap.containsKey("userName")) {
+                queryUser.setUserName((String) userMap.get("userName"));
+            }
+            if (userMap.containsKey("phonenumber")) {
+                queryUser.setPhonenumber((String) userMap.get("phonenumber"));
+            }
+            if (userMap.containsKey("status")) {
+                queryUser.setStatus((String) userMap.get("status"));
+            }
+        }
+
+        SysUser cond = new SysUser();
+        if ("1".equals(type) && userIds != null && !userIds.isEmpty()) {
+            cond.getParams().put("userIds", userIds);
+        } else if ("2".equals(type) && queryUser != null) {
+            cond = queryUser;
+        } else if ("3".equals(type) && deptId != null) {
+            cond.setDeptId(deptId);
+        } else if ("4".equals(type) && deptId != null) {
+            cond.getParams().put("roleId", deptId);
+        }
+
+        List<SysUser> users = userService.selectUserList(cond);
+        if (users.isEmpty()) {
+            return error("没有符合条件的用户");
+        }
+
+        List<String> mails = users.stream()
+                .filter(u -> StringUtils.isNotBlank(u.getEmail()))
+                .map(SysUser::getEmail)
+                .distinct()
+                .collect(Collectors.toList());
+
+        if (mails.isEmpty()) {
+            return error("这些用户都没有维护邮箱");
+        }
+
+        mailUtils.sendHtmlBatch(mails, subject, html);
+        return success("已发送 " + mails.size() + " 封邮件");
+    }
+
 }

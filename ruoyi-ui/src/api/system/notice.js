@@ -41,4 +41,5 @@ export function delNotice(noticeId) {
     url: '/system/notice/' + noticeId,
     method: 'delete'
   })
+
 }
