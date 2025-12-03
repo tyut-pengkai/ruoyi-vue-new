@@ -438,11 +438,11 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                 })
                 .collect(Collectors.toList());
         // showType 为 时间范围的 每一轮最高的出价map
-        Map<Integer, BigDecimal> timeRangeRoundMaxPriceMap = allRoundList.stream()
+        Map<String, BigDecimal> timeRangeRoundMaxPriceMap = allRoundList.stream()
                 .filter(x -> Objects.equals(x.getShowType(), AdShowType.TIME_RANGE.getValue()))
                 .filter(x -> ObjectUtils.isNotEmpty(x.getPayPrice()))
-                .collect(Collectors.groupingBy(AdvertRound::getRoundId, Collectors
-                        .mapping(AdvertRound::getPayPrice, Collectors.reducing(BigDecimal.ZERO, BigDecimal::max))));
+                .collect(Collectors.groupingBy(x -> x.getTypeId().toString() + ":" + x.getRoundId().toString(),
+                        Collectors.reducing(BigDecimal.ZERO, AdvertRound::getPayPrice, BigDecimal::max)));
         // showType 为 位置枚举的 每一个位置最高出价的 map
         Map<Long, BigDecimal> positionEnumMaxPriceMap = allRoundList.stream()
                 .filter(x -> Objects.equals(x.getShowType(), AdShowType.POSITION_ENUM.getValue()))
@@ -473,7 +473,7 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                         // 设置是否能购买推广位
                         .setCanPurchased(DateUtils.getTime().compareTo(this.getDeadline(record.getSymbol())) > 0 ? Boolean.FALSE : Boolean.TRUE)
                         .setBiddingStatusName(AdBiddingStatus.of(record.getBiddingStatus()).getLabel()
-                                + "，最新出价:" + timeRangeRoundMaxPriceMap.get(record.getRoundId())));
+                                + "，最新出价:" + timeRangeRoundMaxPriceMap.get(record.getTypeId().toString() + ":" + record.getRoundId().toString())));
             });
         }
         if (MapUtils.isNotEmpty(boughtFailPositionMap)) {
