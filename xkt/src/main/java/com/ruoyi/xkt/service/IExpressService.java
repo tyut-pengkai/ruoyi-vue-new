@@ -21,7 +21,14 @@ public interface IExpressService {
      *
      * @param expressId
      */
-    void checkExpress(Long expressId);
+    void checkExpressSystemDeliverAccess(Long expressId);
+
+    /**
+     * 检查快递是否可用
+     *
+     * @param expressId
+     */
+    void checkExpressUserRefundAccess(Long expressId);
 
     /**
      * 获取物流
