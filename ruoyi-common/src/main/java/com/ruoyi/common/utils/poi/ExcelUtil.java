@@ -1353,7 +1353,7 @@ public class ExcelUtil<T>
             {
                 for (String value : propertyValue.split(separator))
                 {
-                    if (itemArray[1].equals(value))
+                    if (itemArray[1].equals(value) || itemArray[0].equals(value))
                     {
                         propertyString.append(itemArray[0] + separator);
                         break;
@@ -1362,7 +1362,7 @@ public class ExcelUtil<T>
             }
             else
             {
-                if (itemArray[1].equals(propertyValue))
+                if (itemArray[1].equals(propertyValue) || itemArray[0].equals(propertyValue))
                 {
                     return itemArray[0];
                 }
