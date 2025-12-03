@@ -190,25 +190,22 @@ public class LogAspect
      */
     private String argsArrayToString(Object[] paramsArray, String[] excludeParamNames)
     {
-        String params = "";
-        if (paramsArray != null && paramsArray.length > 0)
-        {
-            for (Object o : paramsArray)
-            {
-                if (StringUtils.isNotNull(o) && !isFilterObject(o))
-                {
-                    try
-                    {
-                        String jsonObj = JSON.toJSONString(o, excludePropertyPreFilter(excludeParamNames));
-                        params += jsonObj.toString() + " ";
-                    }
-                    catch (Exception e)
-                    {
+        StringBuilder params = new StringBuilder();
+        if (paramsArray != null && paramsArray.length > 0) {
+            for (Object o : paramsArray) {
+                if (o != null && !isFilterObject(o)) {
+                    try {
+                        // 使用 fastjson 序列化，并支持字段过滤
+                        String json = JSON.toJSONString(o, excludePropertyPreFilter(excludeParamNames));
+                        params.append(json).append(" ");
+                    } catch (Exception e) {
+                        // 兜底，保证日志不丢
+                        params.append(o.toString()).append(" ");
                     }
                 }
             }
         }
-        return params.trim();
+        return params.toString().trim();
     }
 
     /**
