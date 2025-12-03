@@ -23,5 +23,7 @@ public class NoticePageVO extends BasePageVO {
     @NotNull(message = "ownerType不能为空")
     @ApiModelProperty(value = "谁发的公告 1 档口  2 系统", required = true)
     private Integer ownerType;
+    @ApiModelProperty(value = "档口id")
+    private Long storeId;
 
 }

@@ -156,6 +156,9 @@ public class NoticeServiceImpl implements INoticeService {
         if (StringUtils.isNotBlank(pageDTO.getNoticeTitle())) {
             queryWrapper.like(Notice::getNoticeTitle, pageDTO.getNoticeTitle());
         }
+        if (ObjectUtils.isNotEmpty(pageDTO.getStoreId())) {
+            queryWrapper.eq(Notice::getStoreId, pageDTO.getStoreId());
+        }
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
         List<Notice> noticeList = this.noticeMapper.selectList(queryWrapper);
         if (CollectionUtils.isEmpty(noticeList)) {

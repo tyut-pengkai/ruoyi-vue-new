@@ -20,5 +20,7 @@ public class NoticePageDTO extends BasePageDTO {
     private String noticeTitle;
     @ApiModelProperty(value = "谁发的公告 1 档口  2 系统")
     private Integer ownerType;
+    @ApiModelProperty(value = "档口id")
+    private Long storeId;
 
 }

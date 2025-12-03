@@ -163,6 +163,12 @@ public class DailyTaskController extends BaseController {
         return R.ok();
     }
 
+    @PostMapping("/user-brows-history")
+    public R dailyUpdateUserBrowsingHistory(SysJob sysJob) {
+        task.dailyUpdateUserBrowsingHistory();
+        return R.ok();
+    }
+
 
 
 }
