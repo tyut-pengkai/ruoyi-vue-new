@@ -157,6 +157,12 @@ public class DailyTaskController extends BaseController {
         return R.ok();
     }
 
+    @PostMapping("/store-visit")
+    public R updateStoreVisitCount(SysJob sysJob) {
+        task.updateStoreVisitCount();
+        return R.ok();
+    }
+
 
 
 }

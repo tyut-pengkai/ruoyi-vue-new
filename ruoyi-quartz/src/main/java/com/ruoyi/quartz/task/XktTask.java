@@ -888,7 +888,7 @@ public class XktTask {
     @Transactional
     public void updateStoreVisitCount() {
         // 档口访问量
-        Map<String, Long> storeVisitMap = redisCache.getCacheMap(CacheConstants.STORE_VISIT_COUNT);
+        Map<String, Integer> storeVisitMap = redisCache.getCacheMap(CacheConstants.STORE_VISIT_COUNT);
         if (MapUtil.isEmpty(storeVisitMap)) {
             return;
         }
@@ -898,7 +898,7 @@ public class XktTask {
             return;
         }
         storeList.forEach(store -> {
-            Long viewCount = storeVisitMap.getOrDefault(store.getId().toString(), 0L);
+            Integer viewCount = storeVisitMap.getOrDefault(store.getId().toString(), 0);
             Long existViewCount = ObjectUtils.defaultIfNull(store.getViewCount(), 0L);
             store.setViewCount(existViewCount + viewCount);
             // 清除当日缓存
