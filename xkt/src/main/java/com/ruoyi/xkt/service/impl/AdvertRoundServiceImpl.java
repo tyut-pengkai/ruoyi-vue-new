@@ -448,16 +448,16 @@ public class AdvertRoundServiceImpl implements IAdvertRoundService {
                 .filter(x -> Objects.equals(x.getShowType(), AdShowType.POSITION_ENUM.getValue()))
                 .filter(x -> ObjectUtils.isNotEmpty(x.getPayPrice()))
                 .collect(Collectors.toMap(AdvertRound::getId, AdvertRound::getPayPrice));
-        // 已购买的 时间范围播放轮次 的roundId列表
-        final List<Integer> boughtTimeRangeRoundIdList = boughtRoundList.stream().filter(x -> Objects.equals(x.getShowType(), AdShowType.TIME_RANGE.getValue()))
-                .map(AdRoundStoreBoughtResDTO::getRoundId).collect(Collectors.toList());
+        // 已购买的 时间范围播放轮次 的 typeId 和 roundId 列表
+        final List<String> boughtTimeRangeMultiKeyList = boughtRoundList.stream().filter(x -> Objects.equals(x.getShowType(), AdShowType.TIME_RANGE.getValue()))
+                .map(x -> x.getTypeId().toString() + ":" + x.getRoundId().toString()).collect(Collectors.toList());
         // 已购买的  位置枚举 的 advertRoundId 列表
         final List<Long> boughtPositionAdvertRoundIdList = boughtRoundList.stream().filter(x -> Objects.equals(x.getShowType(), AdShowType.POSITION_ENUM.getValue()))
                 .map(AdRoundStoreBoughtResDTO::getAdvertRoundId).collect(Collectors.toList());
         // 购买失败的 时间范围播放轮次的  列表
         Map<Integer, AdvertRoundRecord> boughtFailTimeRangeMap = allRecordList.stream()
                 .filter(x -> Objects.equals(x.getShowType(), AdShowType.TIME_RANGE.getValue()))
-                .filter(x -> !boughtTimeRangeRoundIdList.contains(x.getRoundId()))
+                .filter(x -> !boughtTimeRangeMultiKeyList.contains(x.getTypeId().toString() + ":" + x.getRoundId().toString()))
                 .collect(Collectors.toMap(AdvertRoundRecord::getRoundId, Function.identity(),
                         BinaryOperator.maxBy(Comparator.comparingLong(AdvertRoundRecord::getId))));
         // 购买失败的 位置枚举播放轮次的 列表
