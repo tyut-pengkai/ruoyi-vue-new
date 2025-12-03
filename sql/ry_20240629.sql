@@ -545,23 +545,13 @@ create table sys_role_menu
 -- ----------------------------
 -- 初始化-角色和菜单关联表数据
 -- ----------------------------
-INSERT INTO `sys_role_menu` VALUES (2, 1045);
-INSERT INTO `sys_role_menu` VALUES (2, 1046);
-INSERT INTO `sys_role_menu` VALUES (2, 1047);
+INSERT INTO `sys_role_menu` VALUES (2, 1006);
 INSERT INTO `sys_role_menu` VALUES (2, 1049);
 INSERT INTO `sys_role_menu` VALUES (2, 1051);
 INSERT INTO `sys_role_menu` VALUES (2, 1052);
 INSERT INTO `sys_role_menu` VALUES (2, 1053);
 INSERT INTO `sys_role_menu` VALUES (2, 1056);
-INSERT INTO `sys_role_menu` VALUES (2, 1058);
 INSERT INTO `sys_role_menu` VALUES (2, 1059);
-INSERT INTO `sys_role_menu` VALUES (2, 1062);
-INSERT INTO `sys_role_menu` VALUES (2, 1063);
-INSERT INTO `sys_role_menu` VALUES (2, 1064);
-INSERT INTO `sys_role_menu` VALUES (2, 1065);
-INSERT INTO `sys_role_menu` VALUES (2, 1066);
-INSERT INTO `sys_role_menu` VALUES (2, 1067);
-INSERT INTO `sys_role_menu` VALUES (2, 1068);
 INSERT INTO `sys_role_menu` VALUES (2, 2002);
 INSERT INTO `sys_role_menu` VALUES (2, 2003);
 INSERT INTO `sys_role_menu` VALUES (3, 1002);
@@ -610,6 +600,13 @@ INSERT INTO `sys_role_menu` VALUES (5, 1058);
 INSERT INTO `sys_role_menu` VALUES (5, 1059);
 INSERT INTO `sys_role_menu` VALUES (5, 1060);
 INSERT INTO `sys_role_menu` VALUES (5, 2000);
+INSERT INTO `sys_role_menu` VALUES (100, 1002);
+INSERT INTO `sys_role_menu` VALUES (101, 1002);
+INSERT INTO `sys_role_menu` VALUES (101, 1003);
+INSERT INTO `sys_role_menu` VALUES (101, 1004);
+INSERT INTO `sys_role_menu` VALUES (102, 1002);
+INSERT INTO `sys_role_menu` VALUES (102, 1003);
+
 
 
 -- ----------------------------
