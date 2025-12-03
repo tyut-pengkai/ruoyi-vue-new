@@ -573,6 +573,35 @@ public class XktTask {
             return;
         }
         this.storeProdMapper.updateById(updateList);
+        // 构建一个批量数据集合
+        List<BulkOperation> list = new ArrayList<>();
+        updateList.forEach(storeProd -> {
+            // 构建部分文档更新请求
+            list.add(new BulkOperation.Builder().update(u -> u
+                            .action(a -> a.doc(new HashMap<String, Object>() {{
+                                put("recommendWeight", storeProd.getRecommendWeight());
+                                put("saleWeight", storeProd.getSaleWeight());
+                                put("popularityWeight", storeProd.getPopularityWeight());
+                            }}))
+                            .id(String.valueOf(storeProd.getId()))
+                            .index(ES_INDEX_NAME))
+                    .build());
+        });
+        try {
+            // 调用bulk方法执行批量更新操作
+            BulkResponse bulkResponse = esClientWrapper.getEsClient().bulk(e -> e.index(ES_INDEX_NAME).operations(list));
+            log.info("定时任务，批量更新商品权重到 ES 成功的 id列表: {}", bulkResponse.items().stream().map(BulkResponseItem::id).collect(Collectors.toList()));
+            // 有哪些没执行成功的，需要发飞书通知
+            List<String> successIdList = bulkResponse.items().stream().map(BulkResponseItem::id).collect(Collectors.toList());
+            List<String> unExeIdList = updateList.stream().map(String::valueOf).filter(x -> !successIdList.contains(x)).collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(unExeIdList)) {
+                fsNotice.sendMsg2DefaultChat("定时任务，批量更新商品权重到 ES 失败", "以下storeProdId未执行成功: " + unExeIdList);
+            }
+        } catch (Exception e) {
+            log.error("定时任务，批量更新商品权重到 ES 失败", e);
+            fsNotice.sendMsg2DefaultChat("全部失败，定时任务批量更新商品权重到 ES 失败",
+                    updateList.stream().map(StoreProduct::getId).map(String::valueOf).collect(Collectors.joining(",")));
+        }
     }
 
     /**
