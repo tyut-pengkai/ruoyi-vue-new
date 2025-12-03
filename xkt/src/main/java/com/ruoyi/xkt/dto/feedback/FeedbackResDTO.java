@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.util.Date;
+
 /**
  * @author liujiang
  * @version v1.0
@@ -21,5 +23,7 @@ public class FeedbackResDTO {
     private String content;
     @ApiModelProperty(value = "联系方式")
     private String contact;
+    @ApiModelProperty(value = "创建时间")
+    private Date createTime;
 
 }
