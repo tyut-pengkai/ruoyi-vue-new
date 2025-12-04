@@ -190,6 +190,8 @@ public class StoreMemberServiceImpl implements IStoreMemberService {
         } else {
             // 如果审核驳回，则直接将该笔审核置为无效
             storeMember.setDelFlag(Constants.DELETED);
+            // 退会员费
+            assetService.refundVipFee(storeMember.getStoreId(), storeMember.getPayPrice());
         }
         return this.storeMemberMapper.updateById(storeMember);
     }
