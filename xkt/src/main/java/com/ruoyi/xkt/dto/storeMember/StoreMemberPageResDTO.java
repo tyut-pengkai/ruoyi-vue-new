@@ -3,6 +3,7 @@ package com.ruoyi.xkt.dto.storeMember;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -29,5 +30,7 @@ public class StoreMemberPageResDTO {
     private Date endTime;
     @ApiModelProperty(value = "会员状态")
     private Integer memberStatus;
+    @ApiModelProperty(value = "支付金额")
+    private BigDecimal payPrice;
 
 }
