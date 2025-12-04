@@ -593,7 +593,7 @@ public class XktTask {
             log.info("定时任务，批量更新商品权重到 ES 成功的 id列表: {}", bulkResponse.items().stream().map(BulkResponseItem::id).collect(Collectors.toList()));
             // 有哪些没执行成功的，需要发飞书通知
             List<String> successIdList = bulkResponse.items().stream().map(BulkResponseItem::id).collect(Collectors.toList());
-            List<String> unExeIdList = updateList.stream().map(String::valueOf).filter(x -> !successIdList.contains(x)).collect(Collectors.toList());
+            List<String> unExeIdList = updateList.stream().map(StoreProduct::getId).map(String::valueOf).filter(x -> !successIdList.contains(x)).collect(Collectors.toList());
             if (CollectionUtils.isNotEmpty(unExeIdList)) {
                 fsNotice.sendMsg2DefaultChat("定时任务，批量更新商品权重到 ES 失败", "以下storeProdId未执行成功: " + unExeIdList);
             }
