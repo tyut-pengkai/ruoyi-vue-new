@@ -87,6 +87,8 @@ public class StoreMemberServiceImpl implements IStoreMemberService {
         storeMember.setVoucherDate(java.sql.Date.valueOf(LocalDate.now()));
         storeMember.setPayPrice(createDTO.getPayPrice());
         this.storeMemberMapper.insertOrUpdate(storeMember);
+        // 购买时就扣除会员费
+        assetService.payVipFee(storeMember.getStoreId(), storeMember.getPayPrice());
         return 1;
     }
 
@@ -185,11 +187,11 @@ public class StoreMemberServiceImpl implements IStoreMemberService {
             // 新增订购成功的消息通知
             this.noticeService.createSingleNotice(SecurityUtils.getUserId(), "购买会员成功!", NoticeType.NOTICE.getValue(), NoticeOwnerType.SYSTEM.getValue(),
                     storeMember.getStoreId(), UserNoticeType.SYSTEM_MSG.getValue(), "恭喜您！购买:实力质造 会员成功!");
-            // 扣除会员费
-            assetService.payVipFee(storeMember.getStoreId(), storeMember.getPayPrice());
         } else {
             // 如果审核驳回，则直接将该笔审核置为无效
             storeMember.setDelFlag(Constants.DELETED);
+            // 退会员费（购买时就支付了，审核驳回就直接退费）
+            this.assetService.refundVipFee(storeMember.getStoreId(), storeMember.getPayPrice());
         }
         return this.storeMemberMapper.updateById(storeMember);
     }
