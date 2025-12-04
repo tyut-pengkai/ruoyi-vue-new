@@ -421,6 +421,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                 String[] nos = detailInfo.getExpressWaybillNo().split(",");
                 Long eId = detailInfo.getExpressId();
                 String eName = expressMap.get(eId);
+                detailInfo.setExpressName(eName);
                 for (String no : nos) {
                     expressWaybillNoInfos.add(new ExpressWaybillNoInfoDTO(eId, eName, no));
                 }
@@ -598,6 +599,7 @@ public class StoreOrderServiceImpl implements IStoreOrderService {
                         String[] nos = detail.getExpressWaybillNo().split(",");
                         Long eId = detail.getExpressId();
                         String eName = expressMap.get(eId);
+                        detail.setExpressName(eName);
                         for (String no : nos) {
                             expressWaybillNoInfos.add(new ExpressWaybillNoInfoDTO(eId, eName, no));
                         }

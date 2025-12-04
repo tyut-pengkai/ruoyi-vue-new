@@ -516,6 +516,9 @@ public class StoreOrderInfoVO {
         @ApiModelProperty(value = "平台介入结果")
         private String platformInvolveResult;
 
+        @ApiModelProperty(value = "物流名称")
+        private String expressName;
+
     }
 
     @ApiModel

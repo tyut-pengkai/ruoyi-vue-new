@@ -38,4 +38,6 @@ public class StoreOrderDetailInfoDTO extends StoreOrderDetailDTO {
     private String storeName;
 
     private String storeAddress;
+
+    private String expressName;
 }

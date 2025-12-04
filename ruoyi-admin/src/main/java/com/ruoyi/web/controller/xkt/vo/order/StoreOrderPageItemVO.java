@@ -493,5 +493,8 @@ public class StoreOrderPageItemVO extends StoreOrderDTO {
 
         @ApiModelProperty(value = "退货原商品数量")
         private Integer originGoodsQuantity;
+
+        @ApiModelProperty(value = "物流名称")
+        private String expressName;
     }
 }
