@@ -1,9 +1,9 @@
 # 项目相关配置
 app:
-  version: 1.0.0
-  download-url: http://oss.cdbuju.cn/apk/cdbuju-1.0.0.apk
-  update-notes: 这不是一次简单的升级，而是一次全方位的进化。请拥抱变化，享受科技带来的美好
-  forced-update: false
+  version: 1.0.4
+  download-url: http://oss.cdbuju.cn/apk/cdbuju-1.0.4.apk
+  update-notes: 修复已知问题，提升用户体验
+  forced-update: true
 ruoyi:
   # 名称
   name: RuoYi
