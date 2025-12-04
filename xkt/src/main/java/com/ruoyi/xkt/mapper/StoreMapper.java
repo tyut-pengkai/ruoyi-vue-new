@@ -39,9 +39,25 @@ public interface StoreMapper extends BaseMapper<Store> {
 
     /**
      * 获取档口访问榜  过去3个月到现在
+     *
      * @param threeMonthAgo 三个月前
-     * @param yesterday 昨天
+     * @param yesterday     昨天
      * @return
      */
     List<StoreAppViewRankResDTO.SAVRViewCountDTO> selectTop10AppViewCount(@Param("threeMonthAgo") Date threeMonthAgo, @Param("yesterday") Date yesterday);
+
+    /**
+     * 将serviceAmount置为null
+     *
+     * @param storeId 档口ID
+     */
+    void updateServiceAmountNull(@Param("storeId") Long storeId);
+
+    /**
+     * 将memberAmount置为null
+     *
+     * @param storeId 档口ID
+     */
+    void updateMemberAmountNull(@Param("storeId") Long storeId);
+
 }

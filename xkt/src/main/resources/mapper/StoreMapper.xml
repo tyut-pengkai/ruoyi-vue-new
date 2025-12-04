@@ -61,5 +61,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             LIMIT 10
     </select>
 
+    <update id="updateServiceAmountNull">
+        UPDATE store SET service_amount = null WHERE id = #{storeId}
+    </update>
+
+    <update id="updateMemberAmountNull">
+        UPDATE store SET member_amount = null WHERE id = #{storeId}
+    </update>
+
 
 </mapper>

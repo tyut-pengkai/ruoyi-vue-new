@@ -161,14 +161,24 @@ public class StoreMemberServiceImpl implements IStoreMemberService {
                         .in(StoreMember::getMemberStatus, Arrays.asList(StoreMemberStatus.WAIT_AUDIT.getValue(), StoreMemberStatus.BOUGHT_WAIT_AUDIT.getValue()))))
                 .orElseThrow(() -> new ServiceException("购买会员记录不存在!", HttpStatus.ERROR));
         if (Objects.equals(auditDTO.getMemberStatus(), StoreMemberStatus.AUDIT_PASS.getValue())) {
-            // 若结束时间在当前时间之前，则直接设置为当前时间
-            Date startTime = ObjectUtils.isEmpty(storeMember.getEndTime()) ? new Date()
-                    : (storeMember.getEndTime().after(new Date()) ? storeMember.getEndTime() : new Date());
-            // 直接增加一年
-            Date endTime = Date.from(startTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-                    .plusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
-            storeMember.setStartTime(startTime);
-            storeMember.setEndTime(endTime);
+            // 未购买待审核
+            if (Objects.equals(storeMember.getMemberStatus(), StoreMemberStatus.WAIT_AUDIT.getValue())) {
+                // 若结束时间在当前时间之前，则直接设置为当前时间
+                Date startTime = ObjectUtils.isEmpty(storeMember.getEndTime()) ? new Date()
+                        : (storeMember.getEndTime().after(new Date()) ? storeMember.getEndTime() : new Date());
+                // 直接增加一年
+                Date endTime = Date.from(startTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                        .plusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
+                storeMember.setStartTime(startTime);
+                storeMember.setEndTime(endTime);
+                // 已购买待审核（续费状态）
+            } else if (Objects.equals(storeMember.getMemberStatus(), StoreMemberStatus.BOUGHT_WAIT_AUDIT.getValue())) {
+                Date oldEndTime = ObjectUtils.isEmpty(storeMember.getEndTime()) ? new Date() : storeMember.getEndTime();
+                // 直接增加一年
+                Date endTime = Date.from(oldEndTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                        .plusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant());
+                storeMember.setEndTime(endTime);
+            }
             storeMember.setUpdateBy(SecurityUtils.getUsername());
             storeMember.setMemberStatus(StoreMemberStatus.AUDIT_PASS.getValue());
             // 最低等级会员：实力质造
@@ -178,10 +188,10 @@ public class StoreMemberServiceImpl implements IStoreMemberService {
             Store store = Optional.ofNullable(this.storeMapper.selectOne(new LambdaQueryWrapper<Store>()
                             .eq(Store::getId, storeMember.getStoreId()).eq(Store::getDelFlag, Constants.UNDELETED)))
                     .orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
-            // 将档口购买优惠金额置为null
-            store.setMemberAmount(null);
             store.setStoreWeight(ObjectUtils.defaultIfNull(store.getStoreWeight(), 0) + 1);
             this.storeMapper.updateById(store);
+            // 将档口购买金额置为null
+            this.storeMapper.updateMemberAmountNull(store.getId());
             // 将档口会员信息添加到 redis 中
             redisCache.setCacheObject(CacheConstants.STORE_MEMBER + storeMember.getStoreId(), storeMember);
             // 新增订购成功的消息通知

@@ -536,8 +536,6 @@ public class StoreServiceImpl implements IStoreService {
         if (!Objects.equals(serviceAmount, buyAnnualDTO.getPayPrice())) {
             throw new ServiceException("付费金额与核定金额不一致!请联系平台客服", HttpStatus.ERROR);
         }
-        // 年费续费成功之后，就将优惠金额清空，下一年再有优惠就需重新设置
-        store.setServiceAmount(null);
         // 如果是使用版 storeStatus 为3，更新为正式版 storeStatus 为4
         if (Objects.equals(store.getStoreStatus(), StoreStatus.TRIAL_PERIOD.getValue())) {
             store.setStoreStatus(StoreStatus.FORMAL_USE.getValue());
@@ -547,6 +545,8 @@ public class StoreServiceImpl implements IStoreService {
         store.setServiceEndTime(Date.from(serviceEndTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
                 .plusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant()));
         int count = this.storeMapper.updateById(store);
+        // 年费续费成功之后，就将优惠金额清空，下一年再有优惠就需重新设置
+        this.storeMapper.updateServiceAmountNull(store.getId());
         // 更新redis 中的 store信息
         this.redisCache.setCacheObject(CacheConstants.STORE_KEY + store.getId(), store);
         // 新增续缴年费成功的消息通知
@@ -571,8 +571,6 @@ public class StoreServiceImpl implements IStoreService {
             throw new ServiceException("当前用户非超级管理员，无权限操作!", HttpStatus.ERROR);
         }
         Store store = Optional.ofNullable(storeMapper.selectById(storeId)).orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
-        // 年费续费成功之后，就将优惠金额清空，下一年再有优惠就需重新设置
-        store.setServiceAmount(null);
         // 如果是使用版 storeStatus 为3，更新为正式版 storeStatus 为4
         if (Objects.equals(store.getStoreStatus(), StoreStatus.TRIAL_PERIOD.getValue())) {
             store.setStoreStatus(StoreStatus.FORMAL_USE.getValue());
@@ -583,7 +581,10 @@ public class StoreServiceImpl implements IStoreService {
                 .plusYears(1).atStartOfDay(ZoneId.systemDefault()).toInstant()));
         // 更新redis 中的 store信息
         this.redisCache.setCacheObject(CacheConstants.STORE_KEY + store.getId(), store);
-        return this.storeMapper.updateById(store);
+        int count = this.storeMapper.updateById(store);
+        // 年费续费成功之后，就将优惠金额清空，下一年再有优惠就需重新设置
+        this.storeMapper.updateServiceAmountNull(store.getId());
+        return count;
     }
 
     /**
