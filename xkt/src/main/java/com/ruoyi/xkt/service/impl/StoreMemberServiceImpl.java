@@ -159,7 +159,7 @@ public class StoreMemberServiceImpl implements IStoreMemberService {
         StoreMember storeMember = Optional.ofNullable(this.storeMemberMapper.selectOne(new LambdaQueryWrapper<StoreMember>()
                         .eq(StoreMember::getId, auditDTO.getStoreMemberId()).eq(StoreMember::getDelFlag, Constants.UNDELETED)
                         .in(StoreMember::getMemberStatus, Arrays.asList(StoreMemberStatus.WAIT_AUDIT.getValue(), StoreMemberStatus.BOUGHT_WAIT_AUDIT.getValue()))))
-                .orElseThrow(() -> new ServiceException("会员不存在!", HttpStatus.ERROR));
+                .orElseThrow(() -> new ServiceException("购买会员记录不存在!", HttpStatus.ERROR));
         if (Objects.equals(auditDTO.getMemberStatus(), StoreMemberStatus.AUDIT_PASS.getValue())) {
             // 若结束时间在当前时间之前，则直接设置为当前时间
             Date startTime = ObjectUtils.isEmpty(storeMember.getEndTime()) ? new Date()
@@ -192,6 +192,9 @@ public class StoreMemberServiceImpl implements IStoreMemberService {
             storeMember.setDelFlag(Constants.DELETED);
             // 退会员费（购买时就支付了，审核驳回就直接退费）
             this.assetService.refundVipFee(storeMember.getStoreId(), storeMember.getPayPrice());
+            // 新增购买驳回的消息通知
+            this.noticeService.createSingleNotice(SecurityUtils.getUserId(), "购买会员驳回!", NoticeType.NOTICE.getValue(), NoticeOwnerType.SYSTEM.getValue(),
+                    storeMember.getStoreId(), UserNoticeType.SYSTEM_MSG.getValue(), "您购买:实力质造 会员驳回!请联系客服18228090035");
         }
         return this.storeMemberMapper.updateById(storeMember);
     }
