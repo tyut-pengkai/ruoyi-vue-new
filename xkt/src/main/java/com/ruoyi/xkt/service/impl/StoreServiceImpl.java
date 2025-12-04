@@ -533,7 +533,7 @@ public class StoreServiceImpl implements IStoreService {
         Store store = Optional.ofNullable(storeMapper.selectById(buyAnnualDTO.getStoreId())).orElseThrow(() -> new ServiceException("档口不存在!", HttpStatus.ERROR));
         // 判断扣费金额和折扣金额是否一致（设置了折扣，就用折扣，反之取默认金额）
         final BigDecimal serviceAmount = ObjectUtils.defaultIfNull(store.getServiceAmount(), Constants.STORE_ANNUAL_AMOUNT);
-        if (!Objects.equals(serviceAmount, buyAnnualDTO.getPayPrice())) {
+        if (serviceAmount.compareTo(buyAnnualDTO.getPayPrice()) != 0) {
             throw new ServiceException("付费金额与核定金额不一致!请联系平台客服", HttpStatus.ERROR);
         }
         // 如果是使用版 storeStatus 为3，更新为正式版 storeStatus 为4
