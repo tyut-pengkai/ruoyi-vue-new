@@ -842,6 +842,10 @@ public class StoreProductServiceImpl implements IStoreProductService {
     public StoreProdAppResDTO getAppInfo(Long storeProdId) {
         // 档口商品的基础信息
         StoreProdAppResDTO appResDTO = this.storeProdMapper.getAppInfo(storeProdId, SecurityUtils.getUserIdSafe());
+        // 如果商品已删除，则报错
+        if (ObjectUtils.isEmpty(appResDTO) || Objects.equals(appResDTO.getProdStatus(), EProductStatus.REMOVED.getValue())) {
+            throw new ServiceException("商品已删除或不存在!请您浏览其它商品", HttpStatus.ERROR);
+        }
         StoreProductCategoryAttribute cateAttr = this.storeProdCateAttrMapper.selectOne(new LambdaQueryWrapper<StoreProductCategoryAttribute>()
                 .eq(StoreProductCategoryAttribute::getStoreProdId, storeProdId).eq(StoreProductCategoryAttribute::getDelFlag, Constants.UNDELETED));
         List<StoreProductColor> colorList = this.storeProdColorMapper.selectList(new LambdaQueryWrapper<StoreProductColor>()
@@ -957,6 +961,10 @@ public class StoreProductServiceImpl implements IStoreProductService {
     public StoreProdPCResDTO getPCInfo(Long storeProdId) {
         // 商品基础信息
         StoreProdPCResDTO prodInfoDTO = ObjectUtils.defaultIfNull(this.storeProdMapper.selectPCProdInfo(storeProdId, SecurityUtils.getUserIdSafe()), new StoreProdPCResDTO());
+        // 如果商品已删除，则报错
+        if (ObjectUtils.isEmpty(prodInfoDTO) || Objects.equals(prodInfoDTO.getProdStatus(), EProductStatus.REMOVED.getValue())) {
+            throw new ServiceException("商品已删除或不存在!请您浏览其它商品", HttpStatus.ERROR);
+        }
         // 获取商品的属性
         StoreProductCategoryAttribute cateAttr = this.storeProdCateAttrMapper.selectOne(new LambdaQueryWrapper<StoreProductCategoryAttribute>()
                 .eq(StoreProductCategoryAttribute::getStoreProdId, storeProdId).eq(StoreProductCategoryAttribute::getDelFlag, Constants.UNDELETED));

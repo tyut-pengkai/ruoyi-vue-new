@@ -220,6 +220,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             sp.id AS storeProdId,
             sp.prod_art_num,
             sp.prod_title,
+            sp.prod_status,
             sp.create_time,
             spd.detail,
             <if test="userId != null">
@@ -285,6 +286,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             s.store_name,
             sp.prod_art_num,
             sp.prod_title,
+            sp.prod_status,
             sp.create_time,
             MIN( DISTINCT spcs.price ) AS minPrice,
             GROUP_CONCAT( DISTINCT dpt.tag ORDER BY dpt.type ASC ) AS tagStr,
