@@ -60,25 +60,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectTop10ProdViewCount">
         SELECT
-            sps.store_id,
-            s.store_name,
             sps.store_prod_id,
-            sp.prod_art_num,
-            spcp.min_price AS price,
-            sps.view_count,
-            sf.file_url AS mainPicUrl
+            SUM( sps.view_count ) AS viewCount
         FROM
             store_product_statistics sps
-                JOIN store s ON sps.store_id = s.id
-                JOIN store_product sp ON sps.store_prod_id = sp.id AND sp.prod_status IN (2)
-                JOIN store_product_file spf ON sps.store_prod_id = spf.store_prod_id AND spf.del_flag = 0 AND spf.file_type = 1 AND spf.order_num = 1
-                JOIN sys_file sf ON spf.file_id = sf.id
-                LEFT JOIN ( SELECT store_prod_id, MIN( price ) AS min_price FROM store_product_color_size GROUP BY store_prod_id ) spcp ON sp.id = spcp.store_prod_id
         WHERE
-            sps.del_flag = 0
-            AND sps.voucher_date BETWEEN #{threeMonthAgo} AND #{yesterday}
+            sps.del_flag = 0 AND sps.voucher_date BETWEEN #{threeMonthAgo} AND #{yesterday}
+        GROUP BY
+            sps.store_prod_id
         ORDER BY
-            sps.view_count DESC
+            viewCount DESC
             LIMIT 10
     </select>
 

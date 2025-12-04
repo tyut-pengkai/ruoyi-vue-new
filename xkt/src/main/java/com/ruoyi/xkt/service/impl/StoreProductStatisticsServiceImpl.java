@@ -3,6 +3,8 @@ package com.ruoyi.xkt.service.impl;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.xkt.dto.StoreProductStatistics.StoreProdAppViewRankResDTO;
+import com.ruoyi.xkt.dto.storeProduct.StoreProdPriceAndMainPicAndTagDTO;
+import com.ruoyi.xkt.mapper.StoreProductMapper;
 import com.ruoyi.xkt.mapper.StoreProductStatisticsMapper;
 import com.ruoyi.xkt.service.IStoreProductStatisticsService;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * 档口商品统计 服务层实现
@@ -27,6 +32,7 @@ public class StoreProductStatisticsServiceImpl implements IStoreProductStatistic
 
     final StoreProductStatisticsMapper prodStatisticsMapper;
     final RedisCache redisCache;
+    final StoreProductMapper storeProdMapper;
 
     /**
      * 档口商品访问榜
@@ -48,7 +54,18 @@ public class StoreProductStatisticsServiceImpl implements IStoreProductStatistic
         if (CollectionUtils.isEmpty(viewCountList)) {
             return redisAppViewRank;
         }
-        redisAppViewRank.setViewCountList(viewCountList);
+        final List<Long> storeProdIdList = viewCountList.stream().map(StoreProdAppViewRankResDTO.SPAVRViewCountDTO::getStoreProdId).collect(Collectors.toList());
+        List<StoreProdPriceAndMainPicAndTagDTO> prodInfoList = this.storeProdMapper.selectPriceAndMainPicAndTagList(storeProdIdList);
+        Map<Long, StoreProdPriceAndMainPicAndTagDTO> prodInfoMap = CollectionUtils.isEmpty(prodInfoList) ? new HashMap<>()
+                : prodInfoList.stream().collect(Collectors.toMap(StoreProdPriceAndMainPicAndTagDTO::getStoreProdId, v -> v));
+        List<StoreProdAppViewRankResDTO.SPAVRViewCountDTO> retViewList = viewCountList.stream()
+                .filter(x -> prodInfoMap.containsKey(x.getStoreProdId()))
+                .map(x -> {
+                    StoreProdPriceAndMainPicAndTagDTO prodInfo = prodInfoMap.get(x.getStoreProdId());
+                    return x.setStoreId(prodInfo.getStoreId()).setStoreProdId(x.getStoreProdId()).setStoreName(prodInfo.getStoreName())
+                            .setMainPicUrl(prodInfo.getMainPicUrl()).setProdArtNum(prodInfo.getProdArtNum()).setPrice(prodInfo.getMinPrice());
+                }).collect(Collectors.toList());
+        redisAppViewRank.setViewCountList(retViewList);
         // 放到redis中
         redisCache.setCacheObject(CacheConstants.STORE_PROD_VIEW_COUNT_CACHE, redisAppViewRank, 1, TimeUnit.DAYS);
         return redisAppViewRank;

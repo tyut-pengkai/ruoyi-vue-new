@@ -22,6 +22,7 @@ public class StoreProdAppViewRankResDTO {
     private List<SPAVRViewCountDTO> viewCountList;
 
     @Data
+    @Accessors(chain = true)
     public static class SPAVRViewCountDTO {
         @ApiModelProperty(value = "档口ID")
         private Long storeId;
