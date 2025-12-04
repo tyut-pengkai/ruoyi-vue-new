@@ -32,6 +32,7 @@ import com.ruoyi.xkt.dto.order.*;
 import com.ruoyi.xkt.enums.EOrderStatus;
 import com.ruoyi.xkt.enums.EPayChannel;
 import com.ruoyi.xkt.enums.EPayPage;
+import com.ruoyi.xkt.enums.EPayStatus;
 import com.ruoyi.xkt.manager.PaymentManager;
 import com.ruoyi.xkt.service.IExpressService;
 import com.ruoyi.xkt.service.IStoreOrderService;
@@ -119,6 +120,16 @@ public class StoreOrderController extends XktBaseController {
         String rtnStr = paymentManager.payStoreOrder(orderExt, EPayPage.of(vo.getPayPage()), vo.getReturnUrl());
         StoreOrderPayRespVO respVO = new StoreOrderPayRespVO(vo.getStoreOrderId(), rtnStr);
         return success(respVO);
+    }
+
+    @ApiOperation("订单支付结果")
+    @GetMapping("pay/result")
+    public R<Boolean> getPayResult(@RequestParam("storeOrderId") Long storeOrderId) {
+        StoreOrder order = storeOrderService.getById(storeOrderId);
+        if (order == null) {
+            return R.ok(false);
+        }
+        return R.ok(EPayStatus.PAID.getValue().equals(order.getPayStatus()));
     }
 
     @PreAuthorize("@ss.hasAnyRoles('seller,agent')")
