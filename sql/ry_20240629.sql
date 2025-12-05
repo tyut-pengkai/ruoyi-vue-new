@@ -2162,6 +2162,7 @@ INSERT INTO `sys_dict_data` VALUES (1207, 34, '兔毛', '兔毛', 'shoe_upper_li
 INSERT INTO `sys_dict_data` VALUES (1208, 35, '狐狸毛', '狐狸毛', 'shoe_upper_lining_material', '0', 'admin', '2025-10-30 22:02:34', '', '2025-10-30 22:02:34', '', 0, '0');
 INSERT INTO `sys_dict_data` VALUES (1209, 1, '单里', '单里', 'shoe_upper_lining_material', '0', 'admin', '2025-11-19 23:38:29', '', '2025-11-19 23:38:29', '', 0, '0');
 INSERT INTO `sys_dict_data` VALUES (1210, 1, '绒里', '绒里', 'shoe_upper_lining_material', '0', 'admin', '2025-11-19 23:38:41', '', '2025-11-19 23:38:41', '', 0, '0');
+INSERT INTO `sys_dict_data` VALUES (1211, 38, '2026年春季', '2026年春季', 'release_year_season', '0', 'admin', '2025-12-01 03:05:00', '', '2025-12-01 03:05:00', NULL, 0, '0');
 
 
 -- ----------------------------
