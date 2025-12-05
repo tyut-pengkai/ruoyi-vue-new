@@ -71,7 +71,8 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
         List<AdminAdRoundPageResDTO> list = this.advertRoundMapper.selectAdminAdvertPage(pageDTO);
         // 所有的商品id列表
         List<Long> prodIdList = list.stream().filter(x -> StringUtils.isNotBlank(x.getProdIdStr()))
-                .flatMap(x -> StrUtil.split(x.getProdIdStr(), ",").stream()).map(Long::parseLong).collect(Collectors.toList());
+                .flatMap(x -> StrUtil.split(x.getProdIdStr(), ",").stream())
+                .filter(ObjectUtils::isNotEmpty).map(Long::parseLong).collect(Collectors.toList());
         Map<Long, String> storeProdMap = CollectionUtils.isEmpty(prodIdList) ? new ConcurrentHashMap<>()
                 : this.storeProdMapper.selectByIds(prodIdList).stream().collect(Collectors.toMap(StoreProduct::getId, StoreProduct::getProdArtNum));
         list.forEach(item -> {
@@ -85,7 +86,8 @@ public class AdminAdvertRoundServiceImpl implements IAdminAdvertRoundService {
                     .setPicSetTypeName(ObjectUtils.isNotEmpty(item.getPicSetType()) ? AdPicSetType.of(item.getPicSetType()).getLabel() : "")
                     .setBiddingStatusName(ObjectUtils.isNotEmpty(item.getBiddingStatus()) ? AdBiddingStatus.of(item.getBiddingStatus()).getLabel() : "");
             if (StringUtils.isNotBlank(item.getProdIdStr())) {
-                item.setProdArtNumList(StrUtil.split(item.getProdIdStr(), ",").stream().map(Long::parseLong).map(storeProdMap::get).collect(Collectors.toList()));
+                item.setProdArtNumList(StrUtil.split(item.getProdIdStr(), ",").stream().filter(ObjectUtils::isNotEmpty)
+                        .map(Long::parseLong).map(storeProdMap::get).collect(Collectors.toList()));
             }
         });
         return Page.convert(new PageInfo<>(list));
