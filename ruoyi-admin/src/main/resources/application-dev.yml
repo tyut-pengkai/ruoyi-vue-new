@@ -307,3 +307,7 @@ fs:
     monitorSwitch: true
     monitorChartId: oc_34e207df88addd15d83ec274fda95ef6
     monitorEnv: 测试
+
+# 企业四要素，手机号三要素
+lfv2:
+  enable: false

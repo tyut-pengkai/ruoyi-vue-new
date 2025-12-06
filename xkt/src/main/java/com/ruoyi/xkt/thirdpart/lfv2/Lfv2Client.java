@@ -27,6 +27,9 @@ public class Lfv2Client {
     @Value("${lfv2.auth:APPCODE 4dd403cda2694a45a1124b09637612b6}")
     private String authCode;
 
+    @Value("${lfv2.enable}")
+    private Boolean enable;
+
     /**
      * 检查企业四要素
      *
@@ -38,6 +41,10 @@ public class Lfv2Client {
      */
     public boolean checkEnterprise(String creditCode, String enterpriseName, String legalPersonName,
                                    String legalIdNumber) {
+        if (!enable) {
+            log.warn("未开启企业四要素检查，直接通过");
+            return true;
+        }
         Map<String, String> headers = new HashMap<>();
         //最后在header中的格式(中间是英文空格)为Authorization:APPCODE 83359fd73fe94948385f570e3c139105
         headers.put("Authorization", authCode);
@@ -75,6 +82,10 @@ public class Lfv2Client {
      * @return
      */
     public boolean checkPhone(String phoneNumber, String personName, String idNumber) {
+        if (!enable) {
+            log.warn("未开启手机号三要素校验，直接通过");
+            return true;
+        }
         Map<String, String> headers = new HashMap<>();
         //最后在header中的格式(中间是英文空格)为Authorization:APPCODE 83359fd73fe94948385f570e3c139105
         headers.put("Authorization", authCode);
