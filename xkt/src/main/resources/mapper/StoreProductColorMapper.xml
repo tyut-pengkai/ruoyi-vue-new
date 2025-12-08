@@ -56,7 +56,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="prodCateId != null "> and sp.prod_cate_id = #{prodCateId}</if>
             <if test="privateItem != null "> and sp.private_item = #{privateItem}</if>
         ORDER BY
-            spc.create_time DESC
+            spc.id DESC
     </select>
 
     <select id="fuzzyQueryPage"  resultType="com.ruoyi.xkt.dto.storeProdColor.StoreProdColorResDTO">
