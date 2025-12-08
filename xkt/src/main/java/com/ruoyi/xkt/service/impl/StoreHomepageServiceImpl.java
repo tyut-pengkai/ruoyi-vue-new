@@ -485,6 +485,9 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                 .eq(StoreProductFile::getStoreId, storeId).eq(StoreProductFile::getDelFlag, Constants.UNDELETED).eq(StoreProductFile::getOrderNum, ORDER_NUM_1)
                 .in(StoreProductFile::getStoreProdId, dailySaleTop10ProdList.stream().map(StoreRecommendResDTO::getStoreProdId).collect(Collectors.toList()))
                 .in(StoreProductFile::getFileType, Arrays.asList(FileType.MAIN_PIC.getValue(), FileType.MAIN_PIC_VIDEO.getValue())));
+        if (CollectionUtils.isEmpty(prodFileList)) {
+            return dailySaleTop10ProdList;
+        }
         // 档口商品主图map
         Map<String, Long> mainPicMap = prodFileList.stream().filter(x -> Objects.equals(x.getFileType(), FileType.MAIN_PIC.getValue()))
                 .collect(Collectors.toMap(x -> x.getStoreProdId().toString(), StoreProductFile::getFileId));
