@@ -134,8 +134,7 @@ public class StoreProdCreateVO {
         @NotBlank(message = "帮面材质不可为空!")
         @ApiModelProperty(value = "帮面材质", required = true)
         private String upperMaterial;
-        @NotBlank(message = "鞋垫材质不可为空!")
-        @ApiModelProperty(value = "鞋垫材质", required = true)
+        @ApiModelProperty(value = "鞋垫材质")
         private String insoleMaterial;
         @ApiModelProperty(value = "上市季节年份")
         private String releaseYearSeason;
