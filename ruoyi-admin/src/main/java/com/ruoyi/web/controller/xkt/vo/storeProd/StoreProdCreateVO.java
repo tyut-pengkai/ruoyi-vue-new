@@ -194,8 +194,7 @@ public class StoreProdCreateVO {
         @NotBlank(message = "颜色名称不能为空!")
         @ApiModelProperty(value = "颜色名称", required = true)
         private String colorName;
-        @NotBlank(message = "内里材质不可为空!")
-        @ApiModelProperty(value = "内里材质", required = true)
+        @ApiModelProperty(value = "内里材质")
         private String shoeUpperLiningMaterial;
         @ApiModelProperty(value = "商品尺码", required = true)
         @NotNull(message = "档口商品定价不能为空!")

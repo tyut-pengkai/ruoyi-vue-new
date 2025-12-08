@@ -379,7 +379,8 @@ public class StoreProductServiceImpl implements IStoreProductService {
         // 当前商品待更新的storeColorId列表
         List<Long> updateProdColorIdList = updateDTO.getSizeList().stream().map(StoreProdDTO.SPCSizeDTO::getColorName).map(storeColorMap::get).collect(Collectors.toList());
         // 待更新的商品颜色内里map
-        Map<String, String> updateColorLineMaterialMap = updateDTO.getSizeList().stream().collect(Collectors.toMap(StoreProdDTO.SPCSizeDTO::getColorName, StoreProdDTO.SPCSizeDTO::getShoeUpperLiningMaterial, (v1, v2) -> v2));
+        Map<String, String> updateColorLineMaterialMap = updateDTO.getSizeList().stream().filter(x -> StringUtils.isNotBlank(x.getShoeUpperLiningMaterial()))
+                .collect(Collectors.toMap(StoreProdDTO.SPCSizeDTO::getColorName, StoreProdDTO.SPCSizeDTO::getShoeUpperLiningMaterial, (v1, v2) -> v2));
         dbProdColorList.stream()
                 // 判断有哪些是删除的颜色
                 .filter(color -> !updateProdColorIdList.contains(color.getStoreColorId()))
@@ -519,8 +520,8 @@ public class StoreProductServiceImpl implements IStoreProductService {
         List<StoreProductColor> prodColorList = new ArrayList<>();
         final List<String> prodColorNameList = createDTO.getSizeList().stream().map(StoreProdDTO.SPCSizeDTO::getColorName).distinct().collect(Collectors.toList());
         // 颜色与内里的关系
-        final Map<String, String> colorLiningMaterialMap = createDTO.getSizeList().stream().collect(Collectors
-                .toMap(StoreProdDTO.SPCSizeDTO::getColorName, StoreProdDTO.SPCSizeDTO::getShoeUpperLiningMaterial, (v1, v2) -> v2));
+        final Map<String, String> colorLiningMaterialMap = createDTO.getSizeList().stream().filter(x -> StringUtils.isNotBlank(x.getShoeUpperLiningMaterial()))
+                .collect(Collectors.toMap(StoreProdDTO.SPCSizeDTO::getColorName, StoreProdDTO.SPCSizeDTO::getShoeUpperLiningMaterial, (v1, v2) -> v2));
         for (int i = 0; i < prodColorNameList.size(); i++) {
             prodColorList.add(new StoreProductColor().setStoreColorId(storeColorMap.get(prodColorNameList.get(i))).setStoreProdId(storeProdId)
                     .setShoeUpperLiningMaterial(colorLiningMaterialMap.get(prodColorNameList.get(i))).setColorName(prodColorNameList.get(i))
