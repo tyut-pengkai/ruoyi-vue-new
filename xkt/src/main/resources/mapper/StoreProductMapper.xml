@@ -231,7 +231,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             </if>
         FROM
             store_product sp
-                JOIN store_product_detail spd ON sp.id = spd.store_prod_id AND spd.del_flag = 0
+                LEFT JOIN store_product_detail spd ON sp.id = spd.store_prod_id AND spd.del_flag = 0
                 JOIN store s ON sp.store_id = s.id
         WHERE
             sp.del_flag = 0
@@ -300,7 +300,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         FROM
             store_product sp
                 JOIN store s ON sp.store_id = s.id
-                JOIN store_product_detail spd ON sp.id = spd.store_prod_id AND spd.del_flag = 0
+                LEFT JOIN store_product_detail spd ON sp.id = spd.store_prod_id AND spd.del_flag = 0
                 JOIN store_product_color_size spcs ON sp.id = spcs.store_prod_id AND spcs.del_flag = 0
                 LEFT JOIN daily_prod_tag dpt ON sp.id = dpt.store_prod_id AND dpt.del_flag = 0
         WHERE
