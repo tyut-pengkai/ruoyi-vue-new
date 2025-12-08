@@ -138,7 +138,7 @@ public class FhbOtherBizAfterController extends BaseController {
         fhbAfterArtNumGroupMap.forEach((fhbArtNo, matchList) -> {
             // 初始化档口商品 默认为私款，只能打印条码出库等，不可在平台展示
             StoreProduct storeProd = new StoreProduct().setStoreId(storeId).setProdCateId(prodCateId).setProdCateName(prodCateName).setPrivateItem(1)
-                    .setProdArtNum(fhbArtNo).setProdTitle("上架大卖").setListingWay(ListingType.RIGHT_NOW.getValue())
+                    .setProdArtNum(fhbArtNo).setProdTitle(fhbArtNo).setListingWay(ListingType.RIGHT_NOW.getValue())
                     .setVoucherDate(voucherDate).setProdStatus(EProductStatus.ON_SALE.getValue()).setRecommendWeight(0L).setSaleWeight(0L).setPopularityWeight(0L);
             storeProdList.add(storeProd);
         });
