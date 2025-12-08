@@ -8,6 +8,7 @@ import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.file.FileUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.web.controller.xkt.migartion.vo.CusDiscErrorVO;
 import com.ruoyi.web.controller.xkt.migartion.vo.gt.GtProdSkuVO;
@@ -139,7 +140,7 @@ public class TyController extends BaseController {
     public R<Integer> createCusDiscCache(@RequestParam(value = "userId") Long userId, @RequestParam("compareStr") String compareStr,
                                          MultipartFile file) throws IOException {
         // 导入的excel名，只取客户名称
-        final String cusName = file.getOriginalFilename().replaceAll("\\..*$", "").replaceAll("[^\\u4e00-\\u9fa50-9]", "").trim();
+        final String cusName = FileUtils.getNameNotSuffix(file.getOriginalFilename());
         ExcelUtil<TyCusDiscImportVO> util = new ExcelUtil<>(TyCusDiscImportVO.class);
         List<TyCusDiscImportVO> tyProdVOList = util.importExcel(file.getInputStream());
         // 从redis中获取已存在的客户优惠数据
