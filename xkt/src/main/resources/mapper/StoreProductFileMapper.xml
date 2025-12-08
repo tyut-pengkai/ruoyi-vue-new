@@ -163,7 +163,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 AND spf2.file_type = 1
                 AND spf2.order_num = 1
             ORDER BY
-                spf2.create_time DESC
+                spf2.id DESC
                 LIMIT 1
             );
     </select>

@@ -23,7 +23,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 AND ssf.type_id = #{typeId}
             </if>
         ORDER BY
-            ssf.create_time DESC
+            ssf.id DESC
     </select>
 
 </mapper>

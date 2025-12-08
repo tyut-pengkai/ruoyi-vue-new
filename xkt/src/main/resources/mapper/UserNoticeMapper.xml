@@ -28,7 +28,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             </if>
             AND un.user_id = #{userId}
         ORDER BY
-            un.create_time DESC,
+            un.id DESC,
             un.target_notice_type
     </select>
 
@@ -60,7 +60,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
           AND un.target_notice_type = #{targetNoticeType}
           AND un.user_id = #{userId}
         ORDER BY
-            un.create_time DESC
+            un.id DESC
     </select>
 
 </mapper>

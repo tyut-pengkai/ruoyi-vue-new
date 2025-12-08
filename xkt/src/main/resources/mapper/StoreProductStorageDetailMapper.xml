@@ -56,7 +56,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 AND sps.storage_type = #{storageType}
             </if>
         ORDER BY
-            spsd.create_time DESC
+            spsd.id DESC
     </select>
 
     <select id="selectExportListVoucherDateBetween" resultType="com.ruoyi.xkt.dto.storeProdStorage.StoreStorageDetailDownloadDTO">
@@ -114,7 +114,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 AND sps.storage_type = #{storageType}
             </if>
         ORDER BY
-            spsd.create_time DESC
+            spsd.id DESC
     </select>
 
 </mapper>

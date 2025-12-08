@@ -329,7 +329,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         GROUP BY
             sp.id
         ORDER BY
-            sp.create_time DESC
+            sp.id DESC
             LIMIT 10
     </select>
 

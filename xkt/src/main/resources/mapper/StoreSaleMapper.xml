@@ -21,7 +21,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createTimeStart != null"> and ss.voucher_date &gt;= #{createTimeStart}</if>
             <if test="createTimeEnd != null"> and ss.voucher_date &lt;= #{createTimeEnd}</if>
         ORDER BY
-            ss.create_time DESC
+            ss.id DESC
     </select>
 
     <select id="selectExportList" resultType="com.ruoyi.xkt.dto.storeSale.StoreSaleDownloadDTO">
@@ -48,7 +48,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 </foreach>
             </if>
         ORDER BY
-            ss.create_time DESC
+            ss.id DESC
     </select>
 
     <select id="selectExportListVoucherDateBetween" resultType="com.ruoyi.xkt.dto.storeSale.StoreSaleDownloadDTO">
@@ -70,7 +70,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             AND ss.store_id = #{storeId}
             AND ss.voucher_date BETWEEN #{voucherDateStart} AND #{voucherDateEnd}
         ORDER BY
-            ss.create_time DESC
+            ss.id DESC
     </select>
 
 

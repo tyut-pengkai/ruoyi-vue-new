@@ -28,7 +28,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createTimeStart != null"> and sps.voucher_date &gt;= #{createTimeStart}</if>
             <if test="createTimeEnd != null"> and sps.voucher_date &lt;= #{createTimeEnd}</if>
         ORDER BY
-            sps.create_time DESC
+            sps.id DESC
     </select>
 
 
