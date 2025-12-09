@@ -204,11 +204,12 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
         // 商品ID列表
         List<Long> prodIdList = CollectionUtils.isEmpty(otherList) ? new ArrayList<>() : otherList.stream().map(StoreHomepage::getStoreProdId).collect(Collectors.toList());
         // 筛选商品最新的30条数据
-        List<StoreProduct> latest50ProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+        List<StoreProduct> latest30ProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getStoreId, storeId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)
+                .eq(StoreProduct::getPrivateItem, PrivateItemType.NON_PRIVATE.getValue())
                 .orderByDesc(StoreProduct::getCreateTime).last("LIMIT 30"));
-        CollectionUtils.addAll(prodIdList, latest50ProdList.stream().map(StoreProduct::getId).collect(Collectors.toList()));
-        if (CollectionUtils.isEmpty(latest50ProdList)) {
+        CollectionUtils.addAll(prodIdList, latest30ProdList.stream().map(StoreProduct::getId).collect(Collectors.toList()));
+        if (CollectionUtils.isEmpty(latest30ProdList)) {
             return templateOne;
         }
         // 商品价格、主图、标签等
@@ -216,15 +217,15 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
         Map<Long, StoreProdPriceAndMainPicAndTagDTO> attrMap = attrList.stream()
                 .collect(Collectors.toMap(StoreProdPriceAndMainPicAndTagDTO::getStoreProdId, Function.identity()));
         // 顶部右侧推荐商品
-        templateOne.setTopRightList(this.getTopRightList(otherList, latest50ProdList, attrMap, 2));
+        templateOne.setTopRightList(this.getTopRightList(otherList, latest30ProdList, attrMap, 2));
         // 档口推荐列表
-        templateOne.setRecommendList(this.getStoreRecommendProdList(otherList, latest50ProdList, attrMap, 5));
+        templateOne.setRecommendList(this.getStoreRecommendProdList(otherList, latest30ProdList, attrMap, 5));
         // 人气爆款列表
-        templateOne.setPopularSaleList(this.getPopularSaleList(otherList, latest50ProdList, attrMap, 5));
+        templateOne.setPopularSaleList(this.getPopularSaleList(otherList, latest30ProdList, attrMap, 5));
         // 当季新品列表
-        templateOne.setNewProdList(this.getSeasonNewProdList(otherList, latest50ProdList, attrMap, 5));
+        templateOne.setNewProdList(this.getSeasonNewProdList(otherList, latest30ProdList, attrMap, 5));
         // 销量排行列表
-        templateOne.setSaleRankList(this.getSaleRankList(otherList, latest50ProdList, attrMap, 10));
+        templateOne.setSaleRankList(this.getSaleRankList(otherList, latest30ProdList, attrMap, 10));
         return templateOne;
     }
 
@@ -260,12 +261,13 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                         HomepageType.SALES_RANKING.getValue())));
         // 商品ID列表
         List<Long> prodIdList = CollectionUtils.isEmpty(otherList) ? new ArrayList<>() : otherList.stream().map(StoreHomepage::getStoreProdId).collect(Collectors.toList());
-        // 筛选商品最新的50条数据
-        List<StoreProduct> latest50ProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+        // 筛选商品最新的30条数据
+        List<StoreProduct> latest30ProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getStoreId, storeId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)
+                .eq(StoreProduct::getPrivateItem, PrivateItemType.NON_PRIVATE.getValue())
                 .orderByDesc(StoreProduct::getCreateTime).last("LIMIT 30"));
-        CollectionUtils.addAll(prodIdList, latest50ProdList.stream().map(StoreProduct::getId).collect(Collectors.toList()));
-        if (CollectionUtils.isEmpty(latest50ProdList)) {
+        CollectionUtils.addAll(prodIdList, latest30ProdList.stream().map(StoreProduct::getId).collect(Collectors.toList()));
+        if (CollectionUtils.isEmpty(latest30ProdList)) {
             return templateTwo;
         }
         // 商品价格、主图、标签等
@@ -273,13 +275,13 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
         Map<Long, StoreProdPriceAndMainPicAndTagDTO> attrMap = attrList.stream()
                 .collect(Collectors.toMap(StoreProdPriceAndMainPicAndTagDTO::getStoreProdId, Function.identity()));
         // 档口推荐列表
-        templateTwo.setRecommendList(this.getStoreRecommendProdList(otherList, latest50ProdList, attrMap, 5));
+        templateTwo.setRecommendList(this.getStoreRecommendProdList(otherList, latest30ProdList, attrMap, 5));
         // 人气爆款列表
-        templateTwo.setPopularSaleList(this.getPopularSaleList(otherList, latest50ProdList, attrMap, 5));
+        templateTwo.setPopularSaleList(this.getPopularSaleList(otherList, latest30ProdList, attrMap, 5));
         // 当季新品列表
-        templateTwo.setNewProdList(this.getSeasonNewProdList(otherList, latest50ProdList, attrMap, 5));
+        templateTwo.setNewProdList(this.getSeasonNewProdList(otherList, latest30ProdList, attrMap, 5));
         // 销量排行列表
-        templateTwo.setSaleRankList(this.getSaleRankList(otherList, latest50ProdList, attrMap, 10));
+        templateTwo.setSaleRankList(this.getSaleRankList(otherList, latest30ProdList, attrMap, 10));
         return templateTwo;
     }
 
@@ -301,12 +303,13 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                         HomepageType.STORE_RECOMMENDED.getValue(), HomepageType.SALES_RANKING.getValue())));
         // 商品ID列表
         List<Long> prodIdList = CollectionUtils.isEmpty(otherList) ? new ArrayList<>() : otherList.stream().map(StoreHomepage::getStoreProdId).collect(Collectors.toList());
-        // 筛选商品最新的50条数据
-        List<StoreProduct> latest50ProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+        // 筛选商品最新的30条数据
+        List<StoreProduct> latest30ProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getStoreId, storeId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)
+                .eq(StoreProduct::getPrivateItem, PrivateItemType.NON_PRIVATE.getValue())
                 .orderByDesc(StoreProduct::getCreateTime).last("LIMIT 30"));
-        CollectionUtils.addAll(prodIdList, latest50ProdList.stream().map(StoreProduct::getId).collect(Collectors.toList()));
-        if (CollectionUtils.isEmpty(latest50ProdList)) {
+        CollectionUtils.addAll(prodIdList, latest30ProdList.stream().map(StoreProduct::getId).collect(Collectors.toList()));
+        if (CollectionUtils.isEmpty(latest30ProdList)) {
             return templateThird;
         }
         // 商品价格、主图、标签等
@@ -314,11 +317,11 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
         Map<Long, StoreProdPriceAndMainPicAndTagDTO> attrMap = attrList.stream()
                 .collect(Collectors.toMap(StoreProdPriceAndMainPicAndTagDTO::getStoreProdId, Function.identity()));
         // 顶部右侧推荐商品
-        templateThird.setTopRightList(this.getTopRightList(otherList, latest50ProdList, attrMap, 2));
+        templateThird.setTopRightList(this.getTopRightList(otherList, latest30ProdList, attrMap, 2));
         // 档口推荐列表
-        templateThird.setRecommendList(this.getStoreRecommendProdList(otherList, latest50ProdList, attrMap, 10));
+        templateThird.setRecommendList(this.getStoreRecommendProdList(otherList, latest30ProdList, attrMap, 10));
         // 销量排行列表
-        templateThird.setSaleRankList(this.getSaleRankList(otherList, latest50ProdList, attrMap, 10));
+        templateThird.setSaleRankList(this.getSaleRankList(otherList, latest30ProdList, attrMap, 10));
         return templateThird;
     }
 
@@ -341,12 +344,13 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                         HomepageType.STORE_RECOMMENDED.getValue())));
         // 商品ID列表
         List<Long> prodIdList = CollectionUtils.isEmpty(otherList) ? new ArrayList<>() : otherList.stream().map(StoreHomepage::getStoreProdId).collect(Collectors.toList());
-        // 筛选商品最新的50条数据
-        List<StoreProduct> latest50ProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+        // 筛选商品最新的30条数据
+        List<StoreProduct> latest30ProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getStoreId, storeId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)
+                .eq(StoreProduct::getPrivateItem, PrivateItemType.NON_PRIVATE.getValue())
                 .orderByDesc(StoreProduct::getCreateTime).last("LIMIT 30"));
-        CollectionUtils.addAll(prodIdList, latest50ProdList.stream().map(StoreProduct::getId).collect(Collectors.toList()));
-        if (CollectionUtils.isEmpty(latest50ProdList)) {
+        CollectionUtils.addAll(prodIdList, latest30ProdList.stream().map(StoreProduct::getId).collect(Collectors.toList()));
+        if (CollectionUtils.isEmpty(latest30ProdList)) {
             return templateFour;
         }
         // 商品价格、主图、标签等
@@ -354,13 +358,13 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
         Map<Long, StoreProdPriceAndMainPicAndTagDTO> attrMap = attrList.stream()
                 .collect(Collectors.toMap(StoreProdPriceAndMainPicAndTagDTO::getStoreProdId, Function.identity()));
         // 顶部右侧推荐商品
-        templateFour.setTopRightList(this.getTopRightList(otherList, latest50ProdList, attrMap, 2));
+        templateFour.setTopRightList(this.getTopRightList(otherList, latest30ProdList, attrMap, 2));
         // 档口推荐列表
-        templateFour.setRecommendList(this.getStoreRecommendProdList(otherList, latest50ProdList, attrMap, 5));
+        templateFour.setRecommendList(this.getStoreRecommendProdList(otherList, latest30ProdList, attrMap, 5));
         // 人气爆款列表
-        templateFour.setPopularSaleList(this.getPopularSaleList(otherList, latest50ProdList, attrMap, 5));
+        templateFour.setPopularSaleList(this.getPopularSaleList(otherList, latest30ProdList, attrMap, 5));
         // 当季新品列表
-        templateFour.setNewProdList(this.getSeasonNewProdList(otherList, latest50ProdList, attrMap, 5));
+        templateFour.setNewProdList(this.getSeasonNewProdList(otherList, latest30ProdList, attrMap, 5));
         return templateFour;
     }
 
@@ -396,12 +400,13 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
                         HomepageType.STORE_RECOMMENDED.getValue(), HomepageType.SALES_RANKING.getValue())));
         // 商品ID列表
         List<Long> prodIdList = CollectionUtils.isEmpty(otherList) ? new ArrayList<>() : otherList.stream().map(StoreHomepage::getStoreProdId).collect(Collectors.toList());
-        // 筛选商品最新的50条数据
-        List<StoreProduct> latest50ProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
+        // 筛选商品最新的30条数据
+        List<StoreProduct> latest30ProdList = this.storeProdMapper.selectList(new LambdaQueryWrapper<StoreProduct>()
                 .eq(StoreProduct::getStoreId, storeId).eq(StoreProduct::getDelFlag, Constants.UNDELETED)
+                .eq(StoreProduct::getPrivateItem, PrivateItemType.NON_PRIVATE.getValue())
                 .orderByDesc(StoreProduct::getCreateTime).last("LIMIT 30"));
-        CollectionUtils.addAll(prodIdList, latest50ProdList.stream().map(StoreProduct::getId).collect(Collectors.toList()));
-        if (CollectionUtils.isEmpty(latest50ProdList)) {
+        CollectionUtils.addAll(prodIdList, latest30ProdList.stream().map(StoreProduct::getId).collect(Collectors.toList()));
+        if (CollectionUtils.isEmpty(latest30ProdList)) {
             return templateFive;
         }
         // 商品价格、主图、标签等
@@ -409,11 +414,11 @@ public class StoreHomepageServiceImpl implements IStoreHomepageService {
         Map<Long, StoreProdPriceAndMainPicAndTagDTO> attrMap = attrList.stream()
                 .collect(Collectors.toMap(StoreProdPriceAndMainPicAndTagDTO::getStoreProdId, Function.identity()));
         // 顶部右侧推荐商品
-        templateFive.setTopRightList(this.getTopRightList(otherList, latest50ProdList, attrMap, 2));
+        templateFive.setTopRightList(this.getTopRightList(otherList, latest30ProdList, attrMap, 2));
         // 档口推荐列表
-        templateFive.setRecommendList(this.getStoreRecommendProdList(otherList, latest50ProdList, attrMap, 10));
+        templateFive.setRecommendList(this.getStoreRecommendProdList(otherList, latest30ProdList, attrMap, 10));
         // 销量排行列表
-        templateFive.setSaleRankList(this.getSaleRankList(otherList, latest50ProdList, attrMap, 10));
+        templateFive.setSaleRankList(this.getSaleRankList(otherList, latest30ProdList, attrMap, 10));
         return templateFive;
     }
 
