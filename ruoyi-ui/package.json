@@ -1,8 +1,8 @@
 {
-  "name": "ruoyi",
+  "name": "hair-link",
   "version": "3.9.0",
-  "description": "若依管理系统",
-  "author": "若依",
+  "description": "Hair-Link 美发预约管理系统",
+  "author": "时光",
   "license": "MIT",
   "scripts": {
     "dev": "vue-cli-service serve",
@@ -19,10 +19,6 @@
     "admin-template",
     "management-system"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://gitee.com/y_project/RuoYi-Vue.git"
-  },
   "dependencies": {
     "@riophae/vue-treeselect": "0.4.0",
     "axios": "0.28.1",

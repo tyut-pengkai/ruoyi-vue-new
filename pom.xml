@@ -5,12 +5,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	
     <groupId>com.ruoyi</groupId>
-    <artifactId>ruoyi</artifactId>
+    <artifactId>hair-link</artifactId>
     <version>3.9.0</version>
 
-    <name>ruoyi</name>
-    <url>http://www.ruoyi.vip</url>
-    <description>若依管理系统</description>
+    <name>hair-link</name>
+    <url>http://www.example.com</url>
+    <description>Hair-Link 美发预约管理系统</description>
     
     <properties>
         <ruoyi.version>3.9.0</ruoyi.version>

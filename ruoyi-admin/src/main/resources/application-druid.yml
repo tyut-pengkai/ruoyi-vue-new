@@ -6,34 +6,34 @@ spring:
         druid:
             # 主库数据源
             master:
-                url: jdbc:mysql://localhost:3306/ry-vue?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
-                username: root
-                password: password
+                url: jdbc:mysql://${HAIRLINK_DB_HOST:localhost}:${HAIRLINK_DB_PORT:3306}/${HAIRLINK_DB_NAME:ry-vue}?${HAIRLINK_DB_PARAMS:useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8}
+                username: ${HAIRLINK_DB_USERNAME:root}
+                password: ${HAIRLINK_DB_PASSWORD:password}
             # 从库数据源
             slave:
                 # 从数据源开关/默认关闭
-                enabled: false
-                url: 
-                username: 
-                password: 
+                enabled: ${HAIRLINK_DB_SLAVE_ENABLED:false}
+                url: jdbc:mysql://${HAIRLINK_DB_SLAVE_HOST:}:${HAIRLINK_DB_SLAVE_PORT:}/${HAIRLINK_DB_SLAVE_NAME:}?${HAIRLINK_DB_SLAVE_PARAMS:}
+                username: ${HAIRLINK_DB_SLAVE_USERNAME:}
+                password: ${HAIRLINK_DB_SLAVE_PASSWORD:} 
             # 初始连接数
-            initialSize: 5
+            initialSize: ${HAIRLINK_DB_INITIAL_SIZE:5}
             # 最小连接池数量
-            minIdle: 10
+            minIdle: ${HAIRLINK_DB_MIN_IDLE:10}
             # 最大连接池数量
-            maxActive: 20
+            maxActive: ${HAIRLINK_DB_MAX_ACTIVE:20}
             # 配置获取连接等待超时的时间
-            maxWait: 60000
+            maxWait: ${HAIRLINK_DB_MAX_WAIT:60000}
             # 配置连接超时时间
-            connectTimeout: 30000
+            connectTimeout: ${HAIRLINK_DB_CONNECT_TIMEOUT:30000}
             # 配置网络超时时间
-            socketTimeout: 60000
+            socketTimeout: ${HAIRLINK_DB_SOCKET_TIMEOUT:60000}
             # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
-            timeBetweenEvictionRunsMillis: 60000
+            timeBetweenEvictionRunsMillis: ${HAIRLINK_DB_TIME_BETWEEN_EVICTION:60000}
             # 配置一个连接在池中最小生存的时间，单位是毫秒
-            minEvictableIdleTimeMillis: 300000
+            minEvictableIdleTimeMillis: ${HAIRLINK_DB_MIN_EVICTABLE_IDLE_TIME:300000}
             # 配置一个连接在池中最大生存的时间，单位是毫秒
-            maxEvictableIdleTimeMillis: 900000
+            maxEvictableIdleTimeMillis: ${HAIRLINK_DB_MAX_EVICTABLE_IDLE_TIME:900000}
             # 配置检测连接是否有效
             validationQuery: SELECT 1 FROM DUAL
             testWhileIdle: true
@@ -47,14 +47,14 @@ spring:
                 allow:
                 url-pattern: /druid/*
                 # 控制台管理用户名和密码
-                login-username: ruoyi
-                login-password: 123456
+                login-username: ${HAIRLINK_DRUID_USERNAME:admin}
+                login-password: ${HAIRLINK_DRUID_PASSWORD:123456}
             filter:
                 stat:
                     enabled: true
                     # 慢SQL记录
                     log-slow-sql: true
-                    slow-sql-millis: 1000
+                    slow-sql-millis: ${HAIRLINK_DRUID_SLOW_SQL_MILLIS:1000}
                     merge-sql: true
                 wall:
                     config:
