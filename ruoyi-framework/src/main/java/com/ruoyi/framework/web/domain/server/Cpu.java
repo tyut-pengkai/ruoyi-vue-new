@@ -10,7 +10,7 @@ import com.ruoyi.common.utils.Arith;
 public class Cpu
 {
     /**
-     * 核心数
+     * 核心数111
      */
     private int cpuNum;
 
