@@ -165,6 +165,15 @@
             </el-form-item>
           </el-col>
         </el-row>
+        <el-row v-if="isSuperAdmin">
+          <el-col :span="12">
+            <el-form-item label="所属租户" prop="tenantId">
+              <el-select v-model="form.tenantId" placeholder="请选择租户" clearable>
+                <el-option v-for="item in tenantOptions" :key="item.tenantId" :label="item.tenantName" :value="item.tenantId" :disabled="item.status == '1'"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
         <el-row>
           <el-col :span="24">
             <el-form-item label="备注">
@@ -246,6 +255,8 @@ export default {
       postOptions: [],
       // 角色选项
       roleOptions: [],
+      // 租户选项
+      tenantOptions: [],
       // 表单参数
       form: {},
       defaultProps: {
@@ -315,6 +326,12 @@ export default {
           }
         ]
       }
+    }
+  },
+  computed: {
+    // 判断当前用户是否为超级管理员
+    isSuperAdmin() {
+      return this.$store.getters.id === 1
     }
   },
   watch: {
@@ -400,7 +417,8 @@ export default {
         status: "0",
         remark: undefined,
         postIds: [],
-        roleIds: []
+        roleIds: [],
+        tenantId: undefined
       }
       this.resetForm("form")
     },
@@ -442,6 +460,9 @@ export default {
       getUser().then(response => {
         this.postOptions = response.posts
         this.roleOptions = response.roles
+        if (response.tenants) {
+          this.tenantOptions = response.tenants
+        }
         this.open = true
         this.title = "添加用户"
         this.form.password = this.initPassword
@@ -455,6 +476,9 @@ export default {
         this.form = response.data
         this.postOptions = response.posts
         this.roleOptions = response.roles
+        if (response.tenants) {
+          this.tenantOptions = response.tenants
+        }
         this.$set(this.form, "postIds", response.postIds)
         this.$set(this.form, "roleIds", response.roleIds)
         this.open = true

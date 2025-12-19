@@ -27,6 +27,11 @@ public class LoginUser implements UserDetails
     private Long deptId;
 
     /**
+     * 租户ID
+     */
+    private Long tenantId;
+
+    /**
      * 用户唯一标识
      */
     private String token;
@@ -256,6 +261,16 @@ public class LoginUser implements UserDetails
     public void setUser(SysUser user)
     {
         this.user = user;
+    }
+
+    public Long getTenantId()
+    {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId)
+    {
+        this.tenantId = tenantId;
     }
 
     @Override

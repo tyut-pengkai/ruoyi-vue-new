@@ -56,7 +56,7 @@ public class TokenService
 
     /**
      * 获取用户身份信息
-     * 
+     *
      * @return 用户信息
      */
     public LoginUser getLoginUser(HttpServletRequest request)
@@ -72,6 +72,15 @@ public class TokenService
                 String uuid = (String) claims.get(Constants.LOGIN_USER_KEY);
                 String userKey = getTokenKey(uuid);
                 LoginUser user = redisCache.getCacheObject(userKey);
+
+                // 【多租户】从JWT中提取tenant_id并设置到LoginUser
+                if (user != null && claims.get("tenant_id") != null)
+                {
+                    Long tenantId = claims.get("tenant_id", Long.class);
+                    user.setTenantId(tenantId);
+                    log.debug("从JWT中提取租户ID: {}", tenantId);
+                }
+
                 return user;
             }
             catch (Exception e)
@@ -107,7 +116,7 @@ public class TokenService
 
     /**
      * 创建令牌
-     * 
+     *
      * @param loginUser 用户信息
      * @return 令牌
      */
@@ -121,6 +130,14 @@ public class TokenService
         Map<String, Object> claims = new HashMap<>();
         claims.put(Constants.LOGIN_USER_KEY, token);
         claims.put(Constants.JWT_USERNAME, loginUser.getUsername());
+
+        // 【多租户】将tenant_id存入JWT
+        if (loginUser.getTenantId() != null)
+        {
+            claims.put("tenant_id", loginUser.getTenantId());
+            log.debug("JWT中存储租户ID: {}", loginUser.getTenantId());
+        }
+
         return createToken(claims);
     }
 

@@ -27,9 +27,11 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.system.domain.SysTenant;
 import com.ruoyi.system.service.ISysDeptService;
 import com.ruoyi.system.service.ISysPostService;
 import com.ruoyi.system.service.ISysRoleService;
+import com.ruoyi.system.service.ISysTenantService;
 import com.ruoyi.system.service.ISysUserService;
 
 /**
@@ -52,6 +54,9 @@ public class SysUserController extends BaseController
 
     @Autowired
     private ISysPostService postService;
+
+    @Autowired
+    private ISysTenantService tenantService;
 
     /**
      * 获取用户列表
@@ -113,6 +118,13 @@ public class SysUserController extends BaseController
         List<SysRole> roles = roleService.selectRoleAll();
         ajax.put("roles", SysUser.isAdmin(userId) ? roles : roles.stream().filter(r -> !r.isAdmin()).collect(Collectors.toList()));
         ajax.put("posts", postService.selectPostAll());
+        // 如果是超级管理员，返回租户列表
+        if (SysUser.isAdmin(SecurityUtils.getUserId()))
+        {
+            SysTenant query = new SysTenant();
+            query.setStatus("0");
+            ajax.put("tenants", tenantService.selectSysTenantList(query));
+        }
         return ajax;
     }
 
