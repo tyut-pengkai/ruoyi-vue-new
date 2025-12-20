@@ -6,6 +6,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 	<resultMap type="SysDictType" id="SysDictTypeResult">
 		<id     property="dictId"     column="dict_id"     />
+		<result property="tenantId"   column="tenant_id"   />
 		<result property="dictName"   column="dict_name"   />
 		<result property="dictType"   column="dict_type"   />
 		<result property="status"     column="status"      />
@@ -14,9 +15,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="updateBy"   column="update_by"   />
 		<result property="updateTime" column="update_time" />
 	</resultMap>
-	
+
 	<sql id="selectDictTypeVo">
-        select dict_id, dict_name, dict_type, status, create_by, create_time, remark 
+        select dict_id, tenant_id, dict_name, dict_type, status, create_by, create_time, remark
 		from sys_dict_type
     </sql>
 
@@ -39,6 +40,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 				and date_format(create_time,'%Y%m%d') &lt;= date_format(#{params.endTime},'%Y%m%d')
 			</if>
 	    </where>
+		order by create_time desc
 	</select>
 	
 	<select id="selectDictTypeAll" resultMap="SysDictTypeResult">
@@ -86,6 +88,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  	
  	<insert id="insertDictType" parameterType="SysDictType">
  		insert into sys_dict_type(
+ 			<if test="tenantId != null">tenant_id,</if>
  			<if test="dictName != null and dictName != ''">dict_name,</if>
  			<if test="dictType != null and dictType != ''">dict_type,</if>
  			<if test="status != null">status,</if>
@@ -93,6 +96,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  			<if test="createBy != null and createBy != ''">create_by,</if>
  			create_time
  		)values(
+ 			<if test="tenantId != null">#{tenantId},</if>
  			<if test="dictName != null and dictName != ''">#{dictName},</if>
  			<if test="dictType != null and dictType != ''">#{dictType},</if>
  			<if test="status != null">#{status},</if>

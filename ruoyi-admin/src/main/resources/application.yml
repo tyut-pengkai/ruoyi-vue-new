@@ -1,49 +1,49 @@
 # 项目相关配置
-ruoyi:
+hairlink:
   # 名称
-  name: RuoYi
+  name: Hair-Link
   # 版本
   version: 3.9.1
   # 版权年份
   copyrightYear: 2025
-  # 文件路径 示例（ Windows配置D:/ruoyi/uploadPath，Linux配置 /home/ruoyi/uploadPath）
-  profile: D:/ruoyi/uploadPath
+  # 文件路径 示例（ Windows配置D:/hairlink/uploadPath，Linux配置 /home/hairlink/uploadPath）
+  profile: ${HAIRLINK_UPLOAD_PATH:./upload}
   # 获取ip地址开关
-  addressEnabled: false
+  addressEnabled: ${HAIRLINK_ADDRESS_ENABLED:false}
   # 验证码类型 math 数字计算 char 字符验证
-  captchaType: math
+  captchaType: ${HAIRLINK_CAPTCHA_TYPE:math}
 
 # 开发环境配置
 server:
   # 服务器的HTTP端口，默认为8080
-  port: 8080
+  port: ${HAIRLINK_SERVER_PORT:8080}
   servlet:
     # 应用的访问路径
-    context-path: /
+    context-path: ${HAIRLINK_CONTEXT_PATH:/}
   tomcat:
     # tomcat的URI编码
-    uri-encoding: UTF-8
+    uri-encoding: ${HAIRLINK_SERVER_URI_ENCODING:UTF-8}
     # 连接数满后的排队数，默认为100
-    accept-count: 1000
+    accept-count: ${HAIRLINK_SERVER_ACCEPT_COUNT:1000}
     threads:
       # tomcat最大线程数，默认为200
-      max: 800
+      max: ${HAIRLINK_SERVER_MAX_THREADS:800}
       # Tomcat启动初始化的线程数，默认值10
-      min-spare: 100
+      min-spare: ${HAIRLINK_SERVER_MIN_SPARE_THREADS:100}
 
 # 日志配置
 logging:
   level:
-    com.ruoyi: debug
-    org.springframework: warn
+    com.ruoyi: ${HAIRLINK_LOG_LEVEL_RUOYI:debug}
+    org.springframework: ${HAIRLINK_LOG_LEVEL_SPRING:warn}
 
 # 用户配置
 user:
   password:
     # 密码最大错误次数
-    maxRetryCount: 5
+    maxRetryCount: ${HAIRLINK_PASSWORD_MAX_RETRY:5}
     # 密码锁定时间（默认10分钟）
-    lockTime: 10
+    lockTime: ${HAIRLINK_PASSWORD_LOCK_TIME:10}
 
 # Spring配置
 spring:
@@ -57,45 +57,45 @@ spring:
   servlet:
     multipart:
       # 单个文件大小
-      max-file-size: 10MB
+      max-file-size: ${HAIRLINK_MAX_FILE_SIZE:10MB}
       # 设置总上传的文件大小
-      max-request-size: 20MB
+      max-request-size: ${HAIRLINK_MAX_REQUEST_SIZE:20MB}
   # 服务模块
   devtools:
     restart:
       # 热部署开关
-      enabled: true
+      enabled: ${HAIRLINK_DEVTOOLS_ENABLED:true}
   # redis 配置
   redis:
     # 地址
-    host: localhost
+    host: ${HAIRLINK_REDIS_HOST:localhost}
     # 端口，默认为6379
-    port: 6379
+    port: ${HAIRLINK_REDIS_PORT:6379}
     # 数据库索引
-    database: 0
+    database: ${HAIRLINK_REDIS_DATABASE:0}
     # 密码
-    password:
+    password: ${HAIRLINK_REDIS_PASSWORD:}
     # 连接超时时间
-    timeout: 10s
+    timeout: ${HAIRLINK_REDIS_TIMEOUT:10s}
     lettuce:
       pool:
         # 连接池中的最小空闲连接
-        min-idle: 0
+        min-idle: ${HAIRLINK_REDIS_MIN_IDLE:0}
         # 连接池中的最大空闲连接
-        max-idle: 8
+        max-idle: ${HAIRLINK_REDIS_MAX_IDLE:8}
         # 连接池的最大数据库连接数
-        max-active: 8
+        max-active: ${HAIRLINK_REDIS_MAX_ACTIVE:8}
         # #连接池最大阻塞等待时间（使用负值表示没有限制）
-        max-wait: -1ms
+        max-wait: ${HAIRLINK_REDIS_MAX_WAIT:-1ms}
 
 # token配置
 token:
   # 令牌自定义标识
-  header: Authorization
+  header: ${HAIRLINK_TOKEN_HEADER:Authorization}
   # 令牌密钥
-  secret: abcdefghijklmnopqrstuvwxyz
+  secret: ${HAIRLINK_TOKEN_SECRET:abcdefghijklmnopqrstuvwxyz}
   # 令牌有效期（默认30分钟）
-  expireTime: 30
+  expireTime: ${HAIRLINK_TOKEN_EXPIRE_TIME:30}
 
 # MyBatis配置
 mybatis:
@@ -115,22 +115,22 @@ pagehelper:
 # Swagger配置
 swagger:
   # 是否开启swagger
-  enabled: true
+  enabled: ${HAIRLINK_SWAGGER_ENABLED:true}
   # 请求前缀
-  pathMapping: /dev-api
+  pathMapping: ${HAIRLINK_SWAGGER_PATH_MAPPING:/dev-api}
 
 # 防盗链配置
 referer:
   # 防盗链开关
-  enabled: false
+  enabled: ${HAIRLINK_REFERER_ENABLED:false}
   # 允许的域名列表
-  allowed-domains: localhost,127.0.0.1,ruoyi.vip,www.ruoyi.vip
+  allowed-domains: ${HAIRLINK_REFERER_ALLOWED_DOMAINS:localhost,127.0.0.1}
 
 # 防止XSS攻击
 xss:
   # 过滤开关
-  enabled: true
+  enabled: ${HAIRLINK_XSS_ENABLED:true}
   # 排除链接（多个用逗号分隔）
-  excludes: /system/notice
+  excludes: ${HAIRLINK_XSS_EXCLUDES:/system/notice}
   # 匹配链接
-  urlPatterns: /system/*,/monitor/*,/tool/*
+  urlPatterns: ${HAIRLINK_XSS_URL_PATTERNS:/system/*,/monitor/*,/tool/*}

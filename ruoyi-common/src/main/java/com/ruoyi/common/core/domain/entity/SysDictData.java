@@ -22,6 +22,9 @@ public class SysDictData extends BaseEntity
     @Excel(name = "字典编码", cellType = ColumnType.NUMERIC)
     private Long dictCode;
 
+    /** 租户ID（0=系统级） */
+    private Long tenantId;
+
     /** 字典排序 */
     @Excel(name = "字典排序", cellType = ColumnType.NUMERIC)
     private Long dictSort;
@@ -60,6 +63,16 @@ public class SysDictData extends BaseEntity
     public void setDictCode(Long dictCode)
     {
         this.dictCode = dictCode;
+    }
+
+    public Long getTenantId()
+    {
+        return tenantId;
+    }
+
+    public void setTenantId(Long tenantId)
+    {
+        this.tenantId = tenantId;
     }
 
     public Long getDictSort()
@@ -158,6 +171,7 @@ public class SysDictData extends BaseEntity
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("dictCode", getDictCode())
+            .append("tenantId", getTenantId())
             .append("dictSort", getDictSort())
             .append("dictLabel", getDictLabel())
             .append("dictValue", getDictValue())

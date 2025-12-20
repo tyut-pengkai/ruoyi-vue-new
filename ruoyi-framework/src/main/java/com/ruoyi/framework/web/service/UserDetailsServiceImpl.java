@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import com.ruoyi.common.core.context.TenantContext;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.enums.UserStatus;
@@ -27,7 +28,7 @@ public class UserDetailsServiceImpl implements UserDetailsService
 
     @Autowired
     private ISysUserService userService;
-    
+
     @Autowired
     private SysPasswordService passwordService;
 
@@ -37,7 +38,22 @@ public class UserDetailsServiceImpl implements UserDetailsService
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException
     {
-        SysUser user = userService.selectUserByUserName(username);
+        // 【多租户】从上下文获取租户ID，用于查询指定租户的用户
+        Long tenantId = TenantContext.getTenantId();
+        SysUser user;
+        if (tenantId != null)
+        {
+            // 有租户ID时，查询指定租户的用户
+            user = userService.selectUserByUserNameAndTenantId(username, tenantId);
+            log.debug("【多租户】查询用户: {}, 租户ID: {}", username, tenantId);
+        }
+        else
+        {
+            // 无租户ID时（超级管理员登录），查询所有用户
+            user = userService.selectUserByUserName(username);
+            log.debug("【多租户】超级管理员登录，查询用户: {}", username);
+        }
+
         if (StringUtils.isNull(user))
         {
             log.info("登录用户：{} 不存在.", username);

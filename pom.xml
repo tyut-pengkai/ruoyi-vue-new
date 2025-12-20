@@ -8,9 +8,9 @@
     <artifactId>ruoyi</artifactId>
     <version>3.9.1</version>
 
-    <name>ruoyi</name>
-    <url>http://www.ruoyi.vip</url>
-    <description>若依管理系统</description>
+    <name>hair-link</name>
+    <url>http://www.example.com</url>
+    <description>Hair-Link 美发预约管理系统</description>
     
     <properties>
         <ruoyi.version>3.9.1</ruoyi.version>
@@ -30,6 +30,9 @@
         <poi.version>4.1.2</poi.version>
         <velocity.version>2.3</velocity.version>
         <jwt.version>0.9.1</jwt.version>
+        <!-- 多租户相关依赖版本 -->
+        <transmittable-thread-local.version>2.14.3</transmittable-thread-local.version>
+        <jsqlparser.version>4.6</jsqlparser.version>
         <!-- override dependency version -->
         <tomcat.version>9.0.112</tomcat.version>
         <logback.version>1.2.13</logback.version>
@@ -216,6 +219,20 @@
                 <groupId>com.ruoyi</groupId>
                 <artifactId>ruoyi-common</artifactId>
                 <version>${ruoyi.version}</version>
+            </dependency>
+
+            <!-- 多租户支持 - TransmittableThreadLocal -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>transmittable-thread-local</artifactId>
+                <version>${transmittable-thread-local.version}</version>
+            </dependency>
+
+            <!-- SQL解析器 - JSqlParser -->
+            <dependency>
+                <groupId>com.github.jsqlparser</groupId>
+                <artifactId>jsqlparser</artifactId>
+                <version>${jsqlparser.version}</version>
             </dependency>
 
         </dependencies>

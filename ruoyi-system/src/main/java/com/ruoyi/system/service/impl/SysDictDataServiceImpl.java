@@ -3,6 +3,7 @@ package com.ruoyi.system.service.impl;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.ruoyi.common.core.context.TenantContext;
 import com.ruoyi.common.core.domain.entity.SysDictData;
 import com.ruoyi.common.utils.DictUtils;
 import com.ruoyi.system.mapper.SysDictDataMapper;
@@ -75,13 +76,17 @@ public class SysDictDataServiceImpl implements ISysDictDataService
 
     /**
      * 新增保存字典数据信息
-     * 
+     *
      * @param data 字典数据信息
      * @return 结果
      */
     @Override
     public int insertDictData(SysDictData data)
     {
+        // 自动填充 tenant_id（混合模式：普通租户填充租户ID，超级管理员填充0表示系统级）
+        Long tenantId = TenantContext.getTenantId();
+        data.setTenantId(tenantId != null ? tenantId : 0L);
+
         int row = dictDataMapper.insertDictData(data);
         if (row > 0)
         {

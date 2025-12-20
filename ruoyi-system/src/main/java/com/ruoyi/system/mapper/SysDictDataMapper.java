@@ -86,10 +86,20 @@ public interface SysDictDataMapper
 
     /**
      * 同步修改字典类型
-     * 
+     *
      * @param oldDictType 旧字典类型
      * @param newDictType 新旧字典类型
      * @return 结果
      */
     public int updateDictDataType(@Param("oldDictType") String oldDictType, @Param("newDictType") String newDictType);
+
+    /**
+     * 混合模式查询：根据字典类型和租户ID查询字典数据
+     * Reason: 合并系统字典(tenant_id=0)和租户字典，租户优先
+     *
+     * @param dictType 字典类型
+     * @param tenantId 租户ID
+     * @return 字典数据集合信息
+     */
+    public List<SysDictData> selectDictDataByTypeWithTenant(@Param("dictType") String dictType, @Param("tenantId") Long tenantId);
 }

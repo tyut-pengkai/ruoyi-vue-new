@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.ruoyi.common.constant.UserConstants;
+import com.ruoyi.common.core.context.TenantContext;
 import com.ruoyi.common.core.domain.entity.SysDictData;
 import com.ruoyi.common.core.domain.entity.SysDictType;
 import com.ruoyi.common.exception.ServiceException;
@@ -133,16 +134,26 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService
 
     /**
      * 加载字典缓存数据
+     * Reason: 启动时设置全局模式，跳过租户过滤
      */
     @Override
     public void loadingDictCache()
     {
-        SysDictData dictData = new SysDictData();
-        dictData.setStatus("0");
-        Map<String, List<SysDictData>> dictDataMap = dictDataMapper.selectDictDataList(dictData).stream().collect(Collectors.groupingBy(SysDictData::getDictType));
-        for (Map.Entry<String, List<SysDictData>> entry : dictDataMap.entrySet())
+        // 启动时加载缓存，设置全局模式跳过租户过滤
+        TenantContext.setIgnore(true);
+        try
         {
-            DictUtils.setDictCache(entry.getKey(), entry.getValue().stream().sorted(Comparator.comparing(SysDictData::getDictSort)).collect(Collectors.toList()));
+            SysDictData dictData = new SysDictData();
+            dictData.setStatus("0");
+            Map<String, List<SysDictData>> dictDataMap = dictDataMapper.selectDictDataList(dictData).stream().collect(Collectors.groupingBy(SysDictData::getDictType));
+            for (Map.Entry<String, List<SysDictData>> entry : dictDataMap.entrySet())
+            {
+                DictUtils.setDictCache(entry.getKey(), entry.getValue().stream().sorted(Comparator.comparing(SysDictData::getDictSort)).collect(Collectors.toList()));
+            }
+        }
+        finally
+        {
+            TenantContext.clear();
         }
     }
 
@@ -167,13 +178,17 @@ public class SysDictTypeServiceImpl implements ISysDictTypeService
 
     /**
      * 新增保存字典类型信息
-     * 
+     *
      * @param dict 字典类型信息
      * @return 结果
      */
     @Override
     public int insertDictType(SysDictType dict)
     {
+        // 自动填充 tenant_id（混合模式：普通租户填充租户ID，超级管理员填充0表示系统级）
+        Long tenantId = TenantContext.getTenantId();
+        dict.setTenantId(tenantId != null ? tenantId : 0L);
+
         int row = dictTypeMapper.insertDictType(dict);
         if (row > 0)
         {

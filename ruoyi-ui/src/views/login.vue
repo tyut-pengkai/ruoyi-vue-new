@@ -2,6 +2,16 @@
   <div class="login">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
       <h3 class="title">{{title}}</h3>
+      <el-form-item prop="tenantCode">
+        <el-input
+          v-model="loginForm.tenantCode"
+          type="text"
+          auto-complete="off"
+          placeholder="租户编码（管理员留空）"
+        >
+          <svg-icon slot="prefix" icon-class="tree" class="el-input__icon input-icon" />
+        </el-input>
+      </el-form-item>
       <el-form-item prop="username">
         <el-input
           v-model="loginForm.username"
@@ -56,7 +66,7 @@
     </el-form>
     <!--  底部  -->
     <div class="el-login-footer">
-      <span>{{ footerContent }}</span>
+      <span>Copyright © 2025 时光. All Rights Reserved.</span>
     </div>
   </div>
 </template>
@@ -75,6 +85,7 @@ export default {
       footerContent: defaultSettings.footerContent,
       codeUrl: "",
       loginForm: {
+        tenantCode: "",
         username: "admin",
         password: "admin123",
         rememberMe: false,

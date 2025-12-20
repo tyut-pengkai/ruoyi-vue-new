@@ -107,7 +107,7 @@ public class SysUserServiceImpl implements ISysUserService
 
     /**
      * 通过用户名查询用户
-     * 
+     *
      * @param userName 用户名
      * @return 用户对象信息
      */
@@ -115,6 +115,19 @@ public class SysUserServiceImpl implements ISysUserService
     public SysUser selectUserByUserName(String userName)
     {
         return userMapper.selectUserByUserName(userName);
+    }
+
+    /**
+     * 通过用户名和租户ID查询用户
+     *
+     * @param userName 用户名
+     * @param tenantId 租户ID
+     * @return 用户对象信息
+     */
+    @Override
+    public SysUser selectUserByUserNameAndTenantId(String userName, Long tenantId)
+    {
+        return userMapper.selectUserByUserNameAndTenantId(userName, tenantId);
     }
 
     /**
@@ -165,7 +178,8 @@ public class SysUserServiceImpl implements ISysUserService
 
     /**
      * 校验用户名称是否唯一
-     * 
+     * Reason: Bug Fix - 添加 tenant_id 参数，支持不同租户创建同名用户
+     *
      * @param user 用户信息
      * @return 结果
      */
@@ -173,7 +187,8 @@ public class SysUserServiceImpl implements ISysUserService
     public boolean checkUserNameUnique(SysUser user)
     {
         Long userId = StringUtils.isNull(user.getUserId()) ? -1L : user.getUserId();
-        SysUser info = userMapper.checkUserNameUnique(user.getUserName());
+        Long tenantId = user.getTenantId();
+        SysUser info = userMapper.checkUserNameUnique(user.getUserName(), tenantId);
         if (StringUtils.isNotNull(info) && info.getUserId().longValue() != userId.longValue())
         {
             return UserConstants.NOT_UNIQUE;
@@ -183,6 +198,7 @@ public class SysUserServiceImpl implements ISysUserService
 
     /**
      * 校验手机号码是否唯一
+     * Reason: Bug Fix - 添加 tenant_id 参数，支持不同租户使用同一手机号
      *
      * @param user 用户信息
      * @return
@@ -191,7 +207,8 @@ public class SysUserServiceImpl implements ISysUserService
     public boolean checkPhoneUnique(SysUser user)
     {
         Long userId = StringUtils.isNull(user.getUserId()) ? -1L : user.getUserId();
-        SysUser info = userMapper.checkPhoneUnique(user.getPhonenumber());
+        Long tenantId = user.getTenantId();
+        SysUser info = userMapper.checkPhoneUnique(user.getPhonenumber(), tenantId);
         if (StringUtils.isNotNull(info) && info.getUserId().longValue() != userId.longValue())
         {
             return UserConstants.NOT_UNIQUE;
@@ -201,6 +218,7 @@ public class SysUserServiceImpl implements ISysUserService
 
     /**
      * 校验email是否唯一
+     * Reason: Bug Fix - 添加 tenant_id 参数，支持不同租户使用同一邮箱
      *
      * @param user 用户信息
      * @return
@@ -209,7 +227,8 @@ public class SysUserServiceImpl implements ISysUserService
     public boolean checkEmailUnique(SysUser user)
     {
         Long userId = StringUtils.isNull(user.getUserId()) ? -1L : user.getUserId();
-        SysUser info = userMapper.checkEmailUnique(user.getEmail());
+        Long tenantId = user.getTenantId();
+        SysUser info = userMapper.checkEmailUnique(user.getEmail(), tenantId);
         if (StringUtils.isNotNull(info) && info.getUserId().longValue() != userId.longValue())
         {
             return UserConstants.NOT_UNIQUE;

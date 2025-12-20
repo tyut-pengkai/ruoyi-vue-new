@@ -134,3 +134,6 @@ export function deptTreeSelect() {
     method: 'get'
   })
 }
+
+// 导出租户列表查询方法
+export { listTenant } from '@/api/system/tenant'
