@@ -41,13 +41,15 @@
           placeholder="请选择过期时间">
         </el-date-picker>
       </el-form-item>
-      <el-form-item label="套餐ID" prop="packageId">
-        <el-input
-          v-model="queryParams.packageId"
-          placeholder="请输入套餐ID"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="租户套餐" prop="packageId">
+        <el-select v-model="queryParams.packageId" placeholder="请选择套餐" clearable>
+          <el-option
+            v-for="pkg in packageList"
+            :key="pkg.packageId"
+            :label="pkg.packageName"
+            :value="pkg.packageId"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -113,7 +115,11 @@
           <span>{{ parseTime(scope.row.expireTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="套餐ID" align="center" prop="packageId" />
+      <el-table-column label="租户套餐" align="center" prop="packageId">
+        <template slot-scope="scope">
+          <span>{{ getPackageName(scope.row.packageId) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="状态" align="center" prop="status" />
       <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -167,11 +173,18 @@
             placeholder="请选择过期时间">
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="套餐ID" prop="packageId">
-          <el-input v-model="form.packageId" placeholder="请输入套餐ID" />
-        </el-form-item>
-        <el-form-item label="删除标志" prop="delFlag">
-          <el-input v-model="form.delFlag" placeholder="请输入删除标志" />
+        <el-form-item label="租户套餐" prop="packageId">
+          <el-select v-model="form.packageId" placeholder="请选择套餐" clearable style="width: 100%">
+            <el-option
+              v-for="pkg in packageList"
+              :key="pkg.packageId"
+              :label="pkg.packageName"
+              :value="pkg.packageId"
+            >
+              <span>{{ pkg.packageName }}</span>
+              <span style="color: #8492a6; font-size: 12px; margin-left: 10px">{{ pkg.remark }}</span>
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
@@ -187,6 +200,7 @@
 
 <script>
 import { listTenant, getTenant, delTenant, addTenant, updateTenant } from "@/api/system/tenant"
+import { listPackage } from "@/api/system/package"
 
 export default {
   name: "Tenant",
@@ -206,6 +220,8 @@ export default {
       total: 0,
       // 租户信息表格数据
       tenantList: [],
+      // 套餐列表
+      packageList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -237,6 +253,7 @@ export default {
   },
   created() {
     this.getList()
+    this.getPackageList()
   },
   methods: {
     /** 查询租户信息列表 */
@@ -247,6 +264,18 @@ export default {
         this.total = response.total
         this.loading = false
       })
+    },
+    /** 查询套餐列表 */
+    getPackageList() {
+      listPackage({ status: '0' }).then(response => {
+        this.packageList = response.rows
+      })
+    },
+    /** 根据套餐ID获取套餐名称 */
+    getPackageName(packageId) {
+      if (!packageId) return '-'
+      const pkg = this.packageList.find(p => p.packageId === packageId)
+      return pkg ? pkg.packageName : '-'
     },
     // 取消按钮
     cancel() {

@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.common.constant.Constants;
@@ -16,14 +18,18 @@ import com.ruoyi.common.core.domain.TreeSelect;
 import com.ruoyi.common.core.domain.entity.SysMenu;
 import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.system.domain.SysTenant;
 import com.ruoyi.system.domain.vo.MetaVo;
 import com.ruoyi.system.domain.vo.RouterVo;
 import com.ruoyi.system.mapper.SysMenuMapper;
 import com.ruoyi.system.mapper.SysRoleMapper;
 import com.ruoyi.system.mapper.SysRoleMenuMapper;
 import com.ruoyi.system.service.ISysMenuService;
+import com.ruoyi.system.service.ISysTenantService;
+import com.ruoyi.system.service.ISysTenantPackageService;
 
 /**
  * 菜单 业务层处理
@@ -33,6 +39,8 @@ import com.ruoyi.system.service.ISysMenuService;
 @Service
 public class SysMenuServiceImpl implements ISysMenuService
 {
+    private static final Logger log = LoggerFactory.getLogger(SysMenuServiceImpl.class);
+
     public static final String PREMISSION_STRING = "perms[\"{0}\"]";
 
     @Autowired
@@ -43,6 +51,12 @@ public class SysMenuServiceImpl implements ISysMenuService
 
     @Autowired
     private SysRoleMenuMapper roleMenuMapper;
+
+    @Autowired
+    private ISysTenantService tenantService;
+
+    @Autowired
+    private ISysTenantPackageService packageService;
 
     /**
      * 根据用户查询系统菜单列表
@@ -58,7 +72,7 @@ public class SysMenuServiceImpl implements ISysMenuService
 
     /**
      * 查询系统菜单列表
-     * 
+     *
      * @param menu 菜单信息
      * @return 菜单列表
      */
@@ -75,6 +89,8 @@ public class SysMenuServiceImpl implements ISysMenuService
         {
             menu.getParams().put("userId", userId);
             menuList = menuMapper.selectMenuListByUserId(menu);
+            // 应用租户套餐过滤
+            menuList = applyPackageFilter(menuList);
         }
         return menuList;
     }
@@ -123,7 +139,7 @@ public class SysMenuServiceImpl implements ISysMenuService
 
     /**
      * 根据用户ID查询菜单
-     * 
+     *
      * @param userId 用户名称
      * @return 菜单列表
      */
@@ -138,6 +154,8 @@ public class SysMenuServiceImpl implements ISysMenuService
         else
         {
             menus = menuMapper.selectMenuTreeByUserId(userId);
+            // 应用租户套餐过滤
+            menus = applyPackageFilter(menus);
         }
         return getChildPerms(menus, 0);
     }
@@ -532,12 +550,69 @@ public class SysMenuServiceImpl implements ISysMenuService
 
     /**
      * 内链域名特殊字符替换
-     * 
+     *
      * @return 替换后的内链域名
      */
     public String innerLinkReplaceEach(String path)
     {
         return StringUtils.replaceEach(path, new String[] { Constants.HTTP, Constants.HTTPS, Constants.WWW, ".", ":" },
                 new String[] { "", "", "", "/", "/" });
+    }
+
+    /**
+     * 应用租户套餐菜单过滤
+     *
+     * Reason: 实现租户套餐功能，通过套餐控制租户的菜单权限
+     * 逻辑：角色菜单 ∩ 套餐菜单
+     *
+     * @param menus 角色菜单列表
+     * @return 过滤后的菜单列表
+     */
+    private List<SysMenu> applyPackageFilter(List<SysMenu> menus)
+    {
+        try
+        {
+            // 1. 获取当前租户
+            LoginUser loginUser = SecurityUtils.getLoginUser();
+            if (loginUser == null || loginUser.getTenantId() == null)
+            {
+                return menus;  // 无租户不过滤
+            }
+
+            // 2. 获取租户信息
+            SysTenant tenant = tenantService.selectSysTenantByTenantId(loginUser.getTenantId());
+            if (tenant == null || tenant.getPackageId() == null)
+            {
+                log.warn("租户 {} 未配置套餐，不限制菜单", loginUser.getTenantId());
+                return menus;
+            }
+
+            // 3. 获取套餐菜单ID集合
+            List<Long> packageMenuIds = packageService.selectMenuIdsByPackageId(tenant.getPackageId());
+
+            // 4. 空列表表示高级套餐（不限制）
+            if (packageMenuIds == null || packageMenuIds.isEmpty())
+            {
+                log.debug("租户 {} 使用高级套餐，不限制菜单", loginUser.getTenantId());
+                return menus;
+            }
+
+            // 5. 过滤：只保留套餐内菜单
+            Set<Long> packageMenuIdSet = new HashSet<>(packageMenuIds);
+            List<SysMenu> filteredMenus = menus.stream()
+                .filter(menu -> packageMenuIdSet.contains(menu.getMenuId()))
+                .collect(Collectors.toList());
+
+            log.debug("租户 {} 套餐过滤: {} → {} 个菜单",
+                loginUser.getTenantId(), menus.size(), filteredMenus.size());
+
+            return filteredMenus;
+
+        }
+        catch (Exception e)
+        {
+            log.error("应用租户套餐过滤失败，降级为不过滤", e);
+            return menus;  // 容错：失败不影响正常功能
+        }
     }
 }

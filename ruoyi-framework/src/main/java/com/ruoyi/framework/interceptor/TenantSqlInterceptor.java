@@ -1,20 +1,26 @@
 package com.ruoyi.framework.interceptor;
 
 import java.sql.Connection;
+import java.util.List;
 import java.util.Properties;
 
 import com.ruoyi.common.exception.ServiceException;
 import net.sf.jsqlparser.expression.LongValue;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
+import net.sf.jsqlparser.expression.operators.relational.ExpressionList;
+import net.sf.jsqlparser.expression.operators.relational.ItemsList;
+import net.sf.jsqlparser.expression.operators.relational.MultiExpressionList;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.schema.Table;
 import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.delete.Delete;
+import net.sf.jsqlparser.statement.insert.Insert;
 import net.sf.jsqlparser.statement.select.FromItem;
 import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.Select;
+import net.sf.jsqlparser.statement.select.SubSelect;
 import net.sf.jsqlparser.statement.update.Update;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
@@ -114,10 +120,11 @@ public class TenantSqlInterceptor implements Interceptor {
      * @return true-需要拦截，false-不需要
      */
     private boolean shouldIntercept(SqlCommandType sqlCommandType, String sql) {
-        // 只拦截 SELECT、UPDATE、DELETE
+        // 拦截 SELECT、UPDATE、DELETE、INSERT
         if (sqlCommandType != SqlCommandType.SELECT &&
             sqlCommandType != SqlCommandType.UPDATE &&
-            sqlCommandType != SqlCommandType.DELETE) {
+            sqlCommandType != SqlCommandType.DELETE &&
+            sqlCommandType != SqlCommandType.INSERT) {
             return false;
         }
 
@@ -152,6 +159,8 @@ public class TenantSqlInterceptor implements Interceptor {
             return ((Update) statement).getTable().getName();
         } else if (statement instanceof Delete) {
             return ((Delete) statement).getTable().getName();
+        } else if (statement instanceof Insert) {
+            return ((Insert) statement).getTable().getName();
         }
         return null;
     }
@@ -163,8 +172,7 @@ public class TenantSqlInterceptor implements Interceptor {
      * @return true-是租户表，false-不是
      */
     private boolean isTenantTable(String tableName) {
-        return TenantConfig.TENANT_TABLES.stream()
-            .anyMatch(t -> t.equalsIgnoreCase(tableName));
+        return TenantConfig.needTenantFilter(tableName);
     }
 
     /**
@@ -232,6 +240,10 @@ public class TenantSqlInterceptor implements Interceptor {
             }
 
             return deleteStatement.toString();
+        }
+        else if (statement instanceof Insert) {
+            // 处理 INSERT 语句
+            return processInsert((Insert) statement, tenantId);
         }
 
         return sql;
@@ -305,6 +317,63 @@ public class TenantSqlInterceptor implements Interceptor {
         }
         equalsTo.setRightExpression(new LongValue(tenantId));
         return equalsTo;
+    }
+
+    /**
+     * 处理INSERT语句 - 自动填充tenant_id
+     *
+     * Reason: 防止开发人员忘记手动设置tenant_id导致孤儿数据
+     *
+     * @param insertStatement INSERT语句
+     * @param tenantId 租户ID
+     * @return 改写后的SQL
+     */
+    private String processInsert(Insert insertStatement, Long tenantId) {
+        // 1. 获取表名
+        String tableName = insertStatement.getTable().getName();
+
+        // 2. 获取列定义
+        List<Column> columns = insertStatement.getColumns();
+        if (columns == null || columns.isEmpty()) {
+            // 无列名INSERT: INSERT INTO table VALUES (...)
+            log.warn("【租户INSERT】无列名语句无法自动填充tenant_id: {}", tableName);
+            return insertStatement.toString();
+        }
+
+        // 3. 检查是否已有tenant_id
+        boolean hasTenantId = columns.stream()
+            .anyMatch(col -> "tenant_id".equalsIgnoreCase(col.getColumnName()));
+
+        if (hasTenantId) {
+            log.debug("【租户INSERT】已包含tenant_id,跳过自动填充: {}", tableName);
+            return insertStatement.toString();
+        }
+
+        // 4. 自动添加tenant_id列
+        columns.add(new Column("tenant_id"));
+
+        // 5. 处理VALUES
+        ItemsList itemsList = insertStatement.getItemsList();
+        if (itemsList instanceof ExpressionList) {
+            // 单行INSERT
+            ExpressionList expressionList = (ExpressionList) itemsList;
+            expressionList.getExpressions().add(new LongValue(tenantId));
+        }
+        else if (itemsList instanceof MultiExpressionList) {
+            // 批量INSERT
+            MultiExpressionList multiList = (MultiExpressionList) itemsList;
+            for (ExpressionList expList : multiList.getExpressionLists()) {
+                expList.getExpressions().add(new LongValue(tenantId));
+            }
+        }
+        else if (itemsList instanceof SubSelect) {
+            // INSERT SELECT（暂不支持）
+            log.warn("【租户INSERT】INSERT SELECT语句暂不支持自动填充: {}", tableName);
+            return insertStatement.toString();
+        }
+
+        log.info("【租户INSERT拦截】自动填充tenant_id={}: {}", tenantId, tableName);
+        return insertStatement.toString();
     }
 
     @Override
