@@ -75,12 +75,14 @@
 import { getCodeImg } from "@/api/login"
 import Cookies from "js-cookie"
 import { encrypt, decrypt } from '@/utils/jsencrypt'
+import defaultSettings from '@/settings'
 
 export default {
   name: "Login",
   data() {
     return {
       title: process.env.VUE_APP_TITLE,
+      footerContent: defaultSettings.footerContent,
       codeUrl: "",
       loginForm: {
         tenantCode: "",
@@ -167,7 +169,7 @@ export default {
 }
 </script>
 
-<style rel="stylesheet/scss" lang="scss">
+<style rel="stylesheet/scss" lang="scss" scoped>
 .login {
   display: flex;
   justify-content: center;
