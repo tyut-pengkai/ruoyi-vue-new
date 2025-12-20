@@ -7,10 +7,12 @@ import java.util.Properties;
 import com.ruoyi.common.exception.ServiceException;
 import net.sf.jsqlparser.expression.LongValue;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
+import net.sf.jsqlparser.expression.operators.conditional.OrExpression;
 import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
 import net.sf.jsqlparser.expression.operators.relational.ExpressionList;
 import net.sf.jsqlparser.expression.operators.relational.ItemsList;
 import net.sf.jsqlparser.expression.operators.relational.MultiExpressionList;
+import net.sf.jsqlparser.expression.Parenthesis;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.schema.Table;
@@ -110,7 +112,7 @@ public class TenantSqlInterceptor implements Interceptor {
     /**
      * 判断是否需要拦截
      *
-     * 核心逻辑：通过SQL解析获取主表名，只有主表是租户表时才拦截
+     * 核心逻辑：通过SQL解析获取主表名，只有主表是租户表或混合模式表时才拦截
      * 这样可以避免：
      * 1. 字符串子串匹配导致的误判（如 sys_role_menu 误匹配 sys_role）
      * 2. JOIN表被错误过滤（只对主表添加租户条件）
@@ -133,8 +135,8 @@ public class TenantSqlInterceptor implements Interceptor {
             Statement statement = CCJSqlParserUtil.parse(sql);
             String mainTableName = getMainTableName(statement);
 
-            // 只有主表是租户表时才拦截
-            return mainTableName != null && isTenantTable(mainTableName);
+            // 租户表或混合模式表都需要拦截
+            return mainTableName != null && (isTenantTable(mainTableName) || isHybridTable(mainTableName));
         } catch (Exception e) {
             // SQL解析失败，不拦截（避免影响正常业务）
             log.debug("SQL解析失败，跳过租户拦截: {}", e.getMessage());
@@ -176,6 +178,17 @@ public class TenantSqlInterceptor implements Interceptor {
     }
 
     /**
+     * 判断表名是否是混合模式表
+     * Reason: 混合模式表同时支持系统级数据(tenant_id=0)和租户级数据
+     *
+     * @param tableName 表名
+     * @return true-是混合模式表，false-不是
+     */
+    private boolean isHybridTable(String tableName) {
+        return TenantConfig.isHybridTable(tableName);
+    }
+
+    /**
      * 处理SQL - 添加租户过滤条件
      *
      * @param sql 原始SQL
@@ -185,6 +198,8 @@ public class TenantSqlInterceptor implements Interceptor {
      */
     private String processSql(String sql, Long tenantId, SqlCommandType sqlCommandType) throws Exception {
         Statement statement = CCJSqlParserUtil.parse(sql);
+        String tableName = getMainTableName(statement);
+        boolean isHybrid = isHybridTable(tableName);
 
         if (statement instanceof Select) {
             // 处理 SELECT 语句
@@ -194,8 +209,15 @@ public class TenantSqlInterceptor implements Interceptor {
             // 获取主表别名，避免多表JOIN时tenant_id歧义
             String tableAlias = getMainTableAlias(plainSelect);
 
-            // 构造 tenant_id = ? 条件（带表别名）
-            EqualsTo tenantCondition = buildTenantCondition(tenantId, tableAlias);
+            // 根据表类型构造不同的租户条件
+            net.sf.jsqlparser.expression.Expression tenantCondition;
+            if (isHybrid) {
+                // 混合模式：(tenant_id = ? OR tenant_id = 0)
+                tenantCondition = buildHybridTenantCondition(tenantId, tableAlias);
+            } else {
+                // 普通租户表：tenant_id = ?
+                tenantCondition = buildTenantCondition(tenantId, tableAlias);
+            }
 
             // 合并WHERE条件
             if (plainSelect.getWhere() != null) {
@@ -213,7 +235,11 @@ public class TenantSqlInterceptor implements Interceptor {
 
             // 获取表别名
             String tableAlias = getUpdateTableAlias(updateStatement);
-            EqualsTo tenantCondition = buildTenantCondition(tenantId, tableAlias);
+
+            // 根据表类型构造不同的租户条件
+            // Reason: 混合模式表的UPDATE只能操作租户自己的数据，不能修改系统级数据(tenant_id=0)
+            net.sf.jsqlparser.expression.Expression tenantCondition;
+            tenantCondition = buildTenantCondition(tenantId, tableAlias);
 
             if (updateStatement.getWhere() != null) {
                 AndExpression andExpression = new AndExpression(tenantCondition, updateStatement.getWhere());
@@ -230,7 +256,11 @@ public class TenantSqlInterceptor implements Interceptor {
 
             // 获取表别名
             String tableAlias = getDeleteTableAlias(deleteStatement);
-            EqualsTo tenantCondition = buildTenantCondition(tenantId, tableAlias);
+
+            // 根据表类型构造不同的租户条件
+            // Reason: 混合模式表的DELETE只能操作租户自己的数据，不能删除系统级数据(tenant_id=0)
+            net.sf.jsqlparser.expression.Expression tenantCondition;
+            tenantCondition = buildTenantCondition(tenantId, tableAlias);
 
             if (deleteStatement.getWhere() != null) {
                 AndExpression andExpression = new AndExpression(tenantCondition, deleteStatement.getWhere());
@@ -317,6 +347,38 @@ public class TenantSqlInterceptor implements Interceptor {
         }
         equalsTo.setRightExpression(new LongValue(tenantId));
         return equalsTo;
+    }
+
+    /**
+     * 构造混合模式租户过滤条件：([表别名.]tenant_id = ? OR [表别名.]tenant_id = 0)
+     * Reason: 混合模式表同时支持系统级数据(tenant_id=0)和租户级数据
+     *
+     * @param tenantId 租户ID
+     * @param tableAlias 表别名（可为null）
+     * @return Parenthesis 表达式（带括号的OR条件）
+     */
+    private Parenthesis buildHybridTenantCondition(Long tenantId, String tableAlias) {
+        // 构造 tenant_id = ?
+        EqualsTo tenantCondition = new EqualsTo();
+        if (tableAlias != null) {
+            tenantCondition.setLeftExpression(new Column(new Table(tableAlias), "tenant_id"));
+        } else {
+            tenantCondition.setLeftExpression(new Column("tenant_id"));
+        }
+        tenantCondition.setRightExpression(new LongValue(tenantId));
+
+        // 构造 tenant_id = 0
+        EqualsTo systemCondition = new EqualsTo();
+        if (tableAlias != null) {
+            systemCondition.setLeftExpression(new Column(new Table(tableAlias), "tenant_id"));
+        } else {
+            systemCondition.setLeftExpression(new Column("tenant_id"));
+        }
+        systemCondition.setRightExpression(new LongValue(0));
+
+        // 构造 (tenant_id = ? OR tenant_id = 0)
+        OrExpression orExpression = new OrExpression(tenantCondition, systemCondition);
+        return new Parenthesis(orExpression);
     }
 
     /**

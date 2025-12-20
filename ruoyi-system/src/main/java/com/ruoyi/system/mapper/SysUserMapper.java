@@ -38,11 +38,20 @@ public interface SysUserMapper
 
     /**
      * 通过用户名查询用户
-     * 
+     *
      * @param userName 用户名
      * @return 用户对象信息
      */
     public SysUser selectUserByUserName(String userName);
+
+    /**
+     * 通过用户名和租户ID查询用户
+     *
+     * @param userName 用户名
+     * @param tenantId 租户ID
+     * @return 用户对象信息
+     */
+    public SysUser selectUserByUserNameAndTenantId(@Param("userName") String userName, @Param("tenantId") Long tenantId);
 
     /**
      * 通过用户ID查询用户
@@ -123,25 +132,28 @@ public interface SysUserMapper
 
     /**
      * 校验用户名称是否唯一
-     * 
+     *
      * @param userName 用户名称
+     * @param tenantId 租户ID
      * @return 结果
      */
-    public SysUser checkUserNameUnique(String userName);
+    public SysUser checkUserNameUnique(@Param("userName") String userName, @Param("tenantId") Long tenantId);
 
     /**
      * 校验手机号码是否唯一
      *
      * @param phonenumber 手机号码
+     * @param tenantId 租户ID
      * @return 结果
      */
-    public SysUser checkPhoneUnique(String phonenumber);
+    public SysUser checkPhoneUnique(@Param("phonenumber") String phonenumber, @Param("tenantId") Long tenantId);
 
     /**
      * 校验email是否唯一
      *
      * @param email 用户邮箱
+     * @param tenantId 租户ID
      * @return 结果
      */
-    public SysUser checkEmailUnique(String email);
+    public SysUser checkEmailUnique(@Param("email") String email, @Param("tenantId") Long tenantId);
 }

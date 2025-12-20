@@ -37,11 +37,20 @@ public interface ISysUserService
 
     /**
      * 通过用户名查询用户
-     * 
+     *
      * @param userName 用户名
      * @return 用户对象信息
      */
     public SysUser selectUserByUserName(String userName);
+
+    /**
+     * 通过用户名和租户ID查询用户
+     *
+     * @param userName 用户名
+     * @param tenantId 租户ID
+     * @return 用户对象信息
+     */
+    public SysUser selectUserByUserNameAndTenantId(String userName, Long tenantId);
 
     /**
      * 通过用户ID查询用户

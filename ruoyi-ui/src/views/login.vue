@@ -2,6 +2,16 @@
   <div class="login">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
       <h3 class="title">{{title}}</h3>
+      <el-form-item prop="tenantCode">
+        <el-input
+          v-model="loginForm.tenantCode"
+          type="text"
+          auto-complete="off"
+          placeholder="租户编码（管理员留空）"
+        >
+          <svg-icon slot="prefix" icon-class="tree" class="el-input__icon input-icon" />
+        </el-input>
+      </el-form-item>
       <el-form-item prop="username">
         <el-input
           v-model="loginForm.username"
@@ -73,6 +83,7 @@ export default {
       title: process.env.VUE_APP_TITLE,
       codeUrl: "",
       loginForm: {
+        tenantCode: "",
         username: "admin",
         password: "admin123",
         rememberMe: false,

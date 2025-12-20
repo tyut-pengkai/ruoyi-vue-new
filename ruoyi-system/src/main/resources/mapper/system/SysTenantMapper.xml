@@ -43,6 +43,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where tenant_id = #{tenantId}
     </select>
 
+    <select id="selectSysTenantByTenantCode" parameterType="String" resultMap="SysTenantResult">
+        <include refid="selectSysTenantVo"/>
+        where tenant_code = #{tenantCode} and del_flag = '0' and status = '0'
+    </select>
+
     <insert id="insertSysTenant" parameterType="SysTenant" useGeneratedKeys="true" keyProperty="tenantId">
         insert into sys_tenant
         <trim prefix="(" suffix=")" suffixOverrides=",">

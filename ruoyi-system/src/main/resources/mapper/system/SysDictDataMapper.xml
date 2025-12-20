@@ -6,6 +6,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<resultMap type="SysDictData" id="SysDictDataResult">
 		<id     property="dictCode"   column="dict_code"   />
+		<result property="tenantId"   column="tenant_id"   />
 		<result property="dictSort"   column="dict_sort"   />
 		<result property="dictLabel"  column="dict_label"  />
 		<result property="dictValue"  column="dict_value"  />
@@ -19,9 +20,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="updateBy"   column="update_by"   />
 		<result property="updateTime" column="update_time" />
 	</resultMap>
-	
+
 	<sql id="selectDictDataVo">
-        select dict_code, dict_sort, dict_label, dict_value, dict_type, css_class, list_class, is_default, status, create_by, create_time, remark 
+        select dict_code, tenant_id, dict_sort, dict_label, dict_value, dict_type, css_class, list_class, is_default, status, create_by, create_time, remark
 		from sys_dict_data
     </sql>
 
@@ -95,6 +96,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  	
  	<insert id="insertDictData" parameterType="SysDictData">
  		insert into sys_dict_data(
+ 			<if test="tenantId != null">tenant_id,</if>
  			<if test="dictSort != null">dict_sort,</if>
  			<if test="dictLabel != null and dictLabel != ''">dict_label,</if>
  			<if test="dictValue != null and dictValue != ''">dict_value,</if>
@@ -107,6 +109,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  			<if test="createBy != null and createBy != ''">create_by,</if>
  			create_time
  		)values(
+ 			<if test="tenantId != null">#{tenantId},</if>
  		    <if test="dictSort != null">#{dictSort},</if>
  		    <if test="dictLabel != null and dictLabel != ''">#{dictLabel},</if>
  			<if test="dictValue != null and dictValue != ''">#{dictValue},</if>
@@ -120,5 +123,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
  			sysdate()
  		)
 	</insert>
-	
+
+	<!-- 混合模式查询：合并系统字典和租户字典，租户优先 -->
+	<select id="selectDictDataByTypeWithTenant" resultMap="SysDictDataResult">
+		SELECT d1.* FROM sys_dict_data d1
+		WHERE d1.dict_type = #{dictType}
+		  AND d1.status = '0'
+		  AND d1.tenant_id IN (0, #{tenantId})
+		  AND NOT EXISTS (
+			  SELECT 1 FROM sys_dict_data d2
+			  WHERE d2.dict_type = d1.dict_type
+				AND d2.dict_value = d1.dict_value
+				AND d2.tenant_id = #{tenantId}
+				AND d1.tenant_id = 0
+		  )
+		ORDER BY d1.dict_sort ASC
+	</select>
+
 </mapper> 

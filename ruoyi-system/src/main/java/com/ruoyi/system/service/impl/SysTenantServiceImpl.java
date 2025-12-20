@@ -22,7 +22,7 @@ public class SysTenantServiceImpl implements ISysTenantService
 
     /**
      * 查询租户信息
-     * 
+     *
      * @param tenantId 租户信息主键
      * @return 租户信息
      */
@@ -30,6 +30,18 @@ public class SysTenantServiceImpl implements ISysTenantService
     public SysTenant selectSysTenantByTenantId(Long tenantId)
     {
         return sysTenantMapper.selectSysTenantByTenantId(tenantId);
+    }
+
+    /**
+     * 通过租户编码查询租户信息
+     *
+     * @param tenantCode 租户编码
+     * @return 租户信息
+     */
+    @Override
+    public SysTenant selectSysTenantByTenantCode(String tenantCode)
+    {
+        return sysTenantMapper.selectSysTenantByTenantCode(tenantCode);
     }
 
     /**

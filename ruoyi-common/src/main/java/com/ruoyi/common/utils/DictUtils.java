@@ -6,6 +6,7 @@ import com.alibaba.fastjson2.JSONArray;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.core.domain.entity.SysDictData;
 import com.ruoyi.common.core.redis.RedisCache;
+import com.ruoyi.common.core.context.TenantContext;
 import com.ruoyi.common.utils.spring.SpringUtils;
 
 /**
@@ -228,12 +229,24 @@ public class DictUtils
 
     /**
      * 设置cache key
-     * 
+     * Reason: 字典数据支持混合模式（系统级tenant_id=0 + 租户级tenant_id=租户ID）
+     * 每个租户的缓存包含：系统级字典 + 该租户的字典，需要按租户隔离缓存
+     *
      * @param configKey 参数键
      * @return 缓存键key
      */
     public static String getCacheKey(String configKey)
     {
-        return CacheConstants.SYS_DICT_KEY + configKey;
+        // 超级管理员或全局模式使用全局缓存
+        if (TenantContext.isIgnore()) {
+            return CacheConstants.SYS_DICT_KEY + "global:" + configKey;
+        }
+        // 租户使用租户级缓存
+        Long tenantId = TenantContext.getTenantId();
+        if (tenantId != null) {
+            return CacheConstants.SYS_DICT_KEY + "tenant_" + tenantId + ":" + configKey;
+        }
+        // 兜底：无租户上下文时使用全局缓存
+        return CacheConstants.SYS_DICT_KEY + "global:" + configKey;
     }
 }

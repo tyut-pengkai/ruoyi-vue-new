@@ -47,8 +47,9 @@ const user = {
       const password = userInfo.password
       const code = userInfo.code
       const uuid = userInfo.uuid
+      const tenantCode = userInfo.tenantCode
       return new Promise((resolve, reject) => {
-        login(username, password, code, uuid).then(res => {
+        login(username, password, code, uuid, tenantCode).then(res => {
           setToken(res.token)
           commit('SET_TOKEN', res.token)
           resolve()
@@ -67,9 +68,13 @@ const user = {
           if (!isHttp(avatar)) {
             avatar = (isEmpty(avatar)) ? defAva : process.env.VUE_APP_BASE_API + avatar
           }
-          if (res.roles && res.roles.length > 0) { // 验证返回的roles是否是一个非空数组
-            commit('SET_ROLES', res.roles)
+          // 设置权限（独立于角色，解决跨租户角色关联时permissions无法设置的问题）
+          if (res.permissions && res.permissions.length > 0) {
             commit('SET_PERMISSIONS', res.permissions)
+          }
+          // 设置角色
+          if (res.roles && res.roles.length > 0) {
+            commit('SET_ROLES', res.roles)
           } else {
             commit('SET_ROLES', ['ROLE_DEFAULT'])
           }

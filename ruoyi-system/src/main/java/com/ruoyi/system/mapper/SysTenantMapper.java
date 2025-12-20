@@ -15,11 +15,19 @@ public interface SysTenantMapper
 {
     /**
      * 查询租户信息
-     * 
+     *
      * @param tenantId 租户信息主键
      * @return 租户信息
      */
     public SysTenant selectSysTenantByTenantId(Long tenantId);
+
+    /**
+     * 通过租户编码查询租户信息
+     *
+     * @param tenantCode 租户编码
+     * @return 租户信息
+     */
+    public SysTenant selectSysTenantByTenantCode(String tenantCode);
 
     /**
      * 查询租户信息列表

@@ -30,6 +30,8 @@ import com.ruoyi.framework.manager.factory.AsyncFactory;
 import com.ruoyi.framework.security.context.AuthenticationContextHolder;
 import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysUserService;
+import com.ruoyi.system.service.ISysTenantService;
+import com.ruoyi.system.domain.SysTenant;
 
 /**
  * 登录校验方法
@@ -55,16 +57,20 @@ public class SysLoginService
     @Autowired
     private ISysConfigService configService;
 
+    @Autowired
+    private ISysTenantService tenantService;
+
     /**
      * 登录验证
-     * 
+     *
      * @param username 用户名
      * @param password 密码
      * @param code 验证码
      * @param uuid 唯一标识
+     * @param tenantCode 租户编码
      * @return 结果
      */
-    public String login(String username, String password, String code, String uuid)
+    public String login(String username, String password, String code, String uuid, String tenantCode)
     {
         // 【多租户】登录阶段：临时忽略租户过滤
         // Reason: 登录时需要查询用户表获取tenant_id，形成先有鸡还是先有蛋的问题
@@ -78,6 +84,23 @@ public class SysLoginService
             validateCaptcha(username, code, uuid);
             // 登录前置校验
             loginPreCheck(username, password);
+
+            // 【多租户】通过租户编码查询租户ID并设置到上下文
+            Long tenantId = null;
+            if (StringUtils.isNotEmpty(tenantCode))
+            {
+                SysTenant tenant = tenantService.selectSysTenantByTenantCode(tenantCode);
+                if (tenant == null)
+                {
+                    AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, "租户不存在或已停用"));
+                    throw new ServiceException("租户不存在或已停用");
+                }
+                tenantId = tenant.getTenantId();
+                // 将租户ID设置到上下文，供 UserDetailsServiceImpl 使用
+                TenantContext.setTenantId(tenantId);
+                log.info("【多租户】登录租户编码: {}, 租户ID: {}", tenantCode, tenantId);
+            }
+
             // 用户验证
             Authentication authentication = null;
             try

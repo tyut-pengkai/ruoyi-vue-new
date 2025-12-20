@@ -54,13 +54,21 @@ public class TenantConfig {
     );
 
     /**
+     * 混合模式表（系统级 + 租户级共存）
+     * Reason: 这些表同时支持系统级数据(tenant_id=0)和租户级数据
+     * 查询时使用 WHERE (tenant_id = ? OR tenant_id = 0)
+     */
+    public static final List<String> HYBRID_TABLES = Arrays.asList(
+        "sys_dict_type",
+        "sys_dict_data"
+    );
+
+    /**
      * 不需要租户隔离的表（白名单）
      * Reason: 这些表是全局共享的，所有租户共用
      */
     public static final List<String> IGNORE_TABLES = Arrays.asList(
         "sys_menu",
-        "sys_dict_type",
-        "sys_dict_data",
         "sys_config",
         "sys_user_role",
         "sys_role_menu",
@@ -118,5 +126,19 @@ public class TenantConfig {
 
         // 租户表需要过滤
         return TENANT_TABLES.stream().anyMatch(lowerTableName::equals);
+    }
+
+    /**
+     * 判断表是否为混合模式表
+     * Reason: 混合模式表同时支持系统级数据(tenant_id=0)和租户级数据
+     *
+     * @param tableName 表名
+     * @return true-混合模式表，false-非混合模式表
+     */
+    public static boolean isHybridTable(String tableName) {
+        if (tableName == null) {
+            return false;
+        }
+        return HYBRID_TABLES.stream().anyMatch(tableName.toLowerCase()::equals);
     }
 }

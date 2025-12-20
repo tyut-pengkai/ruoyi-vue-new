@@ -158,6 +158,16 @@
     <!-- 添加或修改角色配置对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
+        <el-form-item label="所属租户" prop="tenantId" v-if="isSuperAdmin">
+          <el-select v-model="form.tenantId" placeholder="请选择所属租户" clearable style="width: 100%">
+            <el-option
+              v-for="item in tenantList"
+              :key="item.tenantId"
+              :label="item.tenantName"
+              :value="item.tenantId"
+            />
+          </el-select>
+        </el-form-item>
         <el-form-item label="角色名称" prop="roleName">
           <el-input v-model="form.roleName" placeholder="请输入角色名称" />
         </el-form-item>
@@ -254,6 +264,7 @@
 <script>
 import { listRole, getRole, delRole, addRole, updateRole, dataScope, changeRoleStatus, deptTreeSelect } from "@/api/system/role"
 import { treeselect as menuTreeselect, roleMenuTreeselect } from "@/api/system/menu"
+import { listTenant } from "@/api/system/tenant"
 
 export default {
   name: "Role",
@@ -313,6 +324,8 @@ export default {
       menuOptions: [],
       // 部门列表
       deptOptions: [],
+      // 租户列表
+      tenantList: [],
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -344,6 +357,13 @@ export default {
   created() {
     this.getList()
   },
+  computed: {
+    // 判断是否为超级管理员（拥有*:*:*权限）
+    isSuperAdmin() {
+      const permissions = this.$store.getters && this.$store.getters.permissions
+      return permissions && permissions.includes('*:*:*')
+    }
+  },
   methods: {
     /** 查询角色列表 */
     getList() {
@@ -359,6 +379,12 @@ export default {
     getMenuTreeselect() {
       menuTreeselect().then(response => {
         this.menuOptions = response.data
+      })
+    },
+    /** 查询租户列表 */
+    getTenantList() {
+      listTenant({ status: '0' }).then(response => {
+        this.tenantList = response.rows
       })
     },
     // 所有菜单节点数据
@@ -433,7 +459,8 @@ export default {
         deptIds: [],
         menuCheckStrictly: true,
         deptCheckStrictly: true,
-        remark: undefined
+        remark: undefined,
+        tenantId: undefined
       }
       this.resetForm("form")
     },
@@ -501,6 +528,10 @@ export default {
     handleAdd() {
       this.reset()
       this.getMenuTreeselect()
+      // 超级管理员获取租户列表
+      if (this.isSuperAdmin) {
+        this.getTenantList()
+      }
       this.open = true
       this.title = "添加角色"
     },
