@@ -3,7 +3,11 @@ package com.ruoyi.common.utils;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.ruoyi.common.core.domain.entity.SysUser;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.util.PatternMatchUtils;
@@ -173,6 +177,18 @@ public class SecurityUtils
     {
         return roles.stream().filter(StringUtils::hasText)
                 .anyMatch(x -> Constants.SUPER_ADMIN.equals(x) || PatternMatchUtils.simpleMatch(x, role));
+    }
+
+    /**
+     * 委派用户
+     * 模拟其他用户登录或是在定时任务等无登录用户环境下填充默认用户，确保可正常获取用户信息。
+     */
+    public static void delegatingUser(SysUser user) {
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        LoginUser loginUser = new LoginUser();
+        loginUser.setUser(user);
+        context.setAuthentication(new UsernamePasswordAuthenticationToken(loginUser, null));
+        SecurityContextHolder.setContext(context);
     }
 
 }
