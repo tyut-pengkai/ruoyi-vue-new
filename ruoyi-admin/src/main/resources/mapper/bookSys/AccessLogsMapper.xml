@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.bookSys.mapper.AccessLogsMapper">
+    
+    <resultMap type="AccessLogs" id="AccessLogsResult">
+        <result property="logId"    column="log_id"    />
+        <result property="recordId"    column="record_id"    />
+        <result property="gateId"    column="gate_id"    />
+        <result property="gateName"    column="gate_name"    />
+        <result property="accessType"    column="access_type"    />
+        <result property="accessTime"    column="access_time"    />
+        <result property="verifyMethod"    column="verify_method"    />
+        <result property="verifyResult"    column="verify_result"    />
+        <result property="failReason"    column="fail_reason"    />
+        <result property="photoPath"    column="photo_path"    />
+        <result property="temperature"    column="temperature"    />
+    </resultMap>
+
+    <sql id="selectAccessLogsVo">
+        select log_id, record_id, gate_id, gate_name, access_type, access_time, verify_method, verify_result, fail_reason, photo_path, temperature from access_logs
+    </sql>
+
+    <select id="selectAccessLogsList" parameterType="AccessLogs" resultMap="AccessLogsResult">
+        <include refid="selectAccessLogsVo"/>
+        <where>  
+            <if test="recordId != null "> and record_id = #{recordId}</if>
+            <if test="gateId != null "> and gate_id = #{gateId}</if>
+            <if test="gateName != null  and gateName != ''"> and gate_name like concat('%', #{gateName}, '%')</if>
+            <if test="accessType != null "> and access_type = #{accessType}</if>
+            <if test="accessTime != null "> and access_time = #{accessTime}</if>
+            <if test="verifyMethod != null "> and verify_method = #{verifyMethod}</if>
+            <if test="verifyResult != null "> and verify_result = #{verifyResult}</if>
+            <if test="failReason != null  and failReason != ''"> and fail_reason = #{failReason}</if>
+            <if test="photoPath != null  and photoPath != ''"> and photo_path = #{photoPath}</if>
+            <if test="temperature != null "> and temperature = #{temperature}</if>
+        </where>
+    </select>
+    
+    <select id="selectAccessLogsByLogId" parameterType="Long" resultMap="AccessLogsResult">
+        <include refid="selectAccessLogsVo"/>
+        where log_id = #{logId}
+    </select>
+
+    <insert id="insertAccessLogs" parameterType="AccessLogs" useGeneratedKeys="true" keyProperty="logId">
+        insert into access_logs
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="recordId != null">record_id,</if>
+            <if test="gateId != null">gate_id,</if>
+            <if test="gateName != null">gate_name,</if>
+            <if test="accessType != null">access_type,</if>
+            <if test="accessTime != null">access_time,</if>
+            <if test="verifyMethod != null">verify_method,</if>
+            <if test="verifyResult != null">verify_result,</if>
+            <if test="failReason != null">fail_reason,</if>
+            <if test="photoPath != null">photo_path,</if>
+            <if test="temperature != null">temperature,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="recordId != null">#{recordId},</if>
+            <if test="gateId != null">#{gateId},</if>
+            <if test="gateName != null">#{gateName},</if>
+            <if test="accessType != null">#{accessType},</if>
+            <if test="accessTime != null">#{accessTime},</if>
+            <if test="verifyMethod != null">#{verifyMethod},</if>
+            <if test="verifyResult != null">#{verifyResult},</if>
+            <if test="failReason != null">#{failReason},</if>
+            <if test="photoPath != null">#{photoPath},</if>
+            <if test="temperature != null">#{temperature},</if>
+         </trim>
+    </insert>
+
+    <update id="updateAccessLogs" parameterType="AccessLogs">
+        update access_logs
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="recordId != null">record_id = #{recordId},</if>
+            <if test="gateId != null">gate_id = #{gateId},</if>
+            <if test="gateName != null">gate_name = #{gateName},</if>
+            <if test="accessType != null">access_type = #{accessType},</if>
+            <if test="accessTime != null">access_time = #{accessTime},</if>
+            <if test="verifyMethod != null">verify_method = #{verifyMethod},</if>
+            <if test="verifyResult != null">verify_result = #{verifyResult},</if>
+            <if test="failReason != null">fail_reason = #{failReason},</if>
+            <if test="photoPath != null">photo_path = #{photoPath},</if>
+            <if test="temperature != null">temperature = #{temperature},</if>
+        </trim>
+        where log_id = #{logId}
+    </update>
+
+    <delete id="deleteAccessLogsByLogId" parameterType="Long">
+        delete from access_logs where log_id = #{logId}
+    </delete>
+
+    <delete id="deleteAccessLogsByLogIds" parameterType="String">
+        delete from access_logs where log_id in 
+        <foreach item="logId" collection="array" open="(" separator="," close=")">
+            #{logId}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.bookSys.mapper.PropertyStaffMapper">
+    
+    <resultMap type="PropertyStaff" id="PropertyStaffResult">
+        <result property="staffId"    column="staff_id"    />
+        <result property="username"    column="username"    />
+        <result property="passwordHash"    column="password_hash"    />
+        <result property="fullName"    column="full_name"    />
+        <result property="role"    column="role"    />
+        <result property="phone"    column="phone"    />
+        <result property="department"    column="department"    />
+        <result property="status"    column="status"    />
+        <result property="lastLogin"    column="last_login"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <resultMap id="PropertyStaffVisitRecordsResult" type="PropertyStaff" extends="PropertyStaffResult">
+        <collection property="visitRecordsList" ofType="VisitRecords" column="staff_id" select="selectVisitRecordsList" />
+    </resultMap>
+
+    <resultMap type="VisitRecords" id="VisitRecordsResult">
+        <result property="recordId"    column="record_id"    />
+        <result property="visitorId"    column="visitor_id"    />
+        <result property="residentId"    column="resident_id"    />
+        <result property="visitPurpose"    column="visit_purpose"    />
+        <result property="expectedArrival"    column="expected_arrival"    />
+        <result property="actualArrival"    column="actual_arrival"    />
+        <result property="actualLeave"    column="actual_leave"    />
+        <result property="status"    column="status"    />
+        <result property="approvalStatus"    column="approval_status"    />
+        <result property="approverId"    column="approver_id"    />
+        <result property="rejectReason"    column="reject_reason"    />
+        <result property="accessCode"    column="access_code"    />
+        <result property="codeExpiry"    column="code_expiry"    />
+        <result property="accompanyCount"    column="accompany_count"    />
+        <result property="notes"    column="notes"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectPropertyStaffVo">
+        select staff_id, username, password_hash, full_name, role, phone, department, status, last_login, create_time, update_time from property_staff
+    </sql>
+
+    <select id="selectPropertyStaffList" parameterType="PropertyStaff" resultMap="PropertyStaffResult">
+        <include refid="selectPropertyStaffVo"/>
+        <where>  
+            <if test="username != null  and username != ''"> and username like concat('%', #{username}, '%')</if>
+            <if test="passwordHash != null  and passwordHash != ''"> and password_hash = #{passwordHash}</if>
+            <if test="fullName != null  and fullName != ''"> and full_name like concat('%', #{fullName}, '%')</if>
+            <if test="role != null "> and role = #{role}</if>
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            <if test="department != null  and department != ''"> and department = #{department}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="lastLogin != null "> and last_login = #{lastLogin}</if>
+        </where>
+    </select>
+    
+    <select id="selectPropertyStaffByStaffId" parameterType="Long" resultMap="PropertyStaffVisitRecordsResult">
+        select staff_id, username, password_hash, full_name, role, phone, department, status, last_login, create_time, update_time
+        from property_staff
+        where staff_id = #{staffId}
+    </select>
+
+    <select id="selectVisitRecordsList" resultMap="VisitRecordsResult">
+        select record_id, visitor_id, resident_id, visit_purpose, expected_arrival, actual_arrival, actual_leave, status, approval_status, approver_id, reject_reason, access_code, code_expiry, accompany_count, notes, create_time, update_time
+        from visit_records
+        where approver_id = #{approver_id}
+    </select>
+
+    <insert id="insertPropertyStaff" parameterType="PropertyStaff" useGeneratedKeys="true" keyProperty="staffId">
+        insert into property_staff
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="username != null and username != ''">username,</if>
+            <if test="passwordHash != null and passwordHash != ''">password_hash,</if>
+            <if test="fullName != null and fullName != ''">full_name,</if>
+            <if test="role != null">role,</if>
+            <if test="phone != null and phone != ''">phone,</if>
+            <if test="department != null">department,</if>
+            <if test="status != null">status,</if>
+            <if test="lastLogin != null">last_login,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="username != null and username != ''">#{username},</if>
+            <if test="passwordHash != null and passwordHash != ''">#{passwordHash},</if>
+            <if test="fullName != null and fullName != ''">#{fullName},</if>
+            <if test="role != null">#{role},</if>
+            <if test="phone != null and phone != ''">#{phone},</if>
+            <if test="department != null">#{department},</if>
+            <if test="status != null">#{status},</if>
+            <if test="lastLogin != null">#{lastLogin},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePropertyStaff" parameterType="PropertyStaff">
+        update property_staff
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="username != null and username != ''">username = #{username},</if>
+            <if test="passwordHash != null and passwordHash != ''">password_hash = #{passwordHash},</if>
+            <if test="fullName != null and fullName != ''">full_name = #{fullName},</if>
+            <if test="role != null">role = #{role},</if>
+            <if test="phone != null and phone != ''">phone = #{phone},</if>
+            <if test="department != null">department = #{department},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="lastLogin != null">last_login = #{lastLogin},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where staff_id = #{staffId}
+    </update>
+
+    <delete id="deletePropertyStaffByStaffId" parameterType="Long">
+        delete from property_staff where staff_id = #{staffId}
+    </delete>
+
+    <delete id="deletePropertyStaffByStaffIds" parameterType="String">
+        delete from property_staff where staff_id in 
+        <foreach item="staffId" collection="array" open="(" separator="," close=")">
+            #{staffId}
+        </foreach>
+    </delete>
+    
+    <delete id="deleteVisitRecordsByApproverIds" parameterType="String">
+        delete from visit_records where approver_id in 
+        <foreach item="approverId" collection="array" open="(" separator="," close=")">
+            #{approverId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteVisitRecordsByApproverId" parameterType="Long">
+        delete from visit_records where approver_id = #{approverId}
+    </delete>
+
+    <insert id="batchVisitRecords">
+        insert into visit_records( record_id, visitor_id, resident_id, visit_purpose, expected_arrival, actual_arrival, actual_leave, status, approval_status, approver_id, reject_reason, access_code, code_expiry, accompany_count, notes, create_time, update_time) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.recordId}, #{item.visitorId}, #{item.residentId}, #{item.visitPurpose}, #{item.expectedArrival}, #{item.actualArrival}, #{item.actualLeave}, #{item.status}, #{item.approvalStatus}, #{item.approverId}, #{item.rejectReason}, #{item.accessCode}, #{item.codeExpiry}, #{item.accompanyCount}, #{item.notes}, #{item.createTime}, #{item.updateTime})
+        </foreach>
+    </insert>
+</mapper>
