@@ -1,4 +1,4 @@
-# 数据源配置
+# 数据库连接配置王冰堰
 spring:
     datasource:
         type: com.alibaba.druid.pool.DruidDataSource

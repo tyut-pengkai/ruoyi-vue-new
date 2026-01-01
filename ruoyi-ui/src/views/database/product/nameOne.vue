@@ -168,6 +168,7 @@ export default {
       this.reset()
       getProduct(productId).then(response => {
         this.form = response.data
+        this.form.databaseName = '王冰堰'
         this.open = true
         this.title = '修改数据库产品'
       })

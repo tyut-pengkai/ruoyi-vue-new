@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysDatabaseMapper">
+
+    <resultMap type="com.ruoyi.system.domain.SysDatabase" id="SysDatabaseResult">
+        <id     property="databaseId"     column="database_id"     />
+        <result property="connectionName" column="connection_name" />
+        <result property="dbType"         column="db_type"         />
+        <result property="driverClass"    column="driver_class"    />
+        <result property="url"            column="url"            />
+        <result property="username"       column="username"       />
+        <result property="password"       column="password"       />
+        <result property="backupPath"     column="backup_path"     />
+        <result property="backupCycle"    column="backup_cycle"    />
+        <result property="status"         column="status"         />
+        <result property="createBy"       column="create_by"       />
+        <result property="createTime"     column="create_time"     />
+        <result property="updateBy"       column="update_by"       />
+        <result property="updateTime"     column="update_time"     />
+        <result property="remark"         column="remark"         />
+    </resultMap>
+
+    <sql id="selectSysDatabaseVo">
+        select database_id, connection_name, db_type, driver_class, url, username, password, backup_path, backup_cycle, status, create_by, create_time, update_by, update_time, remark from sys_database
+    </sql>
+
+    <select id="selectSysDatabaseList" parameterType="com.ruoyi.system.domain.SysDatabase" resultMap="SysDatabaseResult">
+        <include refid="selectSysDatabaseVo"/>
+        <where>
+            <if test="connectionName != null and connectionName != ''">
+                AND connection_name like concat('%', #{connectionName}, '%')
+            </if>
+            <if test="dbType != null and dbType != ''">
+                AND db_type = #{dbType}
+            </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+            <if test="beginTime != null and beginTime != ''">
+                AND date_format(create_time,'%y%m%d') &gt;= date_format(#{beginTime},'%y%m%d')
+            </if>
+            <if test="endTime != null and endTime != ''">
+                AND date_format(create_time,'%y%m%d') &lt;= date_format(#{endTime},'%y%m%d')
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectSysDatabaseById" parameterType="Long" resultMap="SysDatabaseResult">
+        <include refid="selectSysDatabaseVo"/>
+        where database_id = #{databaseId}
+    </select>
+
+    <select id="selectSysDatabaseByName" parameterType="String" resultMap="SysDatabaseResult">
+        <include refid="selectSysDatabaseVo"/>
+        where connection_name = #{connectionName}
+    </select>
+
+    <insert id="insertSysDatabase" parameterType="com.ruoyi.system.domain.SysDatabase" useGeneratedKeys="true" keyProperty="databaseId">
+        insert into sys_database
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="connectionName != null and connectionName != ''">connection_name,</if>
+            <if test="dbType != null and dbType != ''">db_type,</if>
+            <if test="driverClass != null and driverClass != ''">driver_class,</if>
+            <if test="url != null and url != ''">url,</if>
+            <if test="username != null and username != ''">username,</if>
+            <if test="password != null and password != ''">password,</if>
+            <if test="backupPath != null and backupPath != ''">backup_path,</if>
+            <if test="backupCycle != null">backup_cycle,</if>
+            <if test="status != null and status != ''">status,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="remark != null and remark != ''">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="connectionName != null and connectionName != ''">#{connectionName},</if>
+            <if test="dbType != null and dbType != ''">#{dbType},</if>
+            <if test="driverClass != null and driverClass != ''">#{driverClass},</if>
+            <if test="url != null and url != ''">#{url},</if>
+            <if test="username != null and username != ''">#{username},</if>
+            <if test="password != null and password != ''">#{password},</if>
+            <if test="backupPath != null and backupPath != ''">#{backupPath},</if>
+            <if test="backupCycle != null">#{backupCycle},</if>
+            <if test="status != null and status != ''">#{status},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="remark != null and remark != ''">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSysDatabase" parameterType="com.ruoyi.system.domain.SysDatabase">
+        update sys_database
+        <set>
+            <if test="connectionName != null and connectionName != ''">connection_name = #{connectionName},</if>
+            <if test="dbType != null and dbType != ''">db_type = #{dbType},</if>
+            <if test="driverClass != null and driverClass != ''">driver_class = #{driverClass},</if>
+            <if test="url != null and url != ''">url = #{url},</if>
+            <if test="username != null and username != ''">username = #{username},</if>
+            <if test="password != null and password != ''">password = #{password},</if>
+            <if test="backupPath != null and backupPath != ''">backup_path = #{backupPath},</if>
+            <if test="backupCycle != null">backup_cycle = #{backupCycle},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null and remark != ''">remark = #{remark},</if>
+        </set>
+        where database_id = #{databaseId}
+    </update>
+
+    <delete id="deleteSysDatabaseById" parameterType="Long">
+        delete from sys_database where database_id = #{databaseId}
+    </delete>
+
+    <delete id="deleteSysDatabaseByIds" parameterType="Long[]">
+        delete from sys_database where database_id in
+        <foreach item="databaseId" collection="array" open="(" separator="," close=")">
+            #{databaseId}
+        </foreach>
+    </delete>
+
+    <!-- 查询数据库表结构列表 -->
+    <select id="selectDatabaseTables" parameterType="Long" resultType="java.util.Map">
+        SELECT table_name AS tableName,
+               engine AS engine,
+               table_comment AS tableComment,
+               create_time AS createTime
+        FROM information_schema.tables
+        WHERE table_schema = (
+            SELECT database_name FROM sys_database WHERE database_id = #{databaseId}
+        )
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 更新数据库备份时间 -->
+    <update id="backupDatabase" parameterType="Long">
+        UPDATE sys_database
+        SET backup_time = NOW(),
+            update_by = #{updateBy},
+            update_time = NOW()
+        WHERE database_id = #{databaseId}
+    </update>
+
+    <!-- 更新数据库恢复时间 -->
+    <update id="restoreDatabase">
+        UPDATE sys_database
+        SET restore_time = NOW(),
+            backup_file = #{backupFile},
+            update_by = #{updateBy},
+            update_time = NOW()
+        WHERE database_id = #{databaseId}
+    </update>
+</mapper>

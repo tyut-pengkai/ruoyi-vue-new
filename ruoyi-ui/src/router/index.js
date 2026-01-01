@@ -75,6 +75,35 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/paper',
+    component: Layout,
+    alwaysShow: true,
+    meta: { title: '论文管理', icon: 'dashboard' },
+    children: [
+      {        
+        path: 'wangbingyan',
+        component: () => import('@/views/paper/wangbingyan/index'),
+        name: 'WangbingyanPaper',
+        meta: { title: '论文首页（王冰堰）', icon: 'user' }
+      }
+    ]
+  },
+  {    
+    path: '/database',
+    component: Layout,
+    alwaysShow: true,
+    permissions: ['database:manage:list'],
+    meta: { title: '数据库管理', icon: 'database' },
+    children: [
+      {        
+        path: 'index',
+        component: () => import('@/views/database/product/index'),
+        name: 'Database',
+        meta: { title: '数据库连接配置', permissions: ['database:manage:list'] }
+      }
+    ]
+  },
+  {
     path: '/user',
     component: Layout,
     hidden: true,

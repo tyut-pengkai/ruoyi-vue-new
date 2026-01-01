@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.annotation.Anonymous;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -110,6 +111,11 @@ public class TestController extends BaseController
         {
             return R.fail("用户不存在");
         }
+    }
+    @GetMapping("/error")
+    @Anonymous
+    public R<String> testError() {
+        return R.fail("测试匿名访问错误");
     }
 }
 

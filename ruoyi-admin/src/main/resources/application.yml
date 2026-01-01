@@ -34,6 +34,7 @@ server:
 # 日志配置
 logging:
   level:
+    root: debug
     com.ruoyi: debug
     org.springframework: warn
 
@@ -134,3 +135,4 @@ xss:
   excludes: /system/notice
   # 匹配链接
   urlPatterns: /system/*,/monitor/*,/tool/*
+
