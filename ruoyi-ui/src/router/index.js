@@ -85,6 +85,12 @@ export const constantRoutes = [
         component: () => import('@/views/paper/wangbingyan/index'),
         name: 'WangbingyanPaper',
         meta: { title: '论文首页（王冰堰）', icon: 'user' }
+      },
+      {        
+        path: 'zhujingjing',
+        component: () => import('@/views/paper/zhujingjing/index'),
+        name: 'ZhujingjingPaper',
+        meta: { title: '论文首页（朱晶晶）', icon: 'user' }
       }
     ]
   },
@@ -92,16 +98,22 @@ export const constantRoutes = [
     path: '/database',
     component: Layout,
     alwaysShow: true,
-    permissions: ['database:manage:list'],
-    meta: { title: '数据库管理', icon: 'database' },
+    meta: { title: '数据库产品管理', icon: 'database' },
+    redirect: 'zhengyutian',
     children: [
-      {        
-        path: 'index',
-        component: () => import('@/views/database/product/index'),
-        name: 'Database',
-        meta: { title: '数据库连接配置', permissions: ['database:manage:list'] }
-      }
-    ]
+        {          
+          path: 'zhengyutian',
+          component: () => import('@/views/database/product/index'),
+          name: 'Zhengyutian',
+          meta: { title: '郑瑜甜', icon: 'user' }
+        },
+        {          
+          path: 'zhujingjing',
+          component: () => import('@/views/database/zhujingjing/index'),
+          name: 'Zhujingjing',
+          meta: { title: '朱晶晶', icon: 'user' }
+        }
+      ]
   },
   {
     path: '/user',
@@ -135,22 +147,6 @@ export const dynamicRoutes = [
         meta: { title: '学生信息管理', permissions: ['student:info:list'] }
       }
     ]
-  },
-  {    
-    path: '/database',
-    component: Layout,
-    alwaysShow: true,
-    permissions: ['database:zhengyutian:list'],
-    meta: { title: '数据库产品管理', icon: 'database' },
-    redirect: 'zhengyutian',
-    children: [
-        {
-          path: 'zhengyutian',
-          component: () => import('@/views/database/product/index'),
-          name: 'Zhengyutian',
-          meta: { title: '郑瑜甜', icon: 'user' }
-        }
-      ]
   },
   {
     path: '/system/user-auth',

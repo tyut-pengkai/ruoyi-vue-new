@@ -1,18 +1,17 @@
 package com.ruoyi.framework.web.service;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.model.LoginUser;
-import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.utils.ServletUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.ip.AddressUtils;
@@ -51,8 +50,31 @@ public class TokenService
 
     private static final Long MILLIS_MINUTE_TWENTY = 20 * 60 * 1000L;
 
-    @Autowired
-    private RedisCache redisCache;
+    // 本地缓存替代Redis
+    private static Map<String, CacheItem> loginUserCache = new HashMap<>();
+    
+    // 缓存项内部类，用于存储值和过期时间
+    private static class CacheItem {
+        private LoginUser value;
+        private long expireTime;
+        
+        public CacheItem(LoginUser value, long expireTime) {
+            this.value = value;
+            this.expireTime = expireTime;
+        }
+        
+        public LoginUser getValue() {
+            return value;
+        }
+        
+        public long getExpireTime() {
+            return expireTime;
+        }
+        
+        public boolean isExpired() {
+            return System.currentTimeMillis() > expireTime;
+        }
+    }
 
     /**
      * 获取用户身份信息
@@ -71,7 +93,7 @@ public class TokenService
                 // 解析对应的权限以及用户信息
                 String uuid = (String) claims.get(Constants.LOGIN_USER_KEY);
                 String userKey = getTokenKey(uuid);
-                LoginUser user = redisCache.getCacheObject(userKey);
+                LoginUser user = getCacheObject(userKey);
                 return user;
             }
             catch (Exception e)
@@ -101,7 +123,7 @@ public class TokenService
         if (StringUtils.isNotEmpty(token))
         {
             String userKey = getTokenKey(token);
-            redisCache.deleteObject(userKey);
+            deleteObject(userKey);
         }
     }
 
@@ -151,7 +173,7 @@ public class TokenService
         loginUser.setExpireTime(loginUser.getLoginTime() + expireTime * MILLIS_MINUTE);
         // 根据uuid将loginUser缓存
         String userKey = getTokenKey(loginUser.getToken());
-        redisCache.setCacheObject(userKey, loginUser, expireTime, TimeUnit.MINUTES);
+        setCacheObject(userKey, loginUser, expireTime * (int)MILLIS_MINUTE);
     }
 
     /**
@@ -223,6 +245,52 @@ public class TokenService
             token = token.replace(Constants.TOKEN_PREFIX, "");
         }
         return token;
+    }
+    
+    /**
+     * 本地缓存实现 - 设置缓存对象
+     */
+    private void setCacheObject(String key, LoginUser value, int timeoutMs) {
+        loginUserCache.put(key, new CacheItem(value, System.currentTimeMillis() + timeoutMs));
+    }
+    
+    /**
+     * 本地缓存实现 - 获取缓存对象
+     */
+    public LoginUser getCacheObject(String key) {
+        CacheItem item = loginUserCache.get(key);
+        if (item != null) {
+            if (!item.isExpired()) {
+                return item.getValue();
+            } else {
+                // 过期则删除
+                loginUserCache.remove(key);
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * 本地缓存实现 - 删除缓存对象
+     */
+    private boolean deleteObject(String key) {
+        return loginUserCache.remove(key) != null;
+    }
+
+    /**
+     * 获取所有缓存键
+     */
+    public Collection<String> getAllKeys() {
+        // 清理过期的缓存项
+        loginUserCache.entrySet().removeIf(entry -> entry.getValue().isExpired());
+        return loginUserCache.keySet();
+    }
+
+    /**
+     * 根据键删除缓存对象
+     */
+    public boolean deleteCacheObject(String key) {
+        return deleteObject(key);
     }
 
     private String getTokenKey(String uuid)

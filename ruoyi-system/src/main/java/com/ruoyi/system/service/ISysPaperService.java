@@ -2,14 +2,13 @@ package com.ruoyi.system.service;
 
 import java.util.List;
 import com.ruoyi.system.domain.SysPaper;
-import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
  * 论文信息Service接口
  * 
  * @author ruoyi
  */
-public interface ISysPaperService extends IService<SysPaper>
+public interface ISysPaperService
 {
     /**
      * 查询论文信息列表

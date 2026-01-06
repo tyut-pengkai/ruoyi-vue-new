@@ -1,6 +1,8 @@
 package com.ruoyi.framework.web.service;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -11,7 +13,6 @@ import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.model.LoginUser;
-import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.exception.user.BlackListException;
 import com.ruoyi.common.exception.user.CaptchaException;
@@ -41,15 +42,34 @@ public class SysLoginService
 
     @Resource
     private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private RedisCache redisCache;
     
     @Autowired
     private ISysUserService userService;
 
     @Autowired
     private ISysConfigService configService;
+    
+    // 本地缓存替代Redis
+    private static Map<String, CacheItem> captchaCache = new HashMap<>();
+    
+    // 缓存项内部类，用于存储值和过期时间
+    private static class CacheItem {
+        private String value;
+        private long expireTime;
+        
+        public CacheItem(String value, long expireTime) {
+            this.value = value;
+            this.expireTime = expireTime;
+        }
+        
+        public String getValue() {
+            return value;
+        }
+        
+        public boolean isExpired() {
+            return System.currentTimeMillis() > expireTime;
+        }
+    }
 
     /**
      * 登录验证
@@ -113,19 +133,49 @@ public class SysLoginService
         if (captchaEnabled)
         {
             String verifyKey = CacheConstants.CAPTCHA_CODE_KEY + StringUtils.nvl(uuid, "");
-            String captcha = redisCache.getCacheObject(verifyKey);
+            String captcha = getCacheObject(verifyKey);
             if (captcha == null)
             {
                 AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.jcaptcha.expire")));
                 throw new CaptchaExpireException();
             }
-            redisCache.deleteObject(verifyKey);
+            deleteObject(verifyKey);
             if (!code.equalsIgnoreCase(captcha))
             {
                 AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.LOGIN_FAIL, MessageUtils.message("user.jcaptcha.error")));
                 throw new CaptchaException();
             }
         }
+    }
+    
+    /**
+     * 本地缓存实现 - 设置缓存对象
+     */
+    public void setCacheObject(String key, String value, long timeoutMs) {
+        captchaCache.put(key, new CacheItem(value, System.currentTimeMillis() + timeoutMs));
+    }
+    
+    /**
+     * 本地缓存实现 - 获取缓存对象
+     */
+    public String getCacheObject(String key) {
+        CacheItem item = captchaCache.get(key);
+        if (item != null) {
+            if (!item.isExpired()) {
+                return item.getValue();
+            } else {
+                // 过期则删除
+                captchaCache.remove(key);
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * 本地缓存实现 - 删除缓存对象
+     */
+    public boolean deleteObject(String key) {
+        return captchaCache.remove(key) != null;
     }
 
     /**

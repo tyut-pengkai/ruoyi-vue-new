@@ -1,12 +1,13 @@
 package com.ruoyi.common.utils;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import com.alibaba.fastjson2.JSONArray;
+import java.util.Map;
+import java.util.Set;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.core.domain.entity.SysDictData;
-import com.ruoyi.common.core.redis.RedisCache;
-import com.ruoyi.common.utils.spring.SpringUtils;
 
 /**
  * 字典工具类
@@ -16,36 +17,34 @@ import com.ruoyi.common.utils.spring.SpringUtils;
 public class DictUtils
 {
     /**
-     * 分隔符
-     */
-    public static final String SEPARATOR = ",";
+ * 分隔符
+ */
+public static final String SEPARATOR = ",";
 
-    /**
-     * 设置字典缓存
-     * 
-     * @param key 参数键
-     * @param dictDatas 字典数据列表
-     */
-    public static void setDictCache(String key, List<SysDictData> dictDatas)
-    {
-        SpringUtils.getBean(RedisCache.class).setCacheObject(getCacheKey(key), dictDatas);
-    }
+// 本地缓存替代Redis
+private static Map<String, List<SysDictData>> dictCache = new HashMap<>();
 
-    /**
-     * 获取字典缓存
-     * 
-     * @param key 参数键
-     * @return dictDatas 字典数据列表
-     */
-    public static List<SysDictData> getDictCache(String key)
-    {
-        JSONArray arrayCache = SpringUtils.getBean(RedisCache.class).getCacheObject(getCacheKey(key));
-        if (StringUtils.isNotNull(arrayCache))
-        {
-            return arrayCache.toList(SysDictData.class);
-        }
-        return null;
-    }
+/**
+ * 设置字典缓存
+ * 
+ * @param key 参数键
+ * @param dictDatas 字典数据列表
+ */
+public static void setDictCache(String key, List<SysDictData> dictDatas)
+{
+    dictCache.put(getCacheKey(key), dictDatas);
+}
+
+/**
+ * 获取字典缓存
+ * 
+ * @param key 参数键
+ * @return dictDatas 字典数据列表
+ */
+public static List<SysDictData> getDictCache(String key)
+{
+    return dictCache.get(getCacheKey(key));
+}
 
     /**
      * 根据字典类型和字典值获取字典标签
@@ -208,23 +207,30 @@ public class DictUtils
     }
 
     /**
-     * 删除指定字典缓存
-     * 
-     * @param key 字典键
-     */
-    public static void removeDictCache(String key)
-    {
-        SpringUtils.getBean(RedisCache.class).deleteObject(getCacheKey(key));
-    }
+ * 删除指定字典缓存
+ * 
+ * @param key 字典键
+ */
+public static void removeDictCache(String key)
+{
+    dictCache.remove(getCacheKey(key));
+}
 
-    /**
-     * 清空字典缓存
-     */
-    public static void clearDictCache()
-    {
-        Collection<String> keys = SpringUtils.getBean(RedisCache.class).keys(CacheConstants.SYS_DICT_KEY + "*");
-        SpringUtils.getBean(RedisCache.class).deleteObject(keys);
+/**
+ * 清空字典缓存
+ */
+public static void clearDictCache()
+{
+    Set<String> keysToRemove = new HashSet<>();
+    for (String key : dictCache.keySet()) {
+        if (key.startsWith(CacheConstants.SYS_DICT_KEY)) {
+            keysToRemove.add(key);
+        }
     }
+    for (String key : keysToRemove) {
+        dictCache.remove(key);
+    }
+}
 
     /**
      * 设置cache key

@@ -11,9 +11,11 @@ import com.ruoyi.system.service.ISysDatabaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 数据库管理Controller
@@ -145,10 +147,17 @@ public class SysDatabaseController extends BaseController
     public AjaxResult importData(@RequestParam("file") MultipartFile file, boolean updateSupport)
     {
         ExcelUtil<SysDatabase> util = new ExcelUtil<SysDatabase>(SysDatabase.class);
-        List<SysDatabase> databaseList = util.importExcel(file.getInputStream());
-        String operName = getUsername();
-        String message = sysDatabaseService.importDatabase(databaseList, updateSupport, operName);
-        return AjaxResult.success(message);
+        try
+        {
+            List<SysDatabase> databaseList = util.importExcel(file.getInputStream());
+            String operName = getUsername();
+            String message = sysDatabaseService.importDatabase(databaseList, updateSupport, operName);
+            return AjaxResult.success(message);
+        }
+        catch (Exception e)
+        {
+            return AjaxResult.error(e.getMessage());
+        }
     }
 
     /**

@@ -2,9 +2,7 @@ package com.ruoyi.system.service.impl;
 
 import java.util.Arrays;
 import java.util.List;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.system.domain.SysPaper;
 import com.ruoyi.system.mapper.SysPaperMapper;
 import com.ruoyi.system.service.ISysPaperService;
@@ -17,8 +15,11 @@ import org.springframework.stereotype.Service;
  * @author ruoyi
  */
 @Service
-public class SysPaperServiceImpl extends ServiceImpl<SysPaperMapper, SysPaper> implements ISysPaperService
+public class SysPaperServiceImpl implements ISysPaperService
 {
+    @Autowired
+    private SysPaperMapper sysPaperMapper;
+    
     /**
      * 查询论文信息列表
      * 
@@ -28,11 +29,7 @@ public class SysPaperServiceImpl extends ServiceImpl<SysPaperMapper, SysPaper> i
     @Override
     public List<SysPaper> selectSysPaperList(SysPaper sysPaper)
     {
-        QueryWrapper<SysPaper> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq(StringUtils.isNotBlank(sysPaper.getStatus()), "status", sysPaper.getStatus());
-        queryWrapper.eq(sysPaper.getStudentId() != null, "student_id", sysPaper.getStudentId());
-        queryWrapper.like(StringUtils.isNotBlank(sysPaper.getPaperTitle()), "paper_title", sysPaper.getPaperTitle());
-        return baseMapper.selectList(queryWrapper);
+        return sysPaperMapper.selectSysPaperList(sysPaper);
     }
 
     /**
@@ -44,7 +41,7 @@ public class SysPaperServiceImpl extends ServiceImpl<SysPaperMapper, SysPaper> i
     @Override
     public SysPaper selectSysPaperByPaperId(Long paperId)
     {
-        return baseMapper.selectById(paperId);
+        return sysPaperMapper.selectSysPaperByPaperId(paperId);
     }
 
     /**
@@ -56,7 +53,8 @@ public class SysPaperServiceImpl extends ServiceImpl<SysPaperMapper, SysPaper> i
     @Override
     public int insertSysPaper(SysPaper sysPaper)
     {
-        return baseMapper.insert(sysPaper);
+        sysPaper.setCreateTime(DateUtils.getNowDate());
+        return sysPaperMapper.insertSysPaper(sysPaper);
     }
 
     /**
@@ -68,7 +66,8 @@ public class SysPaperServiceImpl extends ServiceImpl<SysPaperMapper, SysPaper> i
     @Override
     public int updateSysPaper(SysPaper sysPaper)
     {
-        return baseMapper.updateById(sysPaper);
+        sysPaper.setUpdateTime(DateUtils.getNowDate());
+        return sysPaperMapper.updateSysPaper(sysPaper);
     }
 
     /**
@@ -80,7 +79,7 @@ public class SysPaperServiceImpl extends ServiceImpl<SysPaperMapper, SysPaper> i
     @Override
     public int deleteSysPaperByPaperIds(Long[] paperIds)
     {
-        return baseMapper.deleteBatchIds(Arrays.asList(paperIds));
+        return sysPaperMapper.deleteSysPaperByPaperIds(paperIds);
     }
 
     /**
@@ -92,6 +91,6 @@ public class SysPaperServiceImpl extends ServiceImpl<SysPaperMapper, SysPaper> i
     @Override
     public int deleteSysPaperByPaperId(Long paperId)
     {
-        return baseMapper.deleteById(paperId);
+        return sysPaperMapper.deleteSysPaperByPaperId(paperId);
     }
 }

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import com.alibaba.fastjson2.JSON;
 import com.ruoyi.common.annotation.RepeatSubmit;
 import com.ruoyi.common.constant.CacheConstants;
-import com.ruoyi.common.core.redis.RedisCache;
+
 import com.ruoyi.common.filter.RepeatedlyRequestWrapper;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.http.HttpHelper;
@@ -33,8 +33,27 @@ public class SameUrlDataInterceptor extends RepeatSubmitInterceptor
     @Value("${token.header}")
     private String header;
 
-    @Autowired
-    private RedisCache redisCache;
+    // 本地缓存替代Redis
+    private static Map<String, CacheItem<Map<String, Object>>> repeatSubmitCache = new HashMap<>();
+    
+    // 缓存项内部类，用于存储值和过期时间
+    private static class CacheItem<T> {
+        private T value;
+        private long expireTime;
+        
+        public CacheItem(T value, long expireTime) {
+            this.value = value;
+            this.expireTime = expireTime;
+        }
+        
+        public T getValue() {
+            return value;
+        }
+        
+        public boolean isExpired() {
+            return System.currentTimeMillis() > expireTime;
+        }
+    }
 
     @SuppressWarnings("unchecked")
     @Override
@@ -65,7 +84,7 @@ public class SameUrlDataInterceptor extends RepeatSubmitInterceptor
         // 唯一标识（指定key + url + 消息头）
         String cacheRepeatKey = CacheConstants.REPEAT_SUBMIT_KEY + url + submitKey;
 
-        Object sessionObj = redisCache.getCacheObject(cacheRepeatKey);
+        Object sessionObj = getCacheObject(cacheRepeatKey);
         if (sessionObj != null)
         {
             Map<String, Object> sessionMap = (Map<String, Object>) sessionObj;
@@ -80,7 +99,7 @@ public class SameUrlDataInterceptor extends RepeatSubmitInterceptor
         }
         Map<String, Object> cacheMap = new HashMap<String, Object>();
         cacheMap.put(url, nowDataMap);
-        redisCache.setCacheObject(cacheRepeatKey, cacheMap, annotation.interval(), TimeUnit.MILLISECONDS);
+        setCacheObject(cacheRepeatKey, cacheMap, annotation.interval());
         return false;
     }
 
@@ -106,5 +125,28 @@ public class SameUrlDataInterceptor extends RepeatSubmitInterceptor
             return true;
         }
         return false;
+    }
+
+    /**
+     * 本地缓存实现 - 设置缓存对象
+     */
+    private <T> void setCacheObject(String key, T value, int timeoutMs) {
+        repeatSubmitCache.put(key, new CacheItem<>((Map<String, Object>) value, System.currentTimeMillis() + timeoutMs));
+    }
+    
+    /**
+     * 本地缓存实现 - 获取缓存对象
+     */
+    private <T> T getCacheObject(String key) {
+        CacheItem<Map<String, Object>> item = repeatSubmitCache.get(key);
+        if (item != null) {
+            if (!item.isExpired()) {
+                return (T) item.getValue();
+            } else {
+                // 过期则删除
+                repeatSubmitCache.remove(key);
+            }
+        }
+        return null;
     }
 }

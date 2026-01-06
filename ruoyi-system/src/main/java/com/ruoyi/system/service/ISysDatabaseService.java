@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 数据库管理Service接口
@@ -95,6 +96,16 @@ public interface ISysDatabaseService
      * @param operName 操作用户
      * @return 结果
      */
+    public String importDatabase(MultipartFile file, boolean updateSupport, String operName);
+    
+    /**
+     * 导入数据
+     * 
+     * @param databaseList 数据库列表
+     * @param updateSupport 是否更新支持
+     * @param operName 操作用户
+     * @return 结果
+     */
     public String importDatabase(List<SysDatabase> databaseList, boolean updateSupport, String operName);
 
     /**
@@ -104,4 +115,29 @@ public interface ISysDatabaseService
      * @param response 响应
      */
     public void exportSysDatabase(SysDatabase sysDatabase, HttpServletResponse response);
+    
+    /**
+     * 查询数据库表结构信息
+     * 
+     * @param databaseId 数据库连接ID
+     * @return 表结构列表
+     */
+    public List<Map<String, Object>> selectDatabaseTables(Long databaseId);
+    
+    /**
+     * 执行数据库备份
+     * 
+     * @param databaseId 数据库连接ID
+     * @return 备份结果
+     */
+    public AjaxResult backupDatabase(Long databaseId);
+    
+    /**
+     * 执行数据库恢复
+     * 
+     * @param databaseId 数据库连接ID
+     * @param backupFile 备份文件路径
+     * @return 恢复结果
+     */
+    public AjaxResult restoreDatabase(Long databaseId, String backupFile);
 }

@@ -17,9 +17,10 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.page.TableDataInfo;
-import com.ruoyi.common.core.redis.RedisCache;
+
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.framework.web.service.TokenService;
 import com.ruoyi.system.domain.SysUserOnline;
 import com.ruoyi.system.service.ISysUserOnlineService;
 
@@ -36,32 +37,37 @@ public class SysUserOnlineController extends BaseController
     private ISysUserOnlineService userOnlineService;
 
     @Autowired
-    private RedisCache redisCache;
+    private TokenService tokenService;
 
     @PreAuthorize("@ss.hasPermi('monitor:online:list')")
     @GetMapping("/list")
     public TableDataInfo list(String ipaddr, String userName)
     {
-        Collection<String> keys = redisCache.keys(CacheConstants.LOGIN_TOKEN_KEY + "*");
+        Collection<String> keys = tokenService.getAllKeys();
         List<SysUserOnline> userOnlineList = new ArrayList<SysUserOnline>();
         for (String key : keys)
         {
-            LoginUser user = redisCache.getCacheObject(key);
-            if (StringUtils.isNotEmpty(ipaddr) && StringUtils.isNotEmpty(userName))
-            {
-                userOnlineList.add(userOnlineService.selectOnlineByInfo(ipaddr, userName, user));
-            }
-            else if (StringUtils.isNotEmpty(ipaddr))
-            {
-                userOnlineList.add(userOnlineService.selectOnlineByIpaddr(ipaddr, user));
-            }
-            else if (StringUtils.isNotEmpty(userName) && StringUtils.isNotNull(user.getUser()))
-            {
-                userOnlineList.add(userOnlineService.selectOnlineByUserName(userName, user));
-            }
-            else
-            {
-                userOnlineList.add(userOnlineService.loginUserToUserOnline(user));
+            // 只处理登录令牌相关的键
+            if (key.startsWith(CacheConstants.LOGIN_TOKEN_KEY)) {
+                LoginUser user = tokenService.getCacheObject(key);
+                if (user != null) {
+                    if (StringUtils.isNotEmpty(ipaddr) && StringUtils.isNotEmpty(userName))
+                    {
+                        userOnlineList.add(userOnlineService.selectOnlineByInfo(ipaddr, userName, user));
+                    }
+                    else if (StringUtils.isNotEmpty(ipaddr))
+                    {
+                        userOnlineList.add(userOnlineService.selectOnlineByIpaddr(ipaddr, user));
+                    }
+                    else if (StringUtils.isNotEmpty(userName) && StringUtils.isNotNull(user.getUser()))
+                    {
+                        userOnlineList.add(userOnlineService.selectOnlineByUserName(userName, user));
+                    }
+                    else
+                    {
+                        userOnlineList.add(userOnlineService.loginUserToUserOnline(user));
+                    }
+                }
             }
         }
         Collections.reverse(userOnlineList);
@@ -77,7 +83,7 @@ public class SysUserOnlineController extends BaseController
     @DeleteMapping("/{tokenId}")
     public AjaxResult forceLogout(@PathVariable String tokenId)
     {
-        redisCache.deleteObject(CacheConstants.LOGIN_TOKEN_KEY + tokenId);
+        tokenService.deleteCacheObject(CacheConstants.LOGIN_TOKEN_KEY + tokenId);
         return success();
     }
 }

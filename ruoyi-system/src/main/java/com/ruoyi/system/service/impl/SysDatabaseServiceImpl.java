@@ -21,7 +21,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -194,9 +196,27 @@ public class SysDatabaseServiceImpl implements ISysDatabaseService
      * 导入数据
      */
     @Override
+    public String importDatabase(MultipartFile file, boolean updateSupport, String operName)
+    {
+        ExcelUtil<SysDatabase> util = new ExcelUtil<SysDatabase>(SysDatabase.class);
+        try
+        {
+            List<SysDatabase> databaseList = util.importExcel(file.getInputStream());
+            return importDatabase(databaseList, updateSupport, operName);
+        }
+        catch (IOException e)
+        {
+            throw new ServiceException("导入数据失败: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * 导入数据
+     */
+    @Override
     public String importDatabase(List<SysDatabase> databaseList, boolean updateSupport, String operName)
     {
-        if (StringUtils.isEmpty(databaseList))
+        if (databaseList == null || databaseList.isEmpty())
         {
             throw new ServiceException("导入数据不能为空！");
         }

@@ -2,6 +2,8 @@ package com.ruoyi.web.controller.common;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
@@ -15,9 +17,9 @@ import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.core.domain.AjaxResult;
-import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.utils.sign.Base64;
 import com.ruoyi.common.utils.uuid.IdUtils;
+import com.ruoyi.framework.web.service.SysLoginService;
 import com.ruoyi.system.service.ISysConfigService;
 
 /**
@@ -35,10 +37,10 @@ public class CaptchaController
     private Producer captchaProducerMath;
 
     @Autowired
-    private RedisCache redisCache;
+    private ISysConfigService configService;
     
     @Autowired
-    private ISysConfigService configService;
+    private SysLoginService loginService;
     /**
      * 生成验证码
      */
@@ -75,7 +77,8 @@ public class CaptchaController
             image = captchaProducer.createImage(capStr);
         }
 
-        redisCache.setCacheObject(verifyKey, code, Constants.CAPTCHA_EXPIRATION, TimeUnit.MINUTES);
+        // 设置验证码缓存，使用SysLoginService提供的缓存方法
+        loginService.setCacheObject(verifyKey, code, Constants.CAPTCHA_EXPIRATION * 60 * 1000L);
         // 转换流信息写出
         FastByteArrayOutputStream os = new FastByteArrayOutputStream();
         try
