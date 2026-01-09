@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.bookSys.mapper.AnomaliesMapper">
+    
+    <resultMap type="Anomalies" id="AnomaliesResult">
+        <result property="anomalyId"    column="anomaly_id"    />
+        <result property="recordId"    column="record_id"    />
+        <result property="type"    column="type"    />
+        <result property="description"    column="description"    />
+        <result property="handledBy"    column="handled_by"    />
+        <result property="handledTime"    column="handled_time"    />
+        <result property="status"    column="status"    />
+        <result property="severity"    column="severity"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectAnomaliesVo">
+        select anomaly_id, record_id, type, description, handled_by, handled_time, status, severity, create_time, update_time from anomalies
+    </sql>
+
+    <select id="selectAnomaliesList" parameterType="Anomalies" resultMap="AnomaliesResult">
+        <include refid="selectAnomaliesVo"/>
+        <where>  
+            <if test="recordId != null "> and record_id = #{recordId}</if>
+            <if test="type != null "> and type = #{type}</if>
+            <if test="description != null  and description != ''"> and description = #{description}</if>
+            <if test="handledBy != null "> and handled_by = #{handledBy}</if>
+            <if test="handledTime != null "> and handled_time = #{handledTime}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="severity != null "> and severity = #{severity}</if>
+        </where>
+    </select>
+    
+    <select id="selectAnomaliesByAnomalyId" parameterType="Long" resultMap="AnomaliesResult">
+        <include refid="selectAnomaliesVo"/>
+        where anomaly_id = #{anomalyId}
+    </select>
+
+    <insert id="insertAnomalies" parameterType="Anomalies" useGeneratedKeys="true" keyProperty="anomalyId">
+        insert into anomalies
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="recordId != null">record_id,</if>
+            <if test="type != null">type,</if>
+            <if test="description != null and description != ''">description,</if>
+            <if test="handledBy != null">handled_by,</if>
+            <if test="handledTime != null">handled_time,</if>
+            <if test="status != null">status,</if>
+            <if test="severity != null">severity,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="recordId != null">#{recordId},</if>
+            <if test="type != null">#{type},</if>
+            <if test="description != null and description != ''">#{description},</if>
+            <if test="handledBy != null">#{handledBy},</if>
+            <if test="handledTime != null">#{handledTime},</if>
+            <if test="status != null">#{status},</if>
+            <if test="severity != null">#{severity},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateAnomalies" parameterType="Anomalies">
+        update anomalies
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="recordId != null">record_id = #{recordId},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="description != null and description != ''">description = #{description},</if>
+            <if test="handledBy != null">handled_by = #{handledBy},</if>
+            <if test="handledTime != null">handled_time = #{handledTime},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="severity != null">severity = #{severity},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where anomaly_id = #{anomalyId}
+    </update>
+
+    <delete id="deleteAnomaliesByAnomalyId" parameterType="Long">
+        delete from anomalies where anomaly_id = #{anomalyId}
+    </delete>
+
+    <delete id="deleteAnomaliesByAnomalyIds" parameterType="String">
+        delete from anomalies where anomaly_id in 
+        <foreach item="anomalyId" collection="array" open="(" separator="," close=")">
+            #{anomalyId}
+        </foreach>
+    </delete>
+</mapper>
