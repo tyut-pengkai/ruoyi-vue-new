@@ -2,6 +2,37 @@
   <div class="paper-container">
     <el-card class="info-card" style="margin-bottom: 20px;">
       <div slot="header" class="card-header">
+        <span>个人基本信息</span>
+      </div>
+      <el-form :model="studentInfo" label-width="100px" size="small">
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="姓名">
+              <span>{{ studentInfo.name }}</span>
+            </el-form-item>
+            <el-form-item label="学号">
+              <span>{{ studentInfo.studentId }}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="联系电话">
+              <span>{{ studentInfo.phone }}</span>
+            </el-form-item>
+            <el-form-item label="学院">
+              <span>{{ studentInfo.college }}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="邮箱">
+              <span>{{ studentInfo.email }}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </el-card>
+
+    <el-card class="info-card" style="margin-bottom: 20px;">
+      <div slot="header" class="card-header">
         <span>毕业论文基本信息</span>
       </div>
       <el-form :model="paperInfo" label-width="100px" size="small">
@@ -65,6 +96,13 @@ export default {
   name: 'WangbingyanPaper',
   data() {
     return {
+      studentInfo: {
+        name: '王冰堰',
+        studentId: '2023001002',
+        phone: '13800138033',
+        college: '工程技术学院',
+        email: '78991@qq.com'
+      },
       paperInfo: {
         paperTitle: '基于深度学习的图像识别算法研究',
         paperType: '学术论文',
