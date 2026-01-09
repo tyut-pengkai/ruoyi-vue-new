@@ -13,11 +13,17 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import com.ruoyi.framework.config.properties.PermitAllUrlProperties;
 import com.ruoyi.framework.security.filter.JwtAuthenticationTokenFilter;
 import com.ruoyi.framework.security.handle.AuthenticationEntryPointImpl;
 import com.ruoyi.framework.security.handle.LogoutSuccessHandlerImpl;
+
+import java.time.Duration;
+import java.util.List;
 
 /**
  * spring security配置
@@ -45,12 +51,6 @@ public class SecurityConfig
      */
     @Autowired
     private JwtAuthenticationTokenFilter authenticationTokenFilter;
-    
-    /**
-     * 跨域过滤器
-     */
-    @Autowired
-    private CorsFilter corsFilter;
 
     /**
      * 允许匿名访问的地址
@@ -112,8 +112,7 @@ public class SecurityConfig
             // 添加JWT filter
             .addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
             // 添加CORS filter
-            .addFilterBefore(corsFilter, JwtAuthenticationTokenFilter.class)
-            .addFilterBefore(corsFilter, LogoutFilter.class)
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .build();
     }
 
@@ -124,5 +123,18 @@ public class SecurityConfig
     public BCryptPasswordEncoder bCryptPasswordEncoder()
     {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowCredentials(true);
+        configuration.setAllowedOrigins(List.of("*"));
+        configuration.setAllowedMethods(List.of("*"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setMaxAge(Duration.ofMinutes(30L));
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }
