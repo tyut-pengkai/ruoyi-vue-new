@@ -91,10 +91,16 @@ export const constantRoutes = [
         component: () => import('@/views/paper/zhujingjing/index'),
         name: 'ZhujingjingPaper',
         meta: { title: '论文首页（朱晶晶）', icon: 'user' }
+      },
+      {        
+        path: 'zhangjialin',
+        component: () => import('@/views/paper/zhangjialin/index'),
+        name: 'ZhangjialinPaper',
+        meta: { title: '论文首页（张佳琳）', icon: 'user' }
       }
     ]
   },
-  {    
+  {
     path: '/database',
     component: Layout,
     alwaysShow: true,
@@ -107,11 +113,17 @@ export const constantRoutes = [
           name: 'Zhengyutian',
           meta: { title: '郑瑜甜', icon: 'user' }
         },
-        {          
+        {        
           path: 'zhujingjing',
           component: () => import('@/views/database/zhujingjing/index'),
           name: 'Zhujingjing',
           meta: { title: '朱晶晶', icon: 'user' }
+        },
+        {        
+          path: 'zhangjialin',
+          component: () => import('@/views/database/zhangjialin/index'),
+          name: 'Zhangjialin',
+          meta: { title: '张佳琳', icon: 'user' }
         }
       ]
   },
@@ -211,10 +223,121 @@ export const dynamicRoutes = [
     permissions: ['tool:gen:edit'],
     children: [
       {
-        path: 'index/:tableId(\\d+)',
+        path: 'index/:tableId(\d+)',
         component: () => import('@/views/tool/gen/editTable'),
         name: 'GenEdit',
         meta: { title: '修改生成配置', activeMenu: '/tool/gen' }
+      }
+    ]
+  },
+  {
+    path: '/system',
+    component: Layout,
+    alwaysShow: true,
+    name: 'System',
+    meta: { title: '系统管理', icon: 'system' },
+    children: [
+      {
+        path: 'user',
+        component: () => import('@/views/system/user/index'),
+        name: 'User',
+        meta: { title: '用户管理', icon: 'user', permissions: ['system:user:list'] }
+      },
+      {
+        path: 'role',
+        component: () => import('@/views/system/role/index'),
+        name: 'Role',
+        meta: { title: '角色管理', icon: 'peoples', permissions: ['system:role:list'] }
+      },
+      {
+        path: 'menu',
+        component: () => import('@/views/system/menu/index'),
+        name: 'Menu',
+        meta: { title: '菜单管理', icon: 'tree-table', permissions: ['system:menu:list'] }
+      },
+      {
+        path: 'dept',
+        component: () => import('@/views/system/dept/index'),
+        name: 'Dept',
+        meta: { title: '部门管理', icon: 'tree', permissions: ['system:dept:list'] }
+      },
+      {
+        path: 'dict',
+        component: () => import('@/views/system/dict/index'),
+        name: 'Dict',
+        meta: { title: '字典管理', icon: 'dict', permissions: ['system:dict:list'] }
+      },
+      {
+        path: 'config',
+        component: () => import('@/views/system/config/index'),
+        name: 'Config',
+        meta: { title: '参数设置', icon: 'edit', permissions: ['system:config:list'] }
+      },
+      {
+        path: 'notice',
+        component: () => import('@/views/system/notice/index'),
+        name: 'Notice',
+        meta: { title: '通知公告', icon: 'message', permissions: ['system:notice:list'] }
+      },
+      {
+        path: 'dict',
+        component: () => import('@/views/system/dict/index'),
+        name: 'Dict',
+        meta: { title: '字典管理', icon: 'dict', permissions: ['system:dict:list'] }
+      },
+    ]
+  },
+  {
+    path: '/monitor',
+    component: Layout,
+    alwaysShow: true,
+    name: 'Monitor',
+    meta: { title: '系统监控', icon: 'monitor' },
+    children: [
+      {
+        path: 'online',
+        component: () => import('@/views/monitor/online/index'),
+        name: 'Online',
+        meta: { title: '在线用户', icon: 'online', permissions: ['monitor:online:list'] }
+      },
+      {
+        path: 'job',
+        component: () => import('@/views/monitor/job/index'),
+        name: 'Job',
+        meta: { title: '定时任务', icon: 'job', permissions: ['monitor:job:list'] }
+      },
+      {
+        path: 'server',
+        component: () => import('@/views/monitor/server/index'),
+        name: 'Server',
+        meta: { title: '服务监控', icon: 'server', permissions: ['monitor:server:list'] }
+      }
+    ]
+  },
+  {
+    path: '/tool',
+    component: Layout,
+    alwaysShow: true,
+    name: 'Tool',
+    meta: { title: '工具管理', icon: 'tool' },
+    children: [
+      {
+        path: 'build',
+        component: () => import('@/views/tool/build/index'),
+        name: 'Build',
+        meta: { title: '表单构建', icon: 'build', permissions: ['tool:build:list'] }
+      },
+      {
+        path: 'gen',
+        component: () => import('@/views/tool/gen/index'),
+        name: 'Gen',
+        meta: { title: '代码生成', icon: 'code', permissions: ['tool:gen:list'] }
+      },
+      {
+        path: 'swagger',
+        component: () => import('@/views/tool/swagger/index'),
+        name: 'Swagger',
+        meta: { title: '接口文档', icon: 'swagger', permissions: ['tool:swagger:list'] }
       }
     ]
   }

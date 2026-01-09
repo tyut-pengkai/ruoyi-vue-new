@@ -204,11 +204,33 @@ export default {
     /** 查询学生信息列表 */
     getList() {
       this.loading = true
-      listInfo(this.queryParams).then(response => {
-        this.infoList = response.rows
-        this.total = response.total
+      // 模拟数据（后端服务未运行时使用）
+      setTimeout(() => {
+        this.infoList = [
+          {
+            studentId: 1,
+            studentName: '张佳琳',
+            avatar: '',
+            introduction: '这是张佳琳的个人介绍',
+            gender: '0',
+            status: '正常',
+            delFlag: '0',
+            remark: '优秀学生'
+          },
+          {
+            studentId: 2,
+            studentName: '郑瑜甜',
+            avatar: '',
+            introduction: '这是郑瑜甜的个人介绍',
+            gender: '0',
+            status: '正常',
+            delFlag: '0',
+            remark: '优秀学生'
+          }
+        ]
+        this.total = this.infoList.length
         this.loading = false
-      })
+      }, 500)
     },
     // 取消按钮
     cancel() {

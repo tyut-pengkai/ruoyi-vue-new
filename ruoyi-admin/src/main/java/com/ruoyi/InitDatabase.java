@@ -45,15 +45,25 @@ public class InitDatabase {
             );
             
             for (String sqlFile : sqlFiles) {
-                String filePath = "c:\\Users\\zjj\\RuoYi-Vue\\sql\\" + sqlFile;
+                // 使用相对路径查找SQL文件
+                String filePath = "..\\..\\sql\\" + sqlFile;
                 File file = new File(filePath);
                 if (file.exists()) {
                     System.out.println("开始导入脚本: " + sqlFile);
                     executeSqlFile(conn, filePath);
                     System.out.println("导入脚本 " + sqlFile + " 成功");
                 } else {
-                    System.out.println("警告: 脚本文件 " + filePath + " 不存在");
-                    System.out.println("当前工作目录: " + System.getProperty("user.dir"));
+                    // 尝试另一种路径（基于项目根目录）
+                    filePath = "c:\\Users\\86130\\RuoYi-Vue\\sql\\" + sqlFile;
+                    file = new File(filePath);
+                    if (file.exists()) {
+                        System.out.println("开始导入脚本: " + sqlFile);
+                        executeSqlFile(conn, filePath);
+                        System.out.println("导入脚本 " + sqlFile + " 成功");
+                    } else {
+                        System.out.println("警告: 脚本文件 " + sqlFile + " 不存在于预期路径中");
+                        System.out.println("当前工作目录: " + System.getProperty("user.dir"));
+                    }
                 }
             }
             

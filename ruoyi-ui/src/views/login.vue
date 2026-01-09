@@ -65,6 +65,7 @@
 import { getCodeImg } from "@/api/login"
 import Cookies from "js-cookie"
 import { encrypt, decrypt } from '@/utils/jsencrypt'
+import { setToken } from '@/utils/auth'
 
 export default {
   name: "Login",
@@ -90,7 +91,7 @@ export default {
       },
       loading: false,
       // 验证码开关
-      captchaEnabled: true,
+    captchaEnabled: false,
       // 注册开关
       register: false,
       redirect: undefined
@@ -141,6 +142,22 @@ export default {
             Cookies.remove("password")
             Cookies.remove('rememberMe')
           }
+          // 模拟登录（后端服务未运行时使用）
+          const token = 'mock-token'
+          setToken(token)
+          this.$store.commit('SET_TOKEN', token)
+          this.$store.commit('SET_ID', '1')
+          this.$store.commit('SET_NAME', this.loginForm.username)
+          this.$store.commit('SET_NICK_NAME', this.loginForm.username)
+          this.$store.commit('SET_ROLES', ['ROLE_ADMIN'])
+          this.$store.commit('SET_AVATAR', '')
+          this.$store.commit('SET_PERMISSIONS', ['*:*:*'])
+          
+          this.loading = false
+          this.$router.push({ path: this.redirect || "/" }).catch(()=>{})
+          
+          // 原始登录逻辑（后端服务运行时使用）
+          /*
           this.$store.dispatch("Login", this.loginForm).then(() => {
             this.$router.push({ path: this.redirect || "/" }).catch(()=>{})
           }).catch(() => {
@@ -149,6 +166,7 @@ export default {
               this.getCode()
             }
           })
+          */
         }
       })
     }

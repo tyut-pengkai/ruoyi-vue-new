@@ -1,324 +1,231 @@
 <template>
-  <div class="app-container">
-    <div class="head-container">
-      <el-form :inline="true" :model="queryParams" ref="queryForm" size="small" label-width="68px">
-        <el-form-item label="数据库名称" prop="databaseName">
+  <div class="database-manage-page">
+    <!-- 搜索区域 -->
+    <div class="search-container">
+      <el-form :inline="true" class="search-form">
+        <el-form-item label="数据库名称">
           <el-input
-            v-model="queryParams.databaseName"
-            placeholder="请输入数据库名称"
+            v-model="searchForm.dbName"
+            placeholder="输入数据库名称"
             clearable
-            @keyup.enter.native="handleQuery"
+            style="width: 200px;"
           />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" icon="el-icon-search" size="small" @click="handleQuery">搜索</el-button>
-          <el-button icon="el-icon-refresh" size="small" @click="resetQuery">重置</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
+          <el-button icon="el-icon-refresh" @click="handleReset">重置</el-button>
         </el-form-item>
       </el-form>
     </div>
 
-    <!-- 工具栏 -->
-    <div class="toolbar">
-      <el-button type="success" icon="el-icon-plus" size="small" @click="handleAdd" v-hasPermi="['database:zhengyutian:add']">新增</el-button>
-      <el-button type="primary" icon="el-icon-edit" size="small" :disabled="single" @click="handleUpdate" v-hasPermi="['database:zhengyutian:edit']">修改</el-button>
-      <el-button type="danger" icon="el-icon-delete" size="small" :disabled="multiple" @click="handleDelete" v-hasPermi="['database:zhengyutian:remove']">删除</el-button>
-      <el-button type="info" icon="el-icon-download" size="small" @click="handleExport" v-hasPermi="['database:zhengyutian:export']">导出</el-button>
+    <!-- 操作按钮区域 -->
+    <div class="btn-container">
+      <el-button type="primary" icon="el-icon-plus" @click="handleAdd">+ 新增</el-button>
+      <el-button type="warning" icon="el-icon-edit" @click="handleEdit">修改</el-button>
+      <el-button type="danger" icon="el-icon-delete" @click="handleDelete">删除</el-button>
+      <el-button type="success" icon="el-icon-download" @click="handleExport">导出</el-button>
     </div>
 
-    <!-- 数据表格 -->
-    <el-table v-loading="loading" :data="productList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="产品ID" prop="productId" width="80" align="center" />
-      <el-table-column label="数据库名称" prop="databaseName" align="center" />
-      <el-table-column label="图标" prop="icon" align="center" width="80">
-        <template slot-scope="scope">
-          <img :src="scope.row.icon" alt="图标" style="width: 24px; height: 24px;" />
-        </template>
-      </el-table-column>
-      <el-table-column label="类型" align="center">
-        <template slot-scope="scope">
-          <el-tag v-for="type in formatTypeList(scope.row.type)" :key="type" size="small" style="margin-right: 5px;">{{ type }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="数据库描述" prop="description" align="center" min-width="200">
-        <template slot-scope="scope">
-          <div v-html="scope.row.description" style="max-height: 80px; overflow: hidden; text-overflow: ellipsis;"></div>
-        </template>
-      </el-table-column>
-      <el-table-column label="创建时间" prop="createTime" align="center" width="180">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
-        </template>
-      </el-table-column>
-    </el-table>
+    <!-- 数据表格区域 -->
+    <div class="table-container">
+      <el-table
+        v-loading="loading"
+        :data="dbList"
+        border
+        style="width: 100%"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column type="selection" width="55" align="center" />
+        <el-table-column type="index" label="产品ID" width="80" align="center" />
+        <el-table-column prop="dbName" label="数据库名称" min-width="120" />
+        <el-table-column prop="icon" label="图标" width="80" align="center">
+          <template slot-scope="scope">
+            <svg-icon :icon-class="scope.row.icon" />
+          </template>
+        </el-table-column>
+        <el-table-column prop="type" label="类型" min-width="100" />
+        <el-table-column prop="description" label="数据库描述" min-width="200" show-overflow-tooltip />
+        <el-table-column prop="createTime" label="创建时间" min-width="150" align="center" />
+      </el-table>
+    </div>
 
-    <!-- 分页组件 -->
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
-    />
-
-    <!-- 添加或修改数据库产品对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="600px">
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="数据库名称" prop="databaseName">
-          <el-input v-model="form.databaseName" placeholder="请输入数据库名称" />
-        </el-form-item>
-        <el-form-item label="图标" prop="icon">
-          <el-upload
-            class="avatar-uploader"
-            :action="uploadUrl"
-            :show-file-list="false"
-            :on-success="handleIconUpload"
-            :before-upload="beforeIconUpload"
-          >
-            <img v-if="form.icon" :src="form.icon" class="avatar" />
-            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-          </el-upload>
-          <div class="el-upload__tip">请上传大小不超过5MB，格式为png/jpg/jpeg的文件</div>
-        </el-form-item>
-        <el-form-item label="类型" prop="typeList">
-          <el-checkbox-group v-model="form.typeList">
-            <el-checkbox label="关系型" />
-            <el-checkbox label="非关系型" />
-            <el-checkbox label="单机" />
-            <el-checkbox label="分布式" />
-          </el-checkbox-group>
-        </el-form-item>
-        <el-form-item label="数据库描述" prop="description">
-          <editor v-model="form.description" :min-height="150" :toolbar="true" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="cancel">取 消</el-button>
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-      </div>
-    </el-dialog>
+    <!-- 分页区域 -->
+    <div class="pagination-container">
+      <el-pagination
+        background
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+        :page-size.sync="pagination.pageSize"
+        :current-page.sync="pagination.currentPage"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
+    </div>
   </div>
 </template>
 
 <script>
-import { listZhengyutian, getZhengyutian, addZhengyutian, updateZhengyutian, delZhengyutian, exportZhengyutian } from '@/api/database/zhengyutian'
-import Editor from '@/components/Editor'
-
 export default {
-  name: 'Zhengyutian',
-  components: {
-    Editor
-  },
+  name: "ZhengyutianDatabaseManage",
   data() {
     return {
-      // 遮罩层
-      loading: true,
-      // 选中数组
-      ids: [],
-      // 非单个禁用
-      single: true,
-      // 非多个禁用
-      multiple: true,
+      // 搜索表单
+      searchForm: {
+        dbName: ""
+      },
+      // 数据库列表数据
+      dbList: [
+        {
+          id: 100,
+          dbName: "mysql",
+          icon: "database",
+          type: "关系型数据库",
+          description: "MySQL是一个开源的关系型数据库管理系统",
+          createTime: "2024-01-20 10:00:00"
+        },
+        {
+          id: 101,
+          dbName: "oracle",
+          icon: "database",
+          type: "关系型数据库",
+          description: "Oracle是一个功能强大的商业关系型数据库",
+          createTime: "2024-01-20 10:00:00"
+        },
+        {
+          id: 102,
+          dbName: "sqlserver",
+          icon: "database",
+          type: "关系型数据库",
+          description: "SQL Server是微软开发的关系型数据库管理系统",
+          createTime: "2024-01-20 10:00:00"
+        }
+      ],
+      // 选中的行
+      selectedRows: [],
+      // 加载状态
+      loading: false,
+      // 分页信息
+      pagination: {
+        currentPage: 1,
+        pageSize: 10
+      },
       // 总条数
-      total: 0,
-      // 数据库产品列表
-      productList: [],
-      // 弹出层标题
-      title: '',
-      // 是否显示弹出层
-      open: false,
-      // 上传地址
-      uploadUrl: process.env.VUE_APP_BASE_API + '/common/upload',
-      // 查询参数
-      queryParams: {
-        pageNum: 1,
-        pageSize: 10,
-        databaseName: undefined
-      },
-      // 表单参数
-      form: {
-        productId: undefined,
-        databaseName: undefined,
-        icon: undefined,
-        type: '',
-        typeList: [],
-        description: ''
-      },
-      // 表单校验
-      rules: {
-        databaseName: [
-          { required: true, message: '数据库名称不能为空', trigger: 'blur' }
-        ],
-        icon: [
-          { required: true, message: '图标不能为空', trigger: 'blur' }
-        ],
-        typeList: [
-          { required: true, message: '请至少选择一个类型', trigger: 'change' }
-        ]
-      }
-    }
-  },
-  created() {
-    this.getList()
+      total: 3
+    };
   },
   methods: {
-    /** 查询郑瑜甜列表 */
-    getList() {
-      this.loading = true
-      listZhengyutian(this.queryParams).then(response => {
-        this.productList = response.rows
-        this.total = response.total
-        this.loading = false
-      })
+    // 搜索
+    handleSearch() {
+      this.loading = true;
+      // 模拟搜索逻辑
+      setTimeout(() => {
+        this.loading = false;
+      }, 500);
     },
-    /** 搜索按钮操作 */
-    handleQuery() {
-      this.queryParams.pageNum = 1
-      this.getList()
+    // 重置
+    handleReset() {
+      this.searchForm = {
+        dbName: ""
+      };
+      this.handleSearch();
     },
-    /** 重置按钮操作 */
-    resetQuery() {
-      this.resetForm('queryForm')
-      this.handleQuery()
-    },
-    // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.productId)
-      this.single = selection.length !== 1
-      this.multiple = !selection.length
-    },
-    /** 新增按钮操作 */
+    // 新增
     handleAdd() {
-      this.reset()
-      this.open = true
-      this.title = '添加数据库产品'
+      this.$message("新增功能");
     },
-    /** 修改按钮操作 */
-    handleUpdate() {
-      const productId = this.ids.length === 1 ? this.ids[0] : undefined
-      if (productId === undefined) {
-        this.$modal.msgError('请选择一条记录')
-        return
+    // 修改
+    handleEdit() {
+      if (this.selectedRows.length !== 1) {
+        this.$message.warning("请选择一条记录进行修改");
+        return;
       }
-      this.reset()
-      getZhengyutian(productId).then(response => {
-        this.form = response.data
-        // 将类型字符串转换为数组
-        if (this.form.type) {
-          this.form.typeList = this.form.type.split(',')
-        }
-        this.open = true
-        this.title = '修改郑瑜甜'
-      })
+      this.$message("修改功能");
     },
-    /** 图标上传成功处理 */
-    handleIconUpload(res, file) {
-      if (res.code === 200) {
-        this.form.icon = res.fileName
-      } else {
-        this.$message.error(res.msg)
-      }
-    },
-    /** 图标上传前处理 */
-    beforeIconUpload(file) {
-      const isLt5M = file.size / 1024 / 1024 < 5
-      if (!isLt5M) {
-        this.$message.error('上传头像图片大小不能超过 5MB!')
-      }
-      return isLt5M
-    },
-    /** 格式化类型列表 */
-    formatTypeList(typeStr) {
-      return typeStr ? typeStr.split(',') : []
-    },
-    /** 提交按钮 */
-    submitForm() {
-      this.$refs['form'].validate(valid => {
-        if (valid) {
-          // 将类型数组转换为字符串
-          this.form.type = this.form.typeList.join(',')
-          if (this.form.productId != undefined) {
-            updateZhengyutian(this.form).then(response => {
-              this.$modal.msgSuccess('修改成功')
-              this.open = false
-              this.getList()
-            })
-          } else {
-            addZhengyutian(this.form).then(response => {
-              this.$modal.msgSuccess('新增成功')
-              this.open = false
-              this.getList()
-            })
-          }
-        }
-      })
-    },
-    /** 取消按钮 */
-    cancel() {
-      this.open = false
-      this.reset()
-    },
-    /** 重置表单 */
-    reset() {
-      this.form = {
-        productId: undefined,
-        databaseName: undefined,
-        icon: undefined,
-        type: '',
-        typeList: [],
-        description: ''
-      }
-      this.resetForm('form')
-    },
-    /** 删除按钮操作 */
+    // 删除
     handleDelete() {
-      if (this.ids.length === 0) {
-        this.$modal.msgError('请选择要删除的数据')
-        return
+      if (this.selectedRows.length === 0) {
+        this.$message.warning("请选择要删除的记录");
+        return;
       }
-      this.$modal.confirm('确认要删除选中的郑瑜甜吗？').then(function() {
-        return delZhengyutian(this.ids)
-      }.bind(this)).then(() => {
-        this.getList()
-        this.$modal.msgSuccess('删除成功')
-        this.ids = []
-      }).catch(() => {})
+      this.$confirm("确定要删除选中的记录吗?", "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.loading = true;
+          // 模拟删除逻辑
+          setTimeout(() => {
+            this.loading = false;
+            this.selectedRows = [];
+            this.$message.success("删除成功");
+          }, 500);
+        })
+        .catch(() => {
+          this.$message("已取消删除");
+        });
     },
-    /** 导出按钮操作 */
+    // 导出
     handleExport() {
-      this.download('database/product/export', { ...this.queryParams }, `zhengyutian_${new Date().getTime()}.xlsx`)
+      this.$message("导出功能");
+    },
+    // 选择行变化
+    handleSelectionChange(selection) {
+      this.selectedRows = selection;
+    },
+    // 分页大小变化
+    handleSizeChange(val) {
+      this.pagination.pageSize = val;
+      this.handleSearch();
+    },
+    // 当前页码变化
+    handleCurrentChange(val) {
+      this.pagination.currentPage = val;
+      this.handleSearch();
     }
   }
-}
+};
 </script>
 
 <style scoped>
-.avatar-uploader {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  width: 100px;
-  height: 100px;
+.database-manage-page {
+  padding: 20px;
+  background-color: #f5f7fa;
 }
 
-.avatar-uploader:hover {
-  border-color: #409EFF;
+.search-container {
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 15px;
 }
 
-.avatar-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 100px;
-  height: 100px;
-  line-height: 100px;
-  text-align: center;
+.search-form {
+  margin-bottom: 0;
 }
 
-.avatar {
-  width: 100px;
-  height: 100px;
-  display: block;
+.btn-container {
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+.btn-container .el-button {
+  margin-right: 10px;
+}
+
+.table-container {
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+.pagination-container {
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 4px;
+  text-align: right;
 }
 </style>

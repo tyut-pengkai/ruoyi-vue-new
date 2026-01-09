@@ -32,31 +32,29 @@ const permission = {
     // 生成路由
     GenerateRoutes({ commit }) {
       return new Promise(resolve => {
-        // 向后端请求路由数据
-        getRouters().then(res => {
-          const sdata = JSON.parse(JSON.stringify(res.data))
-          const rdata = JSON.parse(JSON.stringify(res.data))
-          const sidebarRoutes = filterAsyncRouter(sdata)
-          const rewriteRoutes = filterAsyncRouter(rdata, false, true)
-          const asyncRoutes = filterDynamicRoutes(dynamicRoutes)
-          rewriteRoutes.push({ path: '*', redirect: '/404', hidden: true })
-          router.addRoutes(asyncRoutes)
-          commit('SET_ROUTES', rewriteRoutes)
-          // 确保首页固定在顶部
-          const homeRouteIndex = constantRoutes.findIndex(route => route.children && route.children.some(child => child.name === 'Index'));
-          if (homeRouteIndex > 0) {
-            // 将首页路由移到最前面
-            const routes = [...constantRoutes];
-            const homeRoute = routes.splice(homeRouteIndex, 1)[0];
-            routes.unshift(homeRoute);
-            commit('SET_SIDEBAR_ROUTERS', routes.concat(sidebarRoutes));
-          } else {
-            commit('SET_SIDEBAR_ROUTERS', constantRoutes.concat(sidebarRoutes));
-          }
-          commit('SET_DEFAULT_ROUTES', sidebarRoutes)
-          commit('SET_TOPBAR_ROUTES', sidebarRoutes)
-          resolve(rewriteRoutes)
-        })
+        // 模拟路由数据（后端服务未运行时使用）
+        // 使用dynamicRoutes作为模拟数据，确保侧边栏显示所有动态路由
+        const mockRoutes = dynamicRoutes
+        const sidebarRoutes = filterAsyncRouter(mockRoutes)
+        const rewriteRoutes = filterAsyncRouter(mockRoutes, false, true)
+        const asyncRoutes = filterDynamicRoutes(dynamicRoutes)
+        rewriteRoutes.push({ path: '*', redirect: '/404', hidden: true })
+        router.addRoutes(asyncRoutes)
+        commit('SET_ROUTES', rewriteRoutes)
+        // 确保首页固定在顶部
+        const homeRouteIndex = constantRoutes.findIndex(route => route.children && route.children.some(child => child.name === 'Index'));
+        if (homeRouteIndex > 0) {
+          // 将首页路由移到最前面
+          const routes = [...constantRoutes];
+          const homeRoute = routes.splice(homeRouteIndex, 1)[0];
+          routes.unshift(homeRoute);
+          commit('SET_SIDEBAR_ROUTERS', routes.concat(sidebarRoutes));
+        } else {
+          commit('SET_SIDEBAR_ROUTERS', constantRoutes.concat(sidebarRoutes));
+        }
+        commit('SET_DEFAULT_ROUTES', sidebarRoutes)
+        commit('SET_TOPBAR_ROUTES', sidebarRoutes)
+        resolve(rewriteRoutes)
       })
     }
   }

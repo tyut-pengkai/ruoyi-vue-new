@@ -66,7 +66,7 @@
 
 <script>
 export default {
-  name: "ZhujingjingDatabaseManage",
+  name: "ZhangjialinDatabaseManage",
   data() {
     return {
       // 搜索表单
