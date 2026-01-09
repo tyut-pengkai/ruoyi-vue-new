@@ -124,6 +124,12 @@ export const constantRoutes = [
           component: () => import('@/views/database/zhangjialin/index'),
           name: 'Zhangjialin',
           meta: { title: '张佳琳', icon: 'user' }
+        },
+        {        
+          path: 'wangbingyan',
+          component: () => import('@/views/database/wangbingyan/index'),
+          name: 'Wangbingyan',
+          meta: { title: '王冰堰', icon: 'user' }
         }
       ]
   },
