@@ -1,0 +1,93 @@
+networks:
+  ruoyi-env: # 定义网络
+    driver: bridge
+
+services:
+  mysql:
+    image: registry.cn-hangzhou.aliyuncs.com/snow-io/mysql:5.7.44 # 或 8.0, 确保与 RuoYi 兼容
+    container_name: ruoyi-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${RUOYI_MYSQL_ROOT_PASS:-cpc!23#@xyz} # 设置 root 密码 (默认 password)
+    ports:
+      - "${RUOYI_MYSQL_EXPOSE_PORT:-3306}:3306" # 映射到宿主机端口 (可选)
+    volumes:
+      - mysql_data:/var/lib/mysql                 # 数据持久化
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d # 挂载初始化脚本目录
+    networks:
+      - ruoyi-env
+    restart: unless-stopped
+    command: # 设置 MySQL 字符集等
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_general_ci
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p${RUOYI_MYSQL_ROOT_PASS:-cpc!23#@xyz}" ]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  redis:
+    image: registry.cn-hangzhou.aliyuncs.com/snow-io/redis:7.2 # 选择合适的 Redis 版本
+    container_name: ruoyi-redis
+    environment:
+      # 如果 Redis 需要密码
+      REDIS_PASSWORD: ${RUOYI_REDIS_PASS:-123456} # 默认无密码
+    command: [ "redis-server", "--requirepass", "${RUOYI_REDIS_PASS:-123456}" ] # 启动时设置密码 (如果环境变量为空则无密码)
+    ports:
+      - "${RUOYI_REDIS_EXPOSE_PORT:-6379}:6379" # 映射到宿主机端口 (可选)
+    volumes:
+      - redis_data:/data # 数据持久化
+    networks:
+      - ruoyi-env
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "redis-cli", "-a", "${RUOYI_REDIS_PASS:-123456}", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+
+
+  ruoyi-backend:
+    container_name: ruoyi-backend
+    build:
+      context: . # 构建上下文是当前目录 (RuoYi-Vue 根目录)
+      dockerfile: docker/backend/Dockerfile # 指定 Dockerfile 路径
+    environment:
+      # 这些环境变量会传递给后端 Dockerfile 的 ENTRYPOINT
+      RUOYI_MYSQL_HOST: mysql # 使用服务名作为 Host
+      RUOYI_MYSQL_PORT: 3306
+      RUOYI_MYSQL_DB: ${RUOYI_MYSQL_DB:-ry-vue}
+      RUOYI_MYSQL_USER: ${RUOYI_MYSQL_USER:-root}
+      RUOYI_MYSQL_PASS: ${RUOYI_MYSQL_PASS:-cpc!23#@xyz}
+      RUOYI_REDIS_HOST: redis # 使用服务名作为 Host
+      RUOYI_REDIS_PORT: 6379
+      RUOYI_REDIS_PASS: ${RUOYI_REDIS_PASS:-123456}
+      # 可以添加其他 Spring Boot 配置覆盖, 如 SERVER_PORT
+      # SERVER_PORT: 8080
+    ports:
+      - "${RUOYI_BACKEND_EXPOSE_PORT:-8080}:8080" # 映射后端端口
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - ruoyi-env
+    restart: unless-stopped
+
+  ruoyi-frontend:
+    container_name: ruoyi-frontend
+    build:
+      context: . # 构建上下文是当前目录
+      dockerfile: docker/frontend/Dockerfile # 指定 Dockerfile 路径
+    ports:
+      - "${RUOYI_FRONTEND_EXPOSE_PORT:-80}:80" # 映射前端 Nginx 端口到宿主机 80
+    depends_on:
+      - ruoyi-backend # 依赖后端服务 (确保后端服务名在 Nginx 配置中正确)
+    networks:
+      - ruoyi-env
+    restart: unless-stopped
+
+volumes: # 定义数据卷
+  mysql_data:
+  redis_data:
