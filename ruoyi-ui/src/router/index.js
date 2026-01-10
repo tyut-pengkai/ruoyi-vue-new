@@ -97,6 +97,12 @@ export const constantRoutes = [
         component: () => import('@/views/paper/zhangjialin/index'),
         name: 'ZhangjialinPaper',
         meta: { title: '论文首页（张佳琳）', icon: 'user' }
+      },
+      {
+        path: 'chenxiaoxuezi',
+        component: () => import('@/views/paper/chenxiaoxuezi/index'),
+        name: 'ChenxiaoxueziPaper',
+        meta: { title: '论文首页（陈潇雪子）', icon: 'user' }
       }
     ]
   },
@@ -130,6 +136,12 @@ export const constantRoutes = [
           component: () => import('@/views/database/wangbingyan/index'),
           name: 'Wangbingyan',
           meta: { title: '王冰堰', icon: 'user' }
+        },
+        {
+          path: 'chenxiaoxuezi',
+          component: () => import('@/views/database/chenxiaoxuezi/index'),
+          name: 'Chenxiaoxuezi',
+          meta: { title: '陈潇雪子', icon: 'user' }
         }
       ]
   },
