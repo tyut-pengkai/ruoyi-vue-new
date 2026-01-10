@@ -1,3 +1,14 @@
+CREATE DATABASE IF NOT EXISTS `ry-vue`
+  DEFAULT CHARACTER SET utf8mb4
+  DEFAULT COLLATE utf8mb4_general_ci;  -- MySQL 8.0 推荐
+
+-- 如果你是 MySQL 5.7，更通用的排序规则用这个：
+-- DEFAULT COLLATE utf8mb4_general_ci;
+
+-- 2) 进入数据库
+USE `ry-vue`;
+
+
 -- ----------------------------
 -- 1、部门表
 -- ----------------------------

@@ -2,26 +2,37 @@
 
 # Stage 1: Build the Vue application
 # 选择一个 Node.js 镜像 (版本需与 ruoyi-ui 兼容, 查看 package.json 或咨询项目)
-FROM node:16 AS builder
+FROM registry.cn-hangzhou.aliyuncs.com/snow-io/node:16 AS builder
 
 WORKDIR /app
 
 # 切换淘宝镜像源加速 (可选)
 RUN npm config set registry https://registry.npmmirror.com
 
+# 复制 package.json 和 lock 文件 (利用缓存)
+# 假设 build context 是 RuoYi-Vue 根目录
+# ruoyi-ui/yarn.lock
+COPY ruoyi-ui/package.json  ./ruoyi-ui/
+# 如果使用 npm，复制 package-lock.json
+
+# 进入 UI 目录安装依赖
+WORKDIR /app/ruoyi-ui
+RUN npm install
+# 如果使用 npm: RUN npm install
+
 # 复制 UI 源代码
+WORKDIR /app
 COPY ruoyi-ui ./ruoyi-ui
 
 # 进入 UI 目录执行构建
 WORKDIR /app/ruoyi-ui
-#安装依赖
-RUN yarn install
 # 查看 ruoyi-ui/package.json 中的 build 命令, 通常是 build:prod
-RUN yarn run build:prod
+RUN npm run build:prod
 # 如果使用 npm: RUN npm run build:prod
 
 # Stage 2: Serve the built files using Nginx
-FROM nginx:1.23-alpine # 使用轻量级 Nginx 镜像
+# 使用轻量级 Nginx 镜像
+FROM registry.cn-hangzhou.aliyuncs.com/snow-io/nginx:1.23-alpine
 
 # 移除 Nginx 默认配置
 RUN rm /etc/nginx/conf.d/default.conf
