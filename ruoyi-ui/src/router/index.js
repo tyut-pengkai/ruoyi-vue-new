@@ -75,6 +75,19 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/open3rd',
+    component: Layout,
+    redirect: '/open3rd/preview',
+    children: [
+      {
+        path: 'preview',
+        component: () => import('@/views/open3rd/preview/index'),
+        name: 'Open3rdPreview',
+        meta: { title: '文档预览', icon: 'document' }
+      }
+    ]
+  },
+  {
     path: '/user',
     component: Layout,
     hidden: true,

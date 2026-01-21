@@ -13,6 +13,38 @@ ruoyi:
   # 验证码类型 math 数字计算 char 字符验证
   captchaType: math
 
+# 文档中台开放接口配置
+open3rd:
+  # 接入方 APP ID
+  app-id: your-app-id
+  # 接入方 APP Secret
+  app-secret: your-app-secret
+  # 文件根目录（默认取上传目录）
+  file-root: ${ruoyi.profile}/open3rd
+  # 默认权限配置
+  permission:
+    read: true
+    download: true
+    update: false
+    copy: false
+    comment: false
+    print: false
+    rename: false
+    history: false
+    manage: false
+  # 文件信息映射（可按需扩展）
+  files:
+    - id: demo
+      name: demo.docx
+      creator-id: admin
+      modifier-id: admin
+      version: 1
+      disable-watermark: false
+  # Token 映射（可选）
+  tokens:
+    - token: demo-token
+      user-id: admin
+
 # 开发环境配置
 server:
   # 服务器的HTTP端口，默认为8080
